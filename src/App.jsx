@@ -55,10 +55,10 @@ const DRIVERS = [
   "#9 Chase Elliott","#10 Ty Dillon","#11 Denny Hamlin","#12 Ryan Blaney",
   "#16 AJ Allmendinger","#17 Chris Buescher","#19 Chase Briscoe","#20 Christopher Bell",
   "#21 Josh Berry","#22 Joey Logano","#23 Bubba Wallace","#24 William Byron",
-  "#31 Carson Hocevar","#34 Todd Gilliland","#35 Riley Herbst","#38 Zane Smith",
+  "#31 Justin Allgaier","#33 Austin Hill","#34 Todd Gilliland","#35 Riley Herbst","#38 Zane Smith",
   "#41 Cole Custer","#42 John Hunter Nemechek","#43 Erik Jones","#45 Tyler Reddick",
   "#47 Ricky Stenhouse Jr","#48 Alex Bowman","#51 Cody Ware","#54 Ty Gibbs",
-  "#60 Ryan Preece","#77 Jesse Love","#88 Connor Zilisch","#97 Shane Van Gisbergen",
+  "#60 Ryan Preece","#71 Michael McDowell","#77 Carson Hocevar","#88 Connor Zilisch","#97 Shane Van Gisbergen",
   "[Open / TBD #1]","[Open / TBD #2]"
 ];
 const MAX_MULLIGANS = 10;
@@ -97,14 +97,92 @@ function buildInitialData() {
       results["w"+w].scored[pid] = { total, bonusPoints:0, weeklyWin:pid===r.w, drivers:[], historical:true };
     });
   });
+
+  // Week 8: Bristol Food City 500 (Short Track x0.2)
+  results["w8"] = { scored: {
+    bigmonroe: { total:332.5, bonusPoints:17.5, weeklyWin:true, drivers:[
+      {driver:"#5 Kyle Larson",total:128.3,bonusPoints:10,isMulligan:false,breakdown:[
+        {label:"P3",pts:36},{label:"Net Q8>P3",pts:5},{label:"284laps*0.2",pts:56.8},{label:"Led a lap",pts:0.5},
+        {label:"S1:P1",pts:10},{label:"S2:P1",pts:10},{label:"S1 Win",pts:2.5},{label:"S2 Win",pts:2.5},{label:"Most Led",pts:5}
+      ]},
+      {driver:"#12 Ryan Blaney",total:102,bonusPoints:7.5,isMulligan:false,breakdown:[
+        {label:"P2",pts:40},{label:"Net Q1>P2",pts:-1},{label:"190laps*0.2",pts:38},{label:"Led a lap",pts:0.5},
+        {label:"S1:P3",pts:8},{label:"S2:P2",pts:9},{label:"Pole",pts:5},{label:"Fast Lap",pts:2.5}
+      ]},
+      {driver:"#54 Ty Gibbs",total:63.5,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P1",pts:50},{label:"Net Q5>P1",pts:4},{label:"25laps*0.2",pts:5},{label:"Led a lap",pts:0.5},
+        {label:"S2:P7",pts:4}
+      ]},
+      {driver:"#6 Brad Keselowski",total:29,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P14",pts:22},{label:"Net Q21>P14",pts:7}
+      ]},
+      {driver:"#20 Christopher Bell",total:9.7,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P27",pts:9},{label:"Net Q14>P27",pts:-10},{label:"6laps*0.2",pts:1.2},{label:"Led a lap",pts:0.5},
+        {label:"S1:P2",pts:9}
+      ]},
+    ]},
+    monroe: { total:163, bonusPoints:7.5, weeklyWin:false, drivers:[
+      {driver:"#12 Ryan Blaney",total:102,bonusPoints:7.5,isMulligan:false,breakdown:[
+        {label:"P2",pts:40},{label:"Net Q1>P2",pts:-1},{label:"190laps*0.2",pts:38},{label:"Led a lap",pts:0.5},
+        {label:"S1:P3",pts:8},{label:"S2:P2",pts:9},{label:"Pole",pts:5},{label:"Fast Lap",pts:2.5}
+      ]},
+      {driver:"#22 Joey Logano",total:42,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P7",pts:29},{label:"Net Q20>P7",pts:10},{label:"S2:P8",pts:3}
+      ]},
+      {driver:"#9 Chase Elliott",total:10,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P22",pts:14},{label:"Net Q18>P22",pts:-4}
+      ]},
+      {driver:"#21 Josh Berry",total:5,bonusPoints:0,isMulligan:true,breakdown:[
+        {label:"P32",pts:5},{label:"Mulligan",pts:0}
+      ]},
+      {driver:"#97 Shane Van Gisbergen",total:4,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P34",pts:5},{label:"Net Q33>P34",pts:-1}
+      ]},
+    ]},
+    justin: { total:137, bonusPoints:0, weeklyWin:false, drivers:[
+      {driver:"#19 Chase Briscoe",total:44,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P5",pts:33},{label:"Net Q3>P5",pts:-2},{label:"S1:P4",pts:7},{label:"S2:P5",pts:6}
+      ]},
+      {driver:"#77 Carson Hocevar",total:37,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P10",pts:26},{label:"S1:P7",pts:4},{label:"S2:P4",pts:7}
+      ]},
+      {driver:"#45 Tyler Reddick",total:33,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P4",pts:35},{label:"Net Q2>P4",pts:-2}
+      ]},
+      {driver:"#7 Daniel Suarez",total:25,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P12",pts:24},{label:"Net Q13>P12",pts:1}
+      ]},
+      {driver:"#88 Connor Zilisch",total:-2,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P33",pts:5},{label:"Net Q26>P33",pts:-7}
+      ]},
+    ]},
+    rich: { total:119, bonusPoints:0, weeklyWin:false, drivers:[
+      {driver:"#11 Denny Hamlin",total:42,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P9",pts:27},{label:"Net Q11>P9",pts:2},{label:"S1:P6",pts:5},{label:"S2:P3",pts:8}
+      ]},
+      {driver:"#60 Ryan Preece",total:37,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P8",pts:28},{label:"Net Q17>P8",pts:9}
+      ]},
+      {driver:"#17 Chris Buescher",total:27,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P13",pts:23},{label:"Net Q17>P13",pts:4}
+      ]},
+      {driver:"#71 Michael McDowell",total:7,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P24",pts:12},{label:"Net Q19>P24",pts:-5}
+      ]},
+      {driver:"#1 Ross Chastain",total:6,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P20",pts:16},{label:"Net Q6>P20",pts:-10}
+      ]},
+    ]},
+  }};
+
   return {
     results, picks: {}, drafts: {},
-    mulligans: { justin:[], bigmonroe:[], monroe:[], rich:[] },
+    mulligans: { justin:[], bigmonroe:[], monroe:[{week:8,driver:"#24 William Byron",replacement:"#21 Josh Berry"}], rich:[] },
     meta: {
-      standings: { justin:1257.1, bigmonroe:1022.3, monroe:1184.0, rich:1189.4 },
-      playoffPts: { justin:154.5, bigmonroe:13.0, monroe:92.5, rich:83.5 },
-      mulligansUsed: { justin:0, bigmonroe:0, monroe:0, rich:0 },
-      lastScoredWeek: 7,
+      standings: { justin:1394.1, bigmonroe:1354.8, monroe:1347.0, rich:1308.4 },
+      playoffPts: { justin:154.5, bigmonroe:60.5, monroe:100.0, rich:83.5 },
+      mulligansUsed: { justin:0, bigmonroe:0, monroe:1, rich:0 },
+      lastScoredWeek: 8,
     },
   };
 }
