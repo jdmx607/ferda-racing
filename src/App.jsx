@@ -58,7 +58,7 @@ const DRIVERS = [
   "#31 Justin Allgaier","#33 Austin Hill","#34 Todd Gilliland","#35 Riley Herbst","#38 Zane Smith",
   "#41 Cole Custer","#42 John Hunter Nemechek","#43 Erik Jones","#45 Tyler Reddick",
   "#47 Ricky Stenhouse Jr","#48 Alex Bowman","#51 Cody Ware","#54 Ty Gibbs",
-  "#60 Ryan Preece","#71 Michael McDowell","#77 Carson Hocevar","#88 Connor Zilisch","#97 Shane Van Gisbergen",
+  "#60 Ryan Preece","#71 Michael McDowell","#77 Carson Hocevar","#84 Jimmie Johnson","#88 Connor Zilisch","#97 Shane Van Gisbergen",
   "[Open / TBD #1]","[Open / TBD #2]"
 ];
 const MAX_MULLIGANS = 10;
@@ -100,18 +100,17 @@ function buildInitialData() {
 
   // Week 8: Bristol Food City 500 (Short Track x0.2)
   results["w8"] = { scored: {
-    bigmonroe: { total:332.5, bonusPoints:17.5, weeklyWin:true, drivers:[
+    bigmonroe: { total:260.5, bonusPoints:10, weeklyWin:true, drivers:[
       {driver:"#5 Kyle Larson",total:128.3,bonusPoints:10,isMulligan:false,breakdown:[
         {label:"P3",pts:36},{label:"Net Q8>P3",pts:5},{label:"284laps*0.2",pts:56.8},{label:"Led a lap",pts:0.5},
         {label:"S1:P1",pts:10},{label:"S2:P1",pts:10},{label:"S1 Win",pts:2.5},{label:"S2 Win",pts:2.5},{label:"Most Led",pts:5}
       ]},
-      {driver:"#12 Ryan Blaney",total:102,bonusPoints:7.5,isMulligan:false,breakdown:[
-        {label:"P2",pts:40},{label:"Net Q1>P2",pts:-1},{label:"190laps*0.2",pts:38},{label:"Led a lap",pts:0.5},
-        {label:"S1:P3",pts:8},{label:"S2:P2",pts:9},{label:"Pole",pts:5},{label:"Fast Lap",pts:2.5}
-      ]},
       {driver:"#54 Ty Gibbs",total:63.5,bonusPoints:0,isMulligan:false,breakdown:[
         {label:"P1",pts:50},{label:"Net Q5>P1",pts:4},{label:"25laps*0.2",pts:5},{label:"Led a lap",pts:0.5},
         {label:"S2:P7",pts:4}
+      ]},
+      {driver:"#23 Bubba Wallace",total:30,bonusPoints:0,isMulligan:false,breakdown:[
+        {label:"P11",pts:25},{label:"Net Q12>P11",pts:1},{label:"S1:P9",pts:2},{label:"S2:P9",pts:2}
       ]},
       {driver:"#6 Brad Keselowski",total:29,bonusPoints:0,isMulligan:false,breakdown:[
         {label:"P14",pts:22},{label:"Net Q21>P14",pts:7}
@@ -175,12 +174,46 @@ function buildInitialData() {
     ]},
   }};
 
+  const w8picks = {
+    bigmonroe:[{driver:"#5 Kyle Larson"},{driver:"#54 Ty Gibbs"},{driver:"#23 Bubba Wallace"},{driver:"#6 Brad Keselowski"},{driver:"#20 Christopher Bell"}],
+    monroe:[{driver:"#12 Ryan Blaney"},{driver:"#22 Joey Logano"},{driver:"#9 Chase Elliott"},{driver:"#21 Josh Berry",mulligan:true},{driver:"#97 Shane Van Gisbergen"}],
+    justin:[{driver:"#19 Chase Briscoe"},{driver:"#77 Carson Hocevar"},{driver:"#45 Tyler Reddick"},{driver:"#7 Daniel Suarez"},{driver:"#88 Connor Zilisch"}],
+    rich:[{driver:"#11 Denny Hamlin"},{driver:"#60 Ryan Preece"},{driver:"#17 Chris Buescher"},{driver:"#71 Michael McDowell"},{driver:"#1 Ross Chastain"}],
+  };
+
+  // Raw race result data for Bristol so Commissioner can edit
+  const w8raw = {drivers:[
+    {name:"#54 Ty Gibbs",finish:1,qualPos:5,stage1:0,stage2:7,lapsLed:25,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#12 Ryan Blaney",finish:2,qualPos:1,stage1:3,stage2:2,lapsLed:190,pole:true,stageWin1:false,stageWin2:false,fastestLap:true,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#5 Kyle Larson",finish:3,qualPos:8,stage1:1,stage2:1,lapsLed:284,pole:false,stageWin1:true,stageWin2:true,fastestLap:false,mostLapsLed:true,dnf:false,dq:false},
+    {name:"#45 Tyler Reddick",finish:4,qualPos:2,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#19 Chase Briscoe",finish:5,qualPos:3,stage1:4,stage2:5,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#34 Todd Gilliland",finish:6,qualPos:35,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#22 Joey Logano",finish:7,qualPos:20,stage1:0,stage2:8,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#60 Ryan Preece",finish:8,qualPos:17,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#11 Denny Hamlin",finish:9,qualPos:11,stage1:6,stage2:3,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#77 Carson Hocevar",finish:10,qualPos:10,stage1:7,stage2:4,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#23 Bubba Wallace",finish:11,qualPos:12,stage1:9,stage2:9,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#7 Daniel Suarez",finish:12,qualPos:13,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#17 Chris Buescher",finish:13,qualPos:17,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#6 Brad Keselowski",finish:14,qualPos:21,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#9 Chase Elliott",finish:22,qualPos:18,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#71 Michael McDowell",finish:24,qualPos:19,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#20 Christopher Bell",finish:27,qualPos:14,stage1:2,stage2:0,lapsLed:6,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#1 Ross Chastain",finish:20,qualPos:6,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#21 Josh Berry",finish:32,qualPos:25,stage1:5,stage2:6,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#88 Connor Zilisch",finish:33,qualPos:26,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#97 Shane Van Gisbergen",finish:34,qualPos:33,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+  ]};
+
+  results["w8"].raw = w8raw;
+
   return {
-    results, picks: {}, drafts: {},
+    results, picks: {"w8": w8picks}, drafts: {},
     mulligans: { justin:[], bigmonroe:[], monroe:[{week:8,driver:"#24 William Byron",replacement:"#21 Josh Berry"}], rich:[] },
     meta: {
-      standings: { justin:1394.1, bigmonroe:1354.8, monroe:1347.0, rich:1308.4 },
-      playoffPts: { justin:154.5, bigmonroe:60.5, monroe:100.0, rich:83.5 },
+      standings: { justin:1394.1, bigmonroe:1282.8, monroe:1347.0, rich:1308.4 },
+      playoffPts: { justin:154.5, bigmonroe:53.0, monroe:100.0, rich:83.5 },
       mulligansUsed: { justin:0, bigmonroe:0, monroe:1, rich:0 },
       lastScoredWeek: 8,
     },
@@ -227,10 +260,10 @@ function scoreWeekFull(picks, raceResult, week, mullData) {
     pp.forEach(pick => {
       const r = raceResult.drivers?.find(d => d.name === pick.driver);
       if (!r) return;
-      const im = mullData?.[p.id]?.some(m => m.week === week && m.driver === pick.driver);
+      const im = pick.mulligan || mullData?.[p.id]?.some(m => m.week === week && m.driver === pick.driver);
       const sc = calcDriverScore(r, ty, im);
       wt += sc.total; wb += sc.bonusPoints;
-      ds.push({ driver:pick.driver, total:sc.total, breakdown:sc.breakdown, bonusPoints:sc.bonusPoints, isMulligan:im });
+      ds.push({ driver:pick.driver, total:sc.total, breakdown:sc.breakdown, bonusPoints:sc.bonusPoints, isMulligan:!!im });
     });
     ps[p.id] = { total:Math.round(wt*100)/100, bonusPoints:Math.round(wb*100)/100, drivers:ds, weeklyWin:false };
   });
@@ -480,37 +513,118 @@ function RulesTab() {
 
 function CommissionerTab({data,onPostResults,currentWeek}) {
   const [week,setWeek] = useState(currentWeek);
+  const [editing,setEditing] = useState(false);
   const [drivers,setDrivers] = useState([]);
+  const [playerPicks,setPlayerPicks] = useState({justin:[],bigmonroe:[],monroe:[],rich:[]});
   const [saving,setSaving] = useState(false);
   const [msg,setMsg] = useState("");
   const race = SCHEDULE.find(s=>s.w===week);
   const done = !!(data.results?.["w"+week]);
+  const isHistorical = data.results?.["w"+week]?.scored?.[PLAYERS[0].id]?.historical;
+
+  // Load existing data when editing a scored week
+  const startEdit = () => {
+    const wr = data.results?.["w"+week];
+    if (wr?.raw?.drivers) {
+      setDrivers(wr.raw.drivers.map(d=>({...d,finish:String(d.finish),qualPos:String(d.qualPos),stage1:String(d.stage1||""),stage2:String(d.stage2||""),lapsLed:String(d.lapsLed||0)})));
+    } else { setDrivers([]); }
+    // Load picks
+    const wp = data.picks?.["w"+week] || {};
+    const pp = {};
+    PLAYERS.forEach(p => {
+      pp[p.id] = (wp[p.id]||[]).map(pk => ({driver:pk.driver, mulligan:pk.mulligan||false}));
+    });
+    setPlayerPicks(pp);
+    setEditing(true); setMsg("");
+  };
+
+  const startNew = () => { setDrivers([]); setPlayerPicks({justin:[],bigmonroe:[],monroe:[],rich:[]}); setEditing(true); setMsg(""); };
+
   const addD = () => setDrivers([...drivers,{name:"",finish:"",qualPos:"",stage1:"",stage2:"",lapsLed:"0",pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false}]);
   const ud = (i,f,v) => {const n=[...drivers];n[i]={...n[i],[f]:v};setDrivers(n);};
   const rm = (i) => setDrivers(drivers.filter((_,j)=>j!==i));
+
+  const addPick = (pid) => {
+    if ((playerPicks[pid]||[]).length >= PICKS_PER_WEEK) return;
+    setPlayerPicks({...playerPicks, [pid]:[...(playerPicks[pid]||[]),{driver:"",mulligan:false}]});
+  };
+  const updatePick = (pid,i,field,val) => {
+    const np = {...playerPicks};
+    np[pid] = [...np[pid]];
+    np[pid][i] = {...np[pid][i],[field]:val};
+    setPlayerPicks(np);
+  };
+  const removePick = (pid,i) => {
+    const np = {...playerPicks};
+    np[pid] = np[pid].filter((_,j)=>j!==i);
+    setPlayerPicks(np);
+  };
+
   const handleScore = async () => {
     setSaving(true); setMsg("");
-    const rr = {drivers:drivers.map(d=>({name:d.name,finish:parseInt(d.finish)||40,qualPos:parseInt(d.qualPos)||40,stage1:parseInt(d.stage1)||0,stage2:parseInt(d.stage2)||0,lapsLed:parseInt(d.lapsLed)||0,pole:d.pole,stageWin1:d.stageWin1,stageWin2:d.stageWin2,fastestLap:d.fastestLap,mostLapsLed:d.mostLapsLed,dnf:d.dnf,dq:d.dq}))};
-    const ds = data.drafts?.["w"+week] || [];
+    const rr = {drivers:drivers.map(d=>({name:d.name,finish:parseInt(d.finish)||40,qualPos:parseInt(d.qualPos)||40,stage1:parseInt(d.stage1)||0,stage2:parseInt(d.stage2)||0,lapsLed:parseInt(d.lapsLed)||0,pole:!!d.pole,stageWin1:!!d.stageWin1,stageWin2:!!d.stageWin2,fastestLap:!!d.fastestLap,mostLapsLed:!!d.mostLapsLed,dnf:!!d.dnf,dq:!!d.dq}))};
     const wp = {};
-    PLAYERS.forEach(p => { wp[p.id] = ds.filter(d => d.pid === p.id).map(d => ({driver: d.driver})); });
-    const scored = scoreWeekFull(wp, rr, week, data.mulligans);
+    PLAYERS.forEach(p => { wp[p.id] = (playerPicks[p.id]||[]).filter(pk=>pk.driver).map(pk=>({driver:pk.driver,mulligan:pk.mulligan})); });
+    const mullOverride = {};
+    PLAYERS.forEach(p => {
+      mullOverride[p.id] = (playerPicks[p.id]||[]).filter(pk=>pk.mulligan).map(pk=>({week,driver:pk.driver}));
+    });
+    const scored = scoreWeekFull(wp, rr, week, mullOverride);
     await onPostResults(week, scored, rr, wp);
-    setMsg("Week "+week+" scored!"); setSaving(false);
+    setMsg("Week "+week+" "+(done?"updated":"scored")+"! Standings recalculated.");
+    setSaving(false); setEditing(false);
   };
+
   const iS = {padding:"6px 8px",borderRadius:6,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:13,fontFamily:"inherit",outline:"none",width:"100%",boxSizing:"border-box"};
+
   return (
     <div style={{padding:20,maxWidth:1000,margin:"0 auto"}}>
       <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Commissioner Panel</h2>
-      <div style={{color:C.dim,fontSize:13,marginBottom:16}}>Enter race results and score the week</div>
+      <div style={{color:C.dim,fontSize:13,marginBottom:16}}>Score new weeks or edit past results</div>
+
       <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:16,flexWrap:"wrap"}}>
         <span style={{color:C.dim,fontSize:13}}>Week:</span>
-        <select value={week} onChange={e=>setWeek(Number(e.target.value))} style={{...iS,width:80}}>{SCHEDULE.map(s=><option key={s.w} value={s.w}>{s.w}</option>)}</select>
+        <select value={week} onChange={e=>{setWeek(Number(e.target.value));setEditing(false);setMsg("");}} style={{...iS,width:80}}>{SCHEDULE.map(s=><option key={s.w} value={s.w}>{s.w}</option>)}</select>
         {race&&<span style={{color:C.dim,fontSize:13}}>{race.r} · {TTL[race.ty]} x{TRACK_MULTS[race.ty]}</span>}
-        {done&&<span style={{color:C.green,fontSize:13,fontWeight:700}}>✓ Scored</span>}
+        {done&&!editing&&<span style={{color:C.green,fontSize:13,fontWeight:700}}>✓ Scored</span>}
       </div>
-      {!done&&<>
-        <button onClick={addD} style={{padding:"8px 16px",borderRadius:6,border:"1px solid "+C.accent,background:C.accent+"22",color:C.accent,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer",marginBottom:16}}>+ Add Driver</button>
+
+      {/* Action buttons when not editing */}
+      {!editing && <div style={{display:"flex",gap:8,marginBottom:16}}>
+        {done && <button onClick={startEdit} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.accent,background:C.accent+"22",color:C.accent,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Edit Week {week}</button>}
+        {!done && <button onClick={startNew} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.green,background:C.green+"22",color:C.green,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Score Week {week}</button>}
+      </div>}
+
+      {/* Editing mode */}
+      {editing && <>
+        {/* Player Picks Editor */}
+        <div style={{marginBottom:20}}>
+          <div style={{color:C.accent,fontSize:14,fontWeight:700,marginBottom:10,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1,textTransform:"uppercase"}}>Player Picks</div>
+          {PLAYERS.map(p => (
+            <div key={p.id} style={{background:C.card,borderRadius:10,padding:12,marginBottom:8,border:"1px solid "+C.border}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                <span style={{color:PC[p.id],fontWeight:700,fontSize:14}}>{PNAME[p.id]} ({(playerPicks[p.id]||[]).length}/{PICKS_PER_WEEK})</span>
+                {(playerPicks[p.id]||[]).length < PICKS_PER_WEEK && <button onClick={()=>addPick(p.id)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid "+C.accent+"66",background:C.accent+"11",color:C.accent,fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>+ Driver</button>}
+              </div>
+              {(playerPicks[p.id]||[]).map((pk,i) => (
+                <div key={i} style={{display:"flex",gap:6,alignItems:"center",marginBottom:4}}>
+                  <select value={pk.driver} onChange={e=>updatePick(p.id,i,"driver",e.target.value)} style={{...iS,flex:1}}>
+                    <option value="">Select driver</option>
+                    {DRIVERS.map(dr=><option key={dr} value={dr}>{dr}</option>)}
+                  </select>
+                  <label style={{display:"flex",alignItems:"center",gap:3,cursor:"pointer",fontSize:11,color:pk.mulligan?C.accent:C.dim,flexShrink:0}}>
+                    <input type="checkbox" checked={!!pk.mulligan} onChange={e=>updatePick(p.id,i,"mulligan",e.target.checked)}/>M
+                  </label>
+                  <button onClick={()=>removePick(p.id,i)} style={{background:C.red+"22",border:"1px solid "+C.red+"44",borderRadius:6,color:C.red,padding:"4px 8px",fontSize:10,cursor:"pointer",fontFamily:"inherit",flexShrink:0}}>X</button>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Race Results Editor */}
+        <div style={{color:C.accent,fontSize:14,fontWeight:700,marginBottom:10,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1,textTransform:"uppercase"}}>Race Results</div>
+        <button onClick={addD} style={{padding:"8px 16px",borderRadius:6,border:"1px solid "+C.accent,background:C.accent+"22",color:C.accent,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer",marginBottom:12}}>+ Add Driver Result</button>
         {drivers.map((d,i)=>(
           <div key={i} style={{background:C.card,borderRadius:10,padding:14,marginBottom:8,border:"1px solid "+C.border}}>
             <div style={{display:"flex",gap:6,marginBottom:8,alignItems:"center",flexWrap:"wrap"}}>
@@ -527,9 +641,30 @@ function CommissionerTab({data,onPostResults,currentWeek}) {
             </div>
           </div>
         ))}
-        {drivers.length>0&&<button onClick={handleScore} disabled={saving} style={{marginTop:10,width:"100%",padding:"14px 0",borderRadius:8,border:"none",background:C.accent,color:"#000",fontFamily:"'Oswald',sans-serif",fontSize:16,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:"pointer"}}>{saving?"Scoring...":"Score Week "+week}</button>}
+
+        <div style={{display:"flex",gap:8,marginTop:12}}>
+          <button onClick={handleScore} disabled={saving} style={{flex:1,padding:"14px 0",borderRadius:8,border:"none",background:C.accent,color:"#000",fontFamily:"'Oswald',sans-serif",fontSize:16,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:"pointer"}}>{saving?"Saving...":(done?"Re-Score Week "+week:"Score Week "+week)}</button>
+          <button onClick={()=>setEditing(false)} style={{padding:"14px 20px",borderRadius:8,border:"1px solid "+C.border,background:"transparent",color:C.dim,fontFamily:"'Oswald',sans-serif",fontSize:14,cursor:"pointer"}}>Cancel</button>
+        </div>
         {msg&&<div style={{color:C.green,marginTop:10,textAlign:"center",fontSize:14}}>{msg}</div>}
       </>}
+
+      {/* Show current results summary when not editing */}
+      {done && !editing && (() => {
+        const wr = data.results["w"+week];
+        const sorted = Object.entries(wr.scored||{}).sort((a,b)=>b[1].total-a[1].total);
+        return <div style={{marginTop:8}}>
+          <div style={{color:C.dim,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>Current Scores</div>
+          {sorted.map(([pid,ps])=>(
+            <div key={pid} style={{display:"flex",justifyContent:"space-between",padding:"8px 12px",background:C.card,borderRadius:8,marginBottom:4,border:"1px solid "+(ps.weeklyWin?C.accent+"44":C.border)}}>
+              <span style={{color:PC[pid],fontWeight:600,fontSize:14}}>{ps.weeklyWin?"👑 ":""}{PNAME[pid]}</span>
+              <span style={{color:PC[pid],fontWeight:700,fontSize:16}}>{ps.total}</span>
+            </div>
+          ))}
+        </div>;
+      })()}
+
+      {msg&&!editing&&<div style={{color:C.green,marginTop:10,textAlign:"center",fontSize:14}}>{msg}</div>}
     </div>
   );
 }
@@ -577,12 +712,37 @@ export default function App() {
     if(!d.picks) d.picks = {};
     d.results["w"+week] = { scored, raw: rr };
     d.picks["w"+week] = wp;
-    Object.entries(scored).forEach(([pid,s])=>{
-      d.meta.standings[pid]=Math.round(((d.meta.standings[pid]||0)+s.total)*100)/100;
-      if(s.weeklyWin) d.meta.playoffPts[pid]=Math.round(((d.meta.playoffPts[pid]||0)+30)*100)/100;
-      d.meta.playoffPts[pid]=Math.round(((d.meta.playoffPts[pid]||0)+(s.bonusPoints||0))*100)/100;
+
+    // FULL RECALCULATE: rebuild standings from ALL scored weeks
+    const freshStandings = {justin:0,bigmonroe:0,monroe:0,rich:0};
+    const freshPlayoff = {justin:0,bigmonroe:0,monroe:0,rich:0};
+    let lastScored = 0;
+
+    // Include historical base for weeks without raw data
+    Object.entries(d.results).forEach(([key,wr]) => {
+      const w = parseInt(key.replace("w",""));
+      if (w > lastScored) lastScored = w;
+      if (!wr.scored) return;
+      Object.entries(wr.scored).forEach(([pid,s]) => {
+        freshStandings[pid] = Math.round((freshStandings[pid] + s.total) * 100) / 100;
+        freshPlayoff[pid] = Math.round((freshPlayoff[pid] + (s.bonusPoints||0)) * 100) / 100;
+        if (s.weeklyWin) freshPlayoff[pid] = Math.round((freshPlayoff[pid] + 30) * 100) / 100;
+      });
     });
-    d.meta.lastScoredWeek=Math.max(d.meta.lastScoredWeek||7,week);
+
+    d.meta.standings = freshStandings;
+    d.meta.playoffPts = freshPlayoff;
+    d.meta.lastScoredWeek = lastScored;
+
+    // Count mulligans used across all weeks
+    const mullCounts = {justin:0,bigmonroe:0,monroe:0,rich:0};
+    Object.entries(d.picks).forEach(([key,weekPicks]) => {
+      Object.entries(weekPicks).forEach(([pid,picks]) => {
+        (picks||[]).forEach(pk => { if(pk.mulligan) mullCounts[pid]++; });
+      });
+    });
+    d.meta.mulligansUsed = mullCounts;
+
     setData(d); await saveLeagueData(d);
   };
 

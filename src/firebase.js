@@ -10,7 +10,7 @@ const firebaseConfig = {
   projectId: "ferdaracingleague",
   storageBucket: "ferdaracingleague.firebasestorage.app",
   messagingSenderId: "927904138916",
-  appId: "1:927904138916:web:8f76928d280ba3e81d8831"
+  appId: "1:927904138916:web:8f76928d280ba3e81d8831",
 };
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
