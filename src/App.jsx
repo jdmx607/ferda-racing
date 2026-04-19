@@ -8,9 +8,11 @@ const PLAYERS = [
   { id: "rich", name: "Rich", password: "ferda4" },
 ];
 const PNAME = { justin:"Justin", bigmonroe:"Big Monroe", monroe:"Monroe", rich:"Rich" };
-const FINISH_POINTS = {1:50,2:40,3:36,4:35,5:33,6:30,7:29,8:28,9:27,10:26,11:25,12:24,13:23,14:22,15:21,16:20,17:19,18:18,19:17,20:16,21:15,22:14,23:13,24:12,25:11,26:10,27:9,28:8,29:7,30:6,31:5,32:5,33:5,34:5,35:5,36:4,37:3,38:2,39:1,40:0.5};
+const FINISH_POINTS = {1:55,2:35,3:34,4:33,5:32,6:31,7:30,8:29,9:28,10:27,11:26,12:25,13:24,14:23,15:22,16:21,17:20,18:19,19:18,20:17,21:16,22:15,23:14,24:13,25:12,26:11,27:10,28:9,29:8,30:7,31:6,32:5,33:4,34:3,35:2,36:1,37:1,38:1,39:1,40:1};
 const STAGE_POINTS = {1:10,2:9,3:8,4:7,5:6,6:5,7:4,8:3,9:2,10:1};
 const TRACK_MULTS = { superspeedway:1.0, short_track:0.2, intermediate:0.5, road_course:1.5 };
+const ACTIVE_PICKS = 5;
+const PICKS_PER_WEEK = 6; // 5 active + 1 garage pick
 const SCHEDULE = [
   {w:1,t:"Daytona",ty:"superspeedway",d:"Feb 15",r:"Daytona 500"},
   {w:2,t:"Atlanta",ty:"superspeedway",d:"Feb 22",r:"Autotrader 400"},
@@ -62,7 +64,6 @@ const DRIVERS = [
   "[Open / TBD #1]","[Open / TBD #2]"
 ];
 const MAX_MULLIGANS = 10;
-const PICKS_PER_WEEK = 5;
 const PLAYOFF_START_WEEK = 27;
 
 function getDraftOrder(data, currentWeek) {
@@ -226,16 +227,22 @@ function calcDriverScore(driver, trackType, isMulligan) {
     if (driver.dq) return { total:-5, breakdown:[{label:"DQ",pts:-5}], bonusPoints:0 };
     return { total:0, breakdown:[{label:"DNF",pts:0}], bonusPoints:0 };
   }
-  const fp = FINISH_POINTS[driver.finish] || 0;
+  const fp = FINISH_POINTS[driver.finish] || 1;
   score += fp; bd.push({label:"P"+driver.finish,pts:fp});
   if (isMulligan) { bd.push({label:"Mulligan",pts:0}); return {total:score,breakdown:bd,bonusPoints:0}; }
+  // Top 5 / Top 10 bonus
+  if (driver.finish <= 5) { score+=2; bd.push({label:"Top 5",pts:2}); }
+  else if (driver.finish <= 10) { score+=1; bd.push({label:"Top 10",pts:1}); }
+  // Stages
   if (driver.stage1 > 0 && driver.stage1 <= 10) { const sp=STAGE_POINTS[driver.stage1]; score+=sp; bd.push({label:"S1:P"+driver.stage1,pts:sp}); }
   if (driver.stage2 > 0 && driver.stage2 <= 10) { const sp=STAGE_POINTS[driver.stage2]; score+=sp; bd.push({label:"S2:P"+driver.stage2,pts:sp}); }
+  // Laps led
   if (driver.lapsLed > 0) {
     const lp = Math.round(driver.lapsLed * mult * 10) / 10;
     score += lp; bd.push({label:driver.lapsLed+"laps*"+mult,pts:lp});
     score += 0.5; bd.push({label:"Led a lap",pts:0.5});
   }
+  // Net position
   if (driver.qualPos && driver.finish) {
     let net = driver.qualPos - driver.finish;
     net = Math.max(-10, Math.min(10, net));
@@ -245,9 +252,10 @@ function calcDriverScore(driver, trackType, isMulligan) {
   if (driver.pole) { score+=5; bp+=5; bd.push({label:"Pole",pts:5}); }
   if (driver.stageWin1) { score+=2.5; bp+=2.5; bd.push({label:"S1 Win",pts:2.5}); }
   if (driver.stageWin2) { score+=2.5; bp+=2.5; bd.push({label:"S2 Win",pts:2.5}); }
-  if (driver.fastestLap) { score+=2.5; bp+=2.5; bd.push({label:"Fast Lap",pts:2.5}); }
+  if (driver.fastestLap) { score+=1; bp+=1; bd.push({label:"Fast Lap",pts:1}); }
   if (driver.mostLapsLed) { score+=5; bp+=5; bd.push({label:"Most Led",pts:5}); }
-  if (driver.pole && driver.stageWin1 && driver.stageWin2 && driver.finish === 1) { score+=10; bp+=10; bd.push({label:"SWEEP!",pts:10}); }
+  // Sweep: Pole + both stage wins = 12.5 (no race win required)
+  if (driver.pole && driver.stageWin1 && driver.stageWin2) { score+=12.5; bp+=12.5; bd.push({label:"SWEEP!",pts:12.5}); }
   return { total:Math.round(score*100)/100, breakdown:bd, bonusPoints:bp };
 }
 
@@ -255,16 +263,31 @@ function scoreWeekFull(picks, raceResult, week, mullData) {
   const ty = SCHEDULE.find(s => s.w === week)?.ty || "intermediate";
   const ps = {};
   PLAYERS.forEach(p => {
-    const pp = picks[p.id] || [];
+    const allPicks = picks[p.id] || [];
+    // Separate active picks from garage pick
+    const activePicks = allPicks.filter(pk => !pk.garage);
+    const garagePick = allPicks.find(pk => pk.garage);
+    // If garage is activated, it replaces the garageReplace driver and scores full points
+    let finalPicks = [...activePicks];
+    let garageActivated = false;
+    if (garagePick && garagePick.garageActivated && garagePick.garageReplace) {
+      finalPicks = finalPicks.filter(pk => pk.driver !== garagePick.garageReplace);
+      finalPicks.push({driver: garagePick.driver, mulligan: false, garageUsed: true});
+      garageActivated = true;
+    }
     let wt=0, wb=0; const ds=[];
-    pp.forEach(pick => {
+    finalPicks.forEach(pick => {
       const r = raceResult.drivers?.find(d => d.name === pick.driver);
       if (!r) return;
-      const im = pick.mulligan || mullData?.[p.id]?.some(m => m.week === week && m.driver === pick.driver);
+      const im = pick.mulligan || (!pick.garageUsed && mullData?.[p.id]?.some(m => m.week === week && m.driver === pick.driver));
       const sc = calcDriverScore(r, ty, im);
       wt += sc.total; wb += sc.bonusPoints;
-      ds.push({ driver:pick.driver, total:sc.total, breakdown:sc.breakdown, bonusPoints:sc.bonusPoints, isMulligan:!!im });
+      ds.push({ driver:pick.driver, total:sc.total, breakdown:sc.breakdown, bonusPoints:sc.bonusPoints, isMulligan:!!im, isGarage:!!pick.garageUsed });
     });
+    // If garage was activated, note the replaced driver scored 0
+    if (garageActivated && garagePick.garageReplace) {
+      ds.push({driver:garagePick.garageReplace, total:0, breakdown:[{label:"Replaced by Garage",pts:0}], bonusPoints:0, isMulligan:false, isGarage:false, replaced:true});
+    }
     ps[p.id] = { total:Math.round(wt*100)/100, bonusPoints:Math.round(wb*100)/100, drivers:ds, weeklyWin:false };
   });
   let mx=-Infinity, wn=null;
@@ -383,8 +406,9 @@ function DraftTab({player, data, onDraftPick, currentWeek}) {
 
       {!draftComplete ? (
         <div style={{background:isMyTurn?C.green+"22":C.card,borderRadius:10,padding:14,marginBottom:16,border:"1px solid "+(isMyTurn?C.green:C.border),textAlign:"center"}}>
-          <div style={{fontSize:11,color:C.dim,textTransform:"uppercase",letterSpacing:2}}>Pick {currentPickNum+1} of {snakeSequence.length} · Round {currentTurn?.round}</div>
-          <div style={{fontSize:20,fontWeight:700,color:isMyTurn?C.green:PC[currentTurn?.pid],marginTop:4}}>{isMyTurn ? "YOUR PICK!" : PNAME[currentTurn?.pid] + "'s Turn"}</div>
+          <div style={{fontSize:11,color:C.dim,textTransform:"uppercase",letterSpacing:2}}>Pick {currentPickNum+1} of {snakeSequence.length} · {currentTurn?.round===6?"Garage Pick":"Round "+currentTurn?.round}</div>
+          <div style={{fontSize:20,fontWeight:700,color:isMyTurn?C.green:PC[currentTurn?.pid],marginTop:4}}>{isMyTurn ? (currentTurn?.round===6?"SELECT YOUR GARAGE PICK":"YOUR PICK!") : PNAME[currentTurn?.pid] + "'s Turn"}</div>
+          {currentTurn?.round===6&&<div style={{fontSize:11,color:C.accent,marginTop:4}}>Garage Pick — can be swapped in during the race for full points (uses 1 mulligan)</div>}
           {!isMyTurn && <div style={{fontSize:12,color:C.dim,marginTop:4}}>Waiting for {PNAME[currentTurn?.pid]}...</div>}
         </div>
       ) : (
@@ -400,8 +424,9 @@ function DraftTab({player, data, onDraftPick, currentWeek}) {
             <div style={{color:PC[p.id],fontWeight:700,fontSize:13,marginBottom:8,textAlign:"center"}}>{PNAME[p.id]}</div>
             {Array.from({length:PICKS_PER_WEEK}).map((_,i) => {
               const driver = playerPicks[p.id]?.[i];
-              return (<div key={i} style={{background:driver?C.input:C.bg,borderRadius:6,padding:"6px 8px",marginBottom:4,border:"1px solid "+(driver?C.border:"rgba(255,255,255,0.03)"),minHeight:28,display:"flex",alignItems:"center"}}>
-                <span style={{fontSize:10,color:C.dim,marginRight:6,fontWeight:700}}>R{i+1}</span>
+              const isGarageRound = i === ACTIVE_PICKS;
+              return (<div key={i} style={{background:driver?(isGarageRound?C.purple+"22":C.input):C.bg,borderRadius:6,padding:"6px 8px",marginBottom:4,border:"1px solid "+(driver?(isGarageRound?C.purple+"55":C.border):"rgba(255,255,255,0.03)"),minHeight:28,display:"flex",alignItems:"center"}}>
+                <span style={{fontSize:10,color:isGarageRound?C.purple:C.dim,marginRight:6,fontWeight:700}}>{isGarageRound?"G":"R"+(i+1)}</span>
                 <span style={{fontSize:11,color:driver?C.text:C.dim+"44"}}>{driver||"—"}</span>
               </div>);
             })}
@@ -452,14 +477,14 @@ function ResultsTab({data}) {
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:(ps.drivers&&ps.drivers.length)?12:0}}>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <span style={{color:PC[pid],fontWeight:700,fontSize:17,fontFamily:"'Barlow Condensed',sans-serif"}}>{idx===0?"👑 ":""}{PNAME[pid]}</span>
-                {ps.weeklyWin&&<span style={{background:C.accent+"22",color:C.accent,padding:"2px 10px",borderRadius:12,fontSize:10,fontWeight:700}}>WIN +30 PO</span>}
+                {ps.weeklyWin&&<span style={{background:C.accent+"22",color:C.accent,padding:"2px 10px",borderRadius:12,fontSize:10,fontWeight:700}}>WIN +25 PO</span>}
               </div>
               <span style={{color:PC[pid],fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700}}>{ps.total}</span>
             </div>
             {ps.historical&&(!ps.drivers||!ps.drivers.length)&&<div style={{color:C.dim,fontSize:12,fontStyle:"italic"}}>Imported from v12</div>}
             {ps.drivers&&ps.drivers.length>0&&<div style={{display:"grid",gap:6}}>{ps.drivers.map(d=>(
               <div key={d.driver} style={{background:C.input,borderRadius:8,padding:"8px 12px",border:"1px solid "+C.border}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:C.text,fontSize:13,fontWeight:600}}>{d.driver}{d.isMulligan?" 🔄":""}</span><span style={{color:d.total>=0?C.green:C.red,fontWeight:700,fontSize:13}}>{d.total}</span></div>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:C.text,fontSize:13,fontWeight:600}}>{d.driver}{d.isMulligan?" 🔄":""}{d.isGarage?" 🅶":""}{d.replaced?" ❌":""}</span><span style={{color:d.replaced?C.dim:d.total>=0?C.green:C.red,fontWeight:700,fontSize:13}}>{d.total}</span></div>
                 <div style={{display:"flex",flexWrap:"wrap",gap:3}}>{(d.breakdown||[]).map((b,i)=>(<span key={i} style={{fontSize:9,color:b.pts>0?C.green:b.pts<0?C.red:C.dim,background:C.bg,padding:"2px 5px",borderRadius:4}}>{b.label}: {b.pts>0?"+":""}{b.pts}</span>))}</div>
               </div>
             ))}</div>}
@@ -502,7 +527,7 @@ function MulligansTab({player,data}) {
 }
 
 function RulesTab() {
-  const rules=[{t:"Draft System",c:"Draft each week. Last week's loser picks first, winner picks last. Same order all 5 rounds — loser always gets first pick."},{t:"Finish Points",c:"P1: 50, P2: 40, P3: 36, P4: 35 down to P30: 6. P31-35: 5, P36: 4, P37: 3, P38: 2, P39: 1, P40: 0.5"},{t:"Stage Points",c:"Top 10 each stage: 1st=10, 2nd=9... 10th=1"},{t:"Laps Led",c:"Per lap led x track modifier: SS x1.0, INT x0.5, ST x0.2, RC x1.5"},{t:"Net Position",c:"+/-1 pt per spot gained/lost (qualifying to finish). Capped at +/-10."},{t:"Bonuses",c:"Pole: 5 | Stage Win: 2.5 | Fastest Lap: 2.5 | Most Laps Led: 5 | Led a Lap: 0.5/driver | Sweep: 10"},{t:"DNF / DQ",c:"DNF = 0 total. DQ = -5 points."},{t:"Weekly Win",c:"Highest scorer earns 30 playoff points."},{t:"Playoffs (W27+)",c:"Reset to 1,000 base. Weekly wins (x30) + bonus pts carry over."},{t:"Mulligans",c:"10/season. Replacement earns finish position points ONLY."}];
+  const rules=[{t:"Draft System",c:"Draft each week. Last week's loser picks first, winner picks last. Same order all 6 rounds. Rounds 1-5 are active drivers, Round 6 is your Garage Pick."},{t:"Finish Points",c:"P1: 55, P2: 35, then P3: 34 decreasing by 1 to P36: 1. P37-40: 1 each."},{t:"Top Finish Bonus",c:"Top 5 finish: +2 bonus pts. Top 10 finish: +1 bonus pt."},{t:"Stage Points",c:"Top 10 each stage: 1st=10, 2nd=9... 10th=1"},{t:"Laps Led",c:"Per lap led x track modifier: SS x1.0, INT x0.5, ST x0.2, RC x1.5"},{t:"Net Position",c:"+/-1 pt per spot gained/lost (qualifying to finish). Capped at +/-10."},{t:"Bonuses",c:"Pole: 5 | Stage Win: 2.5 | Fastest Lap: 1 | Most Laps Led: 5 | Led a Lap: 0.5/driver | Sweep (Pole + both stage wins): 12.5"},{t:"DNF / DQ",c:"DNF = 0 total. DQ = -5 points."},{t:"Weekly Win",c:"Highest scorer earns 25 playoff points."},{t:"Playoffs (W27+)",c:"Reset to 1,000 base. Weekly wins (x25) + bonus pts carry over."},{t:"Garage Pick",c:"6th draft pick each week. Can be swapped in during the race for any active driver. Garage Pick earns FULL points (not mulligan-restricted). Uses 1 of your 10 season mulligans. If unused, no penalty."},{t:"Mulligans",c:"10/season. Regular mulligan replacement earns finish position points ONLY. Garage Pick swap earns full points but still counts as 1 mulligan use."}];
   return (
     <div style={{padding:20,maxWidth:700,margin:"0 auto"}}>
       <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:16}}>Scoring Rules</h2>
@@ -528,11 +553,10 @@ function CommissionerTab({data,onPostResults,currentWeek}) {
     if (wr?.raw?.drivers) {
       setDrivers(wr.raw.drivers.map(d=>({...d,finish:String(d.finish),qualPos:String(d.qualPos),stage1:String(d.stage1||""),stage2:String(d.stage2||""),lapsLed:String(d.lapsLed||0)})));
     } else { setDrivers([]); }
-    // Load picks
     const wp = data.picks?.["w"+week] || {};
     const pp = {};
     PLAYERS.forEach(p => {
-      pp[p.id] = (wp[p.id]||[]).map(pk => ({driver:pk.driver, mulligan:pk.mulligan||false}));
+      pp[p.id] = (wp[p.id]||[]).map(pk => ({driver:pk.driver, mulligan:pk.mulligan||false, garage:pk.garage||false, garageActivated:pk.garageActivated||false, garageReplace:pk.garageReplace||""}));
     });
     setPlayerPicks(pp);
     setEditing(true); setMsg("");
@@ -544,9 +568,13 @@ function CommissionerTab({data,onPostResults,currentWeek}) {
   const ud = (i,f,v) => {const n=[...drivers];n[i]={...n[i],[f]:v};setDrivers(n);};
   const rm = (i) => setDrivers(drivers.filter((_,j)=>j!==i));
 
-  const addPick = (pid) => {
-    if ((playerPicks[pid]||[]).length >= PICKS_PER_WEEK) return;
-    setPlayerPicks({...playerPicks, [pid]:[...(playerPicks[pid]||[]),{driver:"",mulligan:false}]});
+  const addPick = (pid, isGarage) => {
+    const current = (playerPicks[pid]||[]);
+    const activeCount = current.filter(pk=>!pk.garage).length;
+    const hasGarage = current.some(pk=>pk.garage);
+    if (isGarage && hasGarage) return;
+    if (!isGarage && activeCount >= ACTIVE_PICKS) return;
+    setPlayerPicks({...playerPicks, [pid]:[...current,{driver:"",mulligan:false,garage:!!isGarage,garageActivated:false,garageReplace:""}]});
   };
   const updatePick = (pid,i,field,val) => {
     const np = {...playerPicks};
@@ -600,26 +628,64 @@ function CommissionerTab({data,onPostResults,currentWeek}) {
         {/* Player Picks Editor */}
         <div style={{marginBottom:20}}>
           <div style={{color:C.accent,fontSize:14,fontWeight:700,marginBottom:10,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1,textTransform:"uppercase"}}>Player Picks</div>
-          {PLAYERS.map(p => (
+          {PLAYERS.map(p => {
+            const picks = playerPicks[p.id]||[];
+            const activeCount = picks.filter(pk=>!pk.garage).length;
+            const hasGarage = picks.some(pk=>pk.garage);
+            const activePicks = picks.filter(pk=>!pk.garage);
+            const garagePicks = picks.filter(pk=>pk.garage);
+            return (
             <div key={p.id} style={{background:C.card,borderRadius:10,padding:12,marginBottom:8,border:"1px solid "+C.border}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-                <span style={{color:PC[p.id],fontWeight:700,fontSize:14}}>{PNAME[p.id]} ({(playerPicks[p.id]||[]).length}/{PICKS_PER_WEEK})</span>
-                {(playerPicks[p.id]||[]).length < PICKS_PER_WEEK && <button onClick={()=>addPick(p.id)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid "+C.accent+"66",background:C.accent+"11",color:C.accent,fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>+ Driver</button>}
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,flexWrap:"wrap",gap:4}}>
+                <span style={{color:PC[p.id],fontWeight:700,fontSize:14}}>{PNAME[p.id]} ({activeCount}/{ACTIVE_PICKS} + {hasGarage?"1":"0"}/1 Garage)</span>
+                <div style={{display:"flex",gap:4}}>
+                  {activeCount < ACTIVE_PICKS && <button onClick={()=>addPick(p.id,false)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid "+C.accent+"66",background:C.accent+"11",color:C.accent,fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>+ Driver</button>}
+                  {!hasGarage && <button onClick={()=>addPick(p.id,true)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid "+C.purple+"66",background:C.purple+"11",color:C.purple,fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>+ Garage</button>}
+                </div>
               </div>
-              {(playerPicks[p.id]||[]).map((pk,i) => (
-                <div key={i} style={{display:"flex",gap:6,alignItems:"center",marginBottom:4}}>
-                  <select value={pk.driver} onChange={e=>updatePick(p.id,i,"driver",e.target.value)} style={{...iS,flex:1}}>
+              {activePicks.map((pk,i) => {
+                const realIdx = picks.indexOf(pk);
+                return (
+                <div key={realIdx} style={{display:"flex",gap:6,alignItems:"center",marginBottom:4}}>
+                  <span style={{fontSize:10,color:C.dim,fontWeight:700,width:20}}>R{i+1}</span>
+                  <select value={pk.driver} onChange={e=>updatePick(p.id,realIdx,"driver",e.target.value)} style={{...iS,flex:1}}>
                     <option value="">Select driver</option>
                     {DRIVERS.map(dr=><option key={dr} value={dr}>{dr}</option>)}
                   </select>
                   <label style={{display:"flex",alignItems:"center",gap:3,cursor:"pointer",fontSize:11,color:pk.mulligan?C.accent:C.dim,flexShrink:0}}>
-                    <input type="checkbox" checked={!!pk.mulligan} onChange={e=>updatePick(p.id,i,"mulligan",e.target.checked)}/>M
+                    <input type="checkbox" checked={!!pk.mulligan} onChange={e=>updatePick(p.id,realIdx,"mulligan",e.target.checked)}/>M
                   </label>
-                  <button onClick={()=>removePick(p.id,i)} style={{background:C.red+"22",border:"1px solid "+C.red+"44",borderRadius:6,color:C.red,padding:"4px 8px",fontSize:10,cursor:"pointer",fontFamily:"inherit",flexShrink:0}}>X</button>
+                  <button onClick={()=>removePick(p.id,realIdx)} style={{background:C.red+"22",border:"1px solid "+C.red+"44",borderRadius:6,color:C.red,padding:"4px 8px",fontSize:10,cursor:"pointer",fontFamily:"inherit",flexShrink:0}}>X</button>
                 </div>
-              ))}
+              );})}
+              {garagePicks.map((pk) => {
+                const realIdx = picks.indexOf(pk);
+                const activeDrivers = activePicks.filter(ap=>ap.driver).map(ap=>ap.driver);
+                return (
+                <div key={realIdx} style={{marginTop:6,padding:8,background:C.purple+"11",borderRadius:8,border:"1px solid "+C.purple+"33"}}>
+                  <div style={{display:"flex",gap:6,alignItems:"center",marginBottom:pk.garageActivated?6:0}}>
+                    <span style={{fontSize:10,color:C.purple,fontWeight:700,width:20}}>G</span>
+                    <select value={pk.driver} onChange={e=>updatePick(p.id,realIdx,"driver",e.target.value)} style={{...iS,flex:1}}>
+                      <option value="">Select garage driver</option>
+                      {DRIVERS.map(dr=><option key={dr} value={dr}>{dr}</option>)}
+                    </select>
+                    <label style={{display:"flex",alignItems:"center",gap:3,cursor:"pointer",fontSize:11,color:pk.garageActivated?C.green:C.dim,flexShrink:0}}>
+                      <input type="checkbox" checked={!!pk.garageActivated} onChange={e=>updatePick(p.id,realIdx,"garageActivated",e.target.checked)}/>Use
+                    </label>
+                    <button onClick={()=>removePick(p.id,realIdx)} style={{background:C.red+"22",border:"1px solid "+C.red+"44",borderRadius:6,color:C.red,padding:"4px 8px",fontSize:10,cursor:"pointer",fontFamily:"inherit",flexShrink:0}}>X</button>
+                  </div>
+                  {pk.garageActivated && <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                    <span style={{fontSize:10,color:C.purple,width:20}}>↔</span>
+                    <select value={pk.garageReplace||""} onChange={e=>updatePick(p.id,realIdx,"garageReplace",e.target.value)} style={{...iS,flex:1}}>
+                      <option value="">Replaces which driver?</option>
+                      {activeDrivers.map(dr=><option key={dr} value={dr}>{dr}</option>)}
+                    </select>
+                    <span style={{fontSize:10,color:C.dim,flexShrink:0}}>Uses 1 mulligan</span>
+                  </div>}
+                </div>
+              );})}
             </div>
-          ))}
+          );})}
         </div>
 
         {/* Race Results Editor */}
@@ -726,7 +792,7 @@ export default function App() {
       Object.entries(wr.scored).forEach(([pid,s]) => {
         freshStandings[pid] = Math.round((freshStandings[pid] + s.total) * 100) / 100;
         freshPlayoff[pid] = Math.round((freshPlayoff[pid] + (s.bonusPoints||0)) * 100) / 100;
-        if (s.weeklyWin) freshPlayoff[pid] = Math.round((freshPlayoff[pid] + 30) * 100) / 100;
+        if (s.weeklyWin) freshPlayoff[pid] = Math.round((freshPlayoff[pid] + 25) * 100) / 100;
       });
     });
 
