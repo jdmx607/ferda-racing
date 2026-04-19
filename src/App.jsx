@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { loadLeagueData, saveLeagueData, subscribeToLeagueData, loadLocalBackup, isFirebaseReady } from "./firebase";
+import { HISTORICAL_PICKS, HISTORICAL_RESULTS } from "./historicalData";
 
 const PLAYERS = [
   { id: "justin", name: "Justin", password: "ferda1" },
@@ -82,143 +83,78 @@ function buildSnakeOrder(order) {
 }
 
 function buildInitialData() {
-  const wr = {
-    1:{w:"monroe",s:{monroe:196.5,justin:131.0,bigmonroe:84.0,rich:76.5}},
-    2:{w:"justin",s:{justin:212.0,monroe:190.0,rich:177.5,bigmonroe:159.0}},
-    3:{w:"monroe",s:{monroe:235.5,bigmonroe:190.5,rich:151.0,justin:92.5}},
-    4:{w:"justin",s:{justin:220.8,bigmonroe:149.0,monroe:108.0,rich:87.5}},
-    5:{w:"rich",s:{rich:282.5,monroe:144.5,justin:124.0,bigmonroe:109.0}},
-    6:{w:"justin",s:{justin:227.0,bigmonroe:214.5,rich:188.0,monroe:166.5}},
-    7:{w:"justin",s:{justin:249.8,rich:226.4,monroe:143.0,bigmonroe:116.3}},
-  };
+  // Build raw results and picks from historical data
   const results = {};
-  Object.entries(wr).forEach(([w, r]) => {
-    results["w"+w] = { scored: {} };
-    Object.entries(r.s).forEach(([pid, total]) => {
-      results["w"+w].scored[pid] = { total, bonusPoints:0, weeklyWin:pid===r.w, drivers:[], historical:true };
-    });
-  });
+  const picks = {};
 
-  // Week 8: Bristol Food City 500 (Short Track x0.2)
-  results["w8"] = { scored: {
-    bigmonroe: { total:260.5, bonusPoints:10, weeklyWin:true, drivers:[
-      {driver:"#5 Kyle Larson",total:128.3,bonusPoints:10,isMulligan:false,breakdown:[
-        {label:"P3",pts:36},{label:"Net Q8>P3",pts:5},{label:"284laps*0.2",pts:56.8},{label:"Led a lap",pts:0.5},
-        {label:"S1:P1",pts:10},{label:"S2:P1",pts:10},{label:"S1 Win",pts:2.5},{label:"S2 Win",pts:2.5},{label:"Most Led",pts:5}
-      ]},
-      {driver:"#54 Ty Gibbs",total:63.5,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P1",pts:50},{label:"Net Q5>P1",pts:4},{label:"25laps*0.2",pts:5},{label:"Led a lap",pts:0.5},
-        {label:"S2:P7",pts:4}
-      ]},
-      {driver:"#23 Bubba Wallace",total:30,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P11",pts:25},{label:"Net Q12>P11",pts:1},{label:"S1:P9",pts:2},{label:"S2:P9",pts:2}
-      ]},
-      {driver:"#6 Brad Keselowski",total:29,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P14",pts:22},{label:"Net Q21>P14",pts:7}
-      ]},
-      {driver:"#20 Christopher Bell",total:9.7,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P27",pts:9},{label:"Net Q14>P27",pts:-10},{label:"6laps*0.2",pts:1.2},{label:"Led a lap",pts:0.5},
-        {label:"S1:P2",pts:9}
-      ]},
-    ]},
-    monroe: { total:163, bonusPoints:7.5, weeklyWin:false, drivers:[
-      {driver:"#12 Ryan Blaney",total:102,bonusPoints:7.5,isMulligan:false,breakdown:[
-        {label:"P2",pts:40},{label:"Net Q1>P2",pts:-1},{label:"190laps*0.2",pts:38},{label:"Led a lap",pts:0.5},
-        {label:"S1:P3",pts:8},{label:"S2:P2",pts:9},{label:"Pole",pts:5},{label:"Fast Lap",pts:2.5}
-      ]},
-      {driver:"#22 Joey Logano",total:42,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P7",pts:29},{label:"Net Q20>P7",pts:10},{label:"S2:P8",pts:3}
-      ]},
-      {driver:"#9 Chase Elliott",total:10,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P22",pts:14},{label:"Net Q18>P22",pts:-4}
-      ]},
-      {driver:"#21 Josh Berry",total:5,bonusPoints:0,isMulligan:true,breakdown:[
-        {label:"P32",pts:5},{label:"Mulligan",pts:0}
-      ]},
-      {driver:"#97 Shane Van Gisbergen",total:4,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P34",pts:5},{label:"Net Q33>P34",pts:-1}
-      ]},
-    ]},
-    justin: { total:137, bonusPoints:0, weeklyWin:false, drivers:[
-      {driver:"#19 Chase Briscoe",total:44,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P5",pts:33},{label:"Net Q3>P5",pts:-2},{label:"S1:P4",pts:7},{label:"S2:P5",pts:6}
-      ]},
-      {driver:"#77 Carson Hocevar",total:37,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P10",pts:26},{label:"S1:P7",pts:4},{label:"S2:P4",pts:7}
-      ]},
-      {driver:"#45 Tyler Reddick",total:33,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P4",pts:35},{label:"Net Q2>P4",pts:-2}
-      ]},
-      {driver:"#7 Daniel Suarez",total:25,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P12",pts:24},{label:"Net Q13>P12",pts:1}
-      ]},
-      {driver:"#88 Connor Zilisch",total:-2,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P33",pts:5},{label:"Net Q26>P33",pts:-7}
-      ]},
-    ]},
-    rich: { total:119, bonusPoints:0, weeklyWin:false, drivers:[
-      {driver:"#11 Denny Hamlin",total:42,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P9",pts:27},{label:"Net Q11>P9",pts:2},{label:"S1:P6",pts:5},{label:"S2:P3",pts:8}
-      ]},
-      {driver:"#60 Ryan Preece",total:37,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P8",pts:28},{label:"Net Q17>P8",pts:9}
-      ]},
-      {driver:"#17 Chris Buescher",total:27,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P13",pts:23},{label:"Net Q17>P13",pts:4}
-      ]},
-      {driver:"#71 Michael McDowell",total:7,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P24",pts:12},{label:"Net Q19>P24",pts:-5}
-      ]},
-      {driver:"#1 Ross Chastain",total:6,bonusPoints:0,isMulligan:false,breakdown:[
-        {label:"P20",pts:16},{label:"Net Q6>P20",pts:-10}
-      ]},
-    ]},
-  }};
+  for (let w = 1; w <= 8; w++) {
+    const key = "w" + w;
+    const rawResult = HISTORICAL_RESULTS[key];
+    const weekPicks = HISTORICAL_PICKS[key];
+    if (!rawResult || !weekPicks) continue;
+    results[key] = { raw: rawResult, scored: null };
+    picks[key] = weekPicks;
+  }
 
-  const w8picks = {
-    bigmonroe:[{driver:"#5 Kyle Larson"},{driver:"#54 Ty Gibbs"},{driver:"#23 Bubba Wallace"},{driver:"#6 Brad Keselowski"},{driver:"#20 Christopher Bell"}],
-    monroe:[{driver:"#12 Ryan Blaney"},{driver:"#22 Joey Logano"},{driver:"#9 Chase Elliott"},{driver:"#21 Josh Berry",mulligan:true},{driver:"#97 Shane Van Gisbergen"}],
-    justin:[{driver:"#19 Chase Briscoe"},{driver:"#77 Carson Hocevar"},{driver:"#45 Tyler Reddick"},{driver:"#7 Daniel Suarez"},{driver:"#88 Connor Zilisch"}],
-    rich:[{driver:"#11 Denny Hamlin"},{driver:"#60 Ryan Preece"},{driver:"#17 Chris Buescher"},{driver:"#71 Michael McDowell"},{driver:"#1 Ross Chastain"}],
-  };
-
-  // Raw race result data for Bristol so Commissioner can edit
-  const w8raw = {drivers:[
-    {name:"#54 Ty Gibbs",finish:1,qualPos:5,stage1:0,stage2:7,lapsLed:25,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#12 Ryan Blaney",finish:2,qualPos:1,stage1:3,stage2:2,lapsLed:190,pole:true,stageWin1:false,stageWin2:false,fastestLap:true,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#5 Kyle Larson",finish:3,qualPos:8,stage1:1,stage2:1,lapsLed:284,pole:false,stageWin1:true,stageWin2:true,fastestLap:false,mostLapsLed:true,dnf:false,dq:false},
-    {name:"#45 Tyler Reddick",finish:4,qualPos:2,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#19 Chase Briscoe",finish:5,qualPos:3,stage1:4,stage2:5,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#34 Todd Gilliland",finish:6,qualPos:35,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#22 Joey Logano",finish:7,qualPos:20,stage1:0,stage2:8,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#60 Ryan Preece",finish:8,qualPos:17,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#11 Denny Hamlin",finish:9,qualPos:11,stage1:6,stage2:3,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#77 Carson Hocevar",finish:10,qualPos:10,stage1:7,stage2:4,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#23 Bubba Wallace",finish:11,qualPos:12,stage1:9,stage2:9,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#7 Daniel Suarez",finish:12,qualPos:13,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#17 Chris Buescher",finish:13,qualPos:17,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#6 Brad Keselowski",finish:14,qualPos:21,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#9 Chase Elliott",finish:22,qualPos:18,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#71 Michael McDowell",finish:24,qualPos:19,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#20 Christopher Bell",finish:27,qualPos:14,stage1:2,stage2:0,lapsLed:6,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#1 Ross Chastain",finish:20,qualPos:6,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#21 Josh Berry",finish:32,qualPos:25,stage1:5,stage2:6,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#88 Connor Zilisch",finish:33,qualPos:26,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-    {name:"#97 Shane Van Gisbergen",finish:34,qualPos:33,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
-  ]};
-
-  results["w8"].raw = w8raw;
-
-  return {
-    results, picks: {"w8": w8picks}, drafts: {},
-    mulligans: { justin:[], bigmonroe:[], monroe:[{week:8,driver:"#24 William Byron",replacement:"#21 Josh Berry"}], rich:[] },
+  const data = {
+    results, picks, drafts: {},
+    mulligans: { justin:[], bigmonroe:[], monroe:[], rich:[] },
     meta: {
-      standings: { justin:1394.1, bigmonroe:1282.8, monroe:1347.0, rich:1308.4 },
-      playoffPts: { justin:154.5, bigmonroe:53.0, monroe:100.0, rich:83.5 },
+      standings: { justin:0, bigmonroe:0, monroe:0, rich:0 },
+      playoffPts: { justin:0, bigmonroe:0, monroe:0, rich:0 },
       mulligansUsed: { justin:0, bigmonroe:0, monroe:1, rich:0 },
       lastScoredWeek: 8,
     },
   };
+
+  // Score all weeks using the engine
+  return scoreAllWeeks(data);
+}
+
+// Recalculate ALL weeks from raw data + picks
+function scoreAllWeeks(data) {
+  const d = JSON.parse(JSON.stringify(data));
+  const freshStandings = {justin:0,bigmonroe:0,monroe:0,rich:0};
+  const freshPlayoff = {justin:0,bigmonroe:0,monroe:0,rich:0};
+  let lastScored = 0;
+
+  Object.entries(d.results||{}).forEach(([key, wr]) => {
+    const w = parseInt(key.replace("w",""));
+    if (!wr.raw?.drivers) return; // skip weeks without raw data
+    const weekPicks = d.picks?.[key] || {};
+
+    // Build mulligan data for this week from picks
+    const mullOverride = {};
+    PLAYERS.forEach(p => {
+      mullOverride[p.id] = (weekPicks[p.id]||[]).filter(pk=>pk.mulligan).map(pk=>({week:w,driver:pk.driver}));
+    });
+
+    const scored = scoreWeekFull(weekPicks, wr.raw, w, mullOverride);
+    d.results[key].scored = scored;
+    if (w > lastScored) lastScored = w;
+
+    // Accumulate standings
+    Object.entries(scored).forEach(([pid, s]) => {
+      freshStandings[pid] = Math.round((freshStandings[pid] + s.total) * 100) / 100;
+      freshPlayoff[pid] = Math.round((freshPlayoff[pid] + (s.bonusPoints||0)) * 100) / 100;
+      if (s.weeklyWin) freshPlayoff[pid] = Math.round((freshPlayoff[pid] + 25) * 100) / 100;
+    });
+  });
+
+  // Count mulligans
+  const mullCounts = {justin:0,bigmonroe:0,monroe:0,rich:0};
+  Object.entries(d.picks||{}).forEach(([key,weekPicks]) => {
+    Object.entries(weekPicks).forEach(([pid,picks]) => {
+      (picks||[]).forEach(pk => { if(pk.mulligan) mullCounts[pid]++; });
+    });
+  });
+
+  d.meta.standings = freshStandings;
+  d.meta.playoffPts = freshPlayoff;
+  d.meta.mulligansUsed = mullCounts;
+  d.meta.lastScoredWeek = lastScored;
+
+  return d;
 }
 
 function calcDriverScore(driver, trackType, isMulligan) {
