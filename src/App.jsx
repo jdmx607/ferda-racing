@@ -21,21 +21,21 @@ const SCHEDULE = [
   {w:1,t:"Daytona",ty:"superspeedway",d:"Feb 15",r:"Daytona 500"},{w:2,t:"Atlanta",ty:"superspeedway",d:"Feb 22",r:"Autotrader 400"},
   {w:3,t:"COTA",ty:"road_course",d:"Mar 1",r:"DuraMAX Grand Prix"},{w:4,t:"Phoenix",ty:"short_track",d:"Mar 8",r:"Straight Talk 500"},
   {w:5,t:"Las Vegas",ty:"intermediate",d:"Mar 15",r:"Pennzoil 400"},{w:6,t:"Darlington",ty:"intermediate",d:"Mar 22",r:"Goodyear 400"},
-  {w:7,t:"Martinsville",ty:"short_track",d:"Mar 29",r:"STP 500"},{w:8,t:"Bristol",ty:"short_track",d:"Apr 12",r:"Food City 500"},
-  {w:9,t:"Kansas",ty:"intermediate",d:"Apr 19",r:"AdventHealth 400"},{w:10,t:"Talladega",ty:"superspeedway",d:"Apr 26",r:"GEICO 500"},
-  {w:11,t:"Watkins Glen",ty:"road_course",d:"May 3",r:"Go Bowling at The Glen"},{w:12,t:"Texas",ty:"intermediate",d:"May 10",r:"EchoPark 500"},
-  {w:13,t:"Charlotte",ty:"intermediate",d:"May 24",r:"Coca-Cola 600"},{w:14,t:"Nashville",ty:"intermediate",d:"May 31",r:"Ally 400"},
-  {w:15,t:"Michigan",ty:"intermediate",d:"Jun 7",r:"FireKeepers 400"},{w:16,t:"Pocono",ty:"intermediate",d:"Jun 14",r:"Pocono 400"},
-  {w:17,t:"San Diego",ty:"road_course",d:"Jun 21",r:"Street Race"},{w:18,t:"Sonoma",ty:"road_course",d:"Jun 28",r:"Save Mart 350"},
-  {w:19,t:"Chicagoland",ty:"intermediate",d:"Jul 5",r:"Chicagoland 400"},{w:20,t:"Atlanta",ty:"superspeedway",d:"Jul 12",r:"Quaker State 400"},
-  {w:21,t:"N. Wilkesboro",ty:"short_track",d:"Jul 19",r:"N. Wilkesboro 400"},{w:22,t:"Indianapolis",ty:"intermediate",d:"Jul 26",r:"Brickyard 400"},
-  {w:23,t:"Iowa",ty:"short_track",d:"Aug 9",r:"Iowa Corn 350"},{w:24,t:"Richmond",ty:"short_track",d:"Aug 15",r:"Federated Auto 400"},
-  {w:25,t:"New Hampshire",ty:"short_track",d:"Aug 23",r:"Foxwoods 301"},{w:26,t:"Daytona",ty:"superspeedway",d:"Aug 29",r:"Coke Zero 400"},
-  {w:27,t:"Darlington",ty:"intermediate",d:"Sep 6",r:"Southern 500"},{w:28,t:"WWT Raceway",ty:"intermediate",d:"Sep 13",r:"Enjoy Illinois 300"},
-  {w:29,t:"Bristol",ty:"short_track",d:"Sep 19",r:"Bass Pro Night Race"},{w:30,t:"Kansas",ty:"intermediate",d:"Sep 27",r:"Hollywood Casino 400"},
-  {w:31,t:"Las Vegas",ty:"intermediate",d:"Oct 4",r:"South Point 400"},{w:32,t:"Charlotte",ty:"intermediate",d:"Oct 11",r:"Bank of America 500"},
-  {w:33,t:"Phoenix",ty:"short_track",d:"Oct 18",r:"Phoenix Fall Race"},{w:34,t:"Talladega",ty:"superspeedway",d:"Oct 25",r:"YellaWood 500"},
-  {w:35,t:"Martinsville",ty:"short_track",d:"Nov 1",r:"Xfinity 500"},{w:36,t:"Homestead",ty:"intermediate",d:"Nov 8",r:"Championship Race"},
+  {w:7,t:"Martinsville",ty:"short_track",d:"Mar 29",r:"Cook Out 400"},{w:8,t:"Bristol",ty:"short_track",d:"Apr 12",r:"Food City 500"},
+  {w:9,t:"Kansas",ty:"intermediate",d:"Apr 19",r:"AdventHealth 400"},{w:10,t:"Talladega",ty:"superspeedway",d:"Apr 26",r:"Jack Link's 500"},
+  {w:11,t:"Texas",ty:"intermediate",d:"May 3",r:"Würth 400"},{w:12,t:"Watkins Glen",ty:"road_course",d:"May 10",r:"Go Bowling at The Glen"},
+  {w:13,t:"Charlotte",ty:"intermediate",d:"May 24",r:"Coca-Cola 600"},{w:14,t:"Nashville",ty:"intermediate",d:"May 31",r:"Cracker Barrel 400"},
+  {w:15,t:"Michigan",ty:"intermediate",d:"Jun 7",r:"FireKeepers Casino 400"},{w:16,t:"Pocono",ty:"intermediate",d:"Jun 14",r:"Great American Getaway 400"},
+  {w:17,t:"San Diego",ty:"road_course",d:"Jun 21",r:"Anduril 250"},{w:18,t:"Sonoma",ty:"road_course",d:"Jun 28",r:"Toyota/Save Mart 350"},
+  {w:19,t:"Chicagoland",ty:"intermediate",d:"Jul 5",r:"TBA"},{w:20,t:"Atlanta",ty:"superspeedway",d:"Jul 12",r:"Quaker State 400"},
+  {w:21,t:"N. Wilkesboro",ty:"short_track",d:"Jul 19",r:"Window World 450"},{w:22,t:"Indianapolis",ty:"intermediate",d:"Jul 26",r:"Brickyard 400"},
+  {w:23,t:"Iowa",ty:"short_track",d:"Aug 9",r:"Iowa Corn 350"},{w:24,t:"Richmond",ty:"short_track",d:"Aug 15",r:"Cook Out 400"},
+  {w:25,t:"New Hampshire",ty:"short_track",d:"Aug 23",r:"Mobil 1 301"},{w:26,t:"Daytona",ty:"superspeedway",d:"Aug 29",r:"Coke Zero Sugar 400"},
+  {w:27,t:"Darlington",ty:"intermediate",d:"Sep 6",r:"Cook Out Southern 500"},{w:28,t:"WWT Raceway",ty:"intermediate",d:"Sep 13",r:"Enjoy Illinois 300"},
+  {w:29,t:"Bristol",ty:"short_track",d:"Sep 19",r:"Bass Pro Shops Night Race"},{w:30,t:"Kansas",ty:"intermediate",d:"Sep 27",r:"Hollywood Casino 400"},
+  {w:31,t:"Las Vegas",ty:"intermediate",d:"Oct 4",r:"South Point 400"},{w:32,t:"Charlotte",ty:"intermediate",d:"Oct 11",r:"Bank of America 400"},
+  {w:33,t:"Phoenix",ty:"short_track",d:"Oct 18",r:"Freeway Insurance 500"},{w:34,t:"Talladega",ty:"superspeedway",d:"Oct 25",r:"YellaWood 500"},
+  {w:35,t:"Martinsville",ty:"short_track",d:"Nov 1",r:"Xfinity 500"},{w:36,t:"Homestead",ty:"intermediate",d:"Nov 8",r:"Straight Talk Wireless 400"},
 ];
 const DRIVERS = [
   "#1 Ross Chastain","#2 Austin Cindric","#3 Austin Dillon","#4 Noah Gragson",
@@ -154,7 +154,14 @@ function scoreWeekFull(picks, raceResult, week, mullData) {
 }
 
 const C = {bg:"#0a0e17",card:"#111827",accent:"#f59e0b",green:"#10b981",red:"#ef4444",blue:"#3b82f6",purple:"#8b5cf6",text:"#f1f5f9",dim:"#94a3b8",border:"#1e293b",input:"#0f172a"};
-const PC = {justin:C.accent,bigmonroe:C.blue,monroe:C.green,rich:C.red};
+// Player colors: {bg, fg} for badges/cards
+const PClr = {
+  justin:{bg:"#000000",fg:"#CFC493"},
+  bigmonroe:{bg:"#FFFFFF",fg:"#000000"},
+  monroe:{bg:"#046A38",fg:"#91999F"},
+  rich:{bg:"#AA0000",fg:"#B3995D"},
+};
+const PC = {justin:PClr.justin.fg,bigmonroe:"#3b82f6",monroe:PClr.monroe.fg,rich:PClr.rich.fg};
 const TTC = {superspeedway:C.blue,short_track:C.red,intermediate:C.accent,road_course:C.green};
 const TTL = {superspeedway:"SS",short_track:"ST",intermediate:"INT",road_course:"RC"};
 
@@ -165,7 +172,7 @@ function LoginScreen({onLogin}) {
     <div style={{background:C.card,borderRadius:16,padding:"40px 32px",width:340,maxWidth:"90vw",border:"1px solid "+C.border,boxShadow:"0 25px 60px rgba(0,0,0,0.5)"}}>
       <div style={{textAlign:"center",marginBottom:32}}><div style={{fontFamily:"'Racing Sans One',cursive",fontSize:42,color:C.accent,letterSpacing:3}}>FERDA</div><div style={{color:C.dim,fontSize:13,letterSpacing:4,marginTop:4,textTransform:"uppercase"}}>Racing League</div></div>
       <div style={{color:C.dim,fontSize:12,marginBottom:8,textTransform:"uppercase",letterSpacing:2}}>Select Player</div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:16}}>{PLAYERS.map(p=>(<button key={p.id} onClick={()=>{setSel(p.id);setErr("");}} style={{padding:"10px 0",borderRadius:8,border:"2px solid "+(sel===p.id?PC[p.id]:C.border),background:sel===p.id?PC[p.id]+"22":C.input,color:sel===p.id?PC[p.id]:C.dim,fontFamily:"inherit",fontSize:14,fontWeight:600,cursor:"pointer"}}>{p.name}</button>))}</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:16}}>{PLAYERS.map(p=>(<button key={p.id} onClick={()=>{setSel(p.id);setErr("");}} style={{padding:"10px 0",borderRadius:8,border:"2px solid "+(sel===p.id?PClr[p.id].fg:C.border),background:sel===p.id?PClr[p.id].bg:C.input,color:sel===p.id?PClr[p.id].fg:C.dim,fontFamily:"inherit",fontSize:14,fontWeight:600,cursor:"pointer"}}>{p.name}</button>))}</div>
       {sel&&<><div style={{color:C.dim,fontSize:12,marginBottom:8,textTransform:"uppercase",letterSpacing:2}}>Password</div><input type="password" value={pw} onChange={e=>{setPw(e.target.value);setErr("");}} onKeyDown={e=>e.key==="Enter"&&go()} placeholder="Enter password" style={{width:"100%",padding:"10px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",marginBottom:16}}/></>}
       {err&&<div style={{color:C.red,fontSize:13,marginBottom:12,textAlign:"center"}}>{err}</div>}
       <button onClick={go} disabled={!sel||!pw} style={{width:"100%",padding:"12px 0",borderRadius:8,border:"none",background:sel&&pw?C.accent:C.border,color:sel&&pw?"#000":C.dim,fontFamily:"'Oswald',sans-serif",fontSize:16,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:sel&&pw?"pointer":"default"}}>Enter Garage</button>
@@ -187,13 +194,14 @@ function StandingsTab({data}) {
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Season Standings</h2>
     <div style={{color:C.dim,fontSize:13,marginBottom:20}}>{Object.keys(data.results||{}).length} of 36 races scored</div>
     <div style={{display:"grid",gap:12}}>{standings.map((p,i)=>(<div key={p.id} style={{background:C.card,borderRadius:12,padding:"16px 20px",border:"1px solid "+(i===0?C.accent+"55":C.border),display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-      <div style={{display:"flex",alignItems:"center",gap:14}}><div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:i===0?C.accent:i===1?"#9ca3af":i===2?"#b45309":C.border,color:i<3?"#000":C.dim,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div><div><div style={{color:C.text,fontWeight:700,fontSize:19,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div><div style={{color:C.dim,fontSize:12}}>{p.wins} win{p.wins!==1?"s":""} · {p.pp} playoff pts</div></div></div>
-      <div style={{textAlign:"right"}}><div style={{color:PC[p.id],fontFamily:"'Oswald',sans-serif",fontSize:30,fontWeight:700}}>{p.pts}</div><div style={{color:C.dim,fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Points</div></div>
+      <div style={{display:"flex",alignItems:"center",gap:14}}><div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].bg,color:PClr[p.id].fg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif",border:"2px solid "+(PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg)}}>{i+1}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:19,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div><div style={{color:C.dim,fontSize:12}}>{p.wins} win{p.wins!==1?"s":""} · {p.pp} playoff pts</div></div></div>
+      <div style={{textAlign:"right"}}><div style={{color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:30,fontWeight:700}}>{p.pts}</div><div style={{color:C.dim,fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Points</div></div>
     </div>))}</div></div>);
 }
 
-function DraftTab({player,data,onDraftPick,currentWeek}) {
+function DraftTab({player,data,onDraftPick,onUndoDraft,currentWeek}) {
   const [search,setSearch]=useState("");
+  const [undoMsg,setUndoMsg]=useState("");
   const weekInfo=SCHEDULE.find(s=>s.w===currentWeek);
   const draftKey="w"+currentWeek;
   const draftOrder=useMemo(()=>getDraftOrder(data,currentWeek),[data,currentWeek]);
@@ -232,7 +240,9 @@ function DraftTab({player,data,onDraftPick,currentWeek}) {
     {isMyTurn&&!draftComplete&&<><div style={{color:C.dim,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>Select a Driver</div>
       <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search drivers..." style={{width:"100%",padding:"10px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:14,fontFamily:"inherit",outline:"none",marginBottom:8,boxSizing:"border-box"}}/>
       <div style={{maxHeight:300,overflowY:"auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>{available.map(d=>(<button key={d} onClick={()=>handlePick(d)} style={{textAlign:"left",padding:"10px 12px",borderRadius:8,background:C.card,border:"1px solid "+C.border,color:C.text,fontSize:13,cursor:"pointer",fontFamily:"inherit"}}>{d}</button>))}</div></>}
-    {draftState.length>0&&<div style={{marginTop:16}}><div style={{color:C.dim,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>Pick Log</div><div style={{display:"flex",flexDirection:"column",gap:3}}>{[...draftState].reverse().map((d,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",background:C.card,borderRadius:6,border:"1px solid "+C.border}}><span style={{fontSize:10,color:C.dim,width:24}}>#{draftState.length-i}</span><span style={{fontSize:12,color:PC[d.pid],fontWeight:600,width:80}}>{PNAME[d.pid]}</span><span style={{fontSize:12,color:C.text}}>{d.driver}</span></div>))}</div></div>}
+    {draftState.length>0&&<div style={{marginTop:16}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><div style={{color:C.dim,fontSize:11,textTransform:"uppercase",letterSpacing:2}}>Pick Log</div>
+      {player.id==="justin"&&draftState.length>0&&!draftComplete&&<button onClick={async()=>{if(!window.confirm("Undo last pick by "+PNAME[draftState[draftState.length-1].pid]+" ("+draftState[draftState.length-1].driver+")?"))return;const r=await onUndoDraft(currentWeek);if(r)setUndoMsg("Undid "+PNAME[r.pid]+"'s pick: "+r.driver);setTimeout(()=>setUndoMsg(""),3000);}} style={{padding:"5px 12px",borderRadius:6,border:"1px solid "+C.red+"66",background:C.red+"11",color:C.red,fontSize:11,cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>Undo Last Pick</button>}
+    </div>{undoMsg&&<div style={{color:C.accent,fontSize:12,marginBottom:8,textAlign:"center"}}>{undoMsg}</div>}<div style={{display:"flex",flexDirection:"column",gap:3}}>{[...draftState].reverse().map((d,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",background:C.card,borderRadius:6,border:"1px solid "+C.border}}><span style={{fontSize:10,color:C.dim,width:24}}>#{draftState.length-i}</span><span style={{fontSize:12,color:PC[d.pid],fontWeight:600,width:80}}>{PNAME[d.pid]}</span><span style={{fontSize:12,color:C.text}}>{d.driver}</span></div>))}</div></div>}
   </div>);
 }
 
@@ -399,6 +409,14 @@ export default function App() {
     setData(d); await saveLeagueData(d);
   };
 
+  const handleUndoDraft=async(week)=>{
+    const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
+    if(!d.drafts?.[key]?.length) return;
+    const removed = d.drafts[key].pop();
+    setData(d); await saveLeagueData(d);
+    return removed;
+  };
+
   const handlePostResults=async(week,scored,rr,wp)=>{
     const d=JSON.parse(JSON.stringify(data)); if(!d.results)d.results={}; if(!d.picks)d.picks={};
     d.results["w"+week]={scored,raw:rr}; d.picks["w"+week]=wp;
@@ -420,7 +438,7 @@ export default function App() {
     <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)}/>
     {dbStatus==="offline"&&<div style={{background:C.red+"22",color:C.red,textAlign:"center",padding:"6px",fontSize:11,fontWeight:600}}>OFFLINE MODE — Firebase not connected</div>}
     {tab==="standings"&&<StandingsTab data={data}/>}
-    {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} currentWeek={currentWeek}/>}
+    {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
     {tab==="results"&&<ResultsTab data={data}/>}
     {tab==="schedule"&&<ScheduleTab data={data}/>}
     {tab==="mulligans"&&<MulligansTab player={user} data={data}/>}
