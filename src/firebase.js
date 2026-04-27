@@ -28,7 +28,6 @@ try {
 
 const DOC_ID = "ferda-season-2026";
 
-// Helper: wrap a promise with a timeout so it never hangs forever
 function withTimeout(promise, ms = 8000) {
   return Promise.race([
     promise,
@@ -36,39 +35,26 @@ function withTimeout(promise, ms = 8000) {
   ]);
 }
 
-export function isFirebaseReady() {
-  return firebaseReady;
-}
+export function isFirebaseReady() { return firebaseReady; }
 
 export async function loadLeagueData() {
-  if (!firebaseReady || !db) {
-    console.warn("Firebase not ready, skipping load");
-    return null;
-  }
+  if (!firebaseReady || !db) return null;
   try {
     const snap = await withTimeout(getDoc(doc(db, "leagues", DOC_ID)));
-    console.log("Firestore load:", snap.exists() ? "found data" : "no data yet");
     return snap.exists() ? snap.data() : null;
-  } catch (e) {
-    console.error("Load error:", e.message);
-    return null;
-  }
+  } catch (e) { console.error("Load error:", e.message); return null; }
 }
 
 export async function saveLeagueData(data) {
   if (!firebaseReady || !db) {
-    console.warn("Firebase not ready, saving to localStorage fallback");
     localStorage.setItem("ferda-backup", JSON.stringify(data));
     return;
   }
   try {
     await withTimeout(setDoc(doc(db, "leagues", DOC_ID), data));
-    console.log("Firestore save OK");
-    // Also keep a local backup
     localStorage.setItem("ferda-backup", JSON.stringify(data));
   } catch (e) {
     console.error("Save error:", e.message);
-    // Fallback to localStorage
     localStorage.setItem("ferda-backup", JSON.stringify(data));
   }
 }
@@ -78,19 +64,10 @@ export function subscribeToLeagueData(callback) {
   try {
     return onSnapshot(doc(db, "leagues", DOC_ID), (snap) => {
       if (snap.exists()) callback(snap.data());
-    }, (err) => {
-      console.error("Realtime listener error:", err.message);
-    });
-  } catch (e) {
-    console.error("Subscribe error:", e);
-    return () => {};
-  }
+    }, (err) => { console.error("Realtime listener error:", err.message); });
+  } catch (e) { return () => {}; }
 }
 
-// Load from localStorage as fallback
 export function loadLocalBackup() {
-  try {
-    const raw = localStorage.getItem("ferda-backup");
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
+  try { const raw = localStorage.getItem("ferda-backup"); return raw ? JSON.parse(raw) : null; } catch { return null; }
 }
