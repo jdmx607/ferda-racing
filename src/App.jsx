@@ -166,13 +166,18 @@ const TTC = {superspeedway:C.blue,short_track:C.red,intermediate:C.accent,road_c
 const TTL = {superspeedway:"SS",short_track:"ST",intermediate:"INT",road_course:"RC"};
 
 function FerdaLogo({size="large"}) {
-  const s = size==="large" ? {fs:48,sw:4,pad:"6px 18px"} : {fs:22,sw:2,pad:"3px 8px"};
-  return (<div style={{display:"inline-block",position:"relative"}}>
-    <div style={{fontFamily:"'Oswald',sans-serif",fontSize:s.fs,fontWeight:900,fontStyle:"italic",color:"#fff",letterSpacing:2,lineHeight:1,
-      background:"linear-gradient(180deg, #1a1a6c 0%, #1a1a6c 50%, #cc0000 50%, #cc0000 100%)",
-      WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",
-      padding:s.pad,transform:"skewX(-8deg)",display:"inline-block"}}>FERDA</div>
-    <div style={{position:"absolute",bottom:size==="large"?8:3,left:0,right:0,height:s.sw,background:"linear-gradient(90deg, #cc0000 0%, #f59e0b 50%, #cc0000 100%)",transform:"skewX(-8deg)"}}/>
+  const lg = size==="large";
+  const fs = lg ? 52 : 22;
+  const sh = lg ? 40 : 16;
+  const sw = lg ? 4 : 2;
+  const gap = lg ? 3 : 1.5;
+  const stripeColors = ["#ffcf00","#ff0000","#ff0000","#0077c8","#0077c8"];
+  return (<div style={{display:"inline-flex",alignItems:"center",gap:lg?4:2}}>
+    <div style={{display:"flex",gap:gap,transform:"skewX(-12deg)"}}>
+      {stripeColors.map((c,i)=>(<div key={i} style={{width:sw,height:sh,background:c,borderRadius:1}}/>))}
+    </div>
+    <span style={{fontFamily:"'Oswald',sans-serif",fontSize:fs,fontWeight:900,fontStyle:"italic",color:"#ffffff",letterSpacing:lg?4:2,lineHeight:1,transform:"skewX(-6deg)"
+    }}>FERDA</span>
   </div>);
 }
 
@@ -191,7 +196,7 @@ function LoginScreen({onLogin}) {
 }
 
 function Nav({player,tab,setTab,onLogout}) {
-  const tabs=[{id:"standings",l:"Standings"},{id:"draft",l:"Draft"},{id:"results",l:"Results"},{id:"schedule",l:"Schedule"},{id:"mulligans",l:"Mulligans"},{id:"rules",l:"Rules"}];
+  const tabs=[{id:"standings",l:"Standings"},{id:"draft",l:"Draft"},{id:"results",l:"Results"},{id:"playoffs",l:"Playoffs"},{id:"schedule",l:"Schedule"},{id:"mulligans",l:"Mulligans"},{id:"rules",l:"Rules"}];
   if(player.id==="justin") tabs.push({id:"commissioner",l:"Commish"});
   return (<nav style={{background:C.card,borderBottom:"1px solid "+C.border,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 12px",height:52,position:"sticky",top:0,zIndex:100,overflowX:"auto"}}>
     <div style={{display:"flex",alignItems:"center",gap:10}}><FerdaLogo size="small"/><div style={{display:"flex",gap:1}}>{tabs.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"7px 8px",borderRadius:6,border:"none",background:tab===t.id?C.accent+"22":"transparent",color:tab===t.id?C.accent:C.dim,fontFamily:"'Barlow Condensed',sans-serif",fontSize:11,fontWeight:600,cursor:"pointer",letterSpacing:1,textTransform:"uppercase",whiteSpace:"nowrap"}}>{t.l}</button>))}</div></div>
@@ -303,13 +308,71 @@ function MulligansTab({player,data}) {
   </div>);
 }
 
+function PlayoffsTab({data}) {
+  const playoffStandings = useMemo(()=>{
+    return PLAYERS.map(p => {
+      const base = 1000;
+      const pp = data.meta.playoffPts[p.id] || 0;
+      const total = base + pp;
+      const wins = Object.values(data.results||{}).filter(r=>r.scored?.[p.id]?.weeklyWin).length;
+      const regPts = data.meta.standings[p.id] || 0;
+      return { ...p, base, pp, total, wins, regPts };
+    }).sort((a,b) => b.total - a.total);
+  },[data]);
+
+  const scored = Object.keys(data.results||{}).length;
+  const weeksUntil = Math.max(0, PLAYOFF_START_WEEK - scored);
+
+  return (<div style={{padding:20,maxWidth:900,margin:"0 auto"}}>
+    <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Playoff Picture</h2>
+    <div style={{color:C.dim,fontSize:13,marginBottom:8}}>If the chase started today — {scored} races completed, {weeksUntil} until playoffs</div>
+    <div style={{background:C.card,borderRadius:10,padding:14,marginBottom:20,border:"1px solid "+C.border}}>
+      <div style={{color:C.dim,fontSize:11,marginBottom:6}}>Everyone starts at <span style={{color:C.accent,fontWeight:700}}>1,000</span> base points. Playoff points from weekly wins (+25 each) and bonus points carry over.</div>
+    </div>
+    <div style={{display:"grid",gap:12}}>
+      {playoffStandings.map((p,i)=>(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:"18px 20px",border:"2px solid "+(i===0?C.accent:PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88")}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+          <div style={{display:"flex",alignItems:"center",gap:14}}>
+            <div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div>
+            <div>
+              <div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:20,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div>
+              <div style={{color:PClr[p.id].fg+"99",fontSize:12}}>{p.wins} weekly win{p.wins!==1?"s":""}</div>
+            </div>
+          </div>
+          <div style={{textAlign:"right"}}>
+            <div style={{color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:32,fontWeight:700}}>{p.total}</div>
+            <div style={{color:PClr[p.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Chase Pts</div>
+          </div>
+        </div>
+        <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+          <div style={{background:PClr[p.id].bg==="#FFFFFF"?"#f0f0f0":"rgba(255,255,255,0.08)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:100}}>
+            <div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase",letterSpacing:1}}>Base</div>
+            <div style={{fontSize:18,fontWeight:700,color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif"}}>{p.base}</div>
+          </div>
+          <div style={{background:PClr[p.id].bg==="#FFFFFF"?"#f0f0f0":"rgba(255,255,255,0.08)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:100}}>
+            <div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase",letterSpacing:1}}>Playoff Pts</div>
+            <div style={{fontSize:18,fontWeight:700,color:C.accent,fontFamily:"'Oswald',sans-serif"}}>+{p.pp}</div>
+          </div>
+          <div style={{background:PClr[p.id].bg==="#FFFFFF"?"#f0f0f0":"rgba(255,255,255,0.08)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:100}}>
+            <div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase",letterSpacing:1}}>Reg Season</div>
+            <div style={{fontSize:18,fontWeight:700,color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif"}}>{p.regPts}</div>
+          </div>
+        </div>
+      </div>))}
+    </div>
+    <div style={{marginTop:20,background:C.card,borderRadius:10,padding:14,border:"1px solid "+C.border}}>
+      <div style={{color:C.dim,fontSize:12,lineHeight:1.6}}>The Chase begins at Week {PLAYOFF_START_WEEK} (Darlington). All players reset to 1,000 points + their accumulated playoff points. From there, regular race scoring continues and adds to the chase total through Week 36 (Homestead).</div>
+    </div>
+  </div>);
+}
+
 function RulesTab() {
   const rules=[{t:"Draft System",c:"Draft each week. Last week's loser picks first, winner picks last. Same order all 5 rounds."},{t:"Finish Points",c:"P1: 55, P2: 35, then P3: 34 decreasing by 1 to P36: 1. P37-40: 1 each."},{t:"Top Finish Bonus",c:"Top 5 finish: +2 bonus pts. Top 10 finish: +1 bonus pt."},{t:"Stage Points",c:"Top 10 each stage: 1st=10, 2nd=9... 10th=1"},{t:"Laps Led",c:"Per lap led x track modifier: SS x1.0, INT x0.5, ST x0.2, RC x1.5"},{t:"Net Position",c:"+/-1 pt per spot gained/lost (qualifying to finish). Capped at +/-10."},{t:"Bonuses",c:"Pole: 5 | Stage Win: 2.5 | Fastest Lap: 1 | Most Laps Led: 5 | Led a Lap: 0.5/driver | Sweep (Pole + both stage wins): 12.5"},{t:"DNF / DQ",c:"DNF = 0 total. DQ = -5 points."},{t:"Weekly Win",c:"Highest scorer earns 25 playoff points."},{t:"Playoffs (W27+)",c:"Reset to 1,000 base. Weekly wins (x25) + bonus pts carry over."},{t:"Mulligans",c:"10/season. Replacement driver earns finish position points ONLY."}];
   return (<div style={{padding:20,maxWidth:700,margin:"0 auto"}}><h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:16}}>Scoring Rules</h2>
     {rules.map(r=>(<div key={r.t} style={{background:C.card,borderRadius:10,padding:"12px 16px",marginBottom:8,border:"1px solid "+C.border}}><div style={{color:C.accent,fontWeight:700,fontSize:13,marginBottom:3,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1}}>{r.t}</div><div style={{color:C.dim,fontSize:13,lineHeight:1.5}}>{r.c}</div></div>))}</div>);
 }
 
-function CommissionerTab({data,onPostResults,currentWeek}) {
+function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,currentWeek}) {
   const [week,setWeek]=useState(currentWeek); const [editing,setEditing]=useState(false);
   const [drivers,setDrivers]=useState([]); const [playerPicks,setPlayerPicks]=useState({justin:[],bigmonroe:[],monroe:[],rich:[]});
   const [saving,setSaving]=useState(false); const [msg,setMsg]=useState("");
@@ -338,7 +401,22 @@ function CommissionerTab({data,onPostResults,currentWeek}) {
     await onPostResults(week,scored,rr,wp);
     setMsg("Week "+week+" "+(done?"updated":"scored")+"!"); setSaving(false); setEditing(false);
   };
+
+  const handleSavePicksOnly=async()=>{
+    setSaving(true);setMsg("");
+    const wp={}; PLAYERS.forEach(p=>{wp[p.id]=(playerPicks[p.id]||[]).filter(pk=>pk.driver).map(pk=>({driver:pk.driver,mulligan:pk.mulligan,garage:pk.garage,garageActivated:pk.garageActivated,garageReplace:pk.garageReplace}));});
+    await onSavePicks(week,wp);
+    setMsg("Week "+week+" picks saved (not scored)."); setSaving(false); setEditing(false);
+  };
+
+  const handleReset=async()=>{
+    if(!window.confirm("Reset Week "+week+"? This will delete all scores, picks, and draft data for this week. This cannot be undone.")) return;
+    await onResetWeek(week);
+    setMsg("Week "+week+" reset to clean slate."); setEditing(false);
+  };
   const iS={padding:"6px 8px",borderRadius:6,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:13,fontFamily:"inherit",outline:"none",width:"100%",boxSizing:"border-box"};
+  const hasPicks = !!(data.picks?.["w"+week] && Object.values(data.picks["w"+week]).some(p=>p&&p.length>0));
+  const hasDraft = !!(data.drafts?.["w"+week]?.length);
 
   return (<div style={{padding:20,maxWidth:1000,margin:"0 auto"}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Commissioner Panel</h2>
@@ -349,10 +427,13 @@ function CommissionerTab({data,onPostResults,currentWeek}) {
       {race&&<span style={{color:C.dim,fontSize:13}}>{race.r} · {TTL[race.ty]} x{TRACK_MULTS[race.ty]}</span>}
       {done&&!editing&&<span style={{color:C.green,fontSize:13,fontWeight:700}}>✓ Scored</span>}
     </div>
-    {!editing&&<div style={{display:"flex",gap:8,marginBottom:16}}>
+    {!editing&&<div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
       {done&&<button onClick={startEdit} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.accent,background:C.accent+"22",color:C.accent,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Edit Week {week}</button>}
       {!done&&<button onClick={startNew} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.green,background:C.green+"22",color:C.green,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Score Week {week}</button>}
+      {!done&&!editing&&<button onClick={()=>{startNew();}} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.blue,background:C.blue+"22",color:C.blue,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Set Picks Only</button>}
+      {(done||hasPicks||hasDraft)&&<button onClick={handleReset} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.red,background:C.red+"22",color:C.red,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Reset Week {week}</button>}
     </div>}
+    {!editing&&hasPicks&&!done&&<div style={{color:C.blue,fontSize:12,marginBottom:12}}>Picks saved for this week (not yet scored)</div>}
     {editing&&<>
       <div style={{marginBottom:20}}>
         <div style={{color:C.accent,fontSize:14,fontWeight:700,marginBottom:10,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1,textTransform:"uppercase"}}>Player Picks</div>
@@ -390,9 +471,10 @@ function CommissionerTab({data,onPostResults,currentWeek}) {
           <button onClick={()=>rm(i)} style={{background:C.red+"22",border:"1px solid "+C.red+"44",borderRadius:6,color:C.red,padding:"6px 10px",fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>X</button></div>
         <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>{[["pole","Pole"],["stageWin1","S1 Win"],["stageWin2","S2 Win"],["fastestLap","Fast Lap"],["mostLapsLed","Most Led"],["dnf","DNF"],["dq","DQ"]].map(([f,l])=>(<label key={f} style={{display:"flex",alignItems:"center",gap:4,cursor:"pointer",fontSize:12,color:d[f]?C.text:C.dim}}><input type="checkbox" checked={!!d[f]} onChange={e=>ud(i,f,e.target.checked)}/>{l}</label>))}</div>
       </div>))}
-      <div style={{display:"flex",gap:8,marginTop:12}}>
+      <div style={{display:"flex",gap:8,marginTop:12,flexWrap:"wrap"}}>
         <button onClick={handleScore} disabled={saving} style={{flex:1,padding:"14px 0",borderRadius:8,border:"none",background:C.accent,color:"#000",fontFamily:"'Oswald',sans-serif",fontSize:16,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:"pointer"}}>{saving?"Saving...":(done?"Re-Score Week "+week:"Score Week "+week)}</button>
-        <button onClick={()=>setEditing(false)} style={{padding:"14px 20px",borderRadius:8,border:"1px solid "+C.border,background:"transparent",color:C.dim,fontFamily:"'Oswald',sans-serif",fontSize:14,cursor:"pointer"}}>Cancel</button>
+        <button onClick={handleSavePicksOnly} disabled={saving} style={{padding:"14px 16px",borderRadius:8,border:"1px solid "+C.blue,background:C.blue+"22",color:C.blue,fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:700,cursor:"pointer",letterSpacing:1,textTransform:"uppercase"}}>Save Picks Only</button>
+        <button onClick={()=>setEditing(false)} style={{padding:"14px 16px",borderRadius:8,border:"1px solid "+C.border,background:"transparent",color:C.dim,fontFamily:"'Oswald',sans-serif",fontSize:14,cursor:"pointer"}}>Cancel</button>
       </div>{msg&&<div style={{color:C.green,marginTop:10,textAlign:"center",fontSize:14}}>{msg}</div>}
     </>}
     {done&&!editing&&(()=>{const wr=data.results["w"+week];const s=Object.entries(wr.scored||{}).sort((a,b)=>b[1].total-a[1].total);return<div style={{marginTop:8}}><div style={{color:C.dim,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>Current Scores</div>{s.map(([pid,ps])=>(<div key={pid} style={{display:"flex",justifyContent:"space-between",padding:"8px 12px",background:C.card,borderRadius:8,marginBottom:4,border:"1px solid "+(ps.weeklyWin?C.accent+"44":C.border)}}><span style={{color:PC[pid],fontWeight:600,fontSize:14}}>{ps.weeklyWin?"👑 ":""}{PNAME[pid]}</span><span style={{color:PC[pid],fontWeight:700,fontSize:16}}>{ps.total}</span></div>))}</div>;})()}
@@ -440,6 +522,28 @@ export default function App() {
     d.meta.mulligansUsed=mc; setData(d); await saveLeagueData(d);
   };
 
+  const handleSavePicksOnly=async(week,wp)=>{
+    const d=JSON.parse(JSON.stringify(data)); if(!d.picks)d.picks={};
+    d.picks["w"+week]=wp;
+    setData(d); await saveLeagueData(d);
+  };
+
+  const handleResetWeek=async(week)=>{
+    const d=JSON.parse(JSON.stringify(data));
+    const key="w"+week;
+    delete d.results[key]; delete d.picks[key];
+    if(d.drafts) delete d.drafts[key];
+    // Recalculate standings from scratch
+    const fs={justin:0,bigmonroe:0,monroe:0,rich:0},fp2={justin:0,bigmonroe:0,monroe:0,rich:0}; let last=0;
+    Object.entries(d.results||{}).forEach(([k,wr])=>{const w=parseInt(k.replace("w",""));if(w>last)last=w;if(!wr.scored)return;
+      Object.entries(wr.scored).forEach(([pid,s])=>{fs[pid]=Math.round((fs[pid]+s.total)*100)/100;fp2[pid]=Math.round((fp2[pid]+(s.bonusPoints||0))*100)/100;if(s.weeklyWin)fp2[pid]=Math.round((fp2[pid]+25)*100)/100;});});
+    d.meta.standings=fs; d.meta.playoffPts=fp2; d.meta.lastScoredWeek=last;
+    const mc={justin:0,bigmonroe:0,monroe:0,rich:0};
+    Object.entries(d.picks||{}).forEach(([,wp2])=>{Object.entries(wp2).forEach(([pid,pks])=>{(pks||[]).forEach(pk=>{if(pk.mulligan)mc[pid]++;});});});
+    d.meta.mulligansUsed=mc;
+    setData(d); await saveLeagueData(d);
+  };
+
   if(loading)return(<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,gap:12}}>
     <FerdaLogo size="large"/>
     <div style={{color:C.dim,fontSize:13}}>Connecting to database...</div>
@@ -451,9 +555,10 @@ export default function App() {
     {tab==="standings"&&<StandingsTab data={data}/>}
     {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
     {tab==="results"&&<ResultsTab data={data}/>}
+    {tab==="playoffs"&&<PlayoffsTab data={data}/>}
     {tab==="schedule"&&<ScheduleTab data={data}/>}
     {tab==="mulligans"&&<MulligansTab player={user} data={data}/>}
     {tab==="rules"&&<RulesTab/>}
-    {tab==="commissioner"&&user.id==="justin"&&<CommissionerTab data={data} onPostResults={handlePostResults} currentWeek={currentWeek}/>}
+    {tab==="commissioner"&&user.id==="justin"&&<CommissionerTab data={data} onPostResults={handlePostResults} onSavePicks={handleSavePicksOnly} onResetWeek={handleResetWeek} currentWeek={currentWeek}/>}
   </div>);
 }
