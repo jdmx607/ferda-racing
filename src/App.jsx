@@ -159,18 +159,29 @@ const PClr = {
   justin:{bg:"#000000",fg:"#CFC493"},
   bigmonroe:{bg:"#FFFFFF",fg:"#000000"},
   monroe:{bg:"#046A38",fg:"#91999F"},
-  rich:{bg:"#AA0000",fg:"#B3995D"},
+  rich:{bg:"#B3995D",fg:"#AA0000"},
 };
-const PC = {justin:PClr.justin.fg,bigmonroe:"#3b82f6",monroe:PClr.monroe.fg,rich:PClr.rich.fg};
+const PC = {justin:PClr.justin.fg,bigmonroe:PClr.bigmonroe.fg,monroe:PClr.monroe.fg,rich:PClr.rich.fg};
 const TTC = {superspeedway:C.blue,short_track:C.red,intermediate:C.accent,road_course:C.green};
 const TTL = {superspeedway:"SS",short_track:"ST",intermediate:"INT",road_course:"RC"};
+
+function FerdaLogo({size="large"}) {
+  const s = size==="large" ? {fs:48,sw:4,pad:"6px 18px"} : {fs:22,sw:2,pad:"3px 8px"};
+  return (<div style={{display:"inline-block",position:"relative"}}>
+    <div style={{fontFamily:"'Oswald',sans-serif",fontSize:s.fs,fontWeight:900,fontStyle:"italic",color:"#fff",letterSpacing:2,lineHeight:1,
+      background:"linear-gradient(180deg, #1a1a6c 0%, #1a1a6c 50%, #cc0000 50%, #cc0000 100%)",
+      WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",backgroundClip:"text",
+      padding:s.pad,transform:"skewX(-8deg)",display:"inline-block"}}>FERDA</div>
+    <div style={{position:"absolute",bottom:size==="large"?8:3,left:0,right:0,height:s.sw,background:"linear-gradient(90deg, #cc0000 0%, #f59e0b 50%, #cc0000 100%)",transform:"skewX(-8deg)"}}/>
+  </div>);
+}
 
 function LoginScreen({onLogin}) {
   const [sel,setSel]=useState(null); const [pw,setPw]=useState(""); const [err,setErr]=useState("");
   const go=()=>{const p=PLAYERS.find(x=>x.id===sel);if(p&&pw===p.password)onLogin(p);else setErr("Wrong password");};
   return (<div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,"+C.bg+" 0%,#111 50%,#1a1000 100%)"}}>
     <div style={{background:C.card,borderRadius:16,padding:"40px 32px",width:340,maxWidth:"90vw",border:"1px solid "+C.border,boxShadow:"0 25px 60px rgba(0,0,0,0.5)"}}>
-      <div style={{textAlign:"center",marginBottom:32}}><div style={{fontFamily:"'Racing Sans One',cursive",fontSize:42,color:C.accent,letterSpacing:3}}>FERDA</div><div style={{color:C.dim,fontSize:13,letterSpacing:4,marginTop:4,textTransform:"uppercase"}}>Racing League</div></div>
+      <div style={{textAlign:"center",marginBottom:32}}><FerdaLogo size="large"/><div style={{color:C.dim,fontSize:13,letterSpacing:4,marginTop:8,textTransform:"uppercase"}}>Racing League</div></div>
       <div style={{color:C.dim,fontSize:12,marginBottom:8,textTransform:"uppercase",letterSpacing:2}}>Select Player</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:16}}>{PLAYERS.map(p=>(<button key={p.id} onClick={()=>{setSel(p.id);setErr("");}} style={{padding:"10px 0",borderRadius:8,border:"2px solid "+(sel===p.id?PClr[p.id].fg:C.border),background:sel===p.id?PClr[p.id].bg:C.input,color:sel===p.id?PClr[p.id].fg:C.dim,fontFamily:"inherit",fontSize:14,fontWeight:600,cursor:"pointer"}}>{p.name}</button>))}</div>
       {sel&&<><div style={{color:C.dim,fontSize:12,marginBottom:8,textTransform:"uppercase",letterSpacing:2}}>Password</div><input type="password" value={pw} onChange={e=>{setPw(e.target.value);setErr("");}} onKeyDown={e=>e.key==="Enter"&&go()} placeholder="Enter password" style={{width:"100%",padding:"10px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",marginBottom:16}}/></>}
@@ -183,7 +194,7 @@ function Nav({player,tab,setTab,onLogout}) {
   const tabs=[{id:"standings",l:"Standings"},{id:"draft",l:"Draft"},{id:"results",l:"Results"},{id:"schedule",l:"Schedule"},{id:"mulligans",l:"Mulligans"},{id:"rules",l:"Rules"}];
   if(player.id==="justin") tabs.push({id:"commissioner",l:"Commish"});
   return (<nav style={{background:C.card,borderBottom:"1px solid "+C.border,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 12px",height:52,position:"sticky",top:0,zIndex:100,overflowX:"auto"}}>
-    <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{fontFamily:"'Racing Sans One',cursive",fontSize:20,color:C.accent,flexShrink:0}}>FERDA</span><div style={{display:"flex",gap:1}}>{tabs.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"7px 8px",borderRadius:6,border:"none",background:tab===t.id?C.accent+"22":"transparent",color:tab===t.id?C.accent:C.dim,fontFamily:"'Barlow Condensed',sans-serif",fontSize:11,fontWeight:600,cursor:"pointer",letterSpacing:1,textTransform:"uppercase",whiteSpace:"nowrap"}}>{t.l}</button>))}</div></div>
+    <div style={{display:"flex",alignItems:"center",gap:10}}><FerdaLogo size="small"/><div style={{display:"flex",gap:1}}>{tabs.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"7px 8px",borderRadius:6,border:"none",background:tab===t.id?C.accent+"22":"transparent",color:tab===t.id?C.accent:C.dim,fontFamily:"'Barlow Condensed',sans-serif",fontSize:11,fontWeight:600,cursor:"pointer",letterSpacing:1,textTransform:"uppercase",whiteSpace:"nowrap"}}>{t.l}</button>))}</div></div>
     <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}><span style={{color:C.dim,fontSize:11}}>{player.name}</span><button onClick={onLogout} style={{padding:"5px 8px",borderRadius:6,border:"1px solid "+C.border,background:"transparent",color:C.dim,fontFamily:"inherit",fontSize:10,cursor:"pointer"}}>Out</button></div>
   </nav>);
 }
@@ -193,9 +204,9 @@ function StandingsTab({data}) {
   return (<div style={{padding:20,maxWidth:900,margin:"0 auto"}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Season Standings</h2>
     <div style={{color:C.dim,fontSize:13,marginBottom:20}}>{Object.keys(data.results||{}).length} of 36 races scored</div>
-    <div style={{display:"grid",gap:12}}>{standings.map((p,i)=>(<div key={p.id} style={{background:C.card,borderRadius:12,padding:"16px 20px",border:"1px solid "+(i===0?C.accent+"55":C.border),display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-      <div style={{display:"flex",alignItems:"center",gap:14}}><div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].bg,color:PClr[p.id].fg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif",border:"2px solid "+(PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg)}}>{i+1}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:19,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div><div style={{color:C.dim,fontSize:12}}>{p.wins} win{p.wins!==1?"s":""} · {p.pp} playoff pts</div></div></div>
-      <div style={{textAlign:"right"}}><div style={{color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:30,fontWeight:700}}>{p.pts}</div><div style={{color:C.dim,fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Points</div></div>
+    <div style={{display:"grid",gap:12}}>{standings.map((p,i)=>(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:"16px 20px",border:"2px solid "+(i===0?C.accent:PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88"),display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+      <div style={{display:"flex",alignItems:"center",gap:14}}><div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:19,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div><div style={{color:PClr[p.id].fg+"99",fontSize:12}}>{p.wins} win{p.wins!==1?"s":""} · {p.pp} playoff pts</div></div></div>
+      <div style={{textAlign:"right"}}><div style={{color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:30,fontWeight:700}}>{p.pts}</div><div style={{color:PClr[p.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Points</div></div>
     </div>))}</div></div>);
 }
 
@@ -258,14 +269,14 @@ function ResultsTab({data}) {
     </div>
     {weekInfo&&<div style={{color:C.dim,fontSize:14,marginBottom:16}}>{weekInfo.r} · {weekInfo.t} · <span style={{color:TTC[weekInfo.ty]}}>{TTL[weekInfo.ty]} x{TRACK_MULTS[weekInfo.ty]}</span></div>}
     {sorted.length===0?<div style={{color:C.dim,textAlign:"center",padding:40}}>No results</div>
-      :<div style={{display:"grid",gap:12}}>{sorted.map(([pid,ps],idx)=>(<div key={pid} style={{background:C.card,borderRadius:12,padding:"16px 20px",border:"1px solid "+(ps.weeklyWin?C.accent+"55":C.border)}}>
+      :<div style={{display:"grid",gap:12}}>{sorted.map(([pid,ps],idx)=>(<div key={pid} style={{background:PClr[pid].bg,borderRadius:12,padding:"16px 20px",border:"2px solid "+(ps.weeklyWin?C.accent:PClr[pid].bg==="#000000"?C.border:PClr[pid].bg+"88")}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:(ps.drivers&&ps.drivers.length)?12:0}}>
-          <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{color:PC[pid],fontWeight:700,fontSize:17,fontFamily:"'Barlow Condensed',sans-serif"}}>{idx===0?"👑 ":""}{PNAME[pid]}</span>{ps.weeklyWin&&<span style={{background:C.accent+"22",color:C.accent,padding:"2px 10px",borderRadius:12,fontSize:10,fontWeight:700}}>WIN +25 PO</span>}</div>
-          <span style={{color:PC[pid],fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700}}>{ps.total}</span>
+          <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{color:PClr[pid].fg,fontWeight:700,fontSize:17,fontFamily:"'Barlow Condensed',sans-serif"}}>{idx===0?"👑 ":""}{PNAME[pid]}</span>{ps.weeklyWin&&<span style={{background:C.accent+"44",color:C.accent,padding:"2px 10px",borderRadius:12,fontSize:10,fontWeight:700}}>WIN +25 PO</span>}</div>
+          <span style={{color:PClr[pid].fg,fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700}}>{ps.total}</span>
         </div>
-        {ps.drivers&&ps.drivers.length>0&&<div style={{display:"grid",gap:6}}>{ps.drivers.map(d=>(<div key={d.driver} style={{background:C.input,borderRadius:8,padding:"8px 12px",border:"1px solid "+C.border}}>
-          <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:C.text,fontSize:13,fontWeight:600}}>{d.driver}{d.isMulligan?" 🔄":""}{d.isGarage?" 🅶":""}{d.replaced?" ❌":""}</span><span style={{color:d.replaced?C.dim:d.total>=0?C.green:C.red,fontWeight:700,fontSize:13}}>{d.total}</span></div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:3}}>{(d.breakdown||[]).map((b,i)=>(<span key={i} style={{fontSize:9,color:b.pts>0?C.green:b.pts<0?C.red:C.dim,background:C.bg,padding:"2px 5px",borderRadius:4}}>{b.label}: {b.pts>0?"+":""}{b.pts}</span>))}</div>
+        {ps.drivers&&ps.drivers.length>0&&<div style={{display:"grid",gap:6}}>{ps.drivers.map(d=>(<div key={d.driver} style={{background:PClr[pid].bg==="#FFFFFF"?"#f0f0f0":PClr[pid].bg==="#000000"?"#1a1a1a":PClr[pid].bg+"cc",borderRadius:8,padding:"8px 12px",border:"1px solid "+(PClr[pid].bg==="#FFFFFF"?"#ddd":PClr[pid].fg+"22")}}>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:PClr[pid].fg,fontSize:13,fontWeight:600}}>{d.driver}{d.isMulligan?" 🔄":""}{d.isGarage?" 🅶":""}{d.replaced?" ❌":""}</span><span style={{color:d.replaced?PClr[pid].fg+"66":d.total>=0?C.green:C.red,fontWeight:700,fontSize:13}}>{d.total}</span></div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:3}}>{(d.breakdown||[]).map((b,i)=>(<span key={i} style={{fontSize:9,color:b.pts>0?C.green:b.pts<0?C.red:PClr[pid].fg+"88",background:PClr[pid].bg==="#FFFFFF"?"#e0e0e0":"rgba(0,0,0,0.3)",padding:"2px 5px",borderRadius:4}}>{b.label}: {b.pts>0?"+":""}{b.pts}</span>))}</div>
         </div>))}</div>}
       </div>))}</div>}
   </div>);
@@ -277,7 +288,7 @@ function ScheduleTab({data}) {
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:8}}>2026 Schedule</h2>
     <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>{Object.entries(TTC).map(([t,c])=>(<span key={t} style={{fontSize:11,color:c,background:c+"18",padding:"3px 10px",borderRadius:12,fontWeight:600}}>{TTL[t]} x{TRACK_MULTS[t]}</span>))}</div>
     <div style={{display:"grid",gap:3}}>{SCHEDULE.map(s=>(<div key={s.w} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 12px",borderRadius:8,background:s.w===PLAYOFF_START_WEEK?C.accent+"11":C.card,border:"1px solid "+(s.w>=PLAYOFF_START_WEEK?C.accent+"33":C.border)}}>
-      <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{color:scored.has(s.w)?C.green:C.dim,fontSize:11,width:36,fontWeight:700}}>{scored.has(s.w)?"✓ ":""}W{s.w}</span><span style={{color:C.text,fontSize:13,fontWeight:600}}>{s.r}</span>{s.w===PLAYOFF_START_WEEK&&<span style={{fontSize:9,color:C.accent,fontWeight:700,letterSpacing:1}}>PLAYOFFS</span>}</div>
+      <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{color:scored.has(s.w)?C.green:C.dim,fontSize:11,width:36,fontWeight:700}}>{scored.has(s.w)?"✓ ":""}W{s.w}</span><div><span style={{color:C.text,fontSize:13,fontWeight:600}}>{s.r}</span><span style={{color:C.dim,fontSize:11,marginLeft:6}}>@ {s.t}</span></div>{s.w===PLAYOFF_START_WEEK&&<span style={{fontSize:9,color:C.accent,fontWeight:700,letterSpacing:1}}>PLAYOFFS</span>}</div>
       <div style={{display:"flex",alignItems:"center",gap:6}}><span style={{color:C.dim,fontSize:10}}>{s.d}</span><span style={{fontSize:10,color:TTC[s.ty],fontWeight:600,background:TTC[s.ty]+"18",padding:"2px 8px",borderRadius:10}}>{TTL[s.ty]}</span></div>
     </div>))}</div></div>);
 }
@@ -430,7 +441,7 @@ export default function App() {
   };
 
   if(loading)return(<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,gap:12}}>
-    <div style={{color:C.accent,fontFamily:"'Racing Sans One',cursive",fontSize:32}}>FERDA</div>
+    <FerdaLogo size="large"/>
     <div style={{color:C.dim,fontSize:13}}>Connecting to database...</div>
     <div style={{color:C.dim,fontSize:11,marginTop:8}}>If this takes more than 10 seconds, check browser console (F12)</div></div>);
   if(!user)return <LoginScreen onLogin={setUser}/>;
