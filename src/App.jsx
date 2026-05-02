@@ -157,7 +157,7 @@ const C = {bg:"#0a0e17",card:"#111827",accent:"#f59e0b",green:"#10b981",red:"#ef
 // Player colors: {bg, fg} for badges/cards
 const PClr = {
   justin:{bg:"#000000",fg:"#CFC493"},
-  bigmonroe:{bg:"#FFFFFF",fg:"#000000"},
+  bigmonroe:{bg:"#DC0019",fg:"#FFFFFF"},
   monroe:{bg:"#046A38",fg:"#91999F"},
   rich:{bg:"#B3995D",fg:"#AA0000"},
 };
@@ -198,7 +198,7 @@ function LoginScreen({onLogin}) {
 function Nav({player,tab,setTab,onLogout}) {
   const tabs=[{id:"standings",l:"Standings"},{id:"draft",l:"Draft"},{id:"lineups",l:"Lineups"},{id:"results",l:"Results"},{id:"playoffs",l:"Playoffs"},{id:"schedule",l:"Schedule"},{id:"mulligans",l:"Mulligans"},{id:"rules",l:"Rules"}];
   if(player.id==="justin") tabs.push({id:"commissioner",l:"Commish"});
-  return (<nav style={{background:C.card,borderBottom:"1px solid "+C.border,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 12px",height:52,position:"sticky",top:0,zIndex:100,overflowX:"auto"}}>
+  return (<nav style={{background:"#000000",borderBottom:"1px solid "+C.border,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 12px",height:52,position:"sticky",top:0,zIndex:100,overflowX:"auto"}}>
     <div style={{display:"flex",alignItems:"center",gap:10}}><FerdaLogo size="small"/><div style={{display:"flex",gap:1}}>{tabs.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"7px 8px",borderRadius:6,border:"none",background:tab===t.id?C.accent+"22":"transparent",color:tab===t.id?C.accent:C.dim,fontFamily:"'Barlow Condensed',sans-serif",fontSize:11,fontWeight:600,cursor:"pointer",letterSpacing:1,textTransform:"uppercase",whiteSpace:"nowrap"}}>{t.l}</button>))}</div></div>
     <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}><span style={{color:C.dim,fontSize:11}}>{player.name}</span><button onClick={onLogout} style={{padding:"5px 8px",borderRadius:6,border:"1px solid "+C.border,background:"transparent",color:C.dim,fontFamily:"inherit",fontSize:10,cursor:"pointer"}}>Out</button></div>
   </nav>);
