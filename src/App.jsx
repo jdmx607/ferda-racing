@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { loadLeagueData, saveLeagueData, subscribeToLeagueData, loadLocalBackup, isFirebaseReady } from "./firebase";
 import { HISTORICAL_PICKS, HISTORICAL_RESULTS } from "./historicalData";
+import { sendDraftEmail, isEmailConfigured } from "./email";
 
 const PLAYERS = [
   { id: "justin", name: "Justin", password: "ferda1" },
@@ -181,6 +182,83 @@ function FerdaLogo({size="large"}) {
   </div>);
 }
 
+function FlagBanner({user,data,currentWeek,onGoToDraft}) {
+  if(!user||!data) return null;
+
+  // Determine the user's draft status
+  const draftKey="w"+currentWeek;
+  const draftState=data.drafts?.[draftKey]||[];
+  const draftOrder=getDraftOrder(data,currentWeek);
+  const snakeSequence=buildSnakeOrder(draftOrder);
+  const currentPickNum=draftState.length;
+  const draftComplete=currentPickNum>=snakeSequence.length;
+  const totalPicks=snakeSequence.length;
+
+  // If picks were entered manually (no draft data but picks exist), show different message
+  const savedPicks=data.picks?.[draftKey]||{};
+  const hasSavedPicks=Object.values(savedPicks).some(p=>p&&p.length>0);
+  const hasScored=!!(data.results?.[draftKey]?.scored);
+
+  // No draft activity yet
+  if(draftState.length===0&&!hasSavedPicks&&!hasScored){
+    // Check whose turn it is to start
+    const firstUp=snakeSequence[0]?.pid;
+    if(firstUp===user.id){
+      return <Banner flag="green" text={"Your turn to pick first for Week "+currentWeek+"!"} onClick={onGoToDraft}/>;
+    }
+    return null;
+  }
+
+  // Race already scored
+  if(hasScored){
+    return <Banner flag="checkered" text={"Week "+currentWeek+" is complete. Results posted."} onClick={()=>onGoToDraft("results")}/>;
+  }
+
+  // Draft complete but race not scored
+  if(draftComplete||(hasSavedPicks&&draftState.length===0)){
+    return <Banner flag="checkered" text={"All picks locked for Week "+currentWeek+". Race day!"} onClick={()=>onGoToDraft("lineups")}/>;
+  }
+
+  const currentTurn=snakeSequence[currentPickNum];
+  const nextTurn=snakeSequence[currentPickNum+1];
+  const lastRound=currentTurn?.round===ACTIVE_PICKS;
+
+  if(currentTurn?.pid===user.id){
+    return <Banner flag={lastRound?"white":"green"} text={lastRound?"FINAL ROUND — Your pick!":"Your turn to pick!"} onClick={onGoToDraft}/>;
+  }
+  if(nextTurn?.pid===user.id){
+    return <Banner flag="yellow" text={"You're up next after "+PNAME[currentTurn.pid]}/>;
+  }
+  return <Banner flag="red" text={"Waiting on "+PNAME[currentTurn.pid]+" to pick"}/>;
+}
+
+function Banner({flag,text,onClick}){
+  const flags={
+    green:{bg:"#10b981",fg:"#000",icon:"🟢"},
+    yellow:{bg:"#fbbf24",fg:"#000",icon:"🟡"},
+    red:{bg:"#dc2626",fg:"#fff",icon:"🔴"},
+    white:{bg:"#f8fafc",fg:"#000",icon:"⚪"},
+    checkered:{bg:"#1f2937",fg:"#fff",icon:"🏁"},
+  };
+  const f=flags[flag];
+  // Animated stripe pattern for checkered flag
+  const checkeredBg = flag==="checkered" ?
+    "repeating-linear-gradient(45deg, #1f2937 0px, #1f2937 10px, #f8fafc 10px, #f8fafc 20px)" : f.bg;
+  return (<div onClick={onClick} style={{
+    background:checkeredBg, color:f.fg, padding:"10px 16px", textAlign:"center",
+    fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:14, letterSpacing:1,
+    textTransform:"uppercase", cursor:onClick?"pointer":"default",
+    display:"flex", alignItems:"center", justifyContent:"center", gap:10,
+    borderBottom:"2px solid rgba(0,0,0,0.3)",
+    textShadow: flag==="checkered"?"0 0 4px rgba(0,0,0,0.8)":"none",
+    animation: flag==="green"?"pulse 2s infinite":"none"
+  }}>
+    <span style={{fontSize:20}}>{f.icon}</span>
+    <span style={{background:flag==="checkered"?"rgba(0,0,0,0.6)":"transparent",padding:flag==="checkered"?"4px 10px":0,borderRadius:6}}>{text}</span>
+    {onClick&&<span style={{fontSize:11,opacity:0.7,marginLeft:4}}>→</span>}
+  </div>);
+}
+
 function LoginScreen({onLogin}) {
   const [sel,setSel]=useState(null); const [pw,setPw]=useState(""); const [err,setErr]=useState("");
   const go=()=>{const p=PLAYERS.find(x=>x.id===sel);if(p&&pw===p.password)onLogin(p);else setErr("Wrong password");};
@@ -196,7 +274,7 @@ function LoginScreen({onLogin}) {
 }
 
 function Nav({player,tab,setTab,onLogout}) {
-  const tabs=[{id:"standings",l:"Standings"},{id:"draft",l:"Draft"},{id:"lineups",l:"Lineups"},{id:"results",l:"Results"},{id:"playoffs",l:"Playoffs"},{id:"schedule",l:"Schedule"},{id:"mulligans",l:"Mulligans"},{id:"rules",l:"Rules"}];
+  const tabs=[{id:"standings",l:"Standings"},{id:"draft",l:"Draft"},{id:"lineups",l:"Lineups"},{id:"results",l:"Results"},{id:"playoffs",l:"Playoffs"},{id:"schedule",l:"Schedule"},{id:"mulligans",l:"Mulligans"},{id:"rules",l:"Rules"},{id:"settings",l:"Settings"}];
   if(player.id==="justin") tabs.push({id:"commissioner",l:"Commish"});
   return (<nav style={{background:"#000000",borderBottom:"1px solid "+C.border,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 12px",height:52,position:"sticky",top:0,zIndex:100,overflowX:"auto"}}>
     <div style={{display:"flex",alignItems:"center",gap:10}}><FerdaLogo size="small"/><div style={{display:"flex",gap:1}}>{tabs.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"7px 8px",borderRadius:6,border:"none",background:tab===t.id?C.accent+"22":"transparent",color:tab===t.id?C.accent:C.dim,fontFamily:"'Barlow Condensed',sans-serif",fontSize:11,fontWeight:600,cursor:"pointer",letterSpacing:1,textTransform:"uppercase",whiteSpace:"nowrap"}}>{t.l}</button>))}</div></div>
@@ -439,13 +517,66 @@ function PlayoffsTab({data}) {
   </div>);
 }
 
+function SettingsTab({player,data,onSaveSettings}) {
+  const settings=data.playerSettings?.[player.id]||{};
+  const [email,setEmail]=useState(settings.email||"");
+  const [notifyOnTurn,setNotifyOnTurn]=useState(settings.notifyOnTurn!==false);
+  const [saving,setSaving]=useState(false);
+  const [msg,setMsg]=useState("");
+
+  const save=async()=>{
+    setSaving(true);setMsg("");
+    await onSaveSettings(player.id,{email:email.trim(),notifyOnTurn});
+    setMsg("Settings saved!");
+    setSaving(false);
+    setTimeout(()=>setMsg(""),3000);
+  };
+
+  return (<div style={{padding:20,maxWidth:600,margin:"0 auto"}}>
+    <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Notification Settings</h2>
+    <div style={{color:C.dim,fontSize:13,marginBottom:24}}>Get an email when it's your turn to draft</div>
+
+    <div style={{background:C.card,borderRadius:12,padding:20,border:"1px solid "+C.border,marginBottom:16}}>
+      <div style={{color:C.accent,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8,fontWeight:700}}>Email Address</div>
+      <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" style={{
+        width:"100%",padding:"12px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,
+        fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"
+      }}/>
+      <div style={{color:C.dim,fontSize:11,marginTop:6}}>Where draft notifications will be sent</div>
+    </div>
+
+    <div style={{background:C.card,borderRadius:12,padding:20,border:"1px solid "+C.border,marginBottom:16}}>
+      <label style={{display:"flex",alignItems:"center",gap:12,cursor:"pointer"}}>
+        <input type="checkbox" checked={notifyOnTurn} onChange={e=>setNotifyOnTurn(e.target.checked)} style={{width:18,height:18,cursor:"pointer"}}/>
+        <div>
+          <div style={{color:C.text,fontSize:15,fontWeight:600}}>Notify me when it's my turn</div>
+          <div style={{color:C.dim,fontSize:12,marginTop:2}}>Only fires when you're up next on the clock</div>
+        </div>
+      </label>
+    </div>
+
+    <button onClick={save} disabled={saving} style={{
+      width:"100%",padding:"14px 0",borderRadius:8,border:"none",background:C.accent,color:"#000",
+      fontFamily:"'Oswald',sans-serif",fontSize:16,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:"pointer"
+    }}>{saving?"Saving...":"Save Settings"}</button>
+
+    {msg&&<div style={{color:C.green,marginTop:12,textAlign:"center",fontSize:14,fontWeight:600}}>{msg}</div>}
+
+    <div style={{marginTop:24,padding:14,background:C.card,borderRadius:10,border:"1px solid "+C.border}}>
+      <div style={{color:C.dim,fontSize:12,lineHeight:1.6}}>
+        <strong style={{color:C.text}}>How it works:</strong> When you become the next person to pick in the draft, FERDA emails you a green flag alert. The email includes a link to jump straight into the app. First time you receive one, check your spam folder and mark it as "not spam" so future emails arrive in your inbox.
+      </div>
+    </div>
+  </div>);
+}
+
 function RulesTab() {
   const rules=[{t:"Draft System",c:"Draft each week. Last week's loser picks first, winner picks last. Same order all 5 rounds."},{t:"Finish Points",c:"P1: 55, P2: 35, then P3: 34 decreasing by 1 to P36: 1. P37-40: 1 each."},{t:"Top Finish Bonus",c:"Top 5 finish: +2 bonus pts. Top 10 finish: +1 bonus pt."},{t:"Stage Points",c:"Top 10 each stage: 1st=10, 2nd=9... 10th=1"},{t:"Laps Led",c:"Per lap led x track modifier: SS x1.0, INT x0.5, ST x0.2, RC x1.5"},{t:"Net Position",c:"+/-1 pt per spot gained/lost (qualifying to finish). Capped at +/-10."},{t:"Bonuses",c:"Pole: 5 | Stage Win: 2.5 | Fastest Lap: 1 | Most Laps Led: 5 | Led a Lap: 0.5/driver | Sweep (Pole + both stage wins): 12.5"},{t:"DNF / DQ",c:"DNF = 0 total. DQ = -5 points."},{t:"Weekly Win",c:"Highest scorer earns 25 playoff points."},{t:"Playoffs (W27+)",c:"Reset to 1,000 base. Weekly wins (x25) + bonus pts carry over."},{t:"Mulligans",c:"10/season. Replacement driver earns finish position points ONLY."}];
   return (<div style={{padding:20,maxWidth:700,margin:"0 auto"}}><h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:16}}>Scoring Rules</h2>
     {rules.map(r=>(<div key={r.t} style={{background:C.card,borderRadius:10,padding:"12px 16px",marginBottom:8,border:"1px solid "+C.border}}><div style={{color:C.accent,fontWeight:700,fontSize:13,marginBottom:3,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1}}>{r.t}</div><div style={{color:C.dim,fontSize:13,lineHeight:1.5}}>{r.c}</div></div>))}</div>);
 }
 
-function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,currentWeek}) {
+function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,onNotifyDraft,currentWeek}) {
   const [week,setWeek]=useState(currentWeek); const [editing,setEditing]=useState(false);
   const [drivers,setDrivers]=useState([]); const [playerPicks,setPlayerPicks]=useState({justin:[],bigmonroe:[],monroe:[],rich:[]});
   const [saving,setSaving]=useState(false); const [msg,setMsg]=useState("");
@@ -505,6 +636,7 @@ function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,currentWeek
       {!done&&<button onClick={startNew} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.green,background:C.green+"22",color:C.green,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Score Week {week}</button>}
       {!done&&!editing&&<button onClick={()=>{startNew();}} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.blue,background:C.blue+"22",color:C.blue,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Set Picks Only</button>}
       {(done||hasPicks||hasDraft)&&<button onClick={handleReset} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.red,background:C.red+"22",color:C.red,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Reset Week {week}</button>}
+      {!done&&!hasDraft&&<button onClick={async()=>{await onNotifyDraft(week);setMsg("Email sent to first picker (if configured).");setTimeout(()=>setMsg(""),3000);}} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.purple,background:C.purple+"22",color:C.purple,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>📧 Notify First Picker</button>}
     </div>}
     {!editing&&hasPicks&&!done&&<div style={{color:C.blue,fontSize:12,marginBottom:12}}>Picks saved for this week (not yet scored)</div>}
     {editing&&<>
@@ -573,6 +705,8 @@ export default function App() {
     const d=JSON.parse(JSON.stringify(data)); if(!d.drafts)d.drafts={}; const key="w"+week;
     if(!d.drafts[key])d.drafts[key]=[]; d.drafts[key].push({pid,driver,pickNum});
     setData(d); await saveLeagueData(d);
+    // Notify the next picker (fire-and-forget — won't block UI)
+    notifyNextPicker(week, d).catch(e => console.error("Email notify failed:", e));
   };
 
   const handleUndoDraft=async(week)=>{
@@ -617,14 +751,60 @@ export default function App() {
     setData(d); await saveLeagueData(d);
   };
 
+  const handleSaveSettings=async(pid,settings)=>{
+    const d=JSON.parse(JSON.stringify(data));
+    if(!d.playerSettings) d.playerSettings={};
+    d.playerSettings[pid]={...d.playerSettings[pid],...settings};
+    setData(d); await saveLeagueData(d);
+  };
+
+  // Helper: figure out who's next to pick after a draft pick is made,
+  // and email them if they have notifications enabled.
+  const notifyNextPicker = async (week, dataAfterPick) => {
+    if (!isEmailConfigured()) return;
+    const draftKey = "w" + week;
+    const draftState = dataAfterPick.drafts?.[draftKey] || [];
+    const draftOrder = getDraftOrder(dataAfterPick, week);
+    const snakeSequence = buildSnakeOrder(draftOrder);
+    const nextPickIdx = draftState.length;
+    if (nextPickIdx >= snakeSequence.length) return; // Draft complete
+    const nextPicker = snakeSequence[nextPickIdx];
+    const settings = dataAfterPick.playerSettings?.[nextPicker.pid];
+    if (!settings?.email || settings.notifyOnTurn === false) return;
+    // Don't email yourself when you just picked
+    if (user && nextPicker.pid === user.id && nextPickIdx > 0) return;
+    const raceInfo = SCHEDULE.find(s => s.w === week);
+    sendDraftEmail({
+      toEmail: settings.email,
+      name: PNAME[nextPicker.pid],
+      week,
+      race: raceInfo?.r || "the next race",
+      track: raceInfo?.t || "",
+      pickNumber: nextPickIdx + 1,
+      round: nextPicker.round,
+    });
+  };
+
+  // Manually trigger a "draft start" email when commissioner wants to kick off
+  const handleStartDraftNotify = async (week) => {
+    await notifyNextPicker(week, data);
+  };
+
   if(loading)return(<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,gap:12}}>
     <FerdaLogo size="large"/>
     <div style={{color:C.dim,fontSize:13}}>Connecting to database...</div>
     <div style={{color:C.dim,fontSize:11,marginTop:8}}>If this takes more than 10 seconds, check browser console (F12)</div></div>);
   if(!user)return <LoginScreen onLogin={setUser}/>;
   return (<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Barlow Condensed',sans-serif",color:C.text}}>
+    <style>{`
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.75; }
+      }
+    `}</style>
     <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)}/>
     {dbStatus==="offline"&&<div style={{background:C.red+"22",color:C.red,textAlign:"center",padding:"6px",fontSize:11,fontWeight:600}}>OFFLINE MODE — Firebase not connected</div>}
+    <FlagBanner user={user} data={data} currentWeek={currentWeek} onGoToDraft={(t)=>setTab(t||"draft")}/>
     {tab==="standings"&&<StandingsTab data={data}/>}
     {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
     {tab==="lineups"&&<LineupsTab data={data} currentWeek={currentWeek}/>}
@@ -633,6 +813,7 @@ export default function App() {
     {tab==="schedule"&&<ScheduleTab data={data}/>}
     {tab==="mulligans"&&<MulligansTab player={user} data={data}/>}
     {tab==="rules"&&<RulesTab/>}
-    {tab==="commissioner"&&user.id==="justin"&&<CommissionerTab data={data} onPostResults={handlePostResults} onSavePicks={handleSavePicksOnly} onResetWeek={handleResetWeek} currentWeek={currentWeek}/>}
+    {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}
+    {tab==="commissioner"&&user.id==="justin"&&<CommissionerTab data={data} onPostResults={handlePostResults} onSavePicks={handleSavePicksOnly} onResetWeek={handleResetWeek} onNotifyDraft={handleStartDraftNotify} currentWeek={currentWeek}/>}
   </div>);
 }
