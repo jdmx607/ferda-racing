@@ -61,6 +61,12 @@ export const HISTORICAL_PICKS = {
     monroe:[{driver:"#20 Christopher Bell"},{driver:"#22 Joey Logano"},{driver:"#23 Bubba Wallace"},{driver:"#6 Brad Keselowski"},{driver:"#34 Todd Gilliland"}],
     rich:[{driver:"#5 Kyle Larson"},{driver:"#24 William Byron"},{driver:"#77 Carson Hocevar"},{driver:"#1 Ross Chastain"},{driver:"#97 Shane Van Gisbergen"}],
   },
+  w11: {
+    justin:[{driver:"#11 Denny Hamlin"},{driver:"#5 Kyle Larson"},{driver:"#77 Carson Hocevar"},{driver:"#17 Chris Buescher"},{driver:"#48 Alex Bowman"}],
+    bigmonroe:[{driver:"#45 Tyler Reddick"},{driver:"#16 AJ Allmendinger",mulligan:true},{driver:"#19 Chase Briscoe"},{driver:"#60 Ryan Preece"},{driver:"#71 Michael McDowell"}],
+    monroe:[{driver:"#24 William Byron"},{driver:"#22 Joey Logano"},{driver:"#23 Bubba Wallace"},{driver:"#6 Brad Keselowski"},{driver:"#8 Kyle Busch",mulligan:true}],
+    rich:[{driver:"#12 Ryan Blaney"},{driver:"#9 Chase Elliott"},{driver:"#54 Ty Gibbs"},{driver:"#1 Ross Chastain"},{driver:"#2 Austin Cindric"}],
+  },
 };
 
 export const HISTORICAL_RESULTS = {
@@ -311,5 +317,41 @@ export const HISTORICAL_RESULTS = {
     {name:"#22 Joey Logano",finish:39,qualPos:25,stage1:3,stage2:0,lapsLed:3,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
     {name:"#5 Kyle Larson",finish:40,qualPos:2,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
     {name:"#88 Connor Zilisch",finish:26,qualPos:32,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+  ]},
+  w11: { drivers: [
+    // TEXAS - Intermediate x0.5
+    // S1 top 10: 43,77,47,54,19,8,16,9,24,11
+    // S2 top 10: 9,45,6,11,60,7,17,35,77,48
+    // FL: #9 Elliott | Pole: #77 Hocevar (start 1) | MostLed: #9 Elliott (87)
+    {name:"#9 Chase Elliott",finish:1,qualPos:14,stage1:8,stage2:1,lapsLed:87,pole:false,stageWin1:false,stageWin2:true,fastestLap:true,mostLapsLed:true,dnf:false,dq:false},
+    {name:"#11 Denny Hamlin",finish:2,qualPos:4,stage1:10,stage2:4,lapsLed:21,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#48 Alex Bowman",finish:3,qualPos:9,stage1:0,stage2:10,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#45 Tyler Reddick",finish:4,qualPos:8,stage1:0,stage2:2,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#17 Chris Buescher",finish:5,qualPos:3,stage1:0,stage2:7,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#7 Daniel Suarez",finish:6,qualPos:2,stage1:0,stage2:6,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#77 Carson Hocevar",finish:7,qualPos:1,stage1:2,stage2:9,lapsLed:40,pole:true,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#24 William Byron",finish:8,qualPos:15,stage1:9,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#23 Bubba Wallace",finish:9,qualPos:37,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#12 Ryan Blaney",finish:10,qualPos:31,stage1:0,stage2:0,lapsLed:5,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#35 Riley Herbst",finish:11,qualPos:18,stage1:0,stage2:8,lapsLed:1,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#43 Erik Jones",finish:12,qualPos:21,stage1:1,stage2:0,lapsLed:13,pole:false,stageWin1:true,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#6 Brad Keselowski",finish:13,qualPos:25,stage1:0,stage2:3,lapsLed:4,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#60 Ryan Preece",finish:14,qualPos:20,stage1:0,stage2:5,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#2 Austin Cindric",finish:15,qualPos:13,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#88 Connor Zilisch",finish:16,qualPos:12,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#97 Shane Van Gisbergen",finish:17,qualPos:30,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#3 Austin Dillon",finish:18,qualPos:38,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#47 Ricky Stenhouse Jr",finish:19,qualPos:22,stage1:3,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#8 Kyle Busch",finish:20,qualPos:6,stage1:6,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#42 John Hunter Nemechek",finish:21,qualPos:33,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#19 Chase Briscoe",finish:23,qualPos:5,stage1:5,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#16 AJ Allmendinger",finish:25,qualPos:26,stage1:7,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#1 Ross Chastain",finish:26,qualPos:16,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#71 Michael McDowell",finish:27,qualPos:19,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#21 Josh Berry",finish:29,qualPos:24,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#5 Kyle Larson",finish:34,qualPos:11,stage1:0,stage2:0,lapsLed:3,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#54 Ty Gibbs",finish:36,qualPos:10,stage1:4,stage2:0,lapsLed:1,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#22 Joey Logano",finish:37,qualPos:23,stage1:0,stage2:0,lapsLed:0,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+    {name:"#20 Christopher Bell",finish:38,qualPos:7,stage1:0,stage2:0,lapsLed:22,pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true,dq:false},
   ]},
 };
