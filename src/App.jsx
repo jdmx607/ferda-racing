@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { loadLeagueData, saveLeagueData, subscribeToLeagueData, loadLocalBackup, isFirebaseReady } from "./firebase";
 import { HISTORICAL_PICKS, HISTORICAL_RESULTS } from "./historicalData";
-import { sendDraftEmail, isEmailConfigured } from "./email";
+import { sendDraftEmail, isEmailConfigured, DEFAULT_EMAILS } from "./email";
 
 const PLAYERS = [
   { id: "justin", name: "Justin", password: "ferda1" },
@@ -129,6 +129,8 @@ function calcDriverScore(driver, trackType, isMulligan) {
 function scoreWeekFull(picks, raceResult, week, mullData) {
   const ty = SCHEDULE.find(s => s.w === week)?.ty || "intermediate";
   const ps = {};
+  // Find the race winner (P1)
+  const raceWinner = raceResult.drivers?.find(d => d.finish === 1)?.name;
   PLAYERS.forEach(p => {
     const allPicks = picks[p.id] || [];
     const activePicks = allPicks.filter(pk => !pk.garage);
@@ -138,19 +140,28 @@ function scoreWeekFull(picks, raceResult, week, mullData) {
       finalPicks = finalPicks.filter(pk => pk.driver !== garagePick.garageReplace);
       finalPicks.push({driver:garagePick.driver, mulligan:false, garageUsed:true});
     }
-    let wt=0, wb=0; const ds=[];
+    let wt=0, wb=0; const ds=[]; let hadWinner=false; let topDriverScore=0;
     finalPicks.forEach(pick => {
       const r = raceResult.drivers?.find(d => d.name === pick.driver); if (!r) return;
       const im = pick.mulligan || (!pick.garageUsed && mullData?.[p.id]?.some(m => m.week === week && m.driver === pick.driver));
       const sc = calcDriverScore(r, ty, im);
       wt += sc.total; wb += sc.bonusPoints;
+      if (pick.driver === raceWinner && !im) hadWinner = true;
+      if (sc.total > topDriverScore) topDriverScore = sc.total;
       ds.push({driver:pick.driver, total:sc.total, breakdown:sc.breakdown, bonusPoints:sc.bonusPoints, isMulligan:!!im, isGarage:!!pick.garageUsed});
     });
-    ps[p.id] = { total:Math.round(wt*100)/100, bonusPoints:Math.round(wb*100)/100, drivers:ds, weeklyWin:false };
+    ps[p.id] = { total:Math.round(wt*100)/100, bonusPoints:Math.round(wb*100)/100, drivers:ds, weeklyWin:false, hadWinner, topDriverScore:Math.round(topDriverScore*100)/100 };
   });
-  let mx=-Infinity, wn=null;
-  Object.entries(ps).forEach(([id,s]) => { if(s.total>mx){mx=s.total;wn=id;} });
-  if (wn) ps[wn].weeklyWin = true;
+  // Determine weekly winner with tiebreakers:
+  // 1. Highest total
+  // 2. If tied: had the race winner
+  // 3. If still tied: highest single-driver score
+  const ranked = Object.entries(ps).sort((a, b) => {
+    if (b[1].total !== a[1].total) return b[1].total - a[1].total;
+    if (b[1].hadWinner !== a[1].hadWinner) return (b[1].hadWinner ? 1 : 0) - (a[1].hadWinner ? 1 : 0);
+    return b[1].topDriverScore - a[1].topDriverScore;
+  });
+  if (ranked.length > 0) ps[ranked[0][0]].weeklyWin = true;
   return ps;
 }
 
@@ -606,6 +617,8 @@ function SettingsTab({player,data,onSaveSettings}) {
   const [notifyOnTurn,setNotifyOnTurn]=useState(settings.notifyOnTurn!==false);
   const [saving,setSaving]=useState(false);
   const [msg,setMsg]=useState("");
+  const defaultEmail=DEFAULT_EMAILS[player.id];
+  const activeEmail=email.trim()||defaultEmail;
 
   const save=async()=>{
     setSaving(true);setMsg("");
@@ -621,11 +634,11 @@ function SettingsTab({player,data,onSaveSettings}) {
 
     <div style={{background:C.card,borderRadius:12,padding:20,border:"1px solid "+C.border,marginBottom:16}}>
       <div style={{color:C.accent,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8,fontWeight:700}}>Email Address</div>
-      <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" style={{
+      <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder={defaultEmail||"you@example.com"} style={{
         width:"100%",padding:"12px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,
         fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"
       }}/>
-      <div style={{color:C.dim,fontSize:11,marginTop:6}}>Where draft notifications will be sent</div>
+      <div style={{color:C.dim,fontSize:11,marginTop:6}}>{defaultEmail?<>Default: <span style={{color:C.green}}>{defaultEmail}</span> (leave blank to use)</>:"Where draft notifications will be sent"}</div>
     </div>
 
     <div style={{background:C.card,borderRadius:12,padding:20,border:"1px solid "+C.border,marginBottom:16}}>
@@ -787,6 +800,11 @@ export default function App() {
   const handleDraftPick=async(week,pid,driver,pickNum)=>{
     const d=JSON.parse(JSON.stringify(data)); if(!d.drafts)d.drafts={}; const key="w"+week;
     if(!d.drafts[key])d.drafts[key]=[]; d.drafts[key].push({pid,driver,pickNum});
+    // Also sync to data.picks so Mulligan tab can see drivers immediately
+    if(!d.picks)d.picks={};
+    if(!d.picks[key])d.picks[key]={};
+    if(!d.picks[key][pid])d.picks[key][pid]=[];
+    d.picks[key][pid].push({driver, mulligan:false});
     setData(d); await saveLeagueData(d);
     // Notify the next picker (fire-and-forget — won't block UI)
     notifyNextPicker(week, d).catch(e => console.error("Email notify failed:", e));
@@ -796,6 +814,11 @@ export default function App() {
     const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
     if(!d.drafts?.[key]?.length) return;
     const removed = d.drafts[key].pop();
+    // Also remove from data.picks
+    if(d.picks?.[key]?.[removed.pid]){
+      const idx = d.picks[key][removed.pid].findIndex(pk=>pk.driver===removed.driver);
+      if(idx>=0) d.picks[key][removed.pid].splice(idx,1);
+    }
     setData(d); await saveLeagueData(d);
     return removed;
   };
@@ -871,13 +894,16 @@ export default function App() {
     const nextPickIdx = draftState.length;
     if (nextPickIdx >= snakeSequence.length) return; // Draft complete
     const nextPicker = snakeSequence[nextPickIdx];
-    const settings = dataAfterPick.playerSettings?.[nextPicker.pid];
-    if (!settings?.email || settings.notifyOnTurn === false) return;
+    const settings = dataAfterPick.playerSettings?.[nextPicker.pid] || {};
+    // Use Settings email if provided, else fall back to hardcoded default
+    const email = settings.email || DEFAULT_EMAILS[nextPicker.pid];
+    if (!email) return;
+    if (settings.notifyOnTurn === false) return;
     // Don't email yourself when you just picked
     if (user && nextPicker.pid === user.id && nextPickIdx > 0) return;
     const raceInfo = SCHEDULE.find(s => s.w === week);
     sendDraftEmail({
-      toEmail: settings.email,
+      toEmail: email,
       name: PNAME[nextPicker.pid],
       week,
       race: raceInfo?.r || "the next race",

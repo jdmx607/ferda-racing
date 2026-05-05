@@ -13,6 +13,15 @@ const EMAILJS_CONFIG = {
 export const APP_URL = "https://ferda-racing.vercel.app";
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+// Default hardcoded emails per player. These are used as fallback if no email
+// is set in the player's Settings. Settings UI can still override per-player.
+export const DEFAULT_EMAILS = {
+  justin: "jdmx607@gmail.com",
+  bigmonroe: "Extremebmxer923@gmail.com",
+  monroe: "Extremebmxer923@gmail.com",
+  rich: "Rreynolds0129@gmail.com",
+};
+
 function isConfigured() {
   return EMAILJS_CONFIG.serviceId !== "YOUR_SERVICE_ID"
     && EMAILJS_CONFIG.templateId !== "YOUR_TEMPLATE_ID"
