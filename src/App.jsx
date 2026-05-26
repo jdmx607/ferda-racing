@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { loadLeagueData, saveLeagueData, subscribeToLeagueData, loadLocalBackup, isFirebaseReady } from "./firebase";
 import { HISTORICAL_PICKS, HISTORICAL_RESULTS } from "./historicalData";
 import { sendDraftEmail, isEmailConfigured, DEFAULT_EMAILS } from "./email";
@@ -18,6 +18,9 @@ const PICKS_PER_WEEK = 6;
 const MAX_MULLIGANS = 10;
 const PLAYOFF_START_WEEK = 27;
 const GARAGE_PICK_ENABLED = false;
+// Drivers frozen in memoriam — cannot be picked, shown with tribute marker
+const MEMORIAL_DRIVERS = { "#8 Kyle Busch": { years: "1985 – 2026" } };
+
 const SCHEDULE = [
   {w:1,t:"Daytona",ty:"superspeedway",d:"Feb 15",r:"Daytona 500"},{w:2,t:"Atlanta",ty:"superspeedway",d:"Feb 22",r:"Autotrader 400"},
   {w:3,t:"COTA",ty:"road_course",d:"Mar 1",r:"DuraMAX Grand Prix"},{w:4,t:"Phoenix",ty:"short_track",d:"Mar 8",r:"Straight Talk 500"},
@@ -52,6 +55,7 @@ const DRIVERS = [
   "#44 JJ Yeley","#50 Burt Myers","#62 Anthony Alfredo","#66 Various",
   "#67 Corey Heim","#78 BJ McLeod","#84 Jimmie Johnson","#99 Corey LaJoie",
 ];
+function isMemorial(driver){ return !!MEMORIAL_DRIVERS[driver]; }
 
 function getDraftOrder(data, currentWeek) {
   const prev = data.results?.["w" + (currentWeek - 1)];
@@ -68,7 +72,7 @@ function buildSnakeOrder(order) {
 
 function buildInitialData() {
   const results = {}, picks = {};
-  for (let w = 1; w <= 11; w++) {
+  for (let w = 1; w <= 13; w++) {
     const key = "w" + w;
     const rawResult = HISTORICAL_RESULTS[key];
     const weekPicks = HISTORICAL_PICKS[key];
@@ -79,8 +83,9 @@ function buildInitialData() {
   return scoreAllWeeks({
     results, picks, drafts: {},
     mulligans: { justin:[], bigmonroe:[], monroe:[], rich:[] },
+    playerSettings: {},
     meta: { standings:{justin:0,bigmonroe:0,monroe:0,rich:0}, playoffPts:{justin:0,bigmonroe:0,monroe:0,rich:0},
-      mulligansUsed:{justin:0,bigmonroe:0,monroe:1,rich:0}, lastScoredWeek:11 },
+      mulligansUsed:{justin:0,bigmonroe:0,monroe:0,rich:0}, lastScoredWeek:13 },
   });
 }
 
@@ -102,11 +107,11 @@ function scoreAllWeeks(data) {
   });
   const mc={justin:0,bigmonroe:0,monroe:0,rich:0};
   Object.entries(d.picks||{}).forEach(([,wp]) => { Object.entries(wp).forEach(([pid,pks]) => { (pks||[]).forEach(pk => { if(pk.mulligan) mc[pid]++; }); }); });
-  d.meta = { standings:fs, playoffPts:fp, mulligansUsed:mc, lastScoredWeek:last };
+  d.meta = { ...d.meta, standings:fs, playoffPts:fp, mulligansUsed:mc, lastScoredWeek:last };
   return d;
 }
 
-function calcDriverScore(driver, trackType, isMulligan) {
+function calcDriverScore(driver, trackType, isMulligan, threeStages) {
   let score = 0; const bd = []; const mult = TRACK_MULTS[trackType] || 0.5;
   if (driver.dnf) { return driver.dq ? {total:-5,breakdown:[{label:"DQ",pts:-5}],bonusPoints:0} : {total:0,breakdown:[{label:"DNF",pts:0}],bonusPoints:0}; }
   const fp = FINISH_POINTS[driver.finish] || 1; score += fp; bd.push({label:"P"+driver.finish,pts:fp});
@@ -114,22 +119,27 @@ function calcDriverScore(driver, trackType, isMulligan) {
   if (driver.finish <= 5) { score+=2; bd.push({label:"Top 5",pts:2}); } else if (driver.finish <= 10) { score+=1; bd.push({label:"Top 10",pts:1}); }
   if (driver.stage1 > 0 && driver.stage1 <= 10) { const sp=STAGE_POINTS[driver.stage1]; score+=sp; bd.push({label:"S1:P"+driver.stage1,pts:sp}); }
   if (driver.stage2 > 0 && driver.stage2 <= 10) { const sp=STAGE_POINTS[driver.stage2]; score+=sp; bd.push({label:"S2:P"+driver.stage2,pts:sp}); }
+  if (driver.stage3 > 0 && driver.stage3 <= 10) { const sp=STAGE_POINTS[driver.stage3]; score+=sp; bd.push({label:"S3:P"+driver.stage3,pts:sp}); }
   if (driver.lapsLed > 0) { const lp=Math.round(driver.lapsLed*mult*10)/10; score+=lp; bd.push({label:driver.lapsLed+"laps*"+mult,pts:lp}); score+=0.5; bd.push({label:"Led a lap",pts:0.5}); }
   if (driver.qualPos && driver.finish) { let net=driver.qualPos-driver.finish; net=Math.max(-10,Math.min(10,net)); if(net!==0){score+=net;bd.push({label:"Net Q"+driver.qualPos+">P"+driver.finish,pts:net});} }
   let bp = 0;
   if (driver.pole) { score+=5; bp+=5; bd.push({label:"Pole",pts:5}); }
   if (driver.stageWin1) { score+=2.5; bp+=2.5; bd.push({label:"S1 Win",pts:2.5}); }
   if (driver.stageWin2) { score+=2.5; bp+=2.5; bd.push({label:"S2 Win",pts:2.5}); }
+  if (driver.stageWin3) { score+=2.5; bp+=2.5; bd.push({label:"S3 Win",pts:2.5}); }
   if (driver.fastestLap) { score+=1; bp+=1; bd.push({label:"Fast Lap",pts:1}); }
   if (driver.mostLapsLed) { score+=5; bp+=5; bd.push({label:"Most Led",pts:5}); }
-  if (driver.pole && driver.stageWin1 && driver.stageWin2) { score+=12.5; bp+=12.5; bd.push({label:"SWEEP!",pts:12.5}); }
+  const sweep = threeStages
+    ? (driver.pole && driver.stageWin1 && driver.stageWin2 && driver.stageWin3)
+    : (driver.pole && driver.stageWin1 && driver.stageWin2);
+  if (sweep) { score+=12.5; bp+=12.5; bd.push({label:"SWEEP!",pts:12.5}); }
   return { total:Math.round(score*100)/100, breakdown:bd, bonusPoints:bp };
 }
 
 function scoreWeekFull(picks, raceResult, week, mullData) {
   const ty = SCHEDULE.find(s => s.w === week)?.ty || "intermediate";
+  const threeStages = !!raceResult.threeStages;
   const ps = {};
-  // Find the race winner (P1)
   const raceWinner = raceResult.drivers?.find(d => d.finish === 1)?.name;
   PLAYERS.forEach(p => {
     const allPicks = picks[p.id] || [];
@@ -142,9 +152,10 @@ function scoreWeekFull(picks, raceResult, week, mullData) {
     }
     let wt=0, wb=0; const ds=[]; let hadWinner=false; let topDriverScore=0;
     finalPicks.forEach(pick => {
-      const r = raceResult.drivers?.find(d => d.name === pick.driver); if (!r) return;
+      const r = raceResult.drivers?.find(d => d.name === pick.driver);
+      if (!r) { ds.push({driver:pick.driver, total:0, breakdown:[{label:"Did not race",pts:0}], bonusPoints:0, isMulligan:!!pick.mulligan, dnr:true}); return; }
       const im = pick.mulligan || (!pick.garageUsed && mullData?.[p.id]?.some(m => m.week === week && m.driver === pick.driver));
-      const sc = calcDriverScore(r, ty, im);
+      const sc = calcDriverScore(r, ty, im, threeStages);
       wt += sc.total; wb += sc.bonusPoints;
       if (pick.driver === raceWinner && !im) hadWinner = true;
       if (sc.total > topDriverScore) topDriverScore = sc.total;
@@ -152,10 +163,7 @@ function scoreWeekFull(picks, raceResult, week, mullData) {
     });
     ps[p.id] = { total:Math.round(wt*100)/100, bonusPoints:Math.round(wb*100)/100, drivers:ds, weeklyWin:false, hadWinner, topDriverScore:Math.round(topDriverScore*100)/100 };
   });
-  // Determine weekly winner with tiebreakers:
-  // 1. Highest total
-  // 2. If tied: had the race winner
-  // 3. If still tied: highest single-driver score
+  // Tiebreakers: 1) highest total, 2) had race winner, 3) highest single-driver score
   const ranked = Object.entries(ps).sort((a, b) => {
     if (b[1].total !== a[1].total) return b[1].total - a[1].total;
     if (b[1].hadWinner !== a[1].hadWinner) return (b[1].hadWinner ? 1 : 0) - (a[1].hadWinner ? 1 : 0);
@@ -166,14 +174,13 @@ function scoreWeekFull(picks, raceResult, week, mullData) {
 }
 
 const C = {bg:"#0a0e17",card:"#111827",accent:"#f59e0b",green:"#10b981",red:"#ef4444",blue:"#3b82f6",purple:"#8b5cf6",text:"#f1f5f9",dim:"#94a3b8",border:"#1e293b",input:"#0f172a"};
-// Player colors: {bg, fg} for badges/cards
 const PClr = {
   justin:{bg:"#000000",fg:"#CFC493"},
   bigmonroe:{bg:"#DC0019",fg:"#FFFFFF"},
   monroe:{bg:"#046A38",fg:"#91999F"},
   rich:{bg:"#B3995D",fg:"#AA0000"},
 };
-const PC = {justin:PClr.justin.fg,bigmonroe:PClr.bigmonroe.fg,monroe:PClr.monroe.fg,rich:PClr.rich.fg};
+const PC = {justin:PClr.justin.fg,bigmonroe:"#ef4444",monroe:PClr.monroe.fg,rich:PClr.rich.fg};
 const TTC = {superspeedway:C.blue,short_track:C.red,intermediate:C.accent,road_course:C.green};
 const TTL = {superspeedway:"SS",short_track:"ST",intermediate:"INT",road_course:"RC"};
 
@@ -188,82 +195,52 @@ function FerdaLogo({size="large"}) {
     <div style={{display:"flex",gap:gap,transform:"skewX(-12deg)"}}>
       {stripeColors.map((c,i)=>(<div key={i} style={{width:sw,height:sh,background:c,borderRadius:1}}/>))}
     </div>
-    <span style={{fontFamily:"'Oswald',sans-serif",fontSize:fs,fontWeight:900,fontStyle:"italic",color:"#ffffff",letterSpacing:lg?4:2,lineHeight:1,transform:"skewX(-6deg)"
-    }}>FERDA</span>
+    <span style={{fontFamily:"'Oswald',sans-serif",fontSize:fs,fontWeight:900,fontStyle:"italic",color:"#ffffff",letterSpacing:lg?4:2,lineHeight:1,transform:"skewX(-6deg)"}}>FERDA</span>
   </div>);
 }
 
-function FlagBanner({user,data,currentWeek,onGoToDraft}) {
-  if(!user||!data) return null;
+// Subtle stylized #8 memorial backdrop for Kyle Busch
+function MemorialBackdrop() {
+  return (<div aria-hidden style={{position:"fixed",inset:0,zIndex:0,pointerEvents:"none",overflow:"hidden",display:"flex",alignItems:"center",justifyContent:"center"}}>
+    <svg viewBox="0 0 200 260" style={{width:"min(70vw,520px)",opacity:0.05}} xmlns="http://www.w3.org/2000/svg">
+      <text x="100" y="205" textAnchor="middle" fontFamily="'Oswald',sans-serif" fontSize="240" fontWeight="900" fontStyle="italic"
+        fill="none" stroke="#ffffff" strokeWidth="6">8</text>
+    </svg>
+  </div>);
+}
 
-  // Determine the user's draft status
+function FlagBanner({user,data,currentWeek,onGoTo}) {
+  if(!user||!data) return null;
   const draftKey="w"+currentWeek;
   const draftState=data.drafts?.[draftKey]||[];
   const draftOrder=getDraftOrder(data,currentWeek);
   const snakeSequence=buildSnakeOrder(draftOrder);
   const currentPickNum=draftState.length;
   const draftComplete=currentPickNum>=snakeSequence.length;
-  const totalPicks=snakeSequence.length;
-
-  // If picks were entered manually (no draft data but picks exist), show different message
   const savedPicks=data.picks?.[draftKey]||{};
   const hasSavedPicks=Object.values(savedPicks).some(p=>p&&p.length>0);
   const hasScored=!!(data.results?.[draftKey]?.scored);
 
-  // No draft activity yet
   if(draftState.length===0&&!hasSavedPicks&&!hasScored){
-    // Check whose turn it is to start
     const firstUp=snakeSequence[0]?.pid;
-    if(firstUp===user.id){
-      return <Banner flag="green" text={"Your turn to pick first for Week "+currentWeek+"!"} onClick={onGoToDraft}/>;
-    }
+    if(firstUp===user.id) return <Banner flag="green" text={"Your turn to pick first for Week "+currentWeek+"!"} onClick={()=>onGoTo("draft")}/>;
     return null;
   }
-
-  // Race already scored
-  if(hasScored){
-    return <Banner flag="checkered" text={"Week "+currentWeek+" is complete. Results posted."} onClick={()=>onGoToDraft("results")}/>;
-  }
-
-  // Draft complete but race not scored
-  if(draftComplete||(hasSavedPicks&&draftState.length===0)){
-    return <Banner flag="checkered" text={"All picks locked for Week "+currentWeek+". Race day!"} onClick={()=>onGoToDraft("lineups")}/>;
-  }
+  if(hasScored) return <Banner flag="checkered" text={"Week "+currentWeek+" is complete. Results posted."} onClick={()=>onGoTo("results")}/>;
+  if(draftComplete||(hasSavedPicks&&draftState.length===0)) return <Banner flag="checkered" text={"All picks locked for Week "+currentWeek+". Race day!"} onClick={()=>onGoTo("lineups")}/>;
 
   const currentTurn=snakeSequence[currentPickNum];
   const nextTurn=snakeSequence[currentPickNum+1];
   const lastRound=currentTurn?.round===ACTIVE_PICKS;
-
-  if(currentTurn?.pid===user.id){
-    return <Banner flag={lastRound?"white":"green"} text={lastRound?"FINAL ROUND — Your pick!":"Your turn to pick!"} onClick={onGoToDraft}/>;
-  }
-  if(nextTurn?.pid===user.id){
-    return <Banner flag="yellow" text={"You're up next after "+PNAME[currentTurn.pid]}/>;
-  }
+  if(currentTurn?.pid===user.id) return <Banner flag={lastRound?"white":"green"} text={lastRound?"FINAL ROUND — Your pick!":"Your turn to pick!"} onClick={()=>onGoTo("draft")}/>;
+  if(nextTurn?.pid===user.id) return <Banner flag="yellow" text={"You're up next after "+PNAME[currentTurn.pid]}/>;
   return <Banner flag="red" text={"Waiting on "+PNAME[currentTurn.pid]+" to pick"}/>;
 }
-
 function Banner({flag,text,onClick}){
-  const flags={
-    green:{bg:"#10b981",fg:"#000",icon:"🟢"},
-    yellow:{bg:"#fbbf24",fg:"#000",icon:"🟡"},
-    red:{bg:"#dc2626",fg:"#fff",icon:"🔴"},
-    white:{bg:"#f8fafc",fg:"#000",icon:"⚪"},
-    checkered:{bg:"#1f2937",fg:"#fff",icon:"🏁"},
-  };
+  const flags={green:{bg:"#10b981",fg:"#000",icon:"🟢"},yellow:{bg:"#fbbf24",fg:"#000",icon:"🟡"},red:{bg:"#dc2626",fg:"#fff",icon:"🔴"},white:{bg:"#f8fafc",fg:"#000",icon:"⚪"},checkered:{bg:"#1f2937",fg:"#fff",icon:"🏁"}};
   const f=flags[flag];
-  // Animated stripe pattern for checkered flag
-  const checkeredBg = flag==="checkered" ?
-    "repeating-linear-gradient(45deg, #1f2937 0px, #1f2937 10px, #f8fafc 10px, #f8fafc 20px)" : f.bg;
-  return (<div onClick={onClick} style={{
-    background:checkeredBg, color:f.fg, padding:"10px 16px", textAlign:"center",
-    fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:14, letterSpacing:1,
-    textTransform:"uppercase", cursor:onClick?"pointer":"default",
-    display:"flex", alignItems:"center", justifyContent:"center", gap:10,
-    borderBottom:"2px solid rgba(0,0,0,0.3)",
-    textShadow: flag==="checkered"?"0 0 4px rgba(0,0,0,0.8)":"none",
-    animation: flag==="green"?"pulse 2s infinite":"none"
-  }}>
+  const checkeredBg = flag==="checkered" ? "repeating-linear-gradient(45deg, #1f2937 0px, #1f2937 10px, #f8fafc 10px, #f8fafc 20px)" : f.bg;
+  return (<div onClick={onClick} style={{background:checkeredBg,color:f.fg,padding:"10px 16px",textAlign:"center",fontFamily:"'Oswald',sans-serif",fontWeight:700,fontSize:14,letterSpacing:1,textTransform:"uppercase",cursor:onClick?"pointer":"default",display:"flex",alignItems:"center",justifyContent:"center",gap:10,borderBottom:"2px solid rgba(0,0,0,0.3)",position:"relative",zIndex:1,animation:flag==="green"?"pulse 2s infinite":"none"}}>
     <span style={{fontSize:20}}>{f.icon}</span>
     <span style={{background:flag==="checkered"?"rgba(0,0,0,0.6)":"transparent",padding:flag==="checkered"?"4px 10px":0,borderRadius:6}}>{text}</span>
     {onClick&&<span style={{fontSize:11,opacity:0.7,marginLeft:4}}>→</span>}
@@ -275,12 +252,17 @@ function LoginScreen({onLogin}) {
   const go=()=>{const p=PLAYERS.find(x=>x.id===sel);if(p&&pw===p.password)onLogin(p);else setErr("Wrong password");};
   return (<div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,"+C.bg+" 0%,#111 50%,#1a1000 100%)"}}>
     <div style={{background:C.card,borderRadius:16,padding:"40px 32px",width:340,maxWidth:"90vw",border:"1px solid "+C.border,boxShadow:"0 25px 60px rgba(0,0,0,0.5)"}}>
-      <div style={{textAlign:"center",marginBottom:32}}><FerdaLogo size="large"/><div style={{color:C.dim,fontSize:13,letterSpacing:4,marginTop:8,textTransform:"uppercase"}}>Racing League</div></div>
+      <div style={{textAlign:"center",marginBottom:28}}><FerdaLogo size="large"/><div style={{color:C.dim,fontSize:13,letterSpacing:4,marginTop:8,textTransform:"uppercase"}}>Racing League</div></div>
       <div style={{color:C.dim,fontSize:12,marginBottom:8,textTransform:"uppercase",letterSpacing:2}}>Select Player</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:16}}>{PLAYERS.map(p=>(<button key={p.id} onClick={()=>{setSel(p.id);setErr("");}} style={{padding:"10px 0",borderRadius:8,border:"2px solid "+(sel===p.id?PClr[p.id].fg:C.border),background:sel===p.id?PClr[p.id].bg:C.input,color:sel===p.id?PClr[p.id].fg:C.dim,fontFamily:"inherit",fontSize:14,fontWeight:600,cursor:"pointer"}}>{p.name}</button>))}</div>
       {sel&&<><div style={{color:C.dim,fontSize:12,marginBottom:8,textTransform:"uppercase",letterSpacing:2}}>Password</div><input type="password" value={pw} onChange={e=>{setPw(e.target.value);setErr("");}} onKeyDown={e=>e.key==="Enter"&&go()} placeholder="Enter password" style={{width:"100%",padding:"10px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",marginBottom:16}}/></>}
       {err&&<div style={{color:C.red,fontSize:13,marginBottom:12,textAlign:"center"}}>{err}</div>}
       <button onClick={go} disabled={!sel||!pw} style={{width:"100%",padding:"12px 0",borderRadius:8,border:"none",background:sel&&pw?C.accent:C.border,color:sel&&pw?"#000":C.dim,fontFamily:"'Oswald',sans-serif",fontSize:16,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:sel&&pw?"pointer":"default"}}>Enter Garage</button>
+      <div style={{marginTop:24,paddingTop:16,borderTop:"1px solid "+C.border,textAlign:"center"}}>
+        <div style={{color:C.dim,fontSize:11,letterSpacing:1}}>🕊️ In loving memory of</div>
+        <div style={{color:C.text,fontSize:14,fontWeight:700,marginTop:2}}>Kyle Busch · #8</div>
+        <div style={{color:C.dim,fontSize:11,marginTop:1}}>{MEMORIAL_DRIVERS["#8 Kyle Busch"].years}</div>
+      </div>
     </div></div>);
 }
 
@@ -295,7 +277,7 @@ function Nav({player,tab,setTab,onLogout}) {
 
 function StandingsTab({data}) {
   const standings=useMemo(()=>PLAYERS.map(p=>({...p,pts:data.meta.standings[p.id]||0,pp:data.meta.playoffPts[p.id]||0,wins:Object.values(data.results||{}).filter(r=>r.scored?.[p.id]?.weeklyWin).length})).sort((a,b)=>b.pts-a.pts),[data]);
-  return (<div style={{padding:20,maxWidth:900,margin:"0 auto"}}>
+  return (<div style={{padding:20,maxWidth:900,margin:"0 auto",position:"relative",zIndex:1}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Season Standings</h2>
     <div style={{color:C.dim,fontSize:13,marginBottom:20}}>{Object.keys(data.results||{}).length} of 36 races scored</div>
     <div style={{display:"grid",gap:12}}>{standings.map((p,i)=>(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:"16px 20px",border:"2px solid "+(i===0?C.accent:PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88"),display:"flex",alignItems:"center",justifyContent:"space-between"}}>
@@ -310,69 +292,29 @@ function LineupsTab({data,currentWeek}) {
   const draftState=data.drafts?.["w"+week]||[];
   const savedPicks=data.picks?.["w"+week]||{};
   const hasScored=!!(data.results?.["w"+week]?.scored);
-
-  // Build lineups from draft OR from saved picks
-  const lineups={};
-  PLAYERS.forEach(p=>{lineups[p.id]=[];});
-  if(draftState.length>0) {
-    draftState.forEach(d=>{if(lineups[d.pid])lineups[d.pid].push(d.driver);});
-  } else {
-    PLAYERS.forEach(p=>{lineups[p.id]=(savedPicks[p.id]||[]).map(pk=>pk.driver);});
-  }
-
+  const lineups={}; PLAYERS.forEach(p=>{lineups[p.id]=[];});
+  if(draftState.length>0){ draftState.forEach(d=>{if(lineups[d.pid])lineups[d.pid].push(d.driver);}); }
+  else { PLAYERS.forEach(p=>{lineups[p.id]=(savedPicks[p.id]||[]).map(pk=>pk.driver);}); }
   const hasLineups=PLAYERS.some(p=>lineups[p.id].length>0);
   const allComplete=PLAYERS.every(p=>lineups[p.id].length>=ACTIVE_PICKS);
-
-  // Get scored weeks for the week selector
-  const allWeeks = [];
-  for(let w=1;w<=36;w++){
-    const hasDraft=data.drafts?.["w"+w]?.length>0;
-    const hasPicks=data.picks?.["w"+w]&&Object.values(data.picks["w"+w]).some(pk=>pk&&pk.length>0);
-    if(hasDraft||hasPicks||w===currentWeek) allWeeks.push(w);
-  }
-
-  return (<div style={{padding:20,maxWidth:900,margin:"0 auto"}}>
+  const allWeeks=[]; for(let w=1;w<=36;w++){const hd=data.drafts?.["w"+w]?.length>0;const hp=data.picks?.["w"+w]&&Object.values(data.picks["w"+w]).some(pk=>pk&&pk.length>0);if(hd||hp||w===currentWeek)allWeeks.push(w);}
+  return (<div style={{padding:20,maxWidth:900,margin:"0 auto",position:"relative",zIndex:1}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Lineups</h2>
-    <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:16,flexWrap:"wrap"}}>
-      <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
-        {allWeeks.map(w=>(<button key={w} onClick={()=>setWeek(w)} style={{padding:"6px 10px",borderRadius:6,border:"none",fontSize:11,fontWeight:700,cursor:"pointer",background:week===w?C.accent:"rgba(255,255,255,0.05)",color:week===w?"#000":C.dim}}>W{w}</button>))}
-      </div>
-    </div>
-    {weekInfo&&<div style={{color:C.dim,fontSize:14,marginBottom:16}}>
-      {weekInfo.r} <span style={{color:C.dim}}>@ {weekInfo.t}</span> — <span style={{color:TTC[weekInfo.ty],fontWeight:600}}>{TTL[weekInfo.ty]} x{TRACK_MULTS[weekInfo.ty]}</span>
+    <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:16}}>{allWeeks.map(w=>(<button key={w} onClick={()=>setWeek(w)} style={{padding:"6px 10px",borderRadius:6,border:"none",fontSize:11,fontWeight:700,cursor:"pointer",background:week===w?C.accent:"rgba(255,255,255,0.05)",color:week===w?"#000":C.dim}}>W{w}</button>))}</div>
+    {weekInfo&&<div style={{color:C.dim,fontSize:14,marginBottom:16}}>{weekInfo.r} <span style={{color:C.dim}}>@ {weekInfo.t}</span> — <span style={{color:TTC[weekInfo.ty],fontWeight:600}}>{TTL[weekInfo.ty]} x{TRACK_MULTS[weekInfo.ty]}</span>
       {hasScored&&<span style={{color:C.green,marginLeft:8,fontSize:12,fontWeight:600}}>✓ Scored</span>}
       {!hasScored&&allComplete&&<span style={{color:C.accent,marginLeft:8,fontSize:12,fontWeight:600}}>Picks Locked</span>}
       {!hasScored&&!allComplete&&hasLineups&&<span style={{color:C.blue,marginLeft:8,fontSize:12,fontWeight:600}}>Draft In Progress</span>}
     </div>}
-
     {!hasLineups?<div style={{color:C.dim,textAlign:"center",padding:40,fontSize:14}}>No picks yet for Week {week}</div>
     :<div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12}}>
-      {PLAYERS.map(p=>{
-        const picks=lineups[p.id]||[];
-        const mullPicks=(savedPicks[p.id]||[]).filter(pk=>pk.mulligan).map(pk=>pk.driver);
-        return(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:16,border:"2px solid "+(PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88")}}>
-          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
-            <div style={{width:32,height:32,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:14,fontFamily:"'Oswald',sans-serif"}}>{PNAME[p.id][0]}</div>
-            <div>
-              <div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:17,fontFamily:"'Barlow Condensed',sans-serif"}}>{PNAME[p.id]}</div>
-              <div style={{color:PClr[p.id].fg+"88",fontSize:11}}>{picks.length}/{ACTIVE_PICKS} drivers</div>
-            </div>
-          </div>
-          <div style={{display:"flex",flexDirection:"column",gap:4}}>
-            {picks.length===0?<div style={{color:PClr[p.id].fg+"55",fontSize:12,fontStyle:"italic"}}>Waiting to pick...</div>
-            :picks.map((driver,i)=>{
-              const isMull=mullPicks.includes(driver);
-              return(<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",
-                background:PClr[p.id].bg==="#FFFFFF"?"#f0f0f0":PClr[p.id].bg==="#000000"?"#1a1a1a":"rgba(255,255,255,0.08)",
-                borderRadius:8,border:"1px solid "+(PClr[p.id].bg==="#FFFFFF"?"#ddd":PClr[p.id].fg+"22")}}>
-                <span style={{fontSize:11,color:PClr[p.id].fg+"88",fontWeight:700,width:22}}>R{i+1}</span>
-                <span style={{fontSize:13,color:PClr[p.id].fg,fontWeight:600,flex:1}}>{driver}</span>
-                {isMull&&<span style={{fontSize:10,color:C.accent,fontWeight:700}}>🔄 M</span>}
-              </div>);
-            })}
-          </div>
-        </div>);
-      })}
+      {PLAYERS.map(p=>{const picks=lineups[p.id]||[];const mullPicks=(savedPicks[p.id]||[]).filter(pk=>pk.mulligan).map(pk=>pk.driver);
+      return(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:16,border:"2px solid "+(PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88")}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}><div style={{width:32,height:32,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:14,fontFamily:"'Oswald',sans-serif"}}>{PNAME[p.id][0]}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:17,fontFamily:"'Barlow Condensed',sans-serif"}}>{PNAME[p.id]}</div><div style={{color:PClr[p.id].fg+"88",fontSize:11}}>{picks.length}/{ACTIVE_PICKS} drivers</div></div></div>
+        <div style={{display:"flex",flexDirection:"column",gap:4}}>{picks.length===0?<div style={{color:PClr[p.id].fg+"55",fontSize:12,fontStyle:"italic"}}>Waiting to pick...</div>
+          :picks.map((driver,i)=>{const isMull=mullPicks.includes(driver);return(<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",background:PClr[p.id].bg==="#FFFFFF"?"#f0f0f0":"rgba(255,255,255,0.1)",borderRadius:8,border:"1px solid "+PClr[p.id].fg+"22"}}><span style={{fontSize:11,color:PClr[p.id].fg+"88",fontWeight:700,width:22}}>R{i+1}</span><span style={{fontSize:13,color:PClr[p.id].fg,fontWeight:600,flex:1}}>{driver}{isMemorial(driver)?" 🕊️":""}</span>{isMull&&<span style={{fontSize:10,color:"#fff",fontWeight:700}}>🔄 M</span>}</div>);})}
+        </div>
+      </div>);})}
     </div>}
   </div>);
 }
@@ -392,34 +334,32 @@ function DraftTab({player,data,onDraftPick,onUndoDraft,currentWeek}) {
   const takenDrivers=new Set(draftState.map(d=>d.driver));
   const available=DRIVERS.filter(d=>!takenDrivers.has(d)&&d.toLowerCase().includes(search.toLowerCase()));
   const playerPicks={}; PLAYERS.forEach(p=>{playerPicks[p.id]=[];}); draftState.forEach(d=>{if(playerPicks[d.pid])playerPicks[d.pid].push(d.driver);});
-
   const handlePick=(driver)=>{
     if(!isMyTurn||draftComplete)return;
+    if(isMemorial(driver))return;
     if(!window.confirm("Lock in "+driver+"?"))return;
-    onDraftPick(currentWeek,player.id,driver,currentPickNum);
-    setSearch("");
+    onDraftPick(currentWeek,player.id,driver,currentPickNum); setSearch("");
   };
-
-  return (<div style={{padding:20,maxWidth:800,margin:"0 auto"}}>
+  return (<div style={{padding:20,maxWidth:800,margin:"0 auto",position:"relative",zIndex:1}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Week {currentWeek} Draft</h2>
     {weekInfo&&<div style={{color:C.dim,fontSize:14,marginBottom:12}}>{weekInfo.r} — {weekInfo.t} — <span style={{color:TTC[weekInfo.ty],fontWeight:600}}>{TTL[weekInfo.ty]} x{TRACK_MULTS[weekInfo.ty]}</span></div>}
     <div style={{background:C.card,borderRadius:10,padding:14,marginBottom:16,border:"1px solid "+C.border}}>
       <div style={{color:C.dim,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>Draft Order (last week's loser picks first)</div>
-      <div style={{display:"flex",gap:8}}>{draftOrder.map((pid,i)=>(<div key={pid} style={{flex:1,textAlign:"center",padding:"8px 4px",borderRadius:8,background:currentTurn?.pid===pid?PC[pid]+"33":C.input,border:"1px solid "+(currentTurn?.pid===pid?PC[pid]:C.border)}}><div style={{fontSize:10,color:C.dim}}>#{i+1}</div><div style={{fontSize:14,fontWeight:700,color:PC[pid]}}>{PNAME[pid]}</div></div>))}</div>
+      <div style={{display:"flex",gap:8}}>{draftOrder.map((pid,i)=>(<div key={pid} style={{flex:1,textAlign:"center",padding:"8px 4px",borderRadius:8,background:currentTurn?.pid===pid?PClr[pid].bg:C.input,border:"1px solid "+(currentTurn?.pid===pid?PClr[pid].fg:C.border)}}><div style={{fontSize:10,color:currentTurn?.pid===pid?PClr[pid].fg+"99":C.dim}}>#{i+1}</div><div style={{fontSize:14,fontWeight:700,color:currentTurn?.pid===pid?PClr[pid].fg:PC[pid]}}>{PNAME[pid]}</div></div>))}</div>
     </div>
     {!draftComplete?(<div style={{background:isMyTurn?C.green+"22":C.card,borderRadius:10,padding:14,marginBottom:16,border:"1px solid "+(isMyTurn?C.green:C.border),textAlign:"center"}}>
       <div style={{fontSize:11,color:C.dim,textTransform:"uppercase",letterSpacing:2}}>Pick {currentPickNum+1} of {snakeSequence.length} · Round {currentTurn?.round}</div>
       <div style={{fontSize:20,fontWeight:700,color:isMyTurn?C.green:PC[currentTurn?.pid],marginTop:4}}>{isMyTurn?"YOUR PICK!":PNAME[currentTurn?.pid]+"'s Turn"}</div>
       {!isMyTurn&&<div style={{fontSize:12,color:C.dim,marginTop:4}}>Waiting for {PNAME[currentTurn?.pid]}...</div>}
     </div>):(<div style={{background:C.accent+"22",borderRadius:10,padding:14,marginBottom:16,border:"1px solid "+C.accent+"44",textAlign:"center"}}><div style={{fontSize:18,fontWeight:700,color:C.accent}}>Draft Complete!</div><div style={{fontSize:12,color:C.dim,marginTop:4}}>All picks locked for Week {currentWeek}</div></div>)}
-    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16}}>{PLAYERS.map(p=>(<div key={p.id} style={{background:C.card,borderRadius:10,padding:10,border:"1px solid "+C.border}}><div style={{color:PC[p.id],fontWeight:700,fontSize:13,marginBottom:8,textAlign:"center"}}>{PNAME[p.id]}</div>
-      {Array.from({length:GARAGE_PICK_ENABLED?PICKS_PER_WEEK:ACTIVE_PICKS}).map((_,i)=>{const driver=playerPicks[p.id]?.[i];const isG=GARAGE_PICK_ENABLED&&i===ACTIVE_PICKS;return(<div key={i} style={{background:driver?(isG?C.purple+"22":C.input):C.bg,borderRadius:6,padding:"6px 8px",marginBottom:4,border:"1px solid "+(driver?(isG?C.purple+"55":C.border):"rgba(255,255,255,0.03)"),minHeight:28,display:"flex",alignItems:"center"}}><span style={{fontSize:10,color:isG?C.purple:C.dim,marginRight:6,fontWeight:700}}>{isG?"G":"R"+(i+1)}</span><span style={{fontSize:11,color:driver?C.text:C.dim+"44"}}>{driver||"—"}</span></div>);})}
+    <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginBottom:16}}>{PLAYERS.map(p=>(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:10,padding:10,border:"1px solid "+(PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg)}}><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:13,marginBottom:8,textAlign:"center"}}>{PNAME[p.id]}</div>
+      {Array.from({length:ACTIVE_PICKS}).map((_,i)=>{const driver=playerPicks[p.id]?.[i];return(<div key={i} style={{background:driver?(PClr[p.id].bg==="#FFFFFF"?"#f0f0f0":"rgba(255,255,255,0.12)"):"rgba(0,0,0,0.15)",borderRadius:6,padding:"6px 8px",marginBottom:4,minHeight:28,display:"flex",alignItems:"center"}}><span style={{fontSize:10,color:PClr[p.id].fg+"99",marginRight:6,fontWeight:700}}>R{i+1}</span><span style={{fontSize:11,color:driver?PClr[p.id].fg:PClr[p.id].fg+"44"}}>{driver||"—"}</span></div>);})}
     </div>))}</div>
     {isMyTurn&&!draftComplete&&<><div style={{color:C.dim,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>Select a Driver</div>
       <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search drivers..." style={{width:"100%",padding:"10px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:14,fontFamily:"inherit",outline:"none",marginBottom:8,boxSizing:"border-box"}}/>
-      <div style={{maxHeight:300,overflowY:"auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>{available.map(d=>(<button key={d} onClick={()=>handlePick(d)} style={{textAlign:"left",padding:"10px 12px",borderRadius:8,background:C.card,border:"1px solid "+C.border,color:C.text,fontSize:13,cursor:"pointer",fontFamily:"inherit"}}>{d}</button>))}</div></>}
+      <div style={{maxHeight:300,overflowY:"auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>{available.map(d=>{const mem=isMemorial(d);return(<button key={d} onClick={()=>handlePick(d)} disabled={mem} style={{textAlign:"left",padding:"10px 12px",borderRadius:8,background:mem?C.card+"88":C.card,border:"1px solid "+(mem?C.accent+"33":C.border),color:mem?C.dim:C.text,fontSize:13,cursor:mem?"not-allowed":"pointer",fontFamily:"inherit",display:"flex",justifyContent:"space-between",alignItems:"center"}}>{d}{mem&&<span style={{fontSize:10,color:C.accent}}>🕊️ Retired</span>}</button>);})}</div></>}
     {draftState.length>0&&<div style={{marginTop:16}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><div style={{color:C.dim,fontSize:11,textTransform:"uppercase",letterSpacing:2}}>Pick Log</div>
-      {player.id==="justin"&&draftState.length>0&&!draftComplete&&<button onClick={async()=>{if(!window.confirm("Undo last pick by "+PNAME[draftState[draftState.length-1].pid]+" ("+draftState[draftState.length-1].driver+")?"))return;const r=await onUndoDraft(currentWeek);if(r)setUndoMsg("Undid "+PNAME[r.pid]+"'s pick: "+r.driver);setTimeout(()=>setUndoMsg(""),3000);}} style={{padding:"5px 12px",borderRadius:6,border:"1px solid "+C.red+"66",background:C.red+"11",color:C.red,fontSize:11,cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>Undo Last Pick</button>}
+      {player.id==="justin"&&!draftComplete&&<button onClick={async()=>{const last=draftState[draftState.length-1];if(!window.confirm("Undo last pick by "+PNAME[last.pid]+" ("+last.driver+")?"))return;const r=await onUndoDraft(currentWeek);if(r)setUndoMsg("Undid "+PNAME[r.pid]+"'s pick: "+r.driver);setTimeout(()=>setUndoMsg(""),3000);}} style={{padding:"5px 12px",borderRadius:6,border:"1px solid "+C.red+"66",background:C.red+"11",color:C.red,fontSize:11,cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>Undo Last Pick</button>}
     </div>{undoMsg&&<div style={{color:C.accent,fontSize:12,marginBottom:8,textAlign:"center"}}>{undoMsg}</div>}<div style={{display:"flex",flexDirection:"column",gap:3}}>{[...draftState].reverse().map((d,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",background:C.card,borderRadius:6,border:"1px solid "+C.border}}><span style={{fontSize:10,color:C.dim,width:24}}>#{draftState.length-i}</span><span style={{fontSize:12,color:PC[d.pid],fontWeight:600,width:80}}>{PNAME[d.pid]}</span><span style={{fontSize:12,color:C.text}}>{d.driver}</span></div>))}</div></div>}
   </div>);
 }
@@ -429,29 +369,52 @@ function ResultsTab({data}) {
   const [week,setWeek]=useState(weeks[0]||1);
   const wr=data.results?.["w"+week]; const weekInfo=SCHEDULE.find(s=>s.w===week);
   const sorted=wr?.scored?Object.entries(wr.scored).sort((a,b)=>b[1].total-a[1].total):[];
-  return (<div style={{padding:20,maxWidth:900,margin:"0 auto"}}>
+  return (<div style={{padding:20,maxWidth:900,margin:"0 auto",position:"relative",zIndex:1}}>
     <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:16,flexWrap:"wrap",gap:8}}>
       <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,margin:0}}>Results</h2>
       <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>{weeks.map(w=>(<button key={w} onClick={()=>setWeek(w)} style={{padding:"6px 10px",borderRadius:6,border:"none",fontSize:11,fontWeight:700,cursor:"pointer",background:week===w?C.accent:"rgba(255,255,255,0.05)",color:week===w?"#000":C.dim}}>W{w}</button>))}</div>
     </div>
-    {weekInfo&&<div style={{color:C.dim,fontSize:14,marginBottom:16}}>{weekInfo.r} · {weekInfo.t} · <span style={{color:TTC[weekInfo.ty]}}>{TTL[weekInfo.ty]} x{TRACK_MULTS[weekInfo.ty]}</span></div>}
+    {weekInfo&&<div style={{color:C.dim,fontSize:14,marginBottom:16}}>{weekInfo.r} @ {weekInfo.t} · <span style={{color:TTC[weekInfo.ty]}}>{TTL[weekInfo.ty]} x{TRACK_MULTS[weekInfo.ty]}</span>{wr?.raw?.threeStages&&<span style={{color:C.purple,marginLeft:8,fontWeight:600}}>3 STAGES</span>}</div>}
     {sorted.length===0?<div style={{color:C.dim,textAlign:"center",padding:40}}>No results</div>
       :<div style={{display:"grid",gap:12}}>{sorted.map(([pid,ps],idx)=>(<div key={pid} style={{background:PClr[pid].bg,borderRadius:12,padding:"16px 20px",border:"2px solid "+(ps.weeklyWin?C.accent:PClr[pid].bg==="#000000"?C.border:PClr[pid].bg+"88")}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:(ps.drivers&&ps.drivers.length)?12:0}}>
           <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{color:PClr[pid].fg,fontWeight:700,fontSize:17,fontFamily:"'Barlow Condensed',sans-serif"}}>{idx===0?"👑 ":""}{PNAME[pid]}</span>{ps.weeklyWin&&<span style={{background:C.accent+"44",color:C.accent,padding:"2px 10px",borderRadius:12,fontSize:10,fontWeight:700}}>WIN +25 PO</span>}</div>
           <span style={{color:PClr[pid].fg,fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700}}>{ps.total}</span>
         </div>
-        {ps.drivers&&ps.drivers.length>0&&<div style={{display:"grid",gap:6}}>{ps.drivers.map(d=>(<div key={d.driver} style={{background:PClr[pid].bg==="#FFFFFF"?"#f0f0f0":PClr[pid].bg==="#000000"?"#1a1a1a":PClr[pid].bg+"cc",borderRadius:8,padding:"8px 12px",border:"1px solid "+(PClr[pid].bg==="#FFFFFF"?"#ddd":PClr[pid].fg+"22")}}>
-          <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:PClr[pid].fg,fontSize:13,fontWeight:600}}>{d.driver}{d.isMulligan?" 🔄":""}{d.isGarage?" 🅶":""}{d.replaced?" ❌":""}</span><span style={{color:d.replaced?PClr[pid].fg+"66":d.total>=0?C.green:C.red,fontWeight:700,fontSize:13}}>{d.total}</span></div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:3}}>{(d.breakdown||[]).map((b,i)=>(<span key={i} style={{fontSize:9,color:b.pts>0?C.green:b.pts<0?C.red:PClr[pid].fg+"88",background:PClr[pid].bg==="#FFFFFF"?"#e0e0e0":"rgba(0,0,0,0.3)",padding:"2px 5px",borderRadius:4}}>{b.label}: {b.pts>0?"+":""}{b.pts}</span>))}</div>
+        {ps.drivers&&ps.drivers.length>0&&<div style={{display:"grid",gap:6}}>{ps.drivers.map(d=>(<div key={d.driver} style={{background:PClr[pid].bg==="#FFFFFF"?"#f0f0f0":PClr[pid].bg==="#000000"?"#1a1a1a":"rgba(0,0,0,0.22)",borderRadius:8,padding:"8px 12px",border:"1px solid "+PClr[pid].fg+"22"}}>
+          <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:PClr[pid].fg,fontSize:13,fontWeight:600}}>{d.driver}{isMemorial(d.driver)?" 🕊️":""}{d.isMulligan?" 🔄":""}{d.isGarage?" 🅶":""}{d.dnr?" (DNR)":""}</span><span style={{color:d.total>=0?C.green:C.red,fontWeight:700,fontSize:13}}>{d.total}</span></div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:3}}>{(d.breakdown||[]).map((b,i)=>(<span key={i} style={{fontSize:9,color:b.pts>0?C.green:b.pts<0?C.red:PClr[pid].fg+"88",background:"rgba(0,0,0,0.3)",padding:"2px 5px",borderRadius:4}}>{b.label}: {b.pts>0?"+":""}{b.pts}</span>))}</div>
         </div>))}</div>}
       </div>))}</div>}
   </div>);
 }
 
+function PlayoffsTab({data}) {
+  const ps=useMemo(()=>PLAYERS.map(p=>{const base=1000;const pp=data.meta.playoffPts[p.id]||0;return{...p,base,pp,total:base+pp,wins:Object.values(data.results||{}).filter(r=>r.scored?.[p.id]?.weeklyWin).length,regPts:data.meta.standings[p.id]||0};}).sort((a,b)=>b.total-a.total),[data]);
+  const scored=Object.keys(data.results||{}).length;
+  const weeksUntil=Math.max(0,PLAYOFF_START_WEEK-scored);
+  return (<div style={{padding:20,maxWidth:900,margin:"0 auto",position:"relative",zIndex:1}}>
+    <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Playoff Picture</h2>
+    <div style={{color:C.dim,fontSize:13,marginBottom:8}}>If the chase started today — {scored} races completed, {weeksUntil} until playoffs</div>
+    <div style={{background:C.card,borderRadius:10,padding:14,marginBottom:20,border:"1px solid "+C.border}}><div style={{color:C.dim,fontSize:11}}>Everyone starts at <span style={{color:C.accent,fontWeight:700}}>1,000</span> base. Playoff points (weekly wins +25 each, plus bonus points) carry over.</div></div>
+    <div style={{display:"grid",gap:12}}>{ps.map((p,i)=>(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:"18px 20px",border:"2px solid "+(i===0?C.accent:PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88")}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+        <div style={{display:"flex",alignItems:"center",gap:14}}><div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:20,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div><div style={{color:PClr[p.id].fg+"99",fontSize:12}}>{p.wins} weekly win{p.wins!==1?"s":""}</div></div></div>
+        <div style={{textAlign:"right"}}><div style={{color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:32,fontWeight:700}}>{p.total}</div><div style={{color:PClr[p.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Chase Pts</div></div>
+      </div>
+      <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+        <div style={{background:"rgba(0,0,0,0.2)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:90}}><div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase"}}>Base</div><div style={{fontSize:18,fontWeight:700,color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif"}}>{p.base}</div></div>
+        <div style={{background:"rgba(0,0,0,0.2)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:90}}><div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase"}}>Playoff Pts</div><div style={{fontSize:18,fontWeight:700,color:C.accent,fontFamily:"'Oswald',sans-serif"}}>+{p.pp}</div></div>
+        <div style={{background:"rgba(0,0,0,0.2)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:90}}><div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase"}}>Reg Season</div><div style={{fontSize:18,fontWeight:700,color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif"}}>{p.regPts}</div></div>
+      </div>
+    </div>))}</div>
+    <div style={{marginTop:20,background:C.card,borderRadius:10,padding:14,border:"1px solid "+C.border}}><div style={{color:C.dim,fontSize:12,lineHeight:1.6}}>The Chase begins Week {PLAYOFF_START_WEEK} (Darlington). All players reset to 1,000 + accumulated playoff points, then regular scoring continues through Week 36 (Homestead).</div></div>
+  </div>);
+}
+
 function ScheduleTab({data}) {
   const scored=new Set(Object.keys(data.results||{}).map(k=>parseInt(k.replace("w",""))));
-  return (<div style={{padding:20,maxWidth:700,margin:"0 auto"}}>
+  return (<div style={{padding:20,maxWidth:700,margin:"0 auto",position:"relative",zIndex:1}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:8}}>2026 Schedule</h2>
     <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>{Object.entries(TTC).map(([t,c])=>(<span key={t} style={{fontSize:11,color:c,background:c+"18",padding:"3px 10px",borderRadius:12,fontWeight:600}}>{TTL[t]} x{TRACK_MULTS[t]}</span>))}</div>
     <div style={{display:"grid",gap:3}}>{SCHEDULE.map(s=>(<div key={s.w} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 12px",borderRadius:8,background:s.w===PLAYOFF_START_WEEK?C.accent+"11":C.card,border:"1px solid "+(s.w>=PLAYOFF_START_WEEK?C.accent+"33":C.border)}}>
@@ -468,146 +431,55 @@ function MulligansTab({player,data,currentWeek,onApplyMulligan}) {
   const [search,setSearch]=useState("");
   const [saving,setSaving]=useState(false);
   const [msg,setMsg]=useState("");
-
-  // Get this player's current week picks
   const weekKey="w"+currentWeek;
   const weekPicks=data.picks?.[weekKey]?.[player.id]||[];
   const myDrivers=weekPicks.filter(pk=>!pk.garage);
   const hasScored=!!(data.results?.[weekKey]?.scored);
-
-  // Get all drivers picked across all 4 players this week (these are unavailable)
   const allWeekPicks=data.picks?.[weekKey]||{};
   const takenDrivers=new Set();
   Object.values(allWeekPicks).forEach(picks=>{(picks||[]).forEach(pk=>{if(pk.driver)takenDrivers.add(pk.driver);});});
-
-  // Available replacement drivers = full roster minus everyone already on a roster this week
-  const available=DRIVERS.filter(d=>!takenDrivers.has(d)&&d.toLowerCase().includes(search.toLowerCase()));
-
+  const available=DRIVERS.filter(d=>!takenDrivers.has(d)&&!isMemorial(d)&&d.toLowerCase().includes(search.toLowerCase()));
   const apply=async()=>{
-    if(!selectedDriver||!replacement) return;
-    if(!window.confirm("Use a mulligan to swap "+selectedDriver+" for "+replacement+"? This counts as 1 of your 10 season mulligans and the replacement only earns finish position points (no stage/laps/bonuses).")) return;
+    if(!selectedDriver||!replacement)return;
+    if(!window.confirm("Use a mulligan to swap "+selectedDriver+" for "+replacement+"? Counts as 1 of your 10 season mulligans; replacement earns finish position points only."))return;
     setSaving(true);setMsg("");
     await onApplyMulligan(currentWeek,player.id,selectedDriver,replacement);
     setMsg("Mulligan applied: "+selectedDriver+" → "+replacement);
-    setSelectedDriver("");setReplacement("");setSearch("");
-    setSaving(false);
+    setSelectedDriver("");setReplacement("");setSearch("");setSaving(false);
     setTimeout(()=>setMsg(""),5000);
   };
-
-  return (<div style={{padding:20,maxWidth:700,margin:"0 auto"}}>
+  return (<div style={{padding:20,maxWidth:700,margin:"0 auto",position:"relative",zIndex:1}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Mulligans</h2>
     <div style={{color:C.dim,fontSize:14,marginBottom:16}}>{remaining} of {MAX_MULLIGANS} remaining this season</div>
     <div style={{display:"flex",gap:6,marginBottom:24,flexWrap:"wrap"}}>{Array.from({length:MAX_MULLIGANS}).map((_,i)=>(<div key={i} style={{width:26,height:26,borderRadius:"50%",background:i<used?C.red+"33":C.green+"33",border:"2px solid "+(i<used?C.red:C.green),display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:i<used?C.red:C.green}}>{i<used?"✗":"✓"}</div>))}</div>
-
     <div style={{background:PClr[player.id].bg,borderRadius:12,padding:16,border:"2px solid "+(PClr[player.id].bg==="#000000"?C.border:PClr[player.id].bg+"88"),marginBottom:16}}>
       <div style={{color:PClr[player.id].fg,fontWeight:700,fontSize:15,fontFamily:"'Barlow Condensed',sans-serif",marginBottom:8,letterSpacing:1}}>YOUR WEEK {currentWeek} ROSTER</div>
       {myDrivers.length===0?<div style={{color:PClr[player.id].fg+"88",fontSize:13,fontStyle:"italic"}}>No drivers picked yet for this week</div>
-      :<div style={{display:"flex",flexDirection:"column",gap:4}}>
-        {myDrivers.map((pk,i)=>(<div key={i} style={{padding:"8px 12px",background:PClr[player.id].bg==="#FFFFFF"?"#f0f0f0":"rgba(255,255,255,0.1)",borderRadius:6,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <span style={{color:PClr[player.id].fg,fontSize:13,fontWeight:600}}>R{i+1} · {pk.driver}{pk.mulligan?" 🔄":""}</span>
-        </div>))}
-      </div>}
+      :<div style={{display:"flex",flexDirection:"column",gap:4}}>{myDrivers.map((pk,i)=>(<div key={i} style={{padding:"8px 12px",background:PClr[player.id].bg==="#FFFFFF"?"#f0f0f0":"rgba(255,255,255,0.12)",borderRadius:6}}><span style={{color:PClr[player.id].fg,fontSize:13,fontWeight:600}}>R{i+1} · {pk.driver}{pk.mulligan?" 🔄":""}</span></div>))}</div>}
     </div>
-
-    {hasScored?<div style={{background:C.card,borderRadius:10,padding:14,border:"1px solid "+C.border,color:C.dim,fontSize:13,textAlign:"center"}}>Week {currentWeek} is already scored. Mulligans must be applied before the race is scored.</div>
+    {hasScored?<div style={{background:C.card,borderRadius:10,padding:14,border:"1px solid "+C.border,color:C.dim,fontSize:13,textAlign:"center"}}>Week {currentWeek} is already scored. Mulligans must be applied before scoring.</div>
     :remaining<=0?<div style={{background:C.red+"22",borderRadius:10,padding:14,border:"1px solid "+C.red+"44",color:C.red,fontSize:13,textAlign:"center"}}>No mulligans remaining this season.</div>
     :myDrivers.length===0?<div style={{background:C.card,borderRadius:10,padding:14,border:"1px solid "+C.border,color:C.dim,fontSize:13,textAlign:"center"}}>You don't have any picks for Week {currentWeek} yet.</div>
     :<>
       <div style={{background:C.card,borderRadius:12,padding:16,border:"1px solid "+C.border,marginBottom:12}}>
         <div style={{color:C.accent,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8,fontWeight:700}}>Step 1: Choose Driver to Replace</div>
-        <div style={{display:"flex",flexDirection:"column",gap:6}}>
-          {myDrivers.map((pk,i)=>(<button key={i} onClick={()=>setSelectedDriver(selectedDriver===pk.driver?"":pk.driver)} disabled={pk.mulligan} style={{
-            padding:"10px 14px",borderRadius:8,
-            border:"2px solid "+(selectedDriver===pk.driver?C.accent:pk.mulligan?C.border:C.border),
-            background:selectedDriver===pk.driver?C.accent+"22":pk.mulligan?C.input+"55":C.input,
-            color:pk.mulligan?C.dim:C.text,fontSize:13,fontWeight:600,fontFamily:"inherit",cursor:pk.mulligan?"not-allowed":"pointer",textAlign:"left"
-          }}>{pk.driver}{pk.mulligan?" (already mulligan'd)":""}</button>))}
-        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:6}}>{myDrivers.map((pk,i)=>(<button key={i} onClick={()=>setSelectedDriver(selectedDriver===pk.driver?"":pk.driver)} disabled={pk.mulligan} style={{padding:"10px 14px",borderRadius:8,border:"2px solid "+(selectedDriver===pk.driver?C.accent:C.border),background:selectedDriver===pk.driver?C.accent+"22":pk.mulligan?C.input+"55":C.input,color:pk.mulligan?C.dim:C.text,fontSize:13,fontWeight:600,fontFamily:"inherit",cursor:pk.mulligan?"not-allowed":"pointer",textAlign:"left"}}>{pk.driver}{pk.mulligan?" (already mulligan'd)":""}</button>))}</div>
       </div>
-
       {selectedDriver&&<div style={{background:C.card,borderRadius:12,padding:16,border:"1px solid "+C.border,marginBottom:12}}>
-        <div style={{color:C.accent,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8,fontWeight:700}}>Step 2: Choose Replacement Driver</div>
-        <div style={{color:C.dim,fontSize:11,marginBottom:8}}>Only drivers not already picked by anyone this week are available</div>
+        <div style={{color:C.accent,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8,fontWeight:700}}>Step 2: Choose Replacement</div>
+        <div style={{color:C.dim,fontSize:11,marginBottom:8}}>Only drivers not already picked by anyone this week</div>
         <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search drivers..." style={{width:"100%",padding:"10px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:14,fontFamily:"inherit",outline:"none",boxSizing:"border-box",marginBottom:8}}/>
-        <div style={{maxHeight:240,overflowY:"auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>
-          {available.length===0?<div style={{gridColumn:"1/-1",color:C.dim,fontSize:12,textAlign:"center",padding:16}}>No available drivers</div>
-          :available.map(d=>(<button key={d} onClick={()=>setReplacement(d)} style={{
-            textAlign:"left",padding:"8px 10px",borderRadius:6,
-            background:replacement===d?C.accent+"22":C.input,
-            border:"2px solid "+(replacement===d?C.accent:C.border),
-            color:replacement===d?C.accent:C.text,fontSize:12,cursor:"pointer",fontFamily:"inherit",fontWeight:600
-          }}>{d}</button>))}
-        </div>
+        <div style={{maxHeight:240,overflowY:"auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>{available.length===0?<div style={{gridColumn:"1/-1",color:C.dim,fontSize:12,textAlign:"center",padding:16}}>No available drivers</div>:available.map(d=>(<button key={d} onClick={()=>setReplacement(d)} style={{textAlign:"left",padding:"8px 10px",borderRadius:6,background:replacement===d?C.accent+"22":C.input,border:"2px solid "+(replacement===d?C.accent:C.border),color:replacement===d?C.accent:C.text,fontSize:12,cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>{d}</button>))}</div>
       </div>}
-
       {selectedDriver&&replacement&&<div style={{background:C.accent+"11",borderRadius:12,padding:14,border:"1px solid "+C.accent+"44",marginBottom:12}}>
         <div style={{color:C.accent,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:6,fontWeight:700}}>Confirm Swap</div>
         <div style={{color:C.text,fontSize:13,marginBottom:4}}><span style={{color:C.red}}>OUT:</span> {selectedDriver}</div>
         <div style={{color:C.text,fontSize:13,marginBottom:8}}><span style={{color:C.green}}>IN:</span> {replacement} 🔄</div>
-        <div style={{color:C.dim,fontSize:11,marginBottom:10}}>Replacement earns ONLY finish position points. No stage points, laps led, or bonuses.</div>
+        <div style={{color:C.dim,fontSize:11,marginBottom:10}}>Replacement earns ONLY finish position points — no stage points, laps led, or bonuses.</div>
         <button onClick={apply} disabled={saving} style={{width:"100%",padding:"12px 0",borderRadius:8,border:"none",background:C.accent,color:"#000",fontFamily:"'Oswald',sans-serif",fontSize:14,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:"pointer"}}>{saving?"Applying...":"Apply Mulligan"}</button>
       </div>}
     </>}
-
     {msg&&<div style={{color:C.green,marginTop:12,textAlign:"center",fontSize:14,fontWeight:600}}>{msg}</div>}
-  </div>);
-}
-
-function PlayoffsTab({data}) {
-  const playoffStandings = useMemo(()=>{
-    return PLAYERS.map(p => {
-      const base = 1000;
-      const pp = data.meta.playoffPts[p.id] || 0;
-      const total = base + pp;
-      const wins = Object.values(data.results||{}).filter(r=>r.scored?.[p.id]?.weeklyWin).length;
-      const regPts = data.meta.standings[p.id] || 0;
-      return { ...p, base, pp, total, wins, regPts };
-    }).sort((a,b) => b.total - a.total);
-  },[data]);
-
-  const scored = Object.keys(data.results||{}).length;
-  const weeksUntil = Math.max(0, PLAYOFF_START_WEEK - scored);
-
-  return (<div style={{padding:20,maxWidth:900,margin:"0 auto"}}>
-    <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Playoff Picture</h2>
-    <div style={{color:C.dim,fontSize:13,marginBottom:8}}>If the chase started today — {scored} races completed, {weeksUntil} until playoffs</div>
-    <div style={{background:C.card,borderRadius:10,padding:14,marginBottom:20,border:"1px solid "+C.border}}>
-      <div style={{color:C.dim,fontSize:11,marginBottom:6}}>Everyone starts at <span style={{color:C.accent,fontWeight:700}}>1,000</span> base points. Playoff points from weekly wins (+25 each) and bonus points carry over.</div>
-    </div>
-    <div style={{display:"grid",gap:12}}>
-      {playoffStandings.map((p,i)=>(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:"18px 20px",border:"2px solid "+(i===0?C.accent:PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88")}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-          <div style={{display:"flex",alignItems:"center",gap:14}}>
-            <div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div>
-            <div>
-              <div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:20,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div>
-              <div style={{color:PClr[p.id].fg+"99",fontSize:12}}>{p.wins} weekly win{p.wins!==1?"s":""}</div>
-            </div>
-          </div>
-          <div style={{textAlign:"right"}}>
-            <div style={{color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:32,fontWeight:700}}>{p.total}</div>
-            <div style={{color:PClr[p.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Chase Pts</div>
-          </div>
-        </div>
-        <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-          <div style={{background:PClr[p.id].bg==="#FFFFFF"?"#f0f0f0":"rgba(255,255,255,0.08)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:100}}>
-            <div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase",letterSpacing:1}}>Base</div>
-            <div style={{fontSize:18,fontWeight:700,color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif"}}>{p.base}</div>
-          </div>
-          <div style={{background:PClr[p.id].bg==="#FFFFFF"?"#f0f0f0":"rgba(255,255,255,0.08)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:100}}>
-            <div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase",letterSpacing:1}}>Playoff Pts</div>
-            <div style={{fontSize:18,fontWeight:700,color:C.accent,fontFamily:"'Oswald',sans-serif"}}>+{p.pp}</div>
-          </div>
-          <div style={{background:PClr[p.id].bg==="#FFFFFF"?"#f0f0f0":"rgba(255,255,255,0.08)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:100}}>
-            <div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase",letterSpacing:1}}>Reg Season</div>
-            <div style={{fontSize:18,fontWeight:700,color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif"}}>{p.regPts}</div>
-          </div>
-        </div>
-      </div>))}
-    </div>
-    <div style={{marginTop:20,background:C.card,borderRadius:10,padding:14,border:"1px solid "+C.border}}>
-      <div style={{color:C.dim,fontSize:12,lineHeight:1.6}}>The Chase begins at Week {PLAYOFF_START_WEEK} (Darlington). All players reset to 1,000 points + their accumulated playoff points. From there, regular race scoring continues and adds to the chase total through Week 36 (Homestead).</div>
-    </div>
   </div>);
 }
 
@@ -615,110 +487,70 @@ function SettingsTab({player,data,onSaveSettings}) {
   const settings=data.playerSettings?.[player.id]||{};
   const [email,setEmail]=useState(settings.email||"");
   const [notifyOnTurn,setNotifyOnTurn]=useState(settings.notifyOnTurn!==false);
-  const [saving,setSaving]=useState(false);
-  const [msg,setMsg]=useState("");
+  const [saving,setSaving]=useState(false); const [msg,setMsg]=useState("");
   const defaultEmail=DEFAULT_EMAILS[player.id];
-  const activeEmail=email.trim()||defaultEmail;
-
-  const save=async()=>{
-    setSaving(true);setMsg("");
-    await onSaveSettings(player.id,{email:email.trim(),notifyOnTurn});
-    setMsg("Settings saved!");
-    setSaving(false);
-    setTimeout(()=>setMsg(""),3000);
-  };
-
-  return (<div style={{padding:20,maxWidth:600,margin:"0 auto"}}>
+  const save=async()=>{setSaving(true);setMsg("");await onSaveSettings(player.id,{email:email.trim(),notifyOnTurn});setMsg("Settings saved!");setSaving(false);setTimeout(()=>setMsg(""),3000);};
+  return (<div style={{padding:20,maxWidth:600,margin:"0 auto",position:"relative",zIndex:1}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Notification Settings</h2>
     <div style={{color:C.dim,fontSize:13,marginBottom:24}}>Get an email when it's your turn to draft</div>
-
     <div style={{background:C.card,borderRadius:12,padding:20,border:"1px solid "+C.border,marginBottom:16}}>
       <div style={{color:C.accent,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8,fontWeight:700}}>Email Address</div>
-      <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder={defaultEmail||"you@example.com"} style={{
-        width:"100%",padding:"12px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,
-        fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"
-      }}/>
+      <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder={defaultEmail||"you@example.com"} style={{width:"100%",padding:"12px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box"}}/>
       <div style={{color:C.dim,fontSize:11,marginTop:6}}>{defaultEmail?<>Default: <span style={{color:C.green}}>{defaultEmail}</span> (leave blank to use)</>:"Where draft notifications will be sent"}</div>
     </div>
-
     <div style={{background:C.card,borderRadius:12,padding:20,border:"1px solid "+C.border,marginBottom:16}}>
-      <label style={{display:"flex",alignItems:"center",gap:12,cursor:"pointer"}}>
-        <input type="checkbox" checked={notifyOnTurn} onChange={e=>setNotifyOnTurn(e.target.checked)} style={{width:18,height:18,cursor:"pointer"}}/>
-        <div>
-          <div style={{color:C.text,fontSize:15,fontWeight:600}}>Notify me when it's my turn</div>
-          <div style={{color:C.dim,fontSize:12,marginTop:2}}>Only fires when you're up next on the clock</div>
-        </div>
-      </label>
+      <label style={{display:"flex",alignItems:"center",gap:12,cursor:"pointer"}}><input type="checkbox" checked={notifyOnTurn} onChange={e=>setNotifyOnTurn(e.target.checked)} style={{width:18,height:18,cursor:"pointer"}}/><div><div style={{color:C.text,fontSize:15,fontWeight:600}}>Notify me when it's my turn</div><div style={{color:C.dim,fontSize:12,marginTop:2}}>Only fires when you're up next on the clock</div></div></label>
     </div>
-
-    <button onClick={save} disabled={saving} style={{
-      width:"100%",padding:"14px 0",borderRadius:8,border:"none",background:C.accent,color:"#000",
-      fontFamily:"'Oswald',sans-serif",fontSize:16,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:"pointer"
-    }}>{saving?"Saving...":"Save Settings"}</button>
-
+    <button onClick={save} disabled={saving} style={{width:"100%",padding:"14px 0",borderRadius:8,border:"none",background:C.accent,color:"#000",fontFamily:"'Oswald',sans-serif",fontSize:16,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:"pointer"}}>{saving?"Saving...":"Save Settings"}</button>
     {msg&&<div style={{color:C.green,marginTop:12,textAlign:"center",fontSize:14,fontWeight:600}}>{msg}</div>}
-
-    <div style={{marginTop:24,padding:14,background:C.card,borderRadius:10,border:"1px solid "+C.border}}>
-      <div style={{color:C.dim,fontSize:12,lineHeight:1.6}}>
-        <strong style={{color:C.text}}>How it works:</strong> When you become the next person to pick in the draft, FERDA emails you a green flag alert. The email includes a link to jump straight into the app. First time you receive one, check your spam folder and mark it as "not spam" so future emails arrive in your inbox.
-      </div>
-    </div>
   </div>);
 }
 
 function RulesTab() {
-  const rules=[{t:"Draft System",c:"Draft each week. Last week's loser picks first, winner picks last. Same order all 5 rounds."},{t:"Finish Points",c:"P1: 55, P2: 35, then P3: 34 decreasing by 1 to P36: 1. P37-40: 1 each."},{t:"Top Finish Bonus",c:"Top 5 finish: +2 bonus pts. Top 10 finish: +1 bonus pt."},{t:"Stage Points",c:"Top 10 each stage: 1st=10, 2nd=9... 10th=1"},{t:"Laps Led",c:"Per lap led x track modifier: SS x1.0, INT x0.5, ST x0.2, RC x1.5"},{t:"Net Position",c:"+/-1 pt per spot gained/lost (qualifying to finish). Capped at +/-10."},{t:"Bonuses",c:"Pole: 5 | Stage Win: 2.5 | Fastest Lap: 1 | Most Laps Led: 5 | Led a Lap: 0.5/driver | Sweep (Pole + both stage wins): 12.5"},{t:"DNF / DQ",c:"DNF = 0 total. DQ = -5 points."},{t:"Weekly Win",c:"Highest scorer earns 25 playoff points."},{t:"Playoffs (W27+)",c:"Reset to 1,000 base. Weekly wins (x25) + bonus pts carry over."},{t:"Mulligans",c:"10/season. Replacement driver earns finish position points ONLY."}];
-  return (<div style={{padding:20,maxWidth:700,margin:"0 auto"}}><h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:16}}>Scoring Rules</h2>
+  const rules=[{t:"Draft System",c:"Draft each week. Last week's loser picks first, winner picks last. Same order all 5 rounds."},{t:"Finish Points",c:"P1: 55, P2: 35, then P3: 34 decreasing by 1 to P36: 1. P37-40: 1 each."},{t:"Top Finish Bonus",c:"Top 5 finish: +2 bonus pts. Top 10 finish: +1 bonus pt."},{t:"Stage Points",c:"Top 10 each stage: 1st=10, 2nd=9... 10th=1. The Coca-Cola 600 has 3 stages."},{t:"Laps Led",c:"Per lap led x track modifier: SS x1.0, INT x0.5, ST x0.2, RC x1.5"},{t:"Net Position",c:"+/-1 pt per spot gained/lost (qualifying to finish). Capped at +/-10."},{t:"Bonuses",c:"Pole: 5 | Stage Win: 2.5 each | Fastest Lap: 1 | Most Laps Led: 5 | Led a Lap: 0.5/driver | Sweep (Pole + all stage wins): 12.5"},{t:"DNF / DQ",c:"DNF = 0 total. DQ = -5 points."},{t:"Weekly Win",c:"Highest scorer earns 25 playoff points. Tiebreak: had the race winner, then highest single-driver score."},{t:"Playoffs (W27+)",c:"Reset to 1,000 base. Weekly wins (x25) + bonus pts carry over."},{t:"Mulligans",c:"10/season. Replacement driver earns finish position points ONLY."}];
+  return (<div style={{padding:20,maxWidth:700,margin:"0 auto",position:"relative",zIndex:1}}><h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:16}}>Scoring Rules</h2>
     {rules.map(r=>(<div key={r.t} style={{background:C.card,borderRadius:10,padding:"12px 16px",marginBottom:8,border:"1px solid "+C.border}}><div style={{color:C.accent,fontWeight:700,fontSize:13,marginBottom:3,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1}}>{r.t}</div><div style={{color:C.dim,fontSize:13,lineHeight:1.5}}>{r.c}</div></div>))}</div>);
 }
 
 function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,onNotifyDraft,currentWeek}) {
   const [week,setWeek]=useState(currentWeek); const [editing,setEditing]=useState(false);
   const [drivers,setDrivers]=useState([]); const [playerPicks,setPlayerPicks]=useState({justin:[],bigmonroe:[],monroe:[],rich:[]});
+  const [threeStages,setThreeStages]=useState(false);
   const [saving,setSaving]=useState(false); const [msg,setMsg]=useState("");
   const race=SCHEDULE.find(s=>s.w===week); const done=!!(data.results?.["w"+week]);
 
   const startEdit=()=>{
     const wr=data.results?.["w"+week];
-    if(wr?.raw?.drivers){setDrivers(wr.raw.drivers.map(d=>({...d,finish:String(d.finish),qualPos:String(d.qualPos),stage1:String(d.stage1||""),stage2:String(d.stage2||""),lapsLed:String(d.lapsLed||0)})));}else{setDrivers([]);}
+    if(wr?.raw?.drivers){setThreeStages(!!wr.raw.threeStages);setDrivers(wr.raw.drivers.map(d=>({...d,finish:String(d.finish),qualPos:String(d.qualPos),stage1:String(d.stage1||""),stage2:String(d.stage2||""),stage3:String(d.stage3||""),lapsLed:String(d.lapsLed||0)})));}else{setDrivers([]);setThreeStages(false);}
     const wp=data.picks?.["w"+week]||{}; const pp={};
-    PLAYERS.forEach(p=>{pp[p.id]=(wp[p.id]||[]).map(pk=>({driver:pk.driver,mulligan:pk.mulligan||false,garage:pk.garage||false,garageActivated:pk.garageActivated||false,garageReplace:pk.garageReplace||""}));});
+    PLAYERS.forEach(p=>{pp[p.id]=(wp[p.id]||[]).map(pk=>({driver:pk.driver,mulligan:pk.mulligan||false}));});
     setPlayerPicks(pp); setEditing(true); setMsg("");
   };
-  const startNew=()=>{setDrivers([]);setPlayerPicks({justin:[],bigmonroe:[],monroe:[],rich:[]});setEditing(true);setMsg("");};
-  const addD=()=>setDrivers([...drivers,{name:"",finish:"",qualPos:"",stage1:"",stage2:"",lapsLed:"0",pole:false,stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false}]);
+  const startNew=()=>{setDrivers([]);setThreeStages(false);setPlayerPicks({justin:[],bigmonroe:[],monroe:[],rich:[]});setEditing(true);setMsg("");};
+  const addD=()=>setDrivers([...drivers,{name:"",finish:"",qualPos:"",stage1:"",stage2:"",stage3:"",lapsLed:"0",pole:false,stageWin1:false,stageWin2:false,stageWin3:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false}]);
   const ud=(i,f,v)=>{const n=[...drivers];n[i]={...n[i],[f]:v};setDrivers(n);}; const rm=(i)=>setDrivers(drivers.filter((_,j)=>j!==i));
-  const addPick=(pid,isGarage)=>{const cur=playerPicks[pid]||[];const ac=cur.filter(pk=>!pk.garage).length;const hg=cur.some(pk=>pk.garage);if(isGarage&&hg)return;if(!isGarage&&ac>=ACTIVE_PICKS)return;setPlayerPicks({...playerPicks,[pid]:[...cur,{driver:"",mulligan:false,garage:!!isGarage,garageActivated:false,garageReplace:""}]});};
+  const addPick=(pid)=>{const cur=playerPicks[pid]||[];if(cur.length>=ACTIVE_PICKS)return;setPlayerPicks({...playerPicks,[pid]:[...cur,{driver:"",mulligan:false}]});};
   const updatePick=(pid,i,field,val)=>{const np={...playerPicks};np[pid]=[...np[pid]];np[pid][i]={...np[pid][i],[field]:val};setPlayerPicks(np);};
   const removePick=(pid,i)=>{const np={...playerPicks};np[pid]=np[pid].filter((_,j)=>j!==i);setPlayerPicks(np);};
 
+  const buildRR=()=>({threeStages,drivers:drivers.map(d=>({name:d.name,finish:parseInt(d.finish)||40,qualPos:parseInt(d.qualPos)||40,stage1:parseInt(d.stage1)||0,stage2:parseInt(d.stage2)||0,stage3:parseInt(d.stage3)||0,lapsLed:parseInt(d.lapsLed)||0,pole:!!d.pole,stageWin1:!!d.stageWin1,stageWin2:!!d.stageWin2,stageWin3:!!d.stageWin3,fastestLap:!!d.fastestLap,mostLapsLed:!!d.mostLapsLed,dnf:!!d.dnf,dq:!!d.dq}))});
+  const buildWP=()=>{const wp={};PLAYERS.forEach(p=>{wp[p.id]=(playerPicks[p.id]||[]).filter(pk=>pk.driver).map(pk=>({driver:pk.driver,mulligan:pk.mulligan}));});return wp;};
+
   const handleScore=async()=>{
     setSaving(true);setMsg("");
-    const rr={drivers:drivers.map(d=>({name:d.name,finish:parseInt(d.finish)||40,qualPos:parseInt(d.qualPos)||40,stage1:parseInt(d.stage1)||0,stage2:parseInt(d.stage2)||0,lapsLed:parseInt(d.lapsLed)||0,pole:!!d.pole,stageWin1:!!d.stageWin1,stageWin2:!!d.stageWin2,fastestLap:!!d.fastestLap,mostLapsLed:!!d.mostLapsLed,dnf:!!d.dnf,dq:!!d.dq}))};
-    const wp={}; PLAYERS.forEach(p=>{wp[p.id]=(playerPicks[p.id]||[]).filter(pk=>pk.driver).map(pk=>({driver:pk.driver,mulligan:pk.mulligan,garage:pk.garage,garageActivated:pk.garageActivated,garageReplace:pk.garageReplace}));});
+    const rr=buildRR(); const wp=buildWP();
     const mo={}; PLAYERS.forEach(p=>{mo[p.id]=(playerPicks[p.id]||[]).filter(pk=>pk.mulligan).map(pk=>({week,driver:pk.driver}));});
     const scored=scoreWeekFull(wp,rr,week,mo);
     await onPostResults(week,scored,rr,wp);
     setMsg("Week "+week+" "+(done?"updated":"scored")+"!"); setSaving(false); setEditing(false);
   };
-
-  const handleSavePicksOnly=async()=>{
-    setSaving(true);setMsg("");
-    const wp={}; PLAYERS.forEach(p=>{wp[p.id]=(playerPicks[p.id]||[]).filter(pk=>pk.driver).map(pk=>({driver:pk.driver,mulligan:pk.mulligan,garage:pk.garage,garageActivated:pk.garageActivated,garageReplace:pk.garageReplace}));});
-    await onSavePicks(week,wp);
-    setMsg("Week "+week+" picks saved (not scored)."); setSaving(false); setEditing(false);
-  };
-
-  const handleReset=async()=>{
-    if(!window.confirm("Reset Week "+week+"? This will delete all scores, picks, and draft data for this week. This cannot be undone.")) return;
-    await onResetWeek(week);
-    setMsg("Week "+week+" reset to clean slate."); setEditing(false);
-  };
+  const handleSavePicksOnly=async()=>{setSaving(true);setMsg("");await onSavePicks(week,buildWP());setMsg("Week "+week+" picks saved (not scored).");setSaving(false);setEditing(false);};
+  const handleReset=async()=>{if(!window.confirm("Reset Week "+week+"? Deletes all scores, picks, and draft data for this week. Cannot be undone."))return;await onResetWeek(week);setMsg("Week "+week+" reset to clean slate.");setEditing(false);};
   const iS={padding:"6px 8px",borderRadius:6,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:13,fontFamily:"inherit",outline:"none",width:"100%",boxSizing:"border-box"};
-  const hasPicks = !!(data.picks?.["w"+week] && Object.values(data.picks["w"+week]).some(p=>p&&p.length>0));
-  const hasDraft = !!(data.drafts?.["w"+week]?.length);
+  const hasPicks=!!(data.picks?.["w"+week]&&Object.values(data.picks["w"+week]).some(p=>p&&p.length>0));
+  const hasDraft=!!(data.drafts?.["w"+week]?.length);
 
-  return (<div style={{padding:20,maxWidth:1000,margin:"0 auto"}}>
+  return (<div style={{padding:20,maxWidth:1000,margin:"0 auto",position:"relative",zIndex:1}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Commissioner Panel</h2>
     <div style={{color:C.dim,fontSize:13,marginBottom:16}}>Score new weeks or edit past results</div>
     <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:16,flexWrap:"wrap"}}>
@@ -730,47 +562,43 @@ function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,onNotifyDra
     {!editing&&<div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
       {done&&<button onClick={startEdit} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.accent,background:C.accent+"22",color:C.accent,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Edit Week {week}</button>}
       {!done&&<button onClick={startNew} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.green,background:C.green+"22",color:C.green,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Score Week {week}</button>}
-      {!done&&!editing&&<button onClick={()=>{startNew();}} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.blue,background:C.blue+"22",color:C.blue,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Set Picks Only</button>}
+      {!done&&<button onClick={startNew} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.blue,background:C.blue+"22",color:C.blue,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Set Picks Only</button>}
       {(done||hasPicks||hasDraft)&&<button onClick={handleReset} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.red,background:C.red+"22",color:C.red,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Reset Week {week}</button>}
       {!done&&!hasDraft&&<button onClick={async()=>{await onNotifyDraft(week);setMsg("Email sent to first picker (if configured).");setTimeout(()=>setMsg(""),3000);}} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.purple,background:C.purple+"22",color:C.purple,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>📧 Notify First Picker</button>}
     </div>}
     {!editing&&hasPicks&&!done&&<div style={{color:C.blue,fontSize:12,marginBottom:12}}>Picks saved for this week (not yet scored)</div>}
     {editing&&<>
-      <div style={{marginBottom:20}}>
+      <div style={{marginBottom:16}}>
         <div style={{color:C.accent,fontSize:14,fontWeight:700,marginBottom:10,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1,textTransform:"uppercase"}}>Player Picks</div>
-        {PLAYERS.map(p=>{const pks=playerPicks[p.id]||[];const ac=pks.filter(pk=>!pk.garage).length;const hg=pks.some(pk=>pk.garage);const aps=pks.filter(pk=>!pk.garage);const gps=pks.filter(pk=>pk.garage);
-        return(<div key={p.id} style={{background:C.card,borderRadius:10,padding:12,marginBottom:8,border:"1px solid "+C.border}}>
+        {PLAYERS.map(p=>{const pks=playerPicks[p.id]||[];return(<div key={p.id} style={{background:C.card,borderRadius:10,padding:12,marginBottom:8,border:"1px solid "+C.border}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,flexWrap:"wrap",gap:4}}>
-            <span style={{color:PC[p.id],fontWeight:700,fontSize:14}}>{PNAME[p.id]} ({ac}/{ACTIVE_PICKS}{GARAGE_PICK_ENABLED?" + "+(hg?"1":"0")+"/1 G":""})</span>
-            <div style={{display:"flex",gap:4}}>{ac<ACTIVE_PICKS&&<button onClick={()=>addPick(p.id,false)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid "+C.accent+"66",background:C.accent+"11",color:C.accent,fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>+ Driver</button>}{GARAGE_PICK_ENABLED&&!hg&&<button onClick={()=>addPick(p.id,true)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid "+C.purple+"66",background:C.purple+"11",color:C.purple,fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>+ Garage</button>}</div>
+            <span style={{color:PC[p.id],fontWeight:700,fontSize:14}}>{PNAME[p.id]} ({pks.length}/{ACTIVE_PICKS})</span>
+            {pks.length<ACTIVE_PICKS&&<button onClick={()=>addPick(p.id)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid "+C.accent+"66",background:C.accent+"11",color:C.accent,fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>+ Driver</button>}
           </div>
-          {aps.map((pk,i)=>{const ri=pks.indexOf(pk);return(<div key={ri} style={{display:"flex",gap:6,alignItems:"center",marginBottom:4}}>
+          {pks.map((pk,i)=>(<div key={i} style={{display:"flex",gap:6,alignItems:"center",marginBottom:4}}>
             <span style={{fontSize:10,color:C.dim,fontWeight:700,width:20}}>R{i+1}</span>
-            <select value={pk.driver} onChange={e=>updatePick(p.id,ri,"driver",e.target.value)} style={{...iS,flex:1}}><option value="">Select driver</option>{DRIVERS.map(dr=><option key={dr} value={dr}>{dr}</option>)}</select>
-            <label style={{display:"flex",alignItems:"center",gap:3,cursor:"pointer",fontSize:11,color:pk.mulligan?C.accent:C.dim,flexShrink:0}}><input type="checkbox" checked={!!pk.mulligan} onChange={e=>updatePick(p.id,ri,"mulligan",e.target.checked)}/>M</label>
-            <button onClick={()=>removePick(p.id,ri)} style={{background:C.red+"22",border:"1px solid "+C.red+"44",borderRadius:6,color:C.red,padding:"4px 8px",fontSize:10,cursor:"pointer",fontFamily:"inherit",flexShrink:0}}>X</button>
-          </div>);})}
-          {gps.map(pk=>{const ri=pks.indexOf(pk);const ads=aps.filter(ap=>ap.driver).map(ap=>ap.driver);return(<div key={ri} style={{marginTop:6,padding:8,background:C.purple+"11",borderRadius:8,border:"1px solid "+C.purple+"33"}}>
-            <div style={{display:"flex",gap:6,alignItems:"center",marginBottom:pk.garageActivated?6:0}}><span style={{fontSize:10,color:C.purple,fontWeight:700,width:20}}>G</span>
-              <select value={pk.driver} onChange={e=>updatePick(p.id,ri,"driver",e.target.value)} style={{...iS,flex:1}}><option value="">Garage driver</option>{DRIVERS.map(dr=><option key={dr} value={dr}>{dr}</option>)}</select>
-              <label style={{display:"flex",alignItems:"center",gap:3,cursor:"pointer",fontSize:11,color:pk.garageActivated?C.green:C.dim,flexShrink:0}}><input type="checkbox" checked={!!pk.garageActivated} onChange={e=>updatePick(p.id,ri,"garageActivated",e.target.checked)}/>Use</label>
-              <button onClick={()=>removePick(p.id,ri)} style={{background:C.red+"22",border:"1px solid "+C.red+"44",borderRadius:6,color:C.red,padding:"4px 8px",fontSize:10,cursor:"pointer",fontFamily:"inherit",flexShrink:0}}>X</button></div>
-            {pk.garageActivated&&<div style={{display:"flex",gap:6,alignItems:"center"}}><span style={{fontSize:10,color:C.purple,width:20}}>↔</span><select value={pk.garageReplace||""} onChange={e=>updatePick(p.id,ri,"garageReplace",e.target.value)} style={{...iS,flex:1}}><option value="">Replaces?</option>{ads.map(dr=><option key={dr} value={dr}>{dr}</option>)}</select></div>}
-          </div>);})}
+            <select value={pk.driver} onChange={e=>updatePick(p.id,i,"driver",e.target.value)} style={{...iS,flex:1}}><option value="">Select driver</option>{DRIVERS.map(dr=><option key={dr} value={dr}>{dr}{isMemorial(dr)?" 🕊️":""}</option>)}</select>
+            <label style={{display:"flex",alignItems:"center",gap:3,cursor:"pointer",fontSize:11,color:pk.mulligan?C.accent:C.dim,flexShrink:0}}><input type="checkbox" checked={!!pk.mulligan} onChange={e=>updatePick(p.id,i,"mulligan",e.target.checked)}/>M</label>
+            <button onClick={()=>removePick(p.id,i)} style={{background:C.red+"22",border:"1px solid "+C.red+"44",borderRadius:6,color:C.red,padding:"4px 8px",fontSize:10,cursor:"pointer",fontFamily:"inherit",flexShrink:0}}>X</button>
+          </div>))}
         </div>);})}
       </div>
-      <div style={{color:C.accent,fontSize:14,fontWeight:700,marginBottom:10,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1,textTransform:"uppercase"}}>Race Results</div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+        <div style={{color:C.accent,fontSize:14,fontWeight:700,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1,textTransform:"uppercase"}}>Race Results</div>
+        <label style={{display:"flex",alignItems:"center",gap:6,cursor:"pointer",fontSize:12,color:threeStages?C.purple:C.dim}}><input type="checkbox" checked={threeStages} onChange={e=>setThreeStages(e.target.checked)}/>3 Stages (Coca-Cola 600)</label>
+      </div>
       <button onClick={addD} style={{padding:"8px 16px",borderRadius:6,border:"1px solid "+C.accent,background:C.accent+"22",color:C.accent,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer",marginBottom:12}}>+ Add Driver Result</button>
       {drivers.map((d,i)=>(<div key={i} style={{background:C.card,borderRadius:10,padding:14,marginBottom:8,border:"1px solid "+C.border}}>
         <div style={{display:"flex",gap:6,marginBottom:8,alignItems:"center",flexWrap:"wrap"}}>
           <select value={d.name} onChange={e=>ud(i,"name",e.target.value)} style={{...iS,flex:"2 1 140px"}}><option value="">Select driver</option>{DRIVERS.map(dr=><option key={dr} value={dr}>{dr}</option>)}</select>
-          <input placeholder="Fin" type="number" value={d.finish} onChange={e=>ud(i,"finish",e.target.value)} style={{...iS,flex:"0 1 55px"}}/>
-          <input placeholder="Qual" type="number" value={d.qualPos} onChange={e=>ud(i,"qualPos",e.target.value)} style={{...iS,flex:"0 1 55px"}}/>
-          <input placeholder="S1" type="number" value={d.stage1} onChange={e=>ud(i,"stage1",e.target.value)} style={{...iS,flex:"0 1 45px"}}/>
-          <input placeholder="S2" type="number" value={d.stage2} onChange={e=>ud(i,"stage2",e.target.value)} style={{...iS,flex:"0 1 45px"}}/>
-          <input placeholder="Led" type="number" value={d.lapsLed} onChange={e=>ud(i,"lapsLed",e.target.value)} style={{...iS,flex:"0 1 55px"}}/>
+          <input placeholder="Fin" type="number" value={d.finish} onChange={e=>ud(i,"finish",e.target.value)} style={{...iS,flex:"0 1 50px"}}/>
+          <input placeholder="Qual" type="number" value={d.qualPos} onChange={e=>ud(i,"qualPos",e.target.value)} style={{...iS,flex:"0 1 50px"}}/>
+          <input placeholder="S1" type="number" value={d.stage1} onChange={e=>ud(i,"stage1",e.target.value)} style={{...iS,flex:"0 1 42px"}}/>
+          <input placeholder="S2" type="number" value={d.stage2} onChange={e=>ud(i,"stage2",e.target.value)} style={{...iS,flex:"0 1 42px"}}/>
+          {threeStages&&<input placeholder="S3" type="number" value={d.stage3} onChange={e=>ud(i,"stage3",e.target.value)} style={{...iS,flex:"0 1 42px"}}/>}
+          <input placeholder="Led" type="number" value={d.lapsLed} onChange={e=>ud(i,"lapsLed",e.target.value)} style={{...iS,flex:"0 1 50px"}}/>
           <button onClick={()=>rm(i)} style={{background:C.red+"22",border:"1px solid "+C.red+"44",borderRadius:6,color:C.red,padding:"6px 10px",fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>X</button></div>
-        <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>{[["pole","Pole"],["stageWin1","S1 Win"],["stageWin2","S2 Win"],["fastestLap","Fast Lap"],["mostLapsLed","Most Led"],["dnf","DNF"],["dq","DQ"]].map(([f,l])=>(<label key={f} style={{display:"flex",alignItems:"center",gap:4,cursor:"pointer",fontSize:12,color:d[f]?C.text:C.dim}}><input type="checkbox" checked={!!d[f]} onChange={e=>ud(i,f,e.target.checked)}/>{l}</label>))}</div>
+        <div style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>{[["pole","Pole"],["stageWin1","S1 Win"],["stageWin2","S2 Win"],...(threeStages?[["stageWin3","S3 Win"]]:[]),["fastestLap","Fast Lap"],["mostLapsLed","Most Led"],["dnf","DNF"],["dq","DQ"]].map(([f,l])=>(<label key={f} style={{display:"flex",alignItems:"center",gap:4,cursor:"pointer",fontSize:12,color:d[f]?C.text:C.dim}}><input type="checkbox" checked={!!d[f]} onChange={e=>ud(i,f,e.target.checked)}/>{l}</label>))}</div>
       </div>))}
       <div style={{display:"flex",gap:8,marginTop:12,flexWrap:"wrap"}}>
         <button onClick={handleScore} disabled={saving} style={{flex:1,padding:"14px 0",borderRadius:8,border:"none",background:C.accent,color:"#000",fontFamily:"'Oswald',sans-serif",fontSize:16,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:"pointer"}}>{saving?"Saving...":(done?"Re-Score Week "+week:"Score Week "+week)}</button>
@@ -795,144 +623,88 @@ export default function App() {
   }catch(e){console.error("Startup error:",e);setData(loadLocalBackup()||buildInitialData());setLoading(false);setDbStatus("offline");}})();
   return()=>{if(unsub)unsub();};},[]);
 
-  const currentWeek=useMemo(()=>data?(data.meta.lastScoredWeek||10)+1:11,[data]);
+  const currentWeek=useMemo(()=>data?(data.meta.lastScoredWeek||13)+1:14,[data]);
+
+  const notifyNextPicker=async(week,dataAfterPick)=>{
+    if(!isEmailConfigured())return;
+    const draftKey="w"+week;
+    const draftState=dataAfterPick.drafts?.[draftKey]||[];
+    const snakeSequence=buildSnakeOrder(getDraftOrder(dataAfterPick,week));
+    const nextPickIdx=draftState.length;
+    if(nextPickIdx>=snakeSequence.length)return;
+    const nextPicker=snakeSequence[nextPickIdx];
+    const settings=dataAfterPick.playerSettings?.[nextPicker.pid]||{};
+    const email=settings.email||DEFAULT_EMAILS[nextPicker.pid];
+    if(!email||settings.notifyOnTurn===false)return;
+    if(user&&nextPicker.pid===user.id&&nextPickIdx>0)return;
+    const raceInfo=SCHEDULE.find(s=>s.w===week);
+    sendDraftEmail({toEmail:email,name:PNAME[nextPicker.pid],week,race:raceInfo?.r||"the next race",track:raceInfo?.t||"",pickNumber:nextPickIdx+1,round:nextPicker.round});
+  };
 
   const handleDraftPick=async(week,pid,driver,pickNum)=>{
     const d=JSON.parse(JSON.stringify(data)); if(!d.drafts)d.drafts={}; const key="w"+week;
     if(!d.drafts[key])d.drafts[key]=[]; d.drafts[key].push({pid,driver,pickNum});
-    // Also sync to data.picks so Mulligan tab can see drivers immediately
-    if(!d.picks)d.picks={};
-    if(!d.picks[key])d.picks[key]={};
-    if(!d.picks[key][pid])d.picks[key][pid]=[];
-    d.picks[key][pid].push({driver, mulligan:false});
+    if(!d.picks)d.picks={}; if(!d.picks[key])d.picks[key]={}; if(!d.picks[key][pid])d.picks[key][pid]=[];
+    d.picks[key][pid].push({driver,mulligan:false});
     setData(d); await saveLeagueData(d);
-    // Notify the next picker (fire-and-forget — won't block UI)
-    notifyNextPicker(week, d).catch(e => console.error("Email notify failed:", e));
+    notifyNextPicker(week,d).catch(e=>console.error("Email notify failed:",e));
   };
-
   const handleUndoDraft=async(week)=>{
     const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
-    if(!d.drafts?.[key]?.length) return;
-    const removed = d.drafts[key].pop();
-    // Also remove from data.picks
-    if(d.picks?.[key]?.[removed.pid]){
-      const idx = d.picks[key][removed.pid].findIndex(pk=>pk.driver===removed.driver);
-      if(idx>=0) d.picks[key][removed.pid].splice(idx,1);
-    }
-    setData(d); await saveLeagueData(d);
-    return removed;
+    if(!d.drafts?.[key]?.length)return;
+    const removed=d.drafts[key].pop();
+    if(d.picks?.[key]?.[removed.pid]){const idx=d.picks[key][removed.pid].findIndex(pk=>pk.driver===removed.driver);if(idx>=0)d.picks[key][removed.pid].splice(idx,1);}
+    setData(d); await saveLeagueData(d); return removed;
   };
-
+  const recalcMeta=(d)=>{
+    const fs={justin:0,bigmonroe:0,monroe:0,rich:0},fp2={justin:0,bigmonroe:0,monroe:0,rich:0}; let last=0;
+    Object.entries(d.results||{}).forEach(([key,wr])=>{const w=parseInt(key.replace("w",""));if(w>last)last=w;if(!wr.scored)return;
+      Object.entries(wr.scored).forEach(([pid,s])=>{fs[pid]=Math.round((fs[pid]+s.total)*100)/100;fp2[pid]=Math.round((fp2[pid]+(s.bonusPoints||0))*100)/100;if(s.weeklyWin)fp2[pid]=Math.round((fp2[pid]+25)*100)/100;});});
+    const mc={justin:0,bigmonroe:0,monroe:0,rich:0};
+    Object.entries(d.picks||{}).forEach(([,wp])=>{Object.entries(wp).forEach(([pid,pks])=>{(pks||[]).forEach(pk=>{if(pk.mulligan)mc[pid]++;});});});
+    d.meta.standings=fs; d.meta.playoffPts=fp2; d.meta.lastScoredWeek=last; d.meta.mulligansUsed=mc;
+  };
   const handlePostResults=async(week,scored,rr,wp)=>{
     const d=JSON.parse(JSON.stringify(data)); if(!d.results)d.results={}; if(!d.picks)d.picks={};
-    d.results["w"+week]={scored,raw:rr}; d.picks["w"+week]=wp;
-    const fs={justin:0,bigmonroe:0,monroe:0,rich:0},fp2={justin:0,bigmonroe:0,monroe:0,rich:0}; let last=0;
-    Object.entries(d.results).forEach(([key,wr])=>{const w=parseInt(key.replace("w",""));if(w>last)last=w;if(!wr.scored)return;
-      Object.entries(wr.scored).forEach(([pid,s])=>{fs[pid]=Math.round((fs[pid]+s.total)*100)/100;fp2[pid]=Math.round((fp2[pid]+(s.bonusPoints||0))*100)/100;if(s.weeklyWin)fp2[pid]=Math.round((fp2[pid]+25)*100)/100;});});
-    d.meta.standings=fs; d.meta.playoffPts=fp2; d.meta.lastScoredWeek=last;
-    const mc={justin:0,bigmonroe:0,monroe:0,rich:0};
-    Object.entries(d.picks).forEach(([,wp2])=>{Object.entries(wp2).forEach(([pid,pks])=>{(pks||[]).forEach(pk=>{if(pk.mulligan)mc[pid]++;});});});
-    d.meta.mulligansUsed=mc; setData(d); await saveLeagueData(d);
+    d.results["w"+week]={scored,raw:rr}; d.picks["w"+week]=wp; recalcMeta(d);
+    setData(d); await saveLeagueData(d);
   };
-
   const handleSavePicksOnly=async(week,wp)=>{
-    const d=JSON.parse(JSON.stringify(data)); if(!d.picks)d.picks={};
-    d.picks["w"+week]=wp;
+    const d=JSON.parse(JSON.stringify(data)); if(!d.picks)d.picks={}; d.picks["w"+week]=wp;
     setData(d); await saveLeagueData(d);
   };
-
   const handleResetWeek=async(week)=>{
-    const d=JSON.parse(JSON.stringify(data));
-    const key="w"+week;
-    delete d.results[key]; delete d.picks[key];
-    if(d.drafts) delete d.drafts[key];
-    // Recalculate standings from scratch
-    const fs={justin:0,bigmonroe:0,monroe:0,rich:0},fp2={justin:0,bigmonroe:0,monroe:0,rich:0}; let last=0;
-    Object.entries(d.results||{}).forEach(([k,wr])=>{const w=parseInt(k.replace("w",""));if(w>last)last=w;if(!wr.scored)return;
-      Object.entries(wr.scored).forEach(([pid,s])=>{fs[pid]=Math.round((fs[pid]+s.total)*100)/100;fp2[pid]=Math.round((fp2[pid]+(s.bonusPoints||0))*100)/100;if(s.weeklyWin)fp2[pid]=Math.round((fp2[pid]+25)*100)/100;});});
-    d.meta.standings=fs; d.meta.playoffPts=fp2; d.meta.lastScoredWeek=last;
-    const mc={justin:0,bigmonroe:0,monroe:0,rich:0};
-    Object.entries(d.picks||{}).forEach(([,wp2])=>{Object.entries(wp2).forEach(([pid,pks])=>{(pks||[]).forEach(pk=>{if(pk.mulligan)mc[pid]++;});});});
-    d.meta.mulligansUsed=mc;
-    setData(d); await saveLeagueData(d);
+    const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
+    delete d.results[key]; delete d.picks[key]; if(d.drafts)delete d.drafts[key];
+    recalcMeta(d); setData(d); await saveLeagueData(d);
   };
-
   const handleSaveSettings=async(pid,settings)=>{
-    const d=JSON.parse(JSON.stringify(data));
-    if(!d.playerSettings) d.playerSettings={};
+    const d=JSON.parse(JSON.stringify(data)); if(!d.playerSettings)d.playerSettings={};
     d.playerSettings[pid]={...d.playerSettings[pid],...settings};
     setData(d); await saveLeagueData(d);
   };
-
   const handleApplyMulligan=async(week,pid,oldDriver,newDriver)=>{
-    const d=JSON.parse(JSON.stringify(data));
-    const key="w"+week;
-    if(!d.picks?.[key]?.[pid]) return;
-    // Find the slot with the old driver, replace with new + mulligan flag
-    d.picks[key][pid] = d.picks[key][pid].map(pk =>
-      pk.driver === oldDriver ? { driver: newDriver, mulligan: true } : pk
-    );
-    // Track in mulligans log
-    if(!d.mulligans) d.mulligans={justin:[],bigmonroe:[],monroe:[],rich:[]};
-    if(!d.mulligans[pid]) d.mulligans[pid]=[];
-    d.mulligans[pid].push({week, driver:oldDriver, replacement:newDriver});
-    // Update mulligans used count
+    const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
+    if(!d.picks?.[key]?.[pid])return;
+    d.picks[key][pid]=d.picks[key][pid].map(pk=>pk.driver===oldDriver?{driver:newDriver,mulligan:true}:pk);
+    if(!d.mulligans)d.mulligans={justin:[],bigmonroe:[],monroe:[],rich:[]}; if(!d.mulligans[pid])d.mulligans[pid]=[];
+    d.mulligans[pid].push({week,driver:oldDriver,replacement:newDriver});
     const mc={justin:0,bigmonroe:0,monroe:0,rich:0};
     Object.entries(d.picks||{}).forEach(([,wp])=>{Object.entries(wp).forEach(([p,pks])=>{(pks||[]).forEach(pk=>{if(pk.mulligan)mc[p]++;});});});
-    d.meta.mulligansUsed=mc;
-    setData(d); await saveLeagueData(d);
+    d.meta.mulligansUsed=mc; setData(d); await saveLeagueData(d);
   };
-
-  // Helper: figure out who's next to pick after a draft pick is made,
-  // and email them if they have notifications enabled.
-  const notifyNextPicker = async (week, dataAfterPick) => {
-    if (!isEmailConfigured()) return;
-    const draftKey = "w" + week;
-    const draftState = dataAfterPick.drafts?.[draftKey] || [];
-    const draftOrder = getDraftOrder(dataAfterPick, week);
-    const snakeSequence = buildSnakeOrder(draftOrder);
-    const nextPickIdx = draftState.length;
-    if (nextPickIdx >= snakeSequence.length) return; // Draft complete
-    const nextPicker = snakeSequence[nextPickIdx];
-    const settings = dataAfterPick.playerSettings?.[nextPicker.pid] || {};
-    // Use Settings email if provided, else fall back to hardcoded default
-    const email = settings.email || DEFAULT_EMAILS[nextPicker.pid];
-    if (!email) return;
-    if (settings.notifyOnTurn === false) return;
-    // Don't email yourself when you just picked
-    if (user && nextPicker.pid === user.id && nextPickIdx > 0) return;
-    const raceInfo = SCHEDULE.find(s => s.w === week);
-    sendDraftEmail({
-      toEmail: email,
-      name: PNAME[nextPicker.pid],
-      week,
-      race: raceInfo?.r || "the next race",
-      track: raceInfo?.t || "",
-      pickNumber: nextPickIdx + 1,
-      round: nextPicker.round,
-    });
-  };
-
-  // Manually trigger a "draft start" email when commissioner wants to kick off
-  const handleStartDraftNotify = async (week) => {
-    await notifyNextPicker(week, data);
-  };
+  const handleStartDraftNotify=async(week)=>{await notifyNextPicker(week,data);};
 
   if(loading)return(<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,gap:12}}>
     <FerdaLogo size="large"/>
-    <div style={{color:C.dim,fontSize:13}}>Connecting to database...</div>
-    <div style={{color:C.dim,fontSize:11,marginTop:8}}>If this takes more than 10 seconds, check browser console (F12)</div></div>);
+    <div style={{color:C.dim,fontSize:13}}>Connecting to database...</div></div>);
   if(!user)return <LoginScreen onLogin={setUser}/>;
   return (<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Barlow Condensed',sans-serif",color:C.text}}>
-    <style>{`
-      @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.75; }
-      }
-    `}</style>
+    <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }`}</style>
+    <MemorialBackdrop/>
     <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)}/>
-    {dbStatus==="offline"&&<div style={{background:C.red+"22",color:C.red,textAlign:"center",padding:"6px",fontSize:11,fontWeight:600}}>OFFLINE MODE — Firebase not connected</div>}
-    <FlagBanner user={user} data={data} currentWeek={currentWeek} onGoToDraft={(t)=>setTab(t||"draft")}/>
+    {dbStatus==="offline"&&<div style={{background:C.red+"22",color:C.red,textAlign:"center",padding:"6px",fontSize:11,fontWeight:600,position:"relative",zIndex:1}}>OFFLINE MODE — Firebase not connected</div>}
+    <FlagBanner user={user} data={data} currentWeek={currentWeek} onGoTo={setTab}/>
     {tab==="standings"&&<StandingsTab data={data}/>}
     {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
     {tab==="lineups"&&<LineupsTab data={data} currentWeek={currentWeek}/>}
