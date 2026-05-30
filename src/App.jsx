@@ -2,6 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { loadLeagueData, saveLeagueData, subscribeToLeagueData, loadLocalBackup, isFirebaseReady } from "./firebase";
 import { HISTORICAL_PICKS, HISTORICAL_RESULTS } from "./historicalData";
 import { sendDraftEmail, isEmailConfigured, DEFAULT_EMAILS } from "./email";
+import { fetchNASCARResults, fetchLiveRaceData } from "./nascar";
+
+// ─── LIVE SCORING ────────────────────────────────────────────────
+// Firestore stores a liveRace flag: { active: bool, week: int, lastFetch: string }
+// When active, app polls every 30s and shows provisional live standings.
+const LIVE_POLL_INTERVAL = 30000; // 30 seconds
 
 const PLAYERS = [
   { id: "justin", name: "Justin", password: "ferda1" },
@@ -113,9 +119,16 @@ function scoreAllWeeks(data) {
 
 function calcDriverScore(driver, trackType, isMulligan, threeStages) {
   let score = 0; const bd = []; const mult = TRACK_MULTS[trackType] || 0.5;
-  if (driver.dnf) { return driver.dq ? {total:-5,breakdown:[{label:"DQ",pts:-5}],bonusPoints:0} : {total:0,breakdown:[{label:"DNF",pts:0}],bonusPoints:0}; }
+  // DQ only special case — DNF drivers score normally based on finish position
+  if (driver.dq) return {total:-5,breakdown:[{label:"DQ",pts:-5}],bonusPoints:0};
+  // DNF marker just for display — scoring continues normally
+  if (driver.dnf) bd.push({label:"DNF",pts:0});
   const fp = FINISH_POINTS[driver.finish] || 1; score += fp; bd.push({label:"P"+driver.finish,pts:fp});
-  if (isMulligan) { bd.push({label:"Mulligan",pts:0}); return {total:score,breakdown:bd,bonusPoints:0}; }
+  if (isMulligan) {
+    // Mulligans get finish points + net position only
+    if (driver.qualPos && driver.finish) { let net=driver.qualPos-driver.finish; net=Math.max(-10,Math.min(10,net)); if(net!==0){score+=net;bd.push({label:"Net Q"+driver.qualPos+">P"+driver.finish,pts:net});} }
+    bd.push({label:"Mulligan",pts:0}); return {total:Math.round(score*100)/100,breakdown:bd,bonusPoints:0};
+  }
   if (driver.finish <= 5) { score+=2; bd.push({label:"Top 5",pts:2}); } else if (driver.finish <= 10) { score+=1; bd.push({label:"Top 10",pts:1}); }
   if (driver.stage1 > 0 && driver.stage1 <= 10) { const sp=STAGE_POINTS[driver.stage1]; score+=sp; bd.push({label:"S1:P"+driver.stage1,pts:sp}); }
   if (driver.stage2 > 0 && driver.stage2 <= 10) { const sp=STAGE_POINTS[driver.stage2]; score+=sp; bd.push({label:"S2:P"+driver.stage2,pts:sp}); }
@@ -275,13 +288,32 @@ function Nav({player,tab,setTab,onLogout}) {
   </nav>);
 }
 
-function StandingsTab({data}) {
+function StandingsTab({data, liveScores, liveStatus}) {
   const standings=useMemo(()=>PLAYERS.map(p=>({...p,pts:data.meta.standings[p.id]||0,pp:data.meta.playoffPts[p.id]||0,wins:Object.values(data.results||{}).filter(r=>r.scored?.[p.id]?.weeklyWin).length})).sort((a,b)=>b.pts-a.pts),[data]);
+  const isLive = liveScores && data?.liveRace?.active;
+
+  // If live race in progress, show live provisional standings
+  const liveStandings = useMemo(()=>{
+    if(!isLive) return null;
+    return PLAYERS.map(p=>({...p,
+      pts: Math.round(((data.meta.standings[p.id]||0) + (liveScores[p.id]?.total||0))*100)/100,
+      liveScore: liveScores[p.id]?.total||0,
+      pp:data.meta.playoffPts[p.id]||0,
+      wins:Object.values(data.results||{}).filter(r=>r.scored?.[p.id]?.weeklyWin).length
+    })).sort((a,b)=>b.pts-a.pts);
+  },[isLive,liveScores,data]);
+
+  const display = liveStandings || standings;
+
   return (<div style={{padding:20,maxWidth:900,margin:"0 auto",position:"relative",zIndex:1}}>
-    <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Season Standings</h2>
-    <div style={{color:C.dim,fontSize:13,marginBottom:20}}>{Object.keys(data.results||{}).length} of 36 races scored</div>
-    <div style={{display:"grid",gap:12}}>{standings.map((p,i)=>(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:"16px 20px",border:"2px solid "+(i===0?C.accent:PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88"),display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-      <div style={{display:"flex",alignItems:"center",gap:14}}><div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:19,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div><div style={{color:PClr[p.id].fg+"99",fontSize:12}}>{p.wins} win{p.wins!==1?"s":""} · {p.pp} playoff pts</div></div></div>
+    {isLive&&<div style={{background:"linear-gradient(90deg,#ef4444,#f59e0b)",borderRadius:10,padding:"10px 16px",marginBottom:16,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+      <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:18}}>🏁</span><span style={{color:"#000",fontWeight:700,fontFamily:"'Oswald',sans-serif",fontSize:16,letterSpacing:1}}>RACE IN PROGRESS — LIVE SCORING</span></div>
+      <span style={{color:"#000",fontSize:12,fontWeight:600}}>{liveStatus}</span>
+    </div>}
+    <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>{isLive?"Live Standings":"Season Standings"}</h2>
+    <div style={{color:C.dim,fontSize:13,marginBottom:20}}>{isLive?"Provisional — updates every 30s":""+Object.keys(data.results||{}).length+" of 36 races scored"}</div>
+    <div style={{display:"grid",gap:12}}>{display.map((p,i)=>(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:"16px 20px",border:"2px solid "+(i===0?(isLive?"#ef4444":C.accent):PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88"),display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+      <div style={{display:"flex",alignItems:"center",gap:14}}><div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:19,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div><div style={{color:PClr[p.id].fg+"99",fontSize:12}}>{p.wins} win{p.wins!==1?"s":""} · {p.pp} playoff pts{isLive&&p.liveScore!==0?<span style={{marginLeft:8,color:p.liveScore>0?C.green:C.red,fontWeight:700}}>{p.liveScore>0?"+":""}{p.liveScore} live</span>:""}</div></div></div>
       <div style={{textAlign:"right"}}><div style={{color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:30,fontWeight:700}}>{p.pts}</div><div style={{color:PClr[p.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Points</div></div>
     </div>))}</div></div>);
 }
@@ -507,17 +539,50 @@ function SettingsTab({player,data,onSaveSettings}) {
 }
 
 function RulesTab() {
-  const rules=[{t:"Draft System",c:"Draft each week. Last week's loser picks first, winner picks last. Same order all 5 rounds."},{t:"Finish Points",c:"P1: 55, P2: 35, then P3: 34 decreasing by 1 to P36: 1. P37-40: 1 each."},{t:"Top Finish Bonus",c:"Top 5 finish: +2 bonus pts. Top 10 finish: +1 bonus pt."},{t:"Stage Points",c:"Top 10 each stage: 1st=10, 2nd=9... 10th=1. The Coca-Cola 600 has 3 stages."},{t:"Laps Led",c:"Per lap led x track modifier: SS x1.0, INT x0.5, ST x0.2, RC x1.5"},{t:"Net Position",c:"+/-1 pt per spot gained/lost (qualifying to finish). Capped at +/-10."},{t:"Bonuses",c:"Pole: 5 | Stage Win: 2.5 each | Fastest Lap: 1 | Most Laps Led: 5 | Led a Lap: 0.5/driver | Sweep (Pole + all stage wins): 12.5"},{t:"DNF / DQ",c:"DNF = 0 total. DQ = -5 points."},{t:"Weekly Win",c:"Highest scorer earns 25 playoff points. Tiebreak: had the race winner, then highest single-driver score."},{t:"Playoffs (W27+)",c:"Reset to 1,000 base. Weekly wins (x25) + bonus pts carry over."},{t:"Mulligans",c:"10/season. Replacement driver earns finish position points ONLY."}];
+  const rules=[{t:"Draft System",c:"Draft each week. Last week's loser picks first, winner picks last. Same order all 5 rounds."},{t:"Finish Points",c:"P1: 55, P2: 35, then P3: 34 decreasing by 1 to P36: 1. P37-40: 1 each."},{t:"Top Finish Bonus",c:"Top 5 finish: +2 bonus pts. Top 10 finish: +1 bonus pt."},{t:"Stage Points",c:"Top 10 each stage: 1st=10, 2nd=9... 10th=1. The Coca-Cola 600 has 3 stages."},{t:"Laps Led",c:"Per lap led x track modifier: SS x1.0, INT x0.5, ST x0.2, RC x1.5"},{t:"Net Position",c:"+/-1 pt per spot gained/lost (qualifying to finish). Capped at +/-10."},{t:"Bonuses",c:"Pole: 5 | Stage Win: 2.5 each | Fastest Lap: 1 | Most Laps Led: 5 | Led a Lap: 0.5/driver | Sweep (Pole + all stage wins): 12.5"},{t:"DNF / DQ",c:"DNF drivers score normally — finish position, net position, and any stage points earned still apply. DQ = -5 points total."},{t:"Weekly Win",c:"Highest scorer earns 25 playoff points. Tiebreak: had the race winner, then highest single-driver score."},{t:"Playoffs (W27+)",c:"Reset to 1,000 base. Weekly wins (x25) + bonus pts carry over."},{t:"Mulligans",c:"10/season. Replacement driver earns finish position points ONLY."}];
   return (<div style={{padding:20,maxWidth:700,margin:"0 auto",position:"relative",zIndex:1}}><h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:16}}>Scoring Rules</h2>
     {rules.map(r=>(<div key={r.t} style={{background:C.card,borderRadius:10,padding:"12px 16px",marginBottom:8,border:"1px solid "+C.border}}><div style={{color:C.accent,fontWeight:700,fontSize:13,marginBottom:3,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1}}>{r.t}</div><div style={{color:C.dim,fontSize:13,lineHeight:1.5}}>{r.c}</div></div>))}</div>);
 }
 
-function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,onNotifyDraft,currentWeek}) {
+function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,onNotifyDraft,onToggleLive,currentWeek}) {
   const [week,setWeek]=useState(currentWeek); const [editing,setEditing]=useState(false);
   const [drivers,setDrivers]=useState([]); const [playerPicks,setPlayerPicks]=useState({justin:[],bigmonroe:[],monroe:[],rich:[]});
   const [threeStages,setThreeStages]=useState(false);
   const [saving,setSaving]=useState(false); const [msg,setMsg]=useState("");
+  const [fetching,setFetching]=useState(false); const [fetchNote,setFetchNote]=useState("");
   const race=SCHEDULE.find(s=>s.w===week); const done=!!(data.results?.["w"+week]);
+
+  const handleFetchFromNASCAR=async()=>{
+    setFetching(true); setFetchNote(""); setMsg("");
+    const result = await fetchNASCARResults(week);
+    setFetching(false);
+    if(!result.ok){
+      setFetchNote("⚠️ "+result.error);
+      return;
+    }
+    // Populate the drivers editor with fetched data
+    setDrivers(result.drivers.map(d=>({
+      ...d,
+      finish:String(d.finish),
+      qualPos:String(d.qualPos),
+      stage1:String(d.stage1||""),
+      stage2:String(d.stage2||""),
+      stage3:String(d.stage3||""),
+      lapsLed:String(d.lapsLed||0),
+    })));
+    setThreeStages(!!result.threeStages);
+    // Pre-populate existing player picks if available
+    const wp=data.picks?.["w"+week]||{}; const pp={};
+    PLAYERS.forEach(p=>{pp[p.id]=(wp[p.id]||[]).map(pk=>({driver:pk.driver,mulligan:pk.mulligan||false}));});
+    if(Object.values(pp).every(v=>v.length===0)){
+      setPlayerPicks({justin:[],bigmonroe:[],monroe:[],rich:[]});
+    } else {
+      setPlayerPicks(pp);
+    }
+    setEditing(true);
+    setFetchNote(result.note+" Race: "+result.raceName+(result.trackName?" @ "+result.trackName:"")+".");
+    setMsg("✅ "+result.drivers.length+" drivers loaded from NASCAR.com! Review the data below, enter the fastest lap driver, then click Score.");
+  };
 
   const startEdit=()=>{
     const wr=data.results?.["w"+week];
@@ -559,13 +624,21 @@ function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,onNotifyDra
       {race&&<span style={{color:C.dim,fontSize:13}}>{race.r} · {TTL[race.ty]} x{TRACK_MULTS[race.ty]}</span>}
       {done&&!editing&&<span style={{color:C.green,fontSize:13,fontWeight:700}}>✓ Scored</span>}
     </div>
+    <div style={{background:C.card,borderRadius:10,padding:"12px 16px",marginBottom:16,border:"1px solid "+(data.liveRace?.active?"#ef4444":C.border)}}>
+      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:8}}>
+        <div><div style={{color:data.liveRace?.active?"#ef4444":C.dim,fontWeight:700,fontSize:13,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1}}>{data.liveRace?.active?"🔴 LIVE SCORING ACTIVE — Week "+data.liveRace.week:"⚫ Live Scoring Off"}</div><div style={{color:C.dim,fontSize:11,marginTop:2}}>When active, everyone sees live standings updating every 30s via NASCAR.com</div></div>
+        {data.liveRace?.active?<button onClick={()=>onToggleLive(data.liveRace.week,false)} style={{padding:"8px 16px",borderRadius:8,border:"1px solid #ef4444",background:"#ef444422",color:"#ef4444",fontFamily:"'Oswald',sans-serif",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:1}}>END RACE</button>:<button onClick={()=>onToggleLive(week,true)} style={{padding:"8px 16px",borderRadius:8,border:"1px solid #10b981",background:"#10b98122",color:"#10b981",fontFamily:"'Oswald',sans-serif",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:1}}>🟢 START LIVE — W{week}</button>}
+      </div>
+    </div>
     {!editing&&<div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
+      <button onClick={handleFetchFromNASCAR} disabled={fetching} style={{padding:"10px 20px",borderRadius:8,border:"1px solid #10b981",background:"#10b981"+"22",color:"#10b981",fontSize:13,fontFamily:"inherit",fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>{fetching?"⏳ Fetching...":"🔌 Fetch from NASCAR.com"}</button>
       {done&&<button onClick={startEdit} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.accent,background:C.accent+"22",color:C.accent,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Edit Week {week}</button>}
       {!done&&<button onClick={startNew} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.green,background:C.green+"22",color:C.green,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Score Week {week}</button>}
       {!done&&<button onClick={startNew} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.blue,background:C.blue+"22",color:C.blue,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Set Picks Only</button>}
       {(done||hasPicks||hasDraft)&&<button onClick={handleReset} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.red,background:C.red+"22",color:C.red,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Reset Week {week}</button>}
       {!done&&!hasDraft&&<button onClick={async()=>{await onNotifyDraft(week);setMsg("Email sent to first picker (if configured).");setTimeout(()=>setMsg(""),3000);}} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.purple,background:C.purple+"22",color:C.purple,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>📧 Notify First Picker</button>}
     </div>}
+    {fetchNote&&<div style={{background:C.card,borderRadius:8,padding:"10px 14px",marginBottom:12,border:"1px solid "+C.border,color:C.dim,fontSize:12}}>{fetchNote}</div>}
     {!editing&&hasPicks&&!done&&<div style={{color:C.blue,fontSize:12,marginBottom:12}}>Picks saved for this week (not yet scored)</div>}
     {editing&&<>
       <div style={{marginBottom:16}}>
@@ -615,6 +688,30 @@ export default function App() {
   const [user,setUser]=useState(null); const [tab,setTab]=useState("standings");
   const [data,setData]=useState(null); const [loading,setLoading]=useState(true);
   const [dbStatus,setDbStatus]=useState("connecting");
+  const [liveScores,setLiveScores]=useState(null); // provisional scores during live race
+  const [liveStatus,setLiveStatus]=useState(""); // "Live · updated X:XX ago"
+
+  // Live polling effect — activates when data.liveRace.active === true
+  useEffect(()=>{
+    if(!data?.liveRace?.active) { setLiveScores(null); setLiveStatus(""); return; }
+    const week = data.liveRace.week;
+    let timer;
+    const poll = async () => {
+      try {
+        const result = await fetchLiveRaceData(week);
+        if(!result.ok) return;
+        // Score picks against live results (provisional)
+        const wp = data.picks?.["w"+week] || {};
+        const mo = {}; PLAYERS.forEach(p=>{ mo[p.id]=(wp[p.id]||[]).filter(pk=>pk.mulligan).map(pk=>({week,driver:pk.driver})); });
+        const scored = scoreWeekFull(wp, {drivers:result.drivers, threeStages:result.threeStages}, week, mo);
+        setLiveScores(scored);
+        const now = new Date(); setLiveStatus(`Live · ${now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`);
+      } catch(e) { console.error("Live poll error:", e); }
+    };
+    poll(); // immediate first fetch
+    timer = setInterval(poll, LIVE_POLL_INTERVAL);
+    return () => clearInterval(timer);
+  }, [data?.liveRace?.active, data?.liveRace?.week]);
 
   useEffect(()=>{let unsub=null;(async()=>{try{
     let d=await loadLeagueData(); if(d)setDbStatus("connected"); else{d=loadLocalBackup();if(d)setDbStatus("offline");}
@@ -695,6 +792,12 @@ export default function App() {
   };
   const handleStartDraftNotify=async(week)=>{await notifyNextPicker(week,data);};
 
+  const handleToggleLive=async(week, active)=>{
+    const d=JSON.parse(JSON.stringify(data));
+    d.liveRace = { active, week, startedAt: active ? new Date().toISOString() : null };
+    setData(d); await saveLeagueData(d);
+  };
+
   if(loading)return(<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,gap:12}}>
     <FerdaLogo size="large"/>
     <div style={{color:C.dim,fontSize:13}}>Connecting to database...</div></div>);
@@ -705,7 +808,7 @@ export default function App() {
     <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)}/>
     {dbStatus==="offline"&&<div style={{background:C.red+"22",color:C.red,textAlign:"center",padding:"6px",fontSize:11,fontWeight:600,position:"relative",zIndex:1}}>OFFLINE MODE — Firebase not connected</div>}
     <FlagBanner user={user} data={data} currentWeek={currentWeek} onGoTo={setTab}/>
-    {tab==="standings"&&<StandingsTab data={data}/>}
+    {tab==="standings"&&<StandingsTab data={data} liveScores={liveScores} liveStatus={liveStatus}/>}
     {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
     {tab==="lineups"&&<LineupsTab data={data} currentWeek={currentWeek}/>}
     {tab==="results"&&<ResultsTab data={data}/>}
@@ -714,6 +817,6 @@ export default function App() {
     {tab==="mulligans"&&<MulligansTab player={user} data={data} currentWeek={currentWeek} onApplyMulligan={handleApplyMulligan}/>}
     {tab==="rules"&&<RulesTab/>}
     {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}
-    {tab==="commissioner"&&user.id==="justin"&&<CommissionerTab data={data} onPostResults={handlePostResults} onSavePicks={handleSavePicksOnly} onResetWeek={handleResetWeek} onNotifyDraft={handleStartDraftNotify} currentWeek={currentWeek}/>}
+    {tab==="commissioner"&&user.id==="justin"&&<CommissionerTab data={data} onPostResults={handlePostResults} onSavePicks={handleSavePicksOnly} onResetWeek={handleResetWeek} onNotifyDraft={handleStartDraftNotify} onToggleLive={handleToggleLive} currentWeek={currentWeek}/>}
   </div>);
 }
