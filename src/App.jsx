@@ -47,20 +47,79 @@ const SCHEDULE = [
   {w:33,t:"Phoenix",ty:"short_track",d:"Oct 18",r:"Freeway Insurance 500"},{w:34,t:"Talladega",ty:"superspeedway",d:"Oct 25",r:"YellaWood 500"},
   {w:35,t:"Martinsville",ty:"short_track",d:"Nov 1",r:"Xfinity 500"},{w:36,t:"Homestead",ty:"intermediate",d:"Nov 8",r:"Straight Talk Wireless 400"},
 ];
+// Full-time drivers sorted numerically
 const DRIVERS = [
   "#1 Ross Chastain","#2 Austin Cindric","#3 Austin Dillon","#4 Noah Gragson",
   "#5 Kyle Larson","#6 Brad Keselowski","#7 Daniel Suarez","#8 Kyle Busch",
   "#9 Chase Elliott","#10 Ty Dillon","#11 Denny Hamlin","#12 Ryan Blaney",
   "#16 AJ Allmendinger","#17 Chris Buescher","#19 Chase Briscoe","#20 Christopher Bell",
   "#21 Josh Berry","#22 Joey Logano","#23 Bubba Wallace","#24 William Byron",
-  "#34 Todd Gilliland","#35 Riley Herbst","#38 Zane Smith",
+  "#33 Austin Hill / Jesse Love","#34 Todd Gilliland","#35 Riley Herbst","#38 Zane Smith",
   "#41 Cole Custer","#42 John Hunter Nemechek","#43 Erik Jones","#45 Tyler Reddick",
-  "#47 Ricky Stenhouse Jr","#48 Alex Bowman","#51 Cody Ware","#54 Ty Gibbs",
-  "#60 Ryan Preece","#71 Michael McDowell","#77 Carson Hocevar","#88 Connor Zilisch","#97 Shane Van Gisbergen",
-  "#33 Austin Hill / Will Brown","#36 Chandler Smith","#40 Justin Allgaier",
-  "#44 JJ Yeley","#50 Burt Myers","#62 Anthony Alfredo","#66 Various",
-  "#67 Corey Heim","#78 BJ McLeod","#84 Jimmie Johnson","#99 Corey LaJoie",
+  "#47 Ricky Stenhouse Jr","#48 Alex Bowman","#50 Burt Myers","#51 Cody Ware",
+  "#54 Ty Gibbs","#60 Ryan Preece","#62 Casey Mears / Anthony Alfredo",
+  "#66 Various","#67 Corey Heim","#71 Michael McDowell","#77 Carson Hocevar",
+  "#78 BJ McLeod / Daniel Dye / Katherine Legge","#84 Jimmie Johnson",
+  "#88 Connor Zilisch","#91 Kevin Magnussen","#97 Shane Van Gisbergen",
+  // Part-time / Open charter
+  "#01 Corey LaJoie","#36 Chandler Smith","#40 Justin Allgaier",
+  "#44 JJ Yeley / Joey Gase","#99 Corey LaJoie",
 ];
+
+// Team and manufacturer info — used in picker display only
+// Scoring still uses driver name strings unchanged
+const DRIVER_INFO = {
+  "#1 Ross Chastain":               { team:"Trackhouse Racing",         make:"Chevy" },
+  "#2 Austin Cindric":              { team:"Team Penske",                make:"Ford"  },
+  "#3 Austin Dillon":               { team:"Richard Childress Racing",   make:"Chevy" },
+  "#4 Noah Gragson":                { team:"Front Row Motorsports",      make:"Ford"  },
+  "#5 Kyle Larson":                 { team:"Hendrick Motorsports",       make:"Chevy" },
+  "#6 Brad Keselowski":             { team:"RFK Racing",                 make:"Ford"  },
+  "#7 Daniel Suarez":               { team:"Spire Motorsports",          make:"Chevy" },
+  "#8 Kyle Busch":                  { team:"Richard Childress Racing",   make:"Chevy" },
+  "#9 Chase Elliott":               { team:"Hendrick Motorsports",       make:"Chevy" },
+  "#10 Ty Dillon":                  { team:"Kaulig Racing",              make:"Chevy" },
+  "#11 Denny Hamlin":               { team:"Joe Gibbs Racing",           make:"Toyota"},
+  "#12 Ryan Blaney":                { team:"Team Penske",                make:"Ford"  },
+  "#16 AJ Allmendinger":            { team:"Kaulig Racing",              make:"Chevy" },
+  "#17 Chris Buescher":             { team:"RFK Racing",                 make:"Ford"  },
+  "#19 Chase Briscoe":              { team:"Joe Gibbs Racing",           make:"Toyota"},
+  "#20 Christopher Bell":           { team:"Joe Gibbs Racing",           make:"Toyota"},
+  "#21 Josh Berry":                 { team:"Wood Brothers Racing",       make:"Ford"  },
+  "#22 Joey Logano":                { team:"Team Penske",                make:"Ford"  },
+  "#23 Bubba Wallace":              { team:"23XI Racing",                make:"Toyota"},
+  "#24 William Byron":              { team:"Hendrick Motorsports",       make:"Chevy" },
+  "#33 Austin Hill / Jesse Love":   { team:"Richard Childress Racing",   make:"Chevy" },
+  "#34 Todd Gilliland":             { team:"Front Row Motorsports",      make:"Ford"  },
+  "#35 Riley Herbst":               { team:"23XI Racing",                make:"Toyota"},
+  "#38 Zane Smith":                 { team:"Front Row Motorsports",      make:"Ford"  },
+  "#41 Cole Custer":                { team:"Haas Factory Team",          make:"Chevy" },
+  "#42 John Hunter Nemechek":       { team:"Legacy Motor Club",          make:"Toyota"},
+  "#43 Erik Jones":                 { team:"Legacy Motor Club",          make:"Toyota"},
+  "#45 Tyler Reddick":              { team:"23XI Racing",                make:"Toyota"},
+  "#47 Ricky Stenhouse Jr":         { team:"HYAK Motorsports",           make:"Chevy" },
+  "#48 Alex Bowman":                { team:"Hendrick Motorsports",       make:"Chevy" },
+  "#50 Burt Myers":                 { team:"Team AmeriVet Racing",       make:"Chevy" },
+  "#51 Cody Ware":                  { team:"Rick Ware Racing",           make:"Chevy" },
+  "#54 Ty Gibbs":                   { team:"Joe Gibbs Racing",           make:"Toyota"},
+  "#60 Ryan Preece":                { team:"RFK Racing",                 make:"Ford"  },
+  "#62 Casey Mears / Anthony Alfredo":{ team:"Beard Oil Racing",         make:"Chevy" },
+  "#66 Various":                    { team:"Garage 66",                  make:"Ford"  },
+  "#67 Corey Heim":                 { team:"23XI Racing",                make:"Toyota"},
+  "#71 Michael McDowell":           { team:"Spire Motorsports",          make:"Chevy" },
+  "#77 Carson Hocevar":             { team:"Spire Motorsports",          make:"Chevy" },
+  "#78 BJ McLeod / Daniel Dye / Katherine Legge":{ team:"Live Fast Motorsports", make:"Chevy" },
+  "#84 Jimmie Johnson":             { team:"Legacy Motor Club",          make:"Toyota"},
+  "#88 Connor Zilisch":             { team:"Trackhouse Racing",          make:"Chevy" },
+  "#91 Kevin Magnussen":            { team:"Trackhouse Racing",          make:"Chevy" },
+  "#97 Shane Van Gisbergen":        { team:"Trackhouse Racing",          make:"Chevy" },
+  "#01 Corey LaJoie":              { team:"Rick Ware Racing",            make:"Ford"  },
+  "#36 Chandler Smith":             { team:"Front Row Motorsports",      make:"Ford"  },
+  "#40 Justin Allgaier":            { team:"JR Motorsports",             make:"Chevy" },
+  "#44 JJ Yeley / Joey Gase":       { team:"NY Racing Team",             make:"Chevy" },
+  "#99 Corey LaJoie":              { team:"RFK Racing",                  make:"Ford"  },
+};
+const MAKE_COLORS = { Chevy:"#b8b8b8", Ford:"#0052cc", Toyota:"#eb0a1e" };
 function isMemorial(driver){ return !!MEMORIAL_DRIVERS[driver]; }
 
 function getDraftOrder(data, currentWeek) {
@@ -280,12 +339,107 @@ function LoginScreen({onLogin}) {
 }
 
 function Nav({player,tab,setTab,onLogout}) {
-  const tabs=[{id:"standings",l:"Standings"},{id:"draft",l:"Draft"},{id:"lineups",l:"Lineups"},{id:"results",l:"Results"},{id:"playoffs",l:"Playoffs"},{id:"schedule",l:"Schedule"},{id:"mulligans",l:"Mulligans"},{id:"rules",l:"Rules"},{id:"settings",l:"Settings"}];
-  if(player.id==="justin") tabs.push({id:"commissioner",l:"Commish"});
+  const tabs=[
+    {id:"welcome",l:"Home"},
+    {id:"draft",l:"Draft"},
+    {id:"lineups",l:"Lineups"},
+    {id:"mulligans",l:"Mulligans"},
+    {id:"live",l:"🔴 Live"},
+    {id:"results",l:"Results"},
+    {id:"playoffs",l:"Playoffs"},
+    {id:"schedule",l:"Schedule"},
+    {id:"rules",l:"Rules"},
+    {id:"settings",l:"Settings"},
+  ];
+  if(player.id==="justin") tabs.push({id:"commissioner",l:"COMMISH",red:true});
   return (<nav style={{background:"#000000",borderBottom:"1px solid "+C.border,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 12px",height:52,position:"sticky",top:0,zIndex:100,overflowX:"auto"}}>
-    <div style={{display:"flex",alignItems:"center",gap:10}}><FerdaLogo size="small"/><div style={{display:"flex",gap:1}}>{tabs.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"7px 8px",borderRadius:6,border:"none",background:tab===t.id?C.accent+"22":"transparent",color:tab===t.id?C.accent:C.dim,fontFamily:"'Barlow Condensed',sans-serif",fontSize:11,fontWeight:600,cursor:"pointer",letterSpacing:1,textTransform:"uppercase",whiteSpace:"nowrap"}}>{t.l}</button>))}</div></div>
+    <div style={{display:"flex",alignItems:"center",gap:10}}><FerdaLogo size="small"/><div style={{display:"flex",gap:1}}>{tabs.map(t=>(<button key={t.id} onClick={()=>setTab(t.id)} style={{padding:"7px 8px",borderRadius:6,border:t.red?"1px solid #ef4444":"none",background:tab===t.id?(t.red?"#ef4444":C.accent+"22"):"transparent",color:tab===t.id?(t.red?"#fff":C.accent):(t.red?"#ef4444":C.dim),fontFamily:"'Barlow Condensed',sans-serif",fontSize:11,fontWeight:t.red?700:600,cursor:"pointer",letterSpacing:1,textTransform:"uppercase",whiteSpace:"nowrap"}}>{t.l}</button>))}</div></div>
     <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}><span style={{color:C.dim,fontSize:11}}>{player.name}</span><button onClick={onLogout} style={{padding:"5px 8px",borderRadius:6,border:"1px solid "+C.border,background:"transparent",color:C.dim,fontFamily:"inherit",fontSize:10,cursor:"pointer"}}>Out</button></div>
   </nav>);
+}
+
+function WelcomeTab({player, data, setTab}) {
+  const standings=useMemo(()=>PLAYERS.map(p=>({...p,pts:data.meta.standings[p.id]||0,pp:data.meta.playoffPts[p.id]||0,wins:Object.values(data.results||{}).filter(r=>r.scored?.[p.id]?.weeklyWin).length})).sort((a,b)=>b.pts-a.pts),[data]);
+  const lastWeekKey=Object.keys(data.results||{}).map(k=>parseInt(k.replace("w",""))).sort((a,b)=>b-a)[0];
+  const lastWeek=lastWeekKey?data.results["w"+lastWeekKey]:null;
+  const lastRaceInfo=SCHEDULE.find(s=>s.w===lastWeekKey);
+  const nextRace=SCHEDULE.find(s=>!data.results?.["w"+s.w]);
+  const myStats=standings.find(s=>s.id===player.id);
+  const myRank=standings.findIndex(s=>s.id===player.id)+1;
+  const greetings=["Welcome back","Good to see you","Ready to race"];
+  const greeting=greetings[Math.floor(Date.now()/86400000)%greetings.length];
+
+  return (<div style={{padding:20,maxWidth:900,margin:"0 auto",position:"relative",zIndex:1}}>
+    {/* Hero greeting */}
+    <div style={{background:PClr[player.id].bg,borderRadius:16,padding:"24px 24px 20px",marginBottom:20,border:"2px solid "+(PClr[player.id].bg==="#000000"?C.border:PClr[player.id].bg+"88")}}>
+      <div style={{color:PClr[player.id].fg+"88",fontSize:13,textTransform:"uppercase",letterSpacing:3,marginBottom:4}}>{greeting}</div>
+      <div style={{color:PClr[player.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:34,fontWeight:900,letterSpacing:2}}>{player.name}</div>
+      <div style={{display:"flex",gap:16,marginTop:14,flexWrap:"wrap"}}>
+        <div style={{background:"rgba(0,0,0,0.25)",borderRadius:10,padding:"10px 16px",flex:1,minWidth:80,textAlign:"center"}}>
+          <div style={{color:PClr[player.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700}}>{myStats?.pts||0}</div>
+          <div style={{color:PClr[player.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Points</div>
+        </div>
+        <div style={{background:"rgba(0,0,0,0.25)",borderRadius:10,padding:"10px 16px",flex:1,minWidth:80,textAlign:"center"}}>
+          <div style={{color:PClr[player.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700}}>#{myRank}</div>
+          <div style={{color:PClr[player.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Rank</div>
+        </div>
+        <div style={{background:"rgba(0,0,0,0.25)",borderRadius:10,padding:"10px 16px",flex:1,minWidth:80,textAlign:"center"}}>
+          <div style={{color:PClr[player.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700}}>{myStats?.wins||0}</div>
+          <div style={{color:PClr[player.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Wins</div>
+        </div>
+        <div style={{background:"rgba(0,0,0,0.25)",borderRadius:10,padding:"10px 16px",flex:1,minWidth:80,textAlign:"center"}}>
+          <div style={{color:C.accent,fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700}}>{myStats?.pp||0}</div>
+          <div style={{color:PClr[player.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Playoff Pts</div>
+        </div>
+        <div style={{background:"rgba(0,0,0,0.25)",borderRadius:10,padding:"10px 16px",flex:1,minWidth:80,textAlign:"center"}}>
+          <div style={{color:C.red,fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700}}>{MAX_MULLIGANS-(data.meta.mulligansUsed[player.id]||0)}</div>
+          <div style={{color:PClr[player.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Mulligans</div>
+        </div>
+      </div>
+    </div>
+
+    {/* Standings mini-table */}
+    <div style={{marginBottom:20}}>
+      <div style={{color:C.dim,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8,fontWeight:700}}>Season Standings · {Object.keys(data.results||{}).length} of 36 races</div>
+      <div style={{display:"grid",gap:6}}>{standings.map((p,i)=>(
+        <div key={p.id} style={{background:PClr[p.id].bg,borderRadius:10,padding:"10px 14px",display:"flex",alignItems:"center",justifyContent:"space-between",border:"1px solid "+(p.id===player.id?C.accent:PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"55")}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:28,height:28,borderRadius:"50%",background:PClr[p.id].fg,color:PClr[p.id].bg,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div>
+            <div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:15,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}{p.id===player.id?<span style={{color:C.accent,fontSize:11,marginLeft:6}}>YOU</span>:""}</div>
+          </div>
+          <div style={{display:"flex",gap:16,alignItems:"center"}}>
+            <div style={{textAlign:"right"}}><div style={{color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:18,fontWeight:700}}>{p.pts}</div><div style={{color:PClr[p.id].fg+"88",fontSize:9,textTransform:"uppercase"}}>pts</div></div>
+            <div style={{textAlign:"right"}}><div style={{color:C.accent,fontFamily:"'Oswald',sans-serif",fontSize:14,fontWeight:700}}>+{p.pp}</div><div style={{color:PClr[p.id].fg+"88",fontSize:9,textTransform:"uppercase"}}>playoff</div></div>
+          </div>
+        </div>
+      ))}</div>
+    </div>
+
+    {/* Last race + next race */}
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
+      {lastWeek&&lastRaceInfo&&<div style={{background:C.card,borderRadius:10,padding:14,border:"1px solid "+C.border}}>
+        <div style={{color:C.dim,fontSize:10,textTransform:"uppercase",letterSpacing:2,marginBottom:6}}>Last Race</div>
+        <div style={{color:C.text,fontWeight:700,fontSize:14}}>{lastRaceInfo.r}</div>
+        <div style={{color:C.dim,fontSize:12,marginBottom:8}}>@ {lastRaceInfo.t}</div>
+        {Object.entries(lastWeek.scored||{}).sort((a,b)=>b[1].total-a[1].total).map(([pid,s],i)=>(
+          <div key={pid} style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:3}}>
+            <span style={{color:PClr[pid].fg,fontWeight:i===0?700:400}}>{i===0?"👑 ":""}{PNAME[pid]}</span>
+            <span style={{color:s.weeklyWin?C.accent:C.text,fontWeight:s.weeklyWin?700:400}}>{s.total}</span>
+          </div>
+        ))}
+      </div>}
+      {nextRace&&<div style={{background:C.card,borderRadius:10,padding:14,border:"1px solid "+C.accent+"44"}}>
+        <div style={{color:C.accent,fontSize:10,textTransform:"uppercase",letterSpacing:2,marginBottom:6}}>Next Race</div>
+        <div style={{color:C.text,fontWeight:700,fontSize:14}}>{nextRace.r}</div>
+        <div style={{color:C.dim,fontSize:12,marginBottom:8}}>@ {nextRace.t} · {nextRace.d}</div>
+        <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+          <span style={{fontSize:10,color:TTC[nextRace.ty],background:TTC[nextRace.ty]+"18",padding:"3px 8px",borderRadius:8,fontWeight:600}}>{TTL[nextRace.ty]} x{TRACK_MULTS[nextRace.ty]}</span>
+          <span style={{fontSize:10,color:C.dim,background:"rgba(255,255,255,0.05)",padding:"3px 8px",borderRadius:8}}>W{nextRace.w}</span>
+        </div>
+        <button onClick={()=>setTab("draft")} style={{marginTop:10,width:"100%",padding:"8px 0",borderRadius:8,border:"1px solid "+C.accent,background:C.accent+"22",color:C.accent,fontFamily:"'Oswald',sans-serif",fontSize:12,fontWeight:700,letterSpacing:1,cursor:"pointer",textTransform:"uppercase"}}>Go to Draft →</button>
+      </div>}
+    </div>
+  </div>);
 }
 
 function StandingsTab({data, liveScores, liveStatus}) {
@@ -351,6 +505,82 @@ function LineupsTab({data,currentWeek}) {
   </div>);
 }
 
+function LiveTab({data, liveScores, liveStatus, currentWeek}) {
+  const isActive = !!(data?.liveRace?.active && liveScores);
+  const week = data?.liveRace?.week || currentWeek;
+  const weekInfo = SCHEDULE.find(s=>s.w===week);
+  const weekPicks = data?.picks?.["w"+week] || {};
+
+  if(!isActive) return (
+    <div style={{padding:20,maxWidth:900,margin:"0 auto",position:"relative",zIndex:1}}>
+      <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:8}}>Live Scoring</h2>
+      <div style={{background:C.card,borderRadius:12,padding:40,border:"1px solid "+C.border,textAlign:"center"}}>
+        <div style={{fontSize:48,marginBottom:12}}>🏁</div>
+        <div style={{color:C.text,fontWeight:700,fontSize:18,fontFamily:"'Oswald',sans-serif",marginBottom:8}}>No Race In Progress</div>
+        <div style={{color:C.dim,fontSize:13}}>Live scoring activates when the commissioner starts a race. Check back on race day!</div>
+        {weekInfo&&<div style={{marginTop:16,color:C.accent,fontSize:13,fontWeight:600}}>Next up: W{week} {weekInfo.r} @ {weekInfo.t} · {weekInfo.d}</div>}
+      </div>
+    </div>
+  );
+
+  // Sort players by current live total (season pts + live race pts)
+  const ranked = PLAYERS.map(p=>({
+    ...p,
+    seasonPts: data.meta.standings[p.id]||0,
+    livePts: liveScores[p.id]?.total||0,
+    grandTotal: Math.round(((data.meta.standings[p.id]||0)+(liveScores[p.id]?.total||0))*100)/100,
+    drivers: liveScores[p.id]?.drivers||[],
+    picks: weekPicks[p.id]||[],
+  })).sort((a,b)=>b.livePts-a.livePts);
+
+  return (<div style={{padding:20,maxWidth:900,margin:"0 auto",position:"relative",zIndex:1}}>
+    {/* Live header */}
+    <div style={{background:"linear-gradient(90deg,#ef4444,#f59e0b)",borderRadius:10,padding:"12px 16px",marginBottom:16,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+      <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:20}}>🔴</span><div><div style={{color:"#000",fontWeight:900,fontFamily:"'Oswald',sans-serif",fontSize:18,letterSpacing:1}}>RACE IN PROGRESS</div><div style={{color:"#000",fontSize:12,opacity:0.8}}>{weekInfo?.r} @ {weekInfo?.t} — W{week}</div></div></div>
+      <div style={{textAlign:"right"}}><div style={{color:"#000",fontSize:12,fontWeight:700}}>{liveStatus}</div><div style={{color:"#000",fontSize:10,opacity:0.7}}>Updates every 30s</div></div>
+    </div>
+
+    {/* Race scoring cards */}
+    <div style={{display:"grid",gap:12}}>{ranked.map((p,i)=>{
+      const mullPicks=(p.picks||[]).filter(pk=>pk.mulligan).map(pk=>pk.driver);
+      return(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,border:"2px solid "+(i===0?"#ef4444":PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88")}}>
+        {/* Player header */}
+        <div style={{padding:"14px 16px",display:"flex",justifyContent:"space-between",alignItems:"center",borderBottom:"1px solid "+(PClr[p.id].bg==="#000000"?C.border:"rgba(0,0,0,0.2)")}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <div style={{width:34,height:34,borderRadius:"50%",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:15,fontFamily:"'Oswald',sans-serif",display:"flex",alignItems:"center",justifyContent:"center"}}>{i+1}</div>
+            <div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:18,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div><div style={{color:PClr[p.id].fg+"88",fontSize:11}}>Season: {p.seasonPts} pts</div></div>
+          </div>
+          <div style={{textAlign:"right"}}>
+            <div style={{color:p.livePts>0?C.green:p.livePts<0?C.red:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:28,fontWeight:700}}>{p.livePts>0?"+":""}{p.livePts}</div>
+            <div style={{color:PClr[p.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>This Race</div>
+          </div>
+        </div>
+        {/* Drivers */}
+        <div style={{padding:"10px 12px",display:"grid",gap:4}}>
+          {p.drivers.length===0
+            ?<div style={{color:PClr[p.id].fg+"55",fontSize:12,fontStyle:"italic",textAlign:"center",padding:8}}>No picks found</div>
+            :p.drivers.map(d=>{
+              const isMull=mullPicks.includes(d.driver);
+              const info=DRIVER_INFO[d.driver]||{};
+              return(<div key={d.driver} style={{background:PClr[p.id].bg==="#FFFFFF"?"rgba(0,0,0,0.06)":"rgba(255,255,255,0.07)",borderRadius:8,padding:"8px 12px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,flex:1}}>
+                  <div>
+                    <div style={{color:PClr[p.id].fg,fontSize:13,fontWeight:600}}>{d.driver}{isMull?" 🔄":""}{d.dnr?" (DNR)":""}</div>
+                    {info.team&&<div style={{color:PClr[p.id].fg+"77",fontSize:10}}>{info.team}{info.make&&<span style={{color:MAKE_COLORS[info.make],marginLeft:4,fontWeight:600}}>· {info.make}</span>}</div>}
+                  </div>
+                </div>
+                <div style={{textAlign:"right",minWidth:40}}>
+                  <div style={{color:d.total>0?C.green:d.total<0?C.red:PClr[p.id].fg+"88",fontWeight:700,fontSize:14,fontFamily:"'Oswald',sans-serif"}}>{d.total>0?"+":""}{d.total}</div>
+                  {d.breakdown?.slice(0,3).map((b,bi)=>(<div key={bi} style={{fontSize:9,color:PClr[p.id].fg+"66"}}>{b.label}</div>))}
+                </div>
+              </div>);
+            })}
+        </div>
+      </div>);
+    })}</div>
+  </div>);
+}
+
 function DraftTab({player,data,onDraftPick,onUndoDraft,currentWeek}) {
   const [search,setSearch]=useState("");
   const [undoMsg,setUndoMsg]=useState("");
@@ -389,7 +619,13 @@ function DraftTab({player,data,onDraftPick,onUndoDraft,currentWeek}) {
     </div>))}</div>
     {isMyTurn&&!draftComplete&&<><div style={{color:C.dim,fontSize:11,textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>Select a Driver</div>
       <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search drivers..." style={{width:"100%",padding:"10px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:14,fontFamily:"inherit",outline:"none",marginBottom:8,boxSizing:"border-box"}}/>
-      <div style={{maxHeight:300,overflowY:"auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>{available.map(d=>{const mem=isMemorial(d);return(<button key={d} onClick={()=>handlePick(d)} disabled={mem} style={{textAlign:"left",padding:"10px 12px",borderRadius:8,background:mem?C.card+"88":C.card,border:"1px solid "+(mem?C.accent+"33":C.border),color:mem?C.dim:C.text,fontSize:13,cursor:mem?"not-allowed":"pointer",fontFamily:"inherit",display:"flex",justifyContent:"space-between",alignItems:"center"}}>{d}{mem&&<span style={{fontSize:10,color:C.accent}}>🕊️ Retired</span>}</button>);})}</div></>}
+      <div style={{maxHeight:300,overflowY:"auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:4}}>{available.map(d=>{const mem=isMemorial(d);const info=DRIVER_INFO[d]||{};return(<button key={d} onClick={()=>handlePick(d)} disabled={mem} style={{textAlign:"left",padding:"8px 12px",borderRadius:8,background:mem?C.card+"88":C.card,border:"1px solid "+(mem?C.accent+"33":C.border),color:mem?C.dim:C.text,fontSize:13,cursor:mem?"not-allowed":"pointer",fontFamily:"inherit"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+          <span style={{fontWeight:600}}>{d}</span>
+          {mem&&<span style={{fontSize:10,color:C.accent}}>🕊️</span>}
+        </div>
+        {info.team&&<div style={{fontSize:10,color:C.dim,marginTop:1}}>{info.team}{info.make&&<span style={{color:MAKE_COLORS[info.make],marginLeft:4,fontWeight:600}}>{info.make}</span>}</div>}
+      </button>);})}</div></>}
     {draftState.length>0&&<div style={{marginTop:16}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><div style={{color:C.dim,fontSize:11,textTransform:"uppercase",letterSpacing:2}}>Pick Log</div>
       {player.id==="justin"&&!draftComplete&&<button onClick={async()=>{const last=draftState[draftState.length-1];if(!window.confirm("Undo last pick by "+PNAME[last.pid]+" ("+last.driver+")?"))return;const r=await onUndoDraft(currentWeek);if(r)setUndoMsg("Undid "+PNAME[r.pid]+"'s pick: "+r.driver);setTimeout(()=>setUndoMsg(""),3000);}} style={{padding:"5px 12px",borderRadius:6,border:"1px solid "+C.red+"66",background:C.red+"11",color:C.red,fontSize:11,cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>Undo Last Pick</button>}
     </div>{undoMsg&&<div style={{color:C.accent,fontSize:12,marginBottom:8,textAlign:"center"}}>{undoMsg}</div>}<div style={{display:"flex",flexDirection:"column",gap:3}}>{[...draftState].reverse().map((d,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",background:C.card,borderRadius:6,border:"1px solid "+C.border}}><span style={{fontSize:10,color:C.dim,width:24}}>#{draftState.length-i}</span><span style={{fontSize:12,color:PC[d.pid],fontWeight:600,width:80}}>{PNAME[d.pid]}</span><span style={{fontSize:12,color:C.text}}>{d.driver}</span></div>))}</div></div>}
@@ -685,7 +921,7 @@ function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,onNotifyDra
 }
 
 export default function App() {
-  const [user,setUser]=useState(null); const [tab,setTab]=useState("standings");
+  const [user,setUser]=useState(null); const [tab,setTab]=useState("welcome");
   const [data,setData]=useState(null); const [loading,setLoading]=useState(true);
   const [dbStatus,setDbStatus]=useState("connecting");
   const [liveScores,setLiveScores]=useState(null);
@@ -830,13 +1066,14 @@ export default function App() {
       <div style={{display:"flex",gap:8}}><button onClick={handleInstall} style={{padding:"6px 14px",borderRadius:8,border:"none",background:"#000",color:"#fff",fontFamily:"'Oswald',sans-serif",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:1}}>INSTALL</button><button onClick={()=>setShowInstall(false)} style={{padding:"6px 8px",borderRadius:8,border:"none",background:"rgba(0,0,0,0.2)",color:"#000",fontSize:12,cursor:"pointer",fontFamily:"inherit"}}>✕</button></div>
     </div>}
     <FlagBanner user={user} data={data} currentWeek={currentWeek} onGoTo={setTab}/>
-    {tab==="standings"&&<StandingsTab data={data} liveScores={liveScores} liveStatus={liveStatus}/>}
+    {tab==="welcome"&&<WelcomeTab player={user} data={data} setTab={setTab}/>}
     {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
     {tab==="lineups"&&<LineupsTab data={data} currentWeek={currentWeek}/>}
+    {tab==="mulligans"&&<MulligansTab player={user} data={data} currentWeek={currentWeek} onApplyMulligan={handleApplyMulligan}/>}
+    {tab==="live"&&<LiveTab data={data} liveScores={liveScores} liveStatus={liveStatus} currentWeek={currentWeek}/>}
     {tab==="results"&&<ResultsTab data={data}/>}
     {tab==="playoffs"&&<PlayoffsTab data={data}/>}
     {tab==="schedule"&&<ScheduleTab data={data}/>}
-    {tab==="mulligans"&&<MulligansTab player={user} data={data} currentWeek={currentWeek} onApplyMulligan={handleApplyMulligan}/>}
     {tab==="rules"&&<RulesTab/>}
     {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}
     {tab==="commissioner"&&user.id==="justin"&&<CommissionerTab data={data} onPostResults={handlePostResults} onSavePicks={handleSavePicksOnly} onResetWeek={handleResetWeek} onNotifyDraft={handleStartDraftNotify} onToggleLive={handleToggleLive} currentWeek={currentWeek}/>}
