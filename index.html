@@ -2,18 +2,67 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- ── PWA / App Identity ── -->
     <title>FERDA Racing League</title>
+    <meta name="description" content="Fantasy NASCAR scoring app — FERDA Racing League 2026" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- ── Theme Colors ── -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="msapplication-navbutton-color" content="#000000" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- ── Apple PWA Tags ── -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="FERDA Racing" />
+    <link rel="apple-touch-icon" href="/icons/icon-180x180.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128x128.png" />
+
+    <!-- ── Favicon ── -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <!-- ── Google Fonts ── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Oswald:wght@500;700&family=Racing+Sans+One&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700;900&family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+
+    <!-- ── iOS Splash Screens (optional but nice) ── -->
+    <meta name="mobile-web-app-capable" content="yes" />
+
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { background: #0a0e17; font-family: 'Barlow Condensed', 'Oswald', sans-serif; }
+      /* Prevent flash of unstyled content */
+      html, body, #root {
+        margin: 0; padding: 0;
+        background-color: #0a0e17;
+        min-height: 100vh;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+      }
+      /* Safe area insets for iPhone notch/dynamic island */
+      #root {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
     </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- ── Service Worker Registration ── -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered:', reg.scope))
+            .catch(err => console.warn('SW registration failed:', err));
+        });
+      }
+    </script>
   </body>
 </html>

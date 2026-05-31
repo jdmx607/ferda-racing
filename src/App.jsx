@@ -688,8 +688,26 @@ export default function App() {
   const [user,setUser]=useState(null); const [tab,setTab]=useState("standings");
   const [data,setData]=useState(null); const [loading,setLoading]=useState(true);
   const [dbStatus,setDbStatus]=useState("connecting");
-  const [liveScores,setLiveScores]=useState(null); // provisional scores during live race
-  const [liveStatus,setLiveStatus]=useState(""); // "Live · updated X:XX ago"
+  const [liveScores,setLiveScores]=useState(null);
+  const [liveStatus,setLiveStatus]=useState("");
+  const [installPrompt,setInstallPrompt]=useState(null);
+  const [showInstall,setShowInstall]=useState(false);
+
+  // Capture the browser's install prompt (Chrome/Android)
+  useEffect(()=>{
+    const handler = e => { e.preventDefault(); setInstallPrompt(e); setShowInstall(true); };
+    window.addEventListener('beforeinstallprompt', handler);
+    // Hide if already installed
+    window.addEventListener('appinstalled', ()=>setShowInstall(false));
+    return ()=>window.removeEventListener('beforeinstallprompt', handler);
+  },[]);
+
+  const handleInstall = async () => {
+    if(!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if(outcome === 'accepted') setShowInstall(false);
+  };
 
   // Live polling effect — activates when data.liveRace.active === true
   useEffect(()=>{
@@ -807,6 +825,10 @@ export default function App() {
     <MemorialBackdrop/>
     <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)}/>
     {dbStatus==="offline"&&<div style={{background:C.red+"22",color:C.red,textAlign:"center",padding:"6px",fontSize:11,fontWeight:600,position:"relative",zIndex:1}}>OFFLINE MODE — Firebase not connected</div>}
+    {showInstall&&<div style={{background:"linear-gradient(90deg,#f59e0b,#ef4444)",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative",zIndex:2}}>
+      <div style={{display:"flex",alignItems:"center",gap:10}}><img src="/icons/icon-72x72.png" style={{width:36,height:36,borderRadius:8}}/><div><div style={{color:"#000",fontWeight:700,fontSize:13}}>Install FERDA Racing</div><div style={{color:"#000",fontSize:11,opacity:0.8}}>Add to home screen for the best experience</div></div></div>
+      <div style={{display:"flex",gap:8}}><button onClick={handleInstall} style={{padding:"6px 14px",borderRadius:8,border:"none",background:"#000",color:"#fff",fontFamily:"'Oswald',sans-serif",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:1}}>INSTALL</button><button onClick={()=>setShowInstall(false)} style={{padding:"6px 8px",borderRadius:8,border:"none",background:"rgba(0,0,0,0.2)",color:"#000",fontSize:12,cursor:"pointer",fontFamily:"inherit"}}>✕</button></div>
+    </div>}
     <FlagBanner user={user} data={data} currentWeek={currentWeek} onGoTo={setTab}/>
     {tab==="standings"&&<StandingsTab data={data} liveScores={liveScores} liveStatus={liveStatus}/>}
     {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
