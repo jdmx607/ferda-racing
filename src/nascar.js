@@ -211,3 +211,64 @@ export async function getRaceStatus() {
     ||await tryFetch(`${PROXY_BASE}?path=/2026/race_list/latest_completed.json`);
   return { status:data?"ok":"unknown", latestRace:data?.race_no||data?.RaceNo||0 };
 }
+
+// ─── DRIVER PROJECTIONS (SportsDataIO) ───────────────────────────────────────
+// Pre-race projected fantasy stats for the upcoming race.
+// Also doubles as an API connectivity test — if this returns data, live scoring will work.
+
+export async function fetchDriverProjections(week) {
+  // Get race ID for this week from SportsDataIO schedule
+  const races = await tryFetch(`${SPORTSDATA_BASE}/Races/2026?key=${SPORTSDATA_KEY}`);
+  if (!races || !Array.isArray(races)) {
+    return { ok:false, error:"SportsDataIO unreachable — check API key or network.", apiWorking:false };
+  }
+
+  const cup = races
+    .filter(r => (r.SeriesID===100||r.SeriesID===1||String(r.Series||"").includes("Cup")) && r.PointsRace!==false)
+    .sort((a,b)=> new Date(a.Day||a.Date||0) - new Date(b.Day||b.Date||0));
+
+  const race = cup[week - 1];
+  if (!race) return { ok:false, error:`No race found for Week ${week}.`, apiWorking:true };
+
+  const raceId = race.RaceID || race.RaceId;
+  const projections = await tryFetch(`${SPORTSDATA_BASE}/DriverRaceProjections/${raceId}?key=${SPORTSDATA_KEY}`);
+
+  if (!projections || !Array.isArray(projections)) {
+    // Race may not have projections yet (too far out, or projections not released)
+    return {
+      ok:false,
+      error:`No projections available for Week ${week} yet. They usually post 2-3 days before the race.`,
+      apiWorking:true, // Schedule fetch worked, so API is live
+      raceName: race.Name || `Week ${week}`,
+      raceId,
+    };
+  }
+
+  // Map SportsDataIO projections to something readable
+  const drivers = projections
+    .filter(p => p.ProjectedFantasyPoints > 0)
+    .map(p => {
+      const carNo = String(p.Number || p.CarNumber || "");
+      const name = carToDriver(carNo, p.FirstName || "", p.LastName || "");
+      return {
+        name,
+        carNo,
+        projectedPts: Math.round((p.ProjectedFantasyPoints || 0) * 10) / 10,
+        projectedStart: p.ProjectedStartPosition || p.StartPosition || 0,
+        projectedFinish: p.ProjectedFinishPosition || 0,
+        projectedLapsLed: Math.round(p.ProjectedLapsLed || 0),
+        driverName: `${p.FirstName||""} ${p.LastName||""}`.trim(),
+      };
+    })
+    .sort((a, b) => b.projectedPts - a.projectedPts);
+
+  return {
+    ok: true,
+    apiWorking: true,
+    drivers,
+    raceName: race.Name || `Week ${week}`,
+    trackName: race.Track || "",
+    raceId,
+    source: "SportsDataIO",
+  };
+}

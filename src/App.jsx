@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { loadLeagueData, saveLeagueData, subscribeToLeagueData, loadLocalBackup, isFirebaseReady } from "./firebase";
 import { HISTORICAL_PICKS, HISTORICAL_RESULTS } from "./historicalData";
 import { sendDraftEmail, isEmailConfigured, DEFAULT_EMAILS } from "./email";
-import { fetchNASCARResults, fetchLiveRaceData } from "./nascar";
+import { fetchNASCARResults, fetchLiveRaceData, fetchDriverProjections } from "./nascar";
 
 // ─── LIVE SCORING ────────────────────────────────────────────────
 // Firestore stores a liveRace flag: { active: bool, week: int, lastFetch: string }
@@ -23,6 +23,7 @@ const ACTIVE_PICKS = 5;
 const PICKS_PER_WEEK = 6;
 const MAX_MULLIGANS = 10;
 const PLAYOFF_START_WEEK = 27;
+const REG_SEASON_CHAMP_BONUS = 50; // Regular season leader gets +50 playoff bonus pts
 const GARAGE_PICK_ENABLED = false;
 // Drivers frozen in memoriam — cannot be picked, shown with tribute marker
 const MEMORIAL_DRIVERS = { "#8 Kyle Busch": { years: "1985 – 2026" } };
@@ -375,6 +376,7 @@ function Nav({player,tab,setTab,onLogout}) {
     {id:"live",l:"🔴 Live"},
     {id:"results",l:"Results"},
     {id:"playoffs",l:"Playoffs"},
+    {id:"projections",l:"Projections"},
     {id:"schedule",l:"Schedule"},
     {id:"rules",l:"Rules"},
     {id:"settings",l:"Settings"},
@@ -705,25 +707,55 @@ function ResultsTab({data}) {
 }
 
 function PlayoffsTab({data}) {
-  const ps=useMemo(()=>PLAYERS.map(p=>{const base=1000;const pp=data.meta.playoffPts[p.id]||0;return{...p,base,pp,total:base+pp,wins:Object.values(data.results||{}).filter(r=>r.scored?.[p.id]?.weeklyWin).length,regPts:data.meta.standings[p.id]||0};}).sort((a,b)=>b.total-a.total),[data]);
   const scored=Object.keys(data.results||{}).length;
   const weeksUntil=Math.max(0,PLAYOFF_START_WEEK-scored);
+  const playoffsStarted=scored>=PLAYOFF_START_WEEK;
+
+  // Find the regular season leader for the +50 bonus
+  const regStandings=PLAYERS.map(p=>({id:p.id,pts:data.meta.standings[p.id]||0})).sort((a,b)=>b.pts-a.pts);
+  const regLeader=regStandings[0]?.id;
+  const isTied=regStandings[0]?.pts===regStandings[1]?.pts;
+
+  const ps=useMemo(()=>PLAYERS.map(p=>{
+    const base=1000;
+    const pp=data.meta.playoffPts[p.id]||0;
+    const champBonus=(p.id===regLeader&&!isTied)?REG_SEASON_CHAMP_BONUS:0;
+    return{...p,base,pp,champBonus,total:base+pp+champBonus,
+      wins:Object.values(data.results||{}).filter(r=>r.scored?.[p.id]?.weeklyWin).length,
+      regPts:data.meta.standings[p.id]||0};
+  }).sort((a,b)=>b.total-a.total),[data,regLeader,isTied]);
   return (<div style={{padding:20,maxWidth:900,margin:"0 auto",position:"relative",zIndex:1}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Playoff Picture</h2>
     <div style={{color:C.dim,fontSize:13,marginBottom:8}}>If the chase started today — {scored} races completed, {weeksUntil} until playoffs</div>
-    <div style={{background:C.card,borderRadius:10,padding:14,marginBottom:20,border:"1px solid "+C.border}}><div style={{color:C.dim,fontSize:11}}>Everyone starts at <span style={{color:C.accent,fontWeight:700}}>1,000</span> base. Playoff points (weekly wins +25 each, plus bonus points) carry over.</div></div>
-    <div style={{display:"grid",gap:12}}>{ps.map((p,i)=>(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:"18px 20px",border:"2px solid "+(i===0?C.accent:PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88")}}>
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-        <div style={{display:"flex",alignItems:"center",gap:14}}><div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:20,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div><div style={{color:PClr[p.id].fg+"99",fontSize:12}}>{p.wins} weekly win{p.wins!==1?"s":""}</div></div></div>
-        <div style={{textAlign:"right"}}><div style={{color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:32,fontWeight:700}}>{p.total}</div><div style={{color:PClr[p.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Chase Pts</div></div>
+    <div style={{background:C.card,borderRadius:10,padding:14,marginBottom:16,border:"1px solid "+C.border}}>
+      <div style={{color:C.dim,fontSize:11,marginBottom:4}}>Everyone starts at <span style={{color:C.accent,fontWeight:700}}>1,000</span> base. Playoff points (weekly wins +25, bonus pts) carry over. Regular season leader earns <span style={{color:C.accent,fontWeight:700}}>+{REG_SEASON_CHAMP_BONUS} bonus pts</span>.</div>
+      {!isTied&&regLeader&&<div style={{color:C.accent,fontSize:12,fontWeight:700}}>🏆 Current reg. season leader: {PNAME[regLeader]} {playoffsStarted?"(+50 applied)":"(projected +50 if they hold the lead)"}</div>}
+      {isTied&&<div style={{color:"#f59e0b",fontSize:12}}>⚠️ Tie at the top — no bonus awarded until the lead is broken</div>}
+    </div>
+    <div style={{display:"grid",gap:12}}>{ps.map((p,i)=>(
+      <div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:"18px 20px",border:"2px solid "+(i===0?C.accent:PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88")}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+          <div style={{display:"flex",alignItems:"center",gap:14}}>
+            <div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div>
+            <div>
+              <div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:20,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}{p.champBonus>0?<span style={{fontSize:12,color:C.accent,marginLeft:8}}>👑 Reg. Champion</span>:""}</div>
+              <div style={{color:PClr[p.id].fg+"99",fontSize:12}}>{p.wins} weekly win{p.wins!==1?"s":""}</div>
+            </div>
+          </div>
+          <div style={{textAlign:"right"}}>
+            <div style={{color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:32,fontWeight:700}}>{p.total}</div>
+            <div style={{color:PClr[p.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Chase Pts</div>
+          </div>
+        </div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          <div style={{background:"rgba(0,0,0,0.2)",borderRadius:8,padding:"8px 12px",flex:1,minWidth:80}}><div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase"}}>Base</div><div style={{fontSize:16,fontWeight:700,color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif"}}>{p.base}</div></div>
+          <div style={{background:"rgba(0,0,0,0.2)",borderRadius:8,padding:"8px 12px",flex:1,minWidth:80}}><div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase"}}>Playoff Pts</div><div style={{fontSize:16,fontWeight:700,color:C.accent,fontFamily:"'Oswald',sans-serif"}}>+{p.pp}</div></div>
+          {p.champBonus>0&&<div style={{background:"rgba(245,158,11,0.2)",borderRadius:8,padding:"8px 12px",flex:1,minWidth:80,border:"1px solid "+C.accent+"44"}}><div style={{fontSize:10,color:C.accent,textTransform:"uppercase"}}>Champ Bonus</div><div style={{fontSize:16,fontWeight:700,color:C.accent,fontFamily:"'Oswald',sans-serif"}}>+{p.champBonus}</div></div>}
+          <div style={{background:"rgba(0,0,0,0.2)",borderRadius:8,padding:"8px 12px",flex:1,minWidth:80}}><div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase"}}>Reg Season</div><div style={{fontSize:16,fontWeight:700,color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif"}}>{p.regPts}</div></div>
+        </div>
       </div>
-      <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
-        <div style={{background:"rgba(0,0,0,0.2)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:90}}><div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase"}}>Base</div><div style={{fontSize:18,fontWeight:700,color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif"}}>{p.base}</div></div>
-        <div style={{background:"rgba(0,0,0,0.2)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:90}}><div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase"}}>Playoff Pts</div><div style={{fontSize:18,fontWeight:700,color:C.accent,fontFamily:"'Oswald',sans-serif"}}>+{p.pp}</div></div>
-        <div style={{background:"rgba(0,0,0,0.2)",borderRadius:8,padding:"8px 14px",flex:1,minWidth:90}}><div style={{fontSize:10,color:PClr[p.id].fg+"88",textTransform:"uppercase"}}>Reg Season</div><div style={{fontSize:18,fontWeight:700,color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif"}}>{p.regPts}</div></div>
-      </div>
-    </div>))}</div>
-    <div style={{marginTop:20,background:C.card,borderRadius:10,padding:14,border:"1px solid "+C.border}}><div style={{color:C.dim,fontSize:12,lineHeight:1.6}}>The Chase begins Week {PLAYOFF_START_WEEK} (Darlington). All players reset to 1,000 + accumulated playoff points, then regular scoring continues through Week 36 (Homestead).</div></div>
+    ))}</div>
+    <div style={{marginTop:20,background:C.card,borderRadius:10,padding:14,border:"1px solid "+C.border}}><div style={{color:C.dim,fontSize:12,lineHeight:1.6}}>The Chase begins Week {PLAYOFF_START_WEEK} (Darlington). All players reset to 1,000 + playoff pts + regular season champion bonus (if applicable), then regular scoring continues through Week 36 (Homestead).</div></div>
   </div>);
 }
 
@@ -823,8 +855,79 @@ function SettingsTab({player,data,onSaveSettings}) {
   </div>);
 }
 
+function ProjectionsTab({data, currentWeek}) {
+  const [projections,setProjections]=useState(null);
+  const [loading,setLoading]=useState(false);
+  const [msg,setMsg]=useState("");
+  const weekInfo=SCHEDULE.find(s=>s.w===currentWeek);
+
+  const load=async()=>{
+    setLoading(true); setMsg(""); setProjections(null);
+    const result=await fetchDriverProjections(currentWeek);
+    setLoading(false);
+    if(!result.ok){
+      setMsg(result.error);
+      if(result.apiWorking) setMsg(prev=>prev+" ✅ API connection confirmed — SportsDataIO is reachable.");
+      return;
+    }
+    setProjections(result);
+  };
+
+  // Get the current week's picks to highlight drafted drivers
+  const weekPicks=data.picks?.["w"+currentWeek]||data.drafts?.["w"+currentWeek]||{};
+  const pickedDrivers=new Set();
+  Object.values(weekPicks).forEach(pks=>(pks||[]).forEach(pk=>{if(pk.driver||typeof pk==="string")pickedDrivers.add(pk.driver||pk);}));
+
+  return (<div style={{padding:20,maxWidth:900,margin:"0 auto",position:"relative",zIndex:1}}>
+    <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Driver Projections</h2>
+    {weekInfo&&<div style={{color:C.dim,fontSize:14,marginBottom:12}}>W{currentWeek} · {weekInfo.r} @ {weekInfo.t} · <span style={{color:TTC[weekInfo.ty],fontWeight:600}}>{TTL[weekInfo.ty]} x{TRACK_MULTS[weekInfo.ty]}</span></div>}
+
+    <div style={{background:C.card,borderRadius:10,padding:14,marginBottom:16,border:"1px solid "+C.border}}>
+      <div style={{color:C.dim,fontSize:12,marginBottom:10}}>Pre-race projected fantasy points from SportsDataIO — the same API used for live scoring. Projections are based on historical performance, track history, and practice data. Usually available 2–3 days before the race. <span style={{color:C.accent}}>Drafted drivers are highlighted.</span></div>
+      <button onClick={load} disabled={loading} style={{padding:"10px 20px",borderRadius:8,border:"none",background:loading?"#374151":C.green,color:"#fff",fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:700,letterSpacing:1,cursor:loading?"wait":"pointer",textTransform:"uppercase"}}>
+        {loading?"⏳ Fetching from SportsDataIO...":"🔌 Load Projections / Test API"}
+      </button>
+    </div>
+
+    {msg&&<div style={{background:C.card,borderRadius:10,padding:14,marginBottom:16,border:"1px solid "+(msg.includes("✅")?C.green:C.border),color:msg.includes("✅")?C.green:C.dim,fontSize:13}}>{msg}</div>}
+
+    {projections&&<>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12,flexWrap:"wrap",gap:8}}>
+        <div style={{color:C.dim,fontSize:12}}>Source: {projections.source} · {projections.drivers.length} drivers · {projections.raceName}</div>
+        <div style={{background:C.green+"22",color:C.green,padding:"4px 12px",borderRadius:8,fontSize:12,fontWeight:700}}>✅ API Working — Live scoring ready for race day</div>
+      </div>
+
+      <div style={{background:C.card,borderRadius:10,border:"1px solid "+C.border,overflow:"hidden"}}>
+        {/* Header */}
+        <div style={{display:"grid",gridTemplateColumns:"32px 1fr 60px 60px 60px 70px",gap:8,padding:"8px 14px",background:"rgba(255,255,255,0.04)",borderBottom:"1px solid "+C.border}}>
+          {["#","Driver","Start","Finish","Laps Led","Proj Pts"].map(h=>(<span key={h} style={{color:C.dim,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>{h}</span>))}
+        </div>
+        {/* Rows */}
+        <div style={{maxHeight:600,overflowY:"auto"}}>
+          {projections.drivers.map((d,i)=>{
+            const isPicked=pickedDrivers.has(d.name);
+            const info=DRIVER_INFO[d.name]||{};
+            return(<div key={d.name} style={{display:"grid",gridTemplateColumns:"32px 1fr 60px 60px 60px 70px",gap:8,padding:"9px 14px",borderBottom:"1px solid "+C.border+"44",background:isPicked?"rgba(245,158,11,0.08)":"transparent",alignItems:"center"}}>
+              <span style={{color:C.dim,fontSize:12,fontWeight:700}}>{i+1}</span>
+              <div>
+                <div style={{color:isPicked?C.accent:C.text,fontSize:13,fontWeight:isPicked?700:400}}>{d.name}{isPicked?" ✓":""}</div>
+                {info.team&&<div style={{fontSize:10,color:C.dim}}>{info.team}{info.make&&<span style={{color:MAKE_COLORS[info.make],marginLeft:4,fontWeight:600}}>{info.make}</span>}</div>}
+              </div>
+              <span style={{color:C.dim,fontSize:12,textAlign:"center"}}>{d.projectedStart||"—"}</span>
+              <span style={{color:C.dim,fontSize:12,textAlign:"center"}}>{d.projectedFinish||"—"}</span>
+              <span style={{color:C.dim,fontSize:12,textAlign:"center"}}>{d.projectedLapsLed||0}</span>
+              <span style={{color:d.projectedPts>=40?C.green:d.projectedPts>=25?C.accent:C.text,fontSize:13,fontWeight:700,textAlign:"right",fontFamily:"'Oswald',sans-serif"}}>{d.projectedPts}</span>
+            </div>);
+          })}
+        </div>
+      </div>
+      <div style={{color:C.dim,fontSize:11,marginTop:8}}>Projections are SportsDataIO's estimates, not ours. Actual FERDA scoring uses our own rules (stage points, net position, etc.) and will differ.</div>
+    </>}
+  </div>);
+}
+
 function RulesTab() {
-  const rules=[{t:"Draft System",c:"Draft each week. Last week's loser picks first, winner picks last. Same order all 5 rounds."},{t:"Finish Points",c:"P1: 55, P2: 35, then P3: 34 decreasing by 1 to P36: 1. P37-40: 1 each."},{t:"Top Finish Bonus",c:"Top 5 finish: +2 bonus pts. Top 10 finish: +1 bonus pt."},{t:"Stage Points",c:"Top 10 each stage: 1st=10, 2nd=9... 10th=1. The Coca-Cola 600 has 3 stages."},{t:"Laps Led",c:"Per lap led x track modifier: SS x1.0, INT x0.5, ST x0.2, RC x1.5"},{t:"Net Position",c:"+/-1 pt per spot gained/lost (qualifying to finish). Capped at +/-10."},{t:"Bonuses",c:"Pole: 5 | Stage Win: 2.5 each | Fastest Lap: 1 | Most Laps Led: 5 | Led a Lap: 0.5/driver | Sweep (Pole + all stage wins): 12.5"},{t:"DNF / DQ",c:"DNF drivers score normally — finish position, net position, and any stage points earned still apply. DQ = -5 points total."},{t:"Weekly Win",c:"Highest scorer earns 25 playoff points. Tiebreak: had the race winner, then highest single-driver score."},{t:"Playoffs (W27+)",c:"Reset to 1,000 base. Weekly wins (x25) + bonus pts carry over."},{t:"Mulligans",c:"10/season. Replacement driver earns finish position points ONLY."}];
+  const rules=[{t:"Draft System",c:"Draft each week. Last week's loser picks first, winner picks last. Same order all 5 rounds."},{t:"Finish Points",c:"P1: 55, P2: 35, then P3: 34 decreasing by 1 to P36: 1. P37-40: 1 each."},{t:"Top Finish Bonus",c:"Top 5 finish: +2 bonus pts. Top 10 finish: +1 bonus pt."},{t:"Stage Points",c:"Top 10 each stage: 1st=10, 2nd=9... 10th=1. The Coca-Cola 600 has 3 stages."},{t:"Laps Led",c:"Per lap led x track modifier: SS x1.0, INT x0.5, ST x0.2, RC x1.5"},{t:"Net Position",c:"+/-1 pt per spot gained/lost (qualifying to finish). Capped at +/-10."},{t:"Bonuses",c:"Pole: 5 | Stage Win: 2.5 each | Fastest Lap: 1 | Most Laps Led: 5 | Led a Lap: 0.5/driver | Sweep (Pole + all stage wins): 12.5"},{t:"DNF / DQ",c:"DNF drivers score normally — finish position, net position, and any stage points earned still apply. DQ = -5 points total."},{t:"Weekly Win",c:"Highest scorer earns 25 playoff points. Tiebreak: had the race winner, then highest single-driver score."},{t:"Playoffs (W27+)",c:"Reset to 1,000 base. Weekly wins (x25) + bonus pts carry over. Regular season leader earns +50 bonus pts entering the Chase."},{t:"Mulligans",c:"10/season. Replacement driver earns finish position points ONLY."}];
   return (<div style={{padding:20,maxWidth:700,margin:"0 auto",position:"relative",zIndex:1}}><h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:16}}>Scoring Rules</h2>
     {rules.map(r=>(<div key={r.t} style={{background:C.card,borderRadius:10,padding:"12px 16px",marginBottom:8,border:"1px solid "+C.border}}><div style={{color:C.accent,fontWeight:700,fontSize:13,marginBottom:3,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1}}>{r.t}</div><div style={{color:C.dim,fontSize:13,lineHeight:1.5}}>{r.c}</div></div>))}</div>);
 }
@@ -1146,6 +1249,7 @@ export default function App() {
     {tab==="live"&&<LiveTab data={data} liveScores={liveScores} liveStatus={liveStatus} currentWeek={currentWeek}/>}
     {tab==="results"&&<ResultsTab data={data}/>}
     {tab==="playoffs"&&<PlayoffsTab data={data}/>}
+    {tab==="projections"&&<ProjectionsTab data={data} currentWeek={currentWeek}/>}
     {tab==="schedule"&&<ScheduleTab data={data}/>}
     {tab==="rules"&&<RulesTab/>}
     {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}
