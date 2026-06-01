@@ -319,6 +319,34 @@ function Banner({flag,text,onClick}){
   </div>);
 }
 
+// Helper: find last week's winner and loser from scored results
+function getLastWeekResults(data) {
+  const weeks=Object.keys(data.results||{}).map(k=>parseInt(k.replace("w",""))).sort((a,b)=>b-a);
+  if(!weeks.length) return null;
+  const key="w"+weeks[0];
+  const scored=data.results[key]?.scored;
+  if(!scored) return null;
+  const sorted=Object.entries(scored).sort((a,b)=>b[1].total-a[1].total);
+  return { week:weeks[0], winner:sorted[0]?.[0], loser:sorted[sorted.length-1]?.[0], scores:scored };
+}
+
+function WinnerModal({player, data, onDismiss}) {
+  const last=getLastWeekResults(data);
+  if(!last||last.winner!==player.id) return null;
+  const raceInfo=SCHEDULE.find(s=>s.w===last.week);
+  return (<div style={{position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.85)"}} onClick={onDismiss}>
+    <div style={{background:PClr[player.id].bg,borderRadius:20,padding:"40px 32px",maxWidth:340,width:"90vw",textAlign:"center",border:"3px solid "+C.accent,boxShadow:"0 0 60px "+C.accent+"66"}} onClick={e=>e.stopPropagation()}>
+      <div style={{fontSize:64,marginBottom:12}}>🏆</div>
+      <div style={{color:C.accent,fontFamily:"'Oswald',sans-serif",fontSize:13,letterSpacing:3,textTransform:"uppercase",marginBottom:4}}>Weekly Winner</div>
+      <div style={{color:PClr[player.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:36,fontWeight:900,marginBottom:4}}>{player.name}</div>
+      {raceInfo&&<div style={{color:PClr[player.id].fg+"88",fontSize:13,marginBottom:4}}>{raceInfo.r}</div>}
+      <div style={{color:C.accent,fontFamily:"'Oswald',sans-serif",fontSize:20,fontWeight:700,marginBottom:4}}>+25 Playoff Points</div>
+      <div style={{color:PClr[player.id].fg+"66",fontSize:12,marginBottom:24}}>{last.scores[player.id]?.total} pts scored</div>
+      <button onClick={onDismiss} style={{width:"100%",padding:"12px 0",borderRadius:10,border:"none",background:C.accent,color:"#000",fontFamily:"'Oswald',sans-serif",fontSize:15,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:"pointer"}}>LET'S RACE 🏁</button>
+    </div>
+  </div>);
+}
+
 function LoginScreen({onLogin}) {
   const [sel,setSel]=useState(null); const [pw,setPw]=useState(""); const [err,setErr]=useState("");
   const go=()=>{const p=PLAYERS.find(x=>x.id===sel);if(p&&pw===p.password)onLogin(p);else setErr("Wrong password");};
@@ -358,7 +386,7 @@ function Nav({player,tab,setTab,onLogout}) {
   </nav>);
 }
 
-function WelcomeTab({player, data, setTab}) {
+function WelcomeTab({player, data, setTab, liveScores, liveStatus}) {
   const standings=useMemo(()=>PLAYERS.map(p=>({...p,pts:data.meta.standings[p.id]||0,pp:data.meta.playoffPts[p.id]||0,wins:Object.values(data.results||{}).filter(r=>r.scored?.[p.id]?.weeklyWin).length})).sort((a,b)=>b.pts-a.pts),[data]);
   const lastWeekKey=Object.keys(data.results||{}).map(k=>parseInt(k.replace("w",""))).sort((a,b)=>b-a)[0];
   const lastWeek=lastWeekKey?data.results["w"+lastWeekKey]:null;
@@ -415,6 +443,22 @@ function WelcomeTab({player, data, setTab}) {
       ))}</div>
     </div>
 
+    {/* Live race widget — shows when active */}
+    {data?.liveRace?.active&&liveScores&&<div style={{marginBottom:20}}>
+      <div style={{background:"linear-gradient(90deg,#ef4444,#f59e0b)",borderRadius:10,padding:"10px 14px",marginBottom:8,display:"flex",justifyContent:"space-between",alignItems:"center",cursor:"pointer"}} onClick={()=>setTab("live")}>
+        <div style={{color:"#000",fontWeight:900,fontFamily:"'Oswald',sans-serif",fontSize:15,letterSpacing:1}}>🔴 LIVE RACE IN PROGRESS</div>
+        <div style={{color:"#000",fontSize:11,fontWeight:600}}>{liveStatus} → View Live</div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+        {Object.entries(liveScores).sort((a,b)=>b[1].total-a[1].total).map(([pid,s],i)=>(<div key={pid} onClick={()=>setTab("live")} style={{background:PClr[pid].bg,borderRadius:8,padding:"8px 12px",cursor:"pointer",border:"1px solid "+(PClr[pid].bg==="#000000"?C.border:PClr[pid].bg+"88")}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span style={{color:PClr[pid].fg,fontWeight:700,fontSize:13}}>{i===0?"👑 ":""}{PNAME[pid]}</span>
+            <span style={{color:s.total>0?C.green:s.total<0?C.red:PClr[pid].fg,fontWeight:700,fontFamily:"'Oswald',sans-serif",fontSize:16}}>{s.total>0?"+":""}{s.total}</span>
+          </div>
+        </div>))}
+      </div>
+    </div>}
+
     {/* Last race + next race */}
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:20}}>
       {lastWeek&&lastRaceInfo&&<div style={{background:C.card,borderRadius:10,padding:14,border:"1px solid "+C.border}}>
@@ -467,7 +511,7 @@ function StandingsTab({data, liveScores, liveStatus}) {
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>{isLive?"Live Standings":"Season Standings"}</h2>
     <div style={{color:C.dim,fontSize:13,marginBottom:20}}>{isLive?"Provisional — updates every 30s":""+Object.keys(data.results||{}).length+" of 36 races scored"}</div>
     <div style={{display:"grid",gap:12}}>{display.map((p,i)=>(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:"16px 20px",border:"2px solid "+(i===0?(isLive?"#ef4444":C.accent):PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88"),display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-      <div style={{display:"flex",alignItems:"center",gap:14}}><div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:19,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div><div style={{color:PClr[p.id].fg+"99",fontSize:12}}>{p.wins} win{p.wins!==1?"s":""} · {p.pp} playoff pts{isLive&&p.liveScore!==0?<span style={{marginLeft:8,color:p.liveScore>0?C.green:C.red,fontWeight:700}}>{p.liveScore>0?"+":""}{p.liveScore} live</span>:""}</div></div></div>
+      <div style={{display:"flex",alignItems:"center",gap:14}}><div style={{width:38,height:38,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:17,fontFamily:"'Oswald',sans-serif"}}>{i+1}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:19,fontFamily:"'Barlow Condensed',sans-serif"}}>{p.name}</div><div style={{color:PClr[p.id].fg+"99",fontSize:12}}>{p.wins} win{p.wins!==1?"s":""} · {p.pp} playoff pts · <span style={{color:(MAX_MULLIGANS-(data.meta.mulligansUsed[p.id]||0))<=1?C.red:(MAX_MULLIGANS-(data.meta.mulligansUsed[p.id]||0))<=5?"#f59e0b":PClr[p.id].fg+"88"}}>M: {MAX_MULLIGANS-(data.meta.mulligansUsed[p.id]||0)}</span>{isLive&&p.liveScore!==0?<span style={{marginLeft:8,color:p.liveScore>0?C.green:C.red,fontWeight:700}}>{p.liveScore>0?"+":""}{p.liveScore} live</span>:""}</div></div></div>
       <div style={{textAlign:"right"}}><div style={{color:PClr[p.id].fg,fontFamily:"'Oswald',sans-serif",fontSize:30,fontWeight:700}}>{p.pts}</div><div style={{color:PClr[p.id].fg+"88",fontSize:10,textTransform:"uppercase",letterSpacing:1}}>Points</div></div>
     </div>))}</div></div>);
 }
@@ -496,7 +540,7 @@ function LineupsTab({data,currentWeek}) {
     :<div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12}}>
       {PLAYERS.map(p=>{const picks=lineups[p.id]||[];const mullPicks=(savedPicks[p.id]||[]).filter(pk=>pk.mulligan).map(pk=>pk.driver);
       return(<div key={p.id} style={{background:PClr[p.id].bg,borderRadius:12,padding:16,border:"2px solid "+(PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"88")}}>
-        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}><div style={{width:32,height:32,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:14,fontFamily:"'Oswald',sans-serif"}}>{PNAME[p.id][0]}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:17,fontFamily:"'Barlow Condensed',sans-serif"}}>{PNAME[p.id]}</div><div style={{color:PClr[p.id].fg+"88",fontSize:11}}>{picks.length}/{ACTIVE_PICKS} drivers</div></div></div>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}><div style={{width:32,height:32,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:PClr[p.id].fg,color:PClr[p.id].bg,fontWeight:700,fontSize:14,fontFamily:"'Oswald',sans-serif"}}>{PNAME[p.id][0]}</div><div><div style={{color:PClr[p.id].fg,fontWeight:700,fontSize:17,fontFamily:"'Barlow Condensed',sans-serif"}}>{PNAME[p.id]}</div><div style={{color:PClr[p.id].fg+"88",fontSize:11}}>{picks.length}/{ACTIVE_PICKS} drivers · <span style={{color:(MAX_MULLIGANS-(data.meta.mulligansUsed[p.id]||0))<=1?C.red:(MAX_MULLIGANS-(data.meta.mulligansUsed[p.id]||0))<=5?"#f59e0b":PClr[p.id].fg+"66"}}>M: {MAX_MULLIGANS-(data.meta.mulligansUsed[p.id]||0)} left</span></div></div></div>
         <div style={{display:"flex",flexDirection:"column",gap:4}}>{picks.length===0?<div style={{color:PClr[p.id].fg+"55",fontSize:12,fontStyle:"italic"}}>Waiting to pick...</div>
           :picks.map((driver,i)=>{const isMull=mullPicks.includes(driver);return(<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",background:PClr[p.id].bg==="#FFFFFF"?"#f0f0f0":"rgba(255,255,255,0.1)",borderRadius:8,border:"1px solid "+PClr[p.id].fg+"22"}}><span style={{fontSize:11,color:PClr[p.id].fg+"88",fontWeight:700,width:22}}>R{i+1}</span><span style={{fontSize:13,color:PClr[p.id].fg,fontWeight:600,flex:1}}>{driver}{isMemorial(driver)?" 🕊️":""}</span>{isMull&&<span style={{fontSize:10,color:"#fff",fontWeight:700}}>🔄 M</span>}</div>);})}
         </div>
@@ -644,16 +688,19 @@ function ResultsTab({data}) {
     </div>
     {weekInfo&&<div style={{color:C.dim,fontSize:14,marginBottom:16}}>{weekInfo.r} @ {weekInfo.t} · <span style={{color:TTC[weekInfo.ty]}}>{TTL[weekInfo.ty]} x{TRACK_MULTS[weekInfo.ty]}</span>{wr?.raw?.threeStages&&<span style={{color:C.purple,marginLeft:8,fontWeight:600}}>3 STAGES</span>}</div>}
     {sorted.length===0?<div style={{color:C.dim,textAlign:"center",padding:40}}>No results</div>
-      :<div style={{display:"grid",gap:12}}>{sorted.map(([pid,ps],idx)=>(<div key={pid} style={{background:PClr[pid].bg,borderRadius:12,padding:"16px 20px",border:"2px solid "+(ps.weeklyWin?C.accent:PClr[pid].bg==="#000000"?C.border:PClr[pid].bg+"88")}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:(ps.drivers&&ps.drivers.length)?12:0}}>
-          <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{color:PClr[pid].fg,fontWeight:700,fontSize:17,fontFamily:"'Barlow Condensed',sans-serif"}}>{idx===0?"👑 ":""}{PNAME[pid]}</span>{ps.weeklyWin&&<span style={{background:C.accent+"44",color:C.accent,padding:"2px 10px",borderRadius:12,fontSize:10,fontWeight:700}}>WIN +25 PO</span>}</div>
-          <span style={{color:PClr[pid].fg,fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700}}>{ps.total}</span>
-        </div>
-        {ps.drivers&&ps.drivers.length>0&&<div style={{display:"grid",gap:6}}>{ps.drivers.map(d=>(<div key={d.driver} style={{background:PClr[pid].bg==="#FFFFFF"?"#f0f0f0":PClr[pid].bg==="#000000"?"#1a1a1a":"rgba(0,0,0,0.22)",borderRadius:8,padding:"8px 12px",border:"1px solid "+PClr[pid].fg+"22"}}>
-          <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:PClr[pid].fg,fontSize:13,fontWeight:600}}>{d.driver}{isMemorial(d.driver)?" 🕊️":""}{d.isMulligan?" 🔄":""}{d.isGarage?" 🅶":""}{d.dnr?" (DNR)":""}</span><span style={{color:d.total>=0?C.green:C.red,fontWeight:700,fontSize:13}}>{d.total}</span></div>
-          <div style={{display:"flex",flexWrap:"wrap",gap:3}}>{(d.breakdown||[]).map((b,i)=>(<span key={i} style={{fontSize:9,color:b.pts>0?C.green:b.pts<0?C.red:PClr[pid].fg+"88",background:"rgba(0,0,0,0.3)",padding:"2px 5px",borderRadius:4}}>{b.label}: {b.pts>0?"+":""}{b.pts}</span>))}</div>
-        </div>))}</div>}
-      </div>))}</div>}
+      :<div style={{display:"grid",gap:12}}>{sorted.map(([pid,ps],idx)=>{
+        const isLoser=idx===sorted.length-1&&sorted.length===4;
+        return(<div key={pid} style={{background:PClr[pid].bg,borderRadius:12,padding:"16px 20px",border:"2px solid "+(ps.weeklyWin?C.accent:PClr[pid].bg==="#000000"?C.border:PClr[pid].bg+"88")}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:(ps.drivers&&ps.drivers.length)?12:0}}>
+            <div style={{display:"flex",alignItems:"center",gap:10}}><span style={{color:PClr[pid].fg,fontWeight:700,fontSize:17,fontFamily:"'Barlow Condensed',sans-serif"}}>{ps.weeklyWin?"👑 ":""}{isLoser?"💩 ":""}{PNAME[pid]}</span>{ps.weeklyWin&&<span style={{background:C.accent+"44",color:C.accent,padding:"2px 10px",borderRadius:12,fontSize:10,fontWeight:700}}>WIN +25 PO</span>}</div>
+            <span style={{color:PClr[pid].fg,fontFamily:"'Oswald',sans-serif",fontSize:26,fontWeight:700}}>{ps.total}</span>
+          </div>
+          {ps.drivers&&ps.drivers.length>0&&<div style={{display:"grid",gap:6}}>{ps.drivers.map(d=>(<div key={d.driver} style={{background:PClr[pid].bg==="#FFFFFF"?"#f0f0f0":PClr[pid].bg==="#000000"?"#1a1a1a":"rgba(0,0,0,0.22)",borderRadius:8,padding:"8px 12px",border:"1px solid "+PClr[pid].fg+"22"}}>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:PClr[pid].fg,fontSize:13,fontWeight:600}}>{d.driver}{isMemorial(d.driver)?" 🕊️":""}{d.isMulligan?" 🔄":""}{d.dnr?" (DNR)":""}</span><span style={{color:d.total>=0?C.green:C.red,fontWeight:700,fontSize:13}}>{d.total}</span></div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:3}}>{(d.breakdown||[]).map((b,i)=>(<span key={i} style={{fontSize:9,color:b.pts>0?C.green:b.pts<0?C.red:PClr[pid].fg+"88",background:"rgba(0,0,0,0.3)",padding:"2px 5px",borderRadius:4}}>{b.label}: {b.pts>0?"+":""}{b.pts}</span>))}</div>
+          </div>))}</div>}
+        </div>);
+      })}</div>}
   </div>);
 }
 
@@ -719,6 +766,8 @@ function MulligansTab({player,data,currentWeek,onApplyMulligan}) {
   return (<div style={{padding:20,maxWidth:700,margin:"0 auto",position:"relative",zIndex:1}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Mulligans</h2>
     <div style={{color:C.dim,fontSize:14,marginBottom:16}}>{remaining} of {MAX_MULLIGANS} remaining this season</div>
+    {remaining<=1&&remaining>0&&<div style={{background:C.red+"22",border:"2px solid "+C.red,borderRadius:10,padding:14,marginBottom:16,textAlign:"center"}}><div style={{fontSize:24,marginBottom:4}}>⚠️</div><div style={{color:C.red,fontWeight:700,fontSize:14}}>DANGER — Only 1 Mulligan Left!</div><div style={{color:C.red+"cc",fontSize:12,marginTop:4}}>This is your final mulligan for the season. Use it wisely — once it's gone, you're locked in no matter what.</div></div>}
+    {remaining<=5&&remaining>1&&<div style={{background:"#f59e0b22",border:"1px solid #f59e0b",borderRadius:10,padding:12,marginBottom:16,textAlign:"center"}}><div style={{color:"#f59e0b",fontWeight:700,fontSize:13}}>🟡 Down to {remaining} mulligans left — use them wisely!</div></div>}
     <div style={{display:"flex",gap:6,marginBottom:24,flexWrap:"wrap"}}>{Array.from({length:MAX_MULLIGANS}).map((_,i)=>(<div key={i} style={{width:26,height:26,borderRadius:"50%",background:i<used?C.red+"33":C.green+"33",border:"2px solid "+(i<used?C.red:C.green),display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,color:i<used?C.red:C.green}}>{i<used?"✗":"✓"}</div>))}</div>
     <div style={{background:PClr[player.id].bg,borderRadius:12,padding:16,border:"2px solid "+(PClr[player.id].bg==="#000000"?C.border:PClr[player.id].bg+"88"),marginBottom:16}}>
       <div style={{color:PClr[player.id].fg,fontWeight:700,fontSize:15,fontFamily:"'Barlow Condensed',sans-serif",marginBottom:8,letterSpacing:1}}>YOUR WEEK {currentWeek} ROSTER</div>
@@ -870,6 +919,7 @@ function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,onNotifyDra
       <button onClick={handleFetchFromNASCAR} disabled={fetching} style={{padding:"10px 20px",borderRadius:8,border:"1px solid #10b981",background:"#10b981"+"22",color:"#10b981",fontSize:13,fontFamily:"inherit",fontWeight:700,cursor:"pointer",display:"flex",alignItems:"center",gap:6}}>{fetching?"⏳ Fetching...":"🔌 Fetch from NASCAR.com"}</button>
       {done&&<button onClick={startEdit} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.accent,background:C.accent+"22",color:C.accent,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Edit Week {week}</button>}
       {!done&&<button onClick={startNew} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.green,background:C.green+"22",color:C.green,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Score Week {week}</button>}
+      {!done&&hasPicks&&<button onClick={startEdit} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.accent,background:C.accent+"22",color:C.accent,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Edit Picks</button>}
       {!done&&<button onClick={startNew} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.blue,background:C.blue+"22",color:C.blue,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Set Picks Only</button>}
       {(done||hasPicks||hasDraft)&&<button onClick={handleReset} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.red,background:C.red+"22",color:C.red,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>Reset Week {week}</button>}
       {!done&&!hasDraft&&<button onClick={async()=>{await onNotifyDraft(week);setMsg("Email sent to first picker (if configured).");setTimeout(()=>setMsg(""),3000);}} style={{padding:"10px 20px",borderRadius:8,border:"1px solid "+C.purple,background:C.purple+"22",color:C.purple,fontSize:13,fontFamily:"inherit",fontWeight:600,cursor:"pointer"}}>📧 Notify First Picker</button>}
@@ -882,7 +932,10 @@ function CommissionerTab({data,onPostResults,onSavePicks,onResetWeek,onNotifyDra
         {PLAYERS.map(p=>{const pks=playerPicks[p.id]||[];return(<div key={p.id} style={{background:C.card,borderRadius:10,padding:12,marginBottom:8,border:"1px solid "+C.border}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,flexWrap:"wrap",gap:4}}>
             <span style={{color:PC[p.id],fontWeight:700,fontSize:14}}>{PNAME[p.id]} ({pks.length}/{ACTIVE_PICKS})</span>
-            {pks.length<ACTIVE_PICKS&&<button onClick={()=>addPick(p.id)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid "+C.accent+"66",background:C.accent+"11",color:C.accent,fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>+ Driver</button>}
+            <div style={{display:"flex",gap:4}}>
+              {pks.length<ACTIVE_PICKS&&<button onClick={()=>addPick(p.id)} style={{padding:"4px 10px",borderRadius:6,border:"1px solid "+C.accent+"66",background:C.accent+"11",color:C.accent,fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>+ Driver</button>}
+              {pks.length>0&&<button onClick={()=>setPlayerPicks({...playerPicks,[p.id]:[]})} style={{padding:"4px 8px",borderRadius:6,border:"1px solid "+C.red+"66",background:C.red+"11",color:C.red,fontSize:11,cursor:"pointer",fontFamily:"inherit"}}>Clear All</button>}
+            </div>
           </div>
           {pks.map((pk,i)=>(<div key={i} style={{display:"flex",gap:6,alignItems:"center",marginBottom:4}}>
             <span style={{fontSize:10,color:C.dim,fontWeight:700,width:20}}>R{i+1}</span>
@@ -928,6 +981,14 @@ export default function App() {
   const [liveStatus,setLiveStatus]=useState("");
   const [installPrompt,setInstallPrompt]=useState(null);
   const [showInstall,setShowInstall]=useState(false);
+  const [showWinnerModal,setShowWinnerModal]=useState(false);
+
+  const handleLogin=(p)=>{
+    setUser(p);
+    // Show winner modal if this player won last week
+    const last=getLastWeekResults(data);
+    if(last?.winner===p.id) setShowWinnerModal(true);
+  };
 
   // Capture the browser's install prompt (Chrome/Android)
   useEffect(()=>{
@@ -1021,7 +1082,18 @@ export default function App() {
     setData(d); await saveLeagueData(d);
   };
   const handleSavePicksOnly=async(week,wp)=>{
-    const d=JSON.parse(JSON.stringify(data)); if(!d.picks)d.picks={}; d.picks["w"+week]=wp;
+    const d=JSON.parse(JSON.stringify(data)); if(!d.picks)d.picks={}; if(!d.drafts)d.drafts={};
+    d.picks["w"+week]=wp;
+    // Also write to drafts so the Draft tab shows as locked (prevents double-drafting)
+    const order=getDraftOrder(d,week);
+    const seq=buildSnakeOrder(order);
+    const draftEntries=[];
+    PLAYERS.forEach(pid=>{
+      (wp[pid]||[]).forEach((pk,i)=>{
+        if(pk.driver) draftEntries.push({pid,driver:pk.driver,pickNum:draftEntries.length});
+      });
+    });
+    d.drafts["w"+week]=draftEntries;
     setData(d); await saveLeagueData(d);
   };
   const handleResetWeek=async(week)=>{
@@ -1055,10 +1127,11 @@ export default function App() {
   if(loading)return(<div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,gap:12}}>
     <FerdaLogo size="large"/>
     <div style={{color:C.dim,fontSize:13}}>Connecting to database...</div></div>);
-  if(!user)return <LoginScreen onLogin={setUser}/>;
+  if(!user)return <LoginScreen onLogin={handleLogin}/>;
   return (<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Barlow Condensed',sans-serif",color:C.text}}>
     <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }`}</style>
     <MemorialBackdrop/>
+    {showWinnerModal&&<WinnerModal player={user} data={data} onDismiss={()=>setShowWinnerModal(false)}/>}
     <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)}/>
     {dbStatus==="offline"&&<div style={{background:C.red+"22",color:C.red,textAlign:"center",padding:"6px",fontSize:11,fontWeight:600,position:"relative",zIndex:1}}>OFFLINE MODE — Firebase not connected</div>}
     {showInstall&&<div style={{background:"linear-gradient(90deg,#f59e0b,#ef4444)",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative",zIndex:2}}>
@@ -1066,7 +1139,7 @@ export default function App() {
       <div style={{display:"flex",gap:8}}><button onClick={handleInstall} style={{padding:"6px 14px",borderRadius:8,border:"none",background:"#000",color:"#fff",fontFamily:"'Oswald',sans-serif",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:1}}>INSTALL</button><button onClick={()=>setShowInstall(false)} style={{padding:"6px 8px",borderRadius:8,border:"none",background:"rgba(0,0,0,0.2)",color:"#000",fontSize:12,cursor:"pointer",fontFamily:"inherit"}}>✕</button></div>
     </div>}
     <FlagBanner user={user} data={data} currentWeek={currentWeek} onGoTo={setTab}/>
-    {tab==="welcome"&&<WelcomeTab player={user} data={data} setTab={setTab}/>}
+    {tab==="welcome"&&<WelcomeTab player={user} data={data} setTab={setTab} liveScores={liveScores} liveStatus={liveStatus}/>}
     {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
     {tab==="lineups"&&<LineupsTab data={data} currentWeek={currentWeek}/>}
     {tab==="mulligans"&&<MulligansTab player={user} data={data} currentWeek={currentWeek} onApplyMulligan={handleApplyMulligan}/>}
