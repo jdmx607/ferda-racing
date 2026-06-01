@@ -137,7 +137,7 @@ function buildSnakeOrder(order) {
 
 function buildInitialData() {
   const results = {}, picks = {};
-  for (let w = 1; w <= 13; w++) {
+  for (let w = 1; w <= 14; w++) {
     const key = "w" + w;
     const rawResult = HISTORICAL_RESULTS[key];
     const weekPicks = HISTORICAL_PICKS[key];
@@ -150,7 +150,7 @@ function buildInitialData() {
     mulligans: { justin:[], bigmonroe:[], monroe:[], rich:[] },
     playerSettings: {},
     meta: { standings:{justin:0,bigmonroe:0,monroe:0,rich:0}, playoffPts:{justin:0,bigmonroe:0,monroe:0,rich:0},
-      mulligansUsed:{justin:0,bigmonroe:0,monroe:0,rich:0}, lastScoredWeek:13 },
+      mulligansUsed:{justin:0,bigmonroe:0,monroe:0,rich:0}, lastScoredWeek:14 },
   });
 }
 
