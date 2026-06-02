@@ -12,6 +12,18 @@ async function tryFetch(url) {
   } catch { return null; }
 }
 
+// Diagnostic fetch — returns full result including error details
+async function diagFetch(url) {
+  try {
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    let body; try { body = await res.json(); } catch { body = null; }
+    if (!res.ok) return { ok:false, status:res.status, errorBody:body, data:null };
+    return { ok:true, status:res.status, data:body };
+  } catch(e) {
+    return { ok:false, status:0, data:null, networkError:e.message };
+  }
+}
+
 // Diagnostic fetch — returns { ok, data, status, errorBody } so we can surface real errors
 async function diagFetch(url) {
   try {
@@ -151,53 +163,82 @@ async function getSportsDataRace(week) {
 }
 
 export async function fetchLiveRaceData(week) {
-  const race = await getSportsDataRace(week);
-  if (!race) return { ok: false, error: "Could not load race schedule from SportsDataIO." };
+  // Try SportsDataIO first (real-time, 30s updates) — requires paid Discovery Lab key
+  const sdResult = await diagFetch(sdUrl("/Races/2026"));
+  if (sdResult.ok && Array.isArray(sdResult.data)) {
+    const cup = sdResult.data
+      .filter(r => r.PointsRace !== false &&
+        (r.SeriesID===100||r.SeriesID===1||String(r.Series||"").includes("Cup")))
+      .sort((a,b)=>new Date(a.Day||a.Date||0)-new Date(b.Day||b.Date||0));
+    const race = cup[week-1];
+    if (race) {
+      const raceId = race.RaceID||race.RaceId;
+      const resultsResult = await diagFetch(sdUrl(`/RaceResults/${raceId}`));
+      if (resultsResult.ok) {
+        const raceObj = Array.isArray(resultsResult.data) ? resultsResult.data[0] : resultsResult.data;
+        const rawResults = raceObj?.DriverRaceResults||raceObj?.Results||[];
+        if (rawResults.length) {
+          let mostLapsLedName=null, maxLaps=0;
+          const drivers = rawResults.map(r=>{
+            const carNo=String(r.Number||r.CarNumber||"");
+            const fullName=r.Name||r.Driver||"";
+            const parts=fullName.trim().split(" ");
+            const name=carToDriver(carNo,parts.slice(0,-1).join(" "),parts[parts.length-1]||"");
+            const finish=parseInt(r.FinishPosition||r.Position||0);
+            const start=parseInt(r.StartPosition||0);
+            const lapsLed=parseInt(r.LapsLed||0);
+            const status=(r.Status||"").toLowerCase();
+            const dnf=status.includes("accident")||status.includes("engine")||status.includes("out");
+            if(lapsLed>maxLaps){maxLaps=lapsLed;mostLapsLedName=name;}
+            return { name,finish,qualPos:start,lapsLed,
+              stage1:parseInt(r.Stage1FinishPosition||0), stage2:parseInt(r.Stage2FinishPosition||0), stage3:0,
+              pole:start===1, stageWin1:parseInt(r.Stage1FinishPosition||0)===1,
+              stageWin2:parseInt(r.Stage2FinishPosition||0)===1, stageWin3:false,
+              fastestLap:false, mostLapsLed:false, dnf, dq:status.includes("dq") };
+          }).filter(d=>d.finish>0).sort((a,b)=>a.finish-b.finish);
+          if(mostLapsLedName){const d=drivers.find(x=>x.name===mostLapsLedName);if(d)d.mostLapsLed=true;}
+          return { ok:true,drivers,threeStages:false,
+            raceName:raceObj?.Name||race?.Name||`Week ${week}`,
+            isLive:raceObj?.IsStarted&&!raceObj?.IsOver, isOver:!!raceObj?.IsOver,
+            note:"Live · SportsDataIO · updates every 30s", source:"SportsDataIO" };
+        }
+      }
+    }
+  }
 
-  const raceId = race.RaceID || race.RaceId;
-  const data = await tryFetch(sdUrl(`/RaceResults/${raceId}`));
-  if (!data) return { ok: false, error: `No live results yet for race ${raceId}.` };
+  // Fallback: NASCAR cacher feed — updates at stage breaks and race end (free, no key)
+  const cacherRaceId = await getCacherRaceId(week);
+  const data = await tryFetch(cacherUrl(`/2026/1/${cacherRaceId}/weekend-feed.json`));
+  if (!data) return { ok:false, error:"No live data available. Race may not have started." };
 
-  const raceObj = Array.isArray(data) ? data[0] : data;
-  const rawResults = raceObj?.DriverRaceResults || raceObj?.Results || [];
-  if (!rawResults.length) return { ok: false, error: "No driver results yet — race may not have started." };
+  const raceResults = data?.race_results||[];
+  if (!raceResults.length) return { ok:false, error:"Race hasn't started or data isn't available yet." };
 
-  let mostLapsLedName = null, maxLaps = 0;
-  const drivers = rawResults.map(r => {
-    const carNo = String(r.Number || r.CarNumber || r.Car || "");
-    const fullName = r.Name || r.Driver || "";
-    const parts = fullName.trim().split(" ");
-    const first = parts.slice(0, -1).join(" ");
-    const last = parts[parts.length - 1] || "";
-    const name = carToDriver(carNo, first, last);
-    const finish = parseInt(r.FinishPosition || r.Position || 0);
-    const start = parseInt(r.StartPosition || 0);
-    const lapsLed = parseInt(r.LapsLed || 0);
-    const status = (r.Status || r.Reason || "").toLowerCase();
-    const dnf = status.includes("accident") || status.includes("engine") || status.includes("out");
-    const dq = status.includes("dq") || status.includes("disqualified");
-    if (lapsLed > maxLaps) { maxLaps = lapsLed; mostLapsLedName = name; }
-    const stage1 = parseInt(r.Stage1FinishPosition || r.Stage1Position || 0);
-    const stage2 = parseInt(r.Stage2FinishPosition || r.Stage2Position || 0);
-    return {
-      name, finish, qualPos: start, lapsLed, stage1, stage2, stage3: 0,
-      pole: start === 1, stageWin1: stage1 === 1, stageWin2: stage2 === 1, stageWin3: false,
-      fastestLap: false, mostLapsLed: false, dnf, dq,
-    };
-  }).filter(d => d.finish > 0).sort((a, b) => a.finish - b.finish);
-
-  if (mostLapsLedName) { const d = drivers.find(x => x.name === mostLapsLedName); if (d) d.mostLapsLed = true; }
-
-  return {
-    ok: true, drivers, threeStages: false,
-    raceName: raceObj?.Name || race?.Name || `Week ${week}`,
-    trackName: raceObj?.Track || race?.Track || "",
-    isLive: raceObj?.IsStarted && !raceObj?.IsOver,
-    isOver: !!raceObj?.IsOver,
-    driverCount: drivers.length,
-    note: "Live · updates every 30s",
-    source: "SportsDataIO",
-  };
+  const stageMap = parseStages(data);
+  const lapsLedTotals={};
+  (data?.lead_changes||[]).forEach(lc=>{
+    const n=carToDriver(lc.car_number||"",lc.driver_first_name||"",lc.driver_last_name||"");
+    lapsLedTotals[n]=(lapsLedTotals[n]||0)+(lc.laps_led||0);
+  });
+  let mostLapsLedDriver=null,maxLL=0;
+  const drivers=raceResults.map(r=>{
+    const name=carToDriver(r.car_number||"",r.driver_first_name||"",r.driver_last_name||"");
+    const finish=parseInt(r.finishing_position||0),start=parseInt(r.starting_position||0);
+    const lapsLed=lapsLedTotals[name]||parseInt(r.Laps_Led||0);
+    const status=(r.status||"").toLowerCase();
+    if(lapsLed>maxLL){maxLL=lapsLed;mostLapsLedDriver=name;}
+    const stages=stageMap[name]||{};
+    return { name,finish,qualPos:start,lapsLed,
+      stage1:stages.stage1||0,stage2:stages.stage2||0,stage3:stages.stage3||0,
+      pole:start===1,stageWin1:!!stages.stageWin1,stageWin2:!!stages.stageWin2,
+      stageWin3:!!stages.stageWin3,fastestLap:false,mostLapsLed:false,
+      dnf:status==="out"||status.includes("accident"),dq:status.includes("dq") };
+  }).filter(d=>d.finish>0).sort((a,b)=>a.finish-b.finish);
+  if(mostLapsLedDriver){const d=drivers.find(x=>x.name===mostLapsLedDriver);if(d)d.mostLapsLed=true;}
+  return { ok:true,drivers,threeStages:(data?.weekend_stage_results||[]).some(s=>s.stage_number>=3),
+    raceName:data?.race_name||`Week ${week}`,isLive:true,
+    note:"Stage-break updates via NASCAR.com (free) — upgrade to Discovery Lab for 30s live updates",
+    source:"NASCAR Cacher" };
 }
 
 // ─── POST-RACE DATA (NASCAR cacher via proxy) ────────────────────────────────
