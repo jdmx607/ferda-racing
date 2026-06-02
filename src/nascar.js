@@ -1,9 +1,9 @@
 // NASCAR Data Service
-// ALL external calls route through /api/nascar (Vercel proxy) to avoid CORS.
-// SportsDataIO key lives server-side only — never exposed in the browser bundle.
+// ALL external calls route through /api/nascar (Vercel proxy)
 
 const PROXY = "/api/nascar";
 
+// Basic fetch — returns null on any failure
 async function tryFetch(url) {
   try {
     const res = await fetch(url, { headers: { Accept: "application/json" } });
@@ -12,25 +12,32 @@ async function tryFetch(url) {
   } catch { return null; }
 }
 
-// Route a SportsDataIO path through the Vercel proxy
+// Diagnostic fetch — returns { ok, data, status, errorBody } so we can surface real errors
+async function diagFetch(url) {
+  try {
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    let body;
+    try { body = await res.json(); } catch { body = null; }
+    if (!res.ok) return { ok: false, status: res.status, errorBody: body, data: null };
+    return { ok: true, status: res.status, data: body, errorBody: null };
+  } catch (e) {
+    return { ok: false, status: 0, errorBody: null, data: null, networkError: e.message };
+  }
+}
+
 function sdUrl(path) {
   return `${PROXY}?source=sportsdata&path=${encodeURIComponent(path)}`;
 }
-
-// Route a NASCAR cacher path through the Vercel proxy
 function cacherUrl(path) {
   return `${PROXY}?path=${encodeURIComponent(path)}`;
 }
-
-// ─── Driver name helpers ─────────────────────────────────────────────────────
 
 function carToDriver(carNo, firstName, lastName) {
   const raw = String(carNo || "");
   const num = raw.replace(/^0+/, "") || raw;
   const specials = {
-    "33": "#33 Austin Hill / Jesse Love",
-    "66": "#66 Various",
-    "78": "#78 BJ McLeod / Daniel Dye / Katherine Legge",
+    "33":"#33 Austin Hill / Jesse Love","66":"#66 Various",
+    "78":"#78 BJ McLeod / Daniel Dye / Katherine Legge",
   };
   if (raw === "01" || raw === "001") return "#01 Corey LaJoie";
   if (specials[num]) return specials[num];
@@ -38,34 +45,124 @@ function carToDriver(carNo, firstName, lastName) {
   return `#${num} ${name}`;
 }
 
-// ─── Shared: find SportsDataIO Cup race for a given week ─────────────────────
+// ─── PROJECTIONS (SportsDataIO via proxy) ────────────────────────────────────
+
+export async function fetchDriverProjections(week) {
+  // Step 1: Get 2026 race schedule
+  const schedResult = await diagFetch(sdUrl("/Races/2026"));
+
+  if (!schedResult.ok) {
+    // Build a helpful message showing exactly what failed
+    let detail = "";
+    if (schedResult.networkError) {
+      detail = `Network error: ${schedResult.networkError}`;
+    } else if (schedResult.status === 401 || schedResult.status === 403) {
+      detail = `API key rejected (HTTP ${schedResult.status}). The SportsDataIO trial may have expired or the key may not cover NASCAR. Log in to sportsdata.io and check your subscription.`;
+    } else if (schedResult.status === 404) {
+      detail = `Endpoint not found (HTTP 404). The API URL may have changed.`;
+    } else if (schedResult.errorBody?.error) {
+      detail = `Proxy error: ${schedResult.errorBody.error}`;
+    } else {
+      detail = `HTTP ${schedResult.status || "unknown"} from SportsDataIO.`;
+    }
+    return { ok: false, apiWorking: false, error: detail };
+  }
+
+  const races = schedResult.data;
+  if (!Array.isArray(races)) {
+    return { ok: false, apiWorking: true, error: "SportsDataIO returned unexpected data format for race schedule." };
+  }
+
+  // Step 2: Find the Cup race for this week
+  const cup = races
+    .filter(r => r.PointsRace !== false &&
+      (r.SeriesID === 100 || r.SeriesID === 1 || String(r.Series || "").includes("Cup")))
+    .sort((a, b) => new Date(a.Day || a.Date || 0) - new Date(b.Day || b.Date || 0));
+
+  const race = cup[week - 1];
+  if (!race) {
+    return {
+      ok: false, apiWorking: true,
+      error: `No Cup Series race found for Week ${week}. Schedule returned ${races.length} total races, ${cup.length} Cup races.`,
+    };
+  }
+
+  const raceId = race.RaceID || race.RaceId;
+
+  // Step 3: Fetch projections for this race
+  const projResult = await diagFetch(sdUrl(`/DriverRaceProjections/${raceId}`));
+
+  if (!projResult.ok) {
+    if (projResult.status === 404) {
+      return {
+        ok: false, apiWorking: true,
+        error: `No projections yet for Week ${week} (${race.Name}, race ID ${raceId}). They typically post Thu/Fri before the race.`,
+        raceName: race.Name, raceId,
+      };
+    }
+    return {
+      ok: false, apiWorking: true,
+      error: `Projections request failed (HTTP ${projResult.status}). ${projResult.errorBody?.error || ""}`,
+      raceName: race.Name, raceId,
+    };
+  }
+
+  const projections = projResult.data;
+  if (!Array.isArray(projections) || projections.length === 0) {
+    return {
+      ok: false, apiWorking: true,
+      error: `Projections not available yet for ${race.Name} (race ID ${raceId}).`,
+      raceName: race.Name, raceId,
+    };
+  }
+
+  const drivers = projections
+    .filter(p => (p.ProjectedFantasyPoints || 0) > 0)
+    .map(p => {
+      const carNo = String(p.Number || p.CarNumber || "");
+      const name = carToDriver(carNo, p.FirstName || "", p.LastName || "");
+      return {
+        name, carNo,
+        projectedPts: Math.round((p.ProjectedFantasyPoints || 0) * 10) / 10,
+        projectedStart: p.ProjectedStartPosition || p.StartPosition || 0,
+        projectedFinish: p.ProjectedFinishPosition || 0,
+        projectedLapsLed: Math.round(p.ProjectedLapsLed || 0),
+      };
+    })
+    .sort((a, b) => b.projectedPts - a.projectedPts);
+
+  return {
+    ok: true, apiWorking: true, drivers,
+    raceName: race.Name || `Week ${week}`, trackName: race.Track || "",
+    raceId, source: "SportsDataIO",
+  };
+}
+
+// ─── LIVE DATA (SportsDataIO via proxy) ─────────────────────────────────────
 
 async function getSportsDataRace(week) {
-  const races = await tryFetch(sdUrl("/Races/2026"));
-  if (!races || !Array.isArray(races)) return null;
-  const cup = races
+  const data = await tryFetch(sdUrl("/Races/2026"));
+  if (!data || !Array.isArray(data)) return null;
+  const cup = data
     .filter(r => r.PointsRace !== false &&
       (r.SeriesID === 100 || r.SeriesID === 1 || String(r.Series || "").includes("Cup")))
     .sort((a, b) => new Date(a.Day || a.Date || 0) - new Date(b.Day || b.Date || 0));
   return cup[week - 1] || null;
 }
 
-// ─── LIVE DATA (SportsDataIO via proxy) ─────────────────────────────────────
-
 export async function fetchLiveRaceData(week) {
   const race = await getSportsDataRace(week);
-  if (!race) return { ok: false, error: "Could not find race schedule from SportsDataIO." };
+  if (!race) return { ok: false, error: "Could not load race schedule from SportsDataIO." };
 
   const raceId = race.RaceID || race.RaceId;
   const data = await tryFetch(sdUrl(`/RaceResults/${raceId}`));
-  if (!data) return { ok: false, error: `No live results yet for race ID ${raceId}.` };
+  if (!data) return { ok: false, error: `No live results yet for race ${raceId}.` };
 
   const raceObj = Array.isArray(data) ? data[0] : data;
   const rawResults = raceObj?.DriverRaceResults || raceObj?.Results || [];
   if (!rawResults.length) return { ok: false, error: "No driver results yet — race may not have started." };
 
   let mostLapsLedName = null, maxLaps = 0;
-
   const drivers = rawResults.map(r => {
     const carNo = String(r.Number || r.CarNumber || r.Car || "");
     const fullName = r.Name || r.Driver || "";
@@ -159,9 +256,9 @@ export async function fetchNASCARResults(week) {
     const stages = stageMap[name] || {};
     return {
       name, finish, qualPos: start, lapsLed,
-      stage1: stages.stage1 || 0, stage2: stages.stage2 || 0, stage3: stages.stage3 || 0,
-      pole: start === 1, stageWin1: !!stages.stageWin1, stageWin2: !!stages.stageWin2,
-      stageWin3: !!stages.stageWin3, fastestLap: false, mostLapsLed: false, dnf, dq,
+      stage1: stages.stage1||0, stage2: stages.stage2||0, stage3: stages.stage3||0,
+      pole: start===1, stageWin1:!!stages.stageWin1, stageWin2:!!stages.stageWin2,
+      stageWin3:!!stages.stageWin3, fastestLap:false, mostLapsLed:false, dnf, dq,
     };
   }).filter(d => d.finish > 0).sort((a, b) => a.finish - b.finish);
 
@@ -173,48 +270,5 @@ export async function fetchNASCARResults(week) {
     poleSitter: drivers.find(d => d.pole)?.name || null, mostLapsLedDriver, driverCount: drivers.length,
     note: `✓ ${drivers.length} drivers loaded. Enter fastest lap manually before scoring.`,
     source: "NASCAR Cacher",
-  };
-}
-
-// ─── DRIVER PROJECTIONS (SportsDataIO via proxy) ─────────────────────────────
-
-export async function fetchDriverProjections(week) {
-  const race = await getSportsDataRace(week);
-  if (!race) {
-    return { ok: false, error: "Could not reach SportsDataIO. Check that Vercel is deployed with the latest api/nascar.js.", apiWorking: false };
-  }
-
-  const raceId = race.RaceID || race.RaceId;
-  const projections = await tryFetch(sdUrl(`/DriverRaceProjections/${raceId}`));
-
-  if (!projections || !Array.isArray(projections) || projections.length === 0) {
-    return {
-      ok: false,
-      error: `No projections available for Week ${week} yet — they usually post Thursday or Friday before the race.`,
-      apiWorking: true,
-      raceName: race.Name || `Week ${week}`,
-      raceId,
-    };
-  }
-
-  const drivers = projections
-    .filter(p => (p.ProjectedFantasyPoints || 0) > 0)
-    .map(p => {
-      const carNo = String(p.Number || p.CarNumber || "");
-      const name = carToDriver(carNo, p.FirstName || "", p.LastName || "");
-      return {
-        name, carNo,
-        projectedPts: Math.round((p.ProjectedFantasyPoints || 0) * 10) / 10,
-        projectedStart: p.ProjectedStartPosition || p.StartPosition || 0,
-        projectedFinish: p.ProjectedFinishPosition || 0,
-        projectedLapsLed: Math.round(p.ProjectedLapsLed || 0),
-      };
-    })
-    .sort((a, b) => b.projectedPts - a.projectedPts);
-
-  return {
-    ok: true, apiWorking: true, drivers,
-    raceName: race.Name || `Week ${week}`, trackName: race.Track || "",
-    raceId, source: "SportsDataIO",
   };
 }
