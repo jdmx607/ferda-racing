@@ -28,7 +28,9 @@ import { ProjectionsTab } from "./components/ProjectionsTab";
 import { RulesTab } from "./components/RulesTab";
 import { StatsTab } from "./components/StatsTab";
 import { CommissionerTab } from "./components/CommissionerTab";
+import { ScoreTicker } from "./components/ScoreTicker";
 import { C } from "./theme";
+import { sendPushToPlayer } from "./hooks/usePushNotifications";
 
 export default function App() {
   const [user,setUser]=useState(null); const [tab,setTab]=useState("welcome");
@@ -74,8 +76,17 @@ export default function App() {
     const email=settings.email||DEFAULT_EMAILS[nextPicker.pid];
     if(!email||settings.notifyOnTurn===false)return;
     if(user&&nextPicker.pid===user.id&&nextPickIdx>0)return;
-    const raceInfo=SCHEDULE.find(s=>s.w===week);
-    sendDraftEmail({toEmail:email,name:PNAME[nextPicker.pid],week,race:raceInfo?.r||"the next race",track:raceInfo?.t||"",pickNumber:nextPickIdx+1,round:nextPicker.round});
+    const raceInfo2=SCHEDULE.find(s=>s.w===week);
+    sendDraftEmail({toEmail:email,name:PNAME[nextPicker.pid],week,race:raceInfo2?.r||"the next race",track:raceInfo2?.t||"",pickNumber:nextPickIdx+1,round:nextPicker.round});
+    // Also send push notification if the next picker has a subscription
+    const pushSub = dataAfterPick.playerSettings?.[nextPicker.pid]?.pushSubscription;
+    if (pushSub?.endpoint) {
+      sendPushToPlayer(pushSub, {
+        title: "FERDA Racing — Your Pick!",
+        message: `Pick ${nextPickIdx + 1} of ${snakeSequence.length} · W${week} ${raceInfo2?.r || "Draft"}`,
+        url: "/",
+      }).catch(() => {});
+    }
   };
 
   const handleDraftPick=async(week,pid,driver,pickNum)=>{
@@ -166,6 +177,7 @@ export default function App() {
     <MemorialBackdrop/>
     {showWinnerModal&&<WinnerModal player={user} data={data} onDismiss={()=>setShowWinnerModal(false)}/>}
     <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)}/>
+    <ScoreTicker data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo}/>
     {dbStatus==="offline"&&<div style={{background:C.red+"22",color:C.red,textAlign:"center",padding:"6px",fontSize:11,fontWeight:600,position:"relative",zIndex:1}}>OFFLINE MODE — Firebase not connected</div>}
     {showInstall&&<div style={{background:"linear-gradient(90deg,#f59e0b,#ef4444)",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative",zIndex:2}}>
       <div style={{display:"flex",alignItems:"center",gap:10}}><img src="/icons/icon-72x72.png" style={{width:36,height:36,borderRadius:8}}/><div><div style={{color:"#000",fontWeight:700,fontSize:13}}>Install FERDA Racing</div><div style={{color:"#000",fontSize:11,opacity:0.8}}>Add to home screen for the best experience</div></div></div>

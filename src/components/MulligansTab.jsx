@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { C, PClr, r, shadow } from "../theme";
 import { DRIVERS, MAX_MULLIGANS, isMemorial } from "../constants";
+import { getDriverSeasonStats } from "../engine/stats";
 
 export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
   const used      = data.meta.mulligansUsed[player.id] || 0;
@@ -19,6 +20,19 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
 
   const allWeekPicks = data.picks?.[weekKey] || {};
   const takenDrivers = new Set();
+
+  // Smart suggestions: best available by season avg score
+  const smartPicks = useMemo(() => {
+    const taken = new Set();
+    Object.values(allWeekPicks).forEach(picks => {
+      (picks || []).forEach(pk => { if (pk.driver) taken.add(pk.driver); });
+    });
+    const stats = getDriverSeasonStats(data);
+    return stats
+      .filter(s => !taken.has(s.name) && !isMemorial(s.name) && s.appearances > 0)
+      .sort((a, b) => b.avgScore - a.avgScore)
+      .slice(0, 4);
+  }, [data, allWeekPicks]);
   Object.values(allWeekPicks).forEach(picks => {
     (picks || []).forEach(pk => { if (pk.driver) takenDrivers.add(pk.driver); });
   });
@@ -234,8 +248,34 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
               }}>
                 Step 2 — Choose Replacement
               </div>
+
+              {/* Smart suggestions */}
+              {smartPicks.length > 0 && (
+                <div style={{ marginBottom:12 }}>
+                  <div style={{ color:C.muted, fontSize:9, fontWeight:700, textTransform:"uppercase", letterSpacing:1.5, marginBottom:6 }}>
+                    📊 Best Available by Season Avg
+                  </div>
+                  <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
+                    {smartPicks.map(s => (
+                      <button key={s.name} onClick={() => setReplacement(s.name)} style={{
+                        padding:"6px 10px", borderRadius:r.sm, cursor:"pointer",
+                        background:replacement === s.name ? C.green+"22" : C.card,
+                        border:`1px solid ${replacement === s.name ? C.green : C.border}`,
+                        color:replacement === s.name ? C.green : C.text,
+                        fontFamily:"inherit", fontSize:11, fontWeight:700,
+                        transition:"all 0.12s ease",
+                        display:"flex", flexDirection:"column", alignItems:"flex-start", gap:1,
+                      }}>
+                        <span style={{ fontSize:11 }}>{s.name}</span>
+                        <span style={{ fontSize:9, color:C.muted }}>avg {s.avgScore} pts</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div style={{ color:C.dim, fontSize:11, marginBottom:8 }}>
-                Drivers not already in anyone's lineup this week
+                Or search all available drivers:
               </div>
               <input
                 value={search}
