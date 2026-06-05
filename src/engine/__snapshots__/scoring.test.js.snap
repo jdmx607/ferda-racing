@@ -1,0 +1,322 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`W1-W14 scoring lock > W1 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 108,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 136,
+    "weeklyWin": false,
+  },
+  "monroe": {
+    "total": 200.5,
+    "weeklyWin": true,
+  },
+  "rich": {
+    "total": 85.5,
+    "weeklyWin": false,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W2 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 197,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 246,
+    "weeklyWin": true,
+  },
+  "monroe": {
+    "total": 216,
+    "weeklyWin": false,
+  },
+  "rich": {
+    "total": 234,
+    "weeklyWin": false,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W3 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 204.5,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 108,
+    "weeklyWin": false,
+  },
+  "monroe": {
+    "total": 251.5,
+    "weeklyWin": true,
+  },
+  "rich": {
+    "total": 169,
+    "weeklyWin": false,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W4 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 176.7,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 227.8,
+    "weeklyWin": true,
+  },
+  "monroe": {
+    "total": 160.5,
+    "weeklyWin": false,
+  },
+  "rich": {
+    "total": 107.3,
+    "weeklyWin": false,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W5 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 99,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 128,
+    "weeklyWin": false,
+  },
+  "monroe": {
+    "total": 168.5,
+    "weeklyWin": false,
+  },
+  "rich": {
+    "total": 300,
+    "weeklyWin": true,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W6 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 221,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 227,
+    "weeklyWin": true,
+  },
+  "monroe": {
+    "total": 170.5,
+    "weeklyWin": false,
+  },
+  "rich": {
+    "total": 193,
+    "weeklyWin": false,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W7 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 118.3,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 261.8,
+    "weeklyWin": true,
+  },
+  "monroe": {
+    "total": 149,
+    "weeklyWin": false,
+  },
+  "rich": {
+    "total": 238.4,
+    "weeklyWin": false,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W8 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 268.8,
+    "weeklyWin": true,
+  },
+  "justin": {
+    "total": 140,
+    "weeklyWin": false,
+  },
+  "monroe": {
+    "total": 152.5,
+    "weeklyWin": false,
+  },
+  "rich": {
+    "total": 126,
+    "weeklyWin": false,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W9 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 147,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 221.5,
+    "weeklyWin": false,
+  },
+  "monroe": {
+    "total": 170.5,
+    "weeklyWin": false,
+  },
+  "rich": {
+    "total": 236.5,
+    "weeklyWin": true,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W10 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 200.5,
+    "weeklyWin": true,
+  },
+  "justin": {
+    "total": 134.5,
+    "weeklyWin": false,
+  },
+  "monroe": {
+    "total": 107.5,
+    "weeklyWin": false,
+  },
+  "rich": {
+    "total": 173.5,
+    "weeklyWin": false,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W11 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 106,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 193.5,
+    "weeklyWin": false,
+  },
+  "monroe": {
+    "total": 120.5,
+    "weeklyWin": false,
+  },
+  "rich": {
+    "total": 193.5,
+    "weeklyWin": true,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W12 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 124,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 147.5,
+    "weeklyWin": false,
+  },
+  "monroe": {
+    "total": 266,
+    "weeklyWin": true,
+  },
+  "rich": {
+    "total": 178.5,
+    "weeklyWin": false,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W13 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 189,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 169,
+    "weeklyWin": false,
+  },
+  "monroe": {
+    "total": 161.5,
+    "weeklyWin": false,
+  },
+  "rich": {
+    "total": 195,
+    "weeklyWin": true,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > W14 per-player totals and winner 1`] = `
+{
+  "bigmonroe": {
+    "total": 143.5,
+    "weeklyWin": false,
+  },
+  "justin": {
+    "total": 183,
+    "weeklyWin": false,
+  },
+  "monroe": {
+    "total": 189,
+    "weeklyWin": true,
+  },
+  "rich": {
+    "total": 51.5,
+    "weeklyWin": false,
+  },
+}
+`;
+
+exports[`W1-W14 scoring lock > final playoff points match known output 1`] = `
+{
+  "bigmonroe": 86,
+  "justin": 140.5,
+  "monroe": 168,
+  "rich": 178.5,
+}
+`;
+
+exports[`W1-W14 scoring lock > final season standings match known output 1`] = `
+{
+  "bigmonroe": 2303.3,
+  "justin": 2523.6,
+  "monroe": 2484,
+  "rich": 2481.7,
+}
+`;
+
+exports[`W1-W14 scoring lock > mulligan usage counts match known output 1`] = `
+{
+  "bigmonroe": 3,
+  "justin": 0,
+  "monroe": 3,
+  "rich": 0,
+}
+`;

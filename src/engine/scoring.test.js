@@ -1,0 +1,118 @@
+import { describe, test, expect } from "vitest";
+import { buildInitialData, calcDriverScore, scoreWeekFull } from "./scoring.js";
+
+// ─── W1-W14 SCORING LOCK TESTS ──────────────────────────────────────────────
+// These tests freeze the scoring engine output against all 14 real race results.
+// They exist to catch regressions — if you change scoring logic and these break,
+// you must verify the change was intentional before updating the snapshots.
+//
+// To regenerate snapshots after an intentional rule change:
+//   npx vitest --update-snapshots
+
+describe("W1-W14 scoring lock", () => {
+  const data = buildInitialData();
+
+  test("final season standings match known output", () => {
+    expect(data.meta.standings).toMatchSnapshot();
+  });
+
+  test("final playoff points match known output", () => {
+    expect(data.meta.playoffPts).toMatchSnapshot();
+  });
+
+  test("mulligan usage counts match known output", () => {
+    expect(data.meta.mulligansUsed).toMatchSnapshot();
+  });
+
+  // Lock every week's per-player totals and the weekly winner
+  for (let w = 1; w <= 14; w++) {
+    const key = "w" + w;
+    test(`W${w} per-player totals and winner`, () => {
+      const scored = data.results[key]?.scored;
+      expect(scored).toBeDefined();
+      const summary = Object.fromEntries(
+        Object.entries(scored).map(([pid, s]) => [pid, { total: s.total, weeklyWin: s.weeklyWin }])
+      );
+      expect(summary).toMatchSnapshot();
+    });
+  }
+});
+
+// ─── UNIT TESTS: calcDriverScore ─────────────────────────────────────────────
+
+describe("calcDriverScore", () => {
+  test("DQ returns -5 flat regardless of other fields", () => {
+    const result = calcDriverScore(
+      { finish: 1, qualPos: 1, lapsLed: 100, pole: true, stageWin1: true, stageWin2: true, dq: true },
+      "intermediate", false, false
+    );
+    expect(result.total).toBe(-5);
+    expect(result.bonusPoints).toBe(0);
+  });
+
+  test("DNF driver still scores finish position and net position", () => {
+    const result = calcDriverScore(
+      { finish: 10, qualPos: 5, lapsLed: 0, dnf: true },
+      "intermediate", false, false
+    );
+    // P10 = 27, Top 10 = +1, net Q5→P10 = -5
+    expect(result.total).toBe(23);
+    expect(result.breakdown.some(b => b.label === "DNF")).toBe(true);
+  });
+
+  test("mulligan driver gets finish + net only (no stage, no laps, no bonuses)", () => {
+    const result = calcDriverScore(
+      { finish: 5, qualPos: 15, lapsLed: 50, pole: true, stageWin1: true, stageWin2: true, stage1: 1, stage2: 1 },
+      "superspeedway", true, false
+    );
+    // P5 = 32, net Q15→P5 = +10 (capped)
+    expect(result.total).toBe(42);
+    expect(result.bonusPoints).toBe(0);
+    expect(result.breakdown.some(b => b.label === "Mulligan")).toBe(true);
+  });
+
+  test("laps led multiplier applied correctly for road course", () => {
+    const result = calcDriverScore(
+      { finish: 15, qualPos: 15, lapsLed: 10 },
+      "road_course", false, false
+    );
+    // P15 = 22, 10 laps * 1.5 = 15, led a lap = 0.5
+    expect(result.total).toBe(37.5);
+  });
+
+  test("sweep bonus applies correctly for 2-stage race", () => {
+    const result = calcDriverScore(
+      { finish: 1, qualPos: 1, lapsLed: 0, pole: true, stageWin1: true, stageWin2: true },
+      "intermediate", false, false
+    );
+    // P1=55, top5=+2, pole=+5, SW1=+2.5, SW2=+2.5, sweep=+12.5
+    expect(result.total).toBe(79.5);
+    expect(result.breakdown.some(b => b.label === "SWEEP!")).toBe(true);
+  });
+
+  test("sweep does NOT apply in 3-stage race without stageWin3", () => {
+    const result = calcDriverScore(
+      { finish: 1, qualPos: 1, lapsLed: 0, pole: true, stageWin1: true, stageWin2: true, stageWin3: false },
+      "intermediate", false, true
+    );
+    expect(result.breakdown.some(b => b.label === "SWEEP!")).toBe(false);
+  });
+
+  test("net position capped at +10", () => {
+    const result = calcDriverScore(
+      { finish: 1, qualPos: 40, lapsLed: 0 },
+      "intermediate", false, false
+    );
+    const netEntry = result.breakdown.find(b => b.label.startsWith("Net"));
+    expect(netEntry.pts).toBe(10);
+  });
+
+  test("net position capped at -10", () => {
+    const result = calcDriverScore(
+      { finish: 40, qualPos: 1, lapsLed: 0 },
+      "intermediate", false, false
+    );
+    const netEntry = result.breakdown.find(b => b.label.startsWith("Net"));
+    expect(netEntry.pts).toBe(-10);
+  });
+});

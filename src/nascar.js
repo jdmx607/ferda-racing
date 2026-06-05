@@ -12,18 +12,6 @@ async function tryFetch(url) {
   } catch { return null; }
 }
 
-// Diagnostic fetch — returns full result including error details
-async function diagFetch(url) {
-  try {
-    const res = await fetch(url, { headers: { Accept: "application/json" } });
-    let body; try { body = await res.json(); } catch { body = null; }
-    if (!res.ok) return { ok:false, status:res.status, errorBody:body, data:null };
-    return { ok:true, status:res.status, data:body };
-  } catch(e) {
-    return { ok:false, status:0, data:null, networkError:e.message };
-  }
-}
-
 // Diagnostic fetch — returns { ok, data, status, errorBody } so we can surface real errors
 async function diagFetch(url) {
   try {
