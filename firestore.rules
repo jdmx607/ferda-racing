@@ -1,0 +1,40 @@
+rules_version = '2';
+
+// FERDA Racing League — Firestore Security Rules
+//
+// Architecture: single document at leagues/ferda-season-2026.
+// No Firebase Auth is used; the app does client-side password auth.
+//
+// Goals:
+//   1. Block ALL paths except the one document the app actually uses.
+//   2. Allow reads freely (it's a fantasy league for 4 friends, not sensitive).
+//   3. Validate writes have the expected top-level structure — prevents
+//      accidental overwrites with empty/malformed documents.
+//   4. Never expires (replaces the test-mode rules that expire after 30 days).
+//
+// To deploy:
+//   firebase deploy --only firestore:rules
+//   (requires firebase-tools: npm install -g firebase-tools && firebase login)
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // The one and only document this app reads and writes.
+    match /leagues/ferda-season-2026 {
+      allow read: if true;
+
+      // Write is allowed if the document includes the required top-level fields.
+      // This prevents empty or malformed documents from being written but doesn't
+      // block any valid app operation.
+      allow write: if request.resource.data.keys().hasAll(['results', 'picks', 'meta'])
+                   && request.resource.data.meta is map
+                   && request.resource.data.results is map;
+    }
+
+    // Everything else is locked — no other collection or document can be read
+    // or written by any client.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
