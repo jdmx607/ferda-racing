@@ -2,6 +2,7 @@ import { describe, test, expect } from "vitest";
 import { buildInitialData, calcDriverScore, scoreWeekFull } from "./scoring.js";
 import { getWeekTopDrivers, getDriverSeasonStats, getSeasonRecords } from "./stats.js";
 import { getSeasonTimeline, getHeadToHead, getAchievements } from "./history.js";
+import { generateFullRecap, generateWeekPreview, getSeasonStorylines, getDriverStatsByTrackType } from "./narrative.js";
 import { HISTORICAL_RESULTS } from "../historicalData.js";
 
 // ─── W1-W14 SCORING LOCK TESTS ──────────────────────────────────────────────
@@ -201,5 +202,55 @@ describe("history engine", () => {
       Object.entries(ach).map(([pid, { unlocked }]) => [pid, unlocked.map(a => a.id)])
     );
     expect(summary).toMatchSnapshot();
+  });
+});
+
+// ─── NARRATIVE ENGINE TESTS ───────────────────────────────────────────────────
+
+describe("narrative engine", () => {
+  const data = buildInitialData();
+
+  test("generateFullRecap W14 returns correct winner and MVP", () => {
+    const recap = generateFullRecap(14, data);
+    expect(recap).not.toBeNull();
+    expect(recap.weekWinner.pid).toBe("monroe");         // Monroe won W14
+    expect(recap.weekWinner.total).toBeGreaterThan(180); // 189 pts
+    expect(recap.mvp.name).toBe("#11 Denny Hamlin");     // Hamlin MVP
+    expect(recap.mvp.total).toBeGreaterThan(100);
+    expect(recap.week).toBe(14);
+  });
+
+  test("generateFullRecap W14 Hamlin was not picked by everyone", () => {
+    const recap = generateFullRecap(14, data);
+    // Hamlin picked by Monroe only in W14 — biggestMiss should be someone else
+    expect(recap.mulliganReport).toBeDefined();
+    // Monroe's mulligan (Zilisch→Keselowski) should be in the report
+    const monroeMull = recap.mulliganReport.find(m => m.pid === "monroe");
+    expect(monroeMull).toBeDefined();
+    expect(monroeMull.replacement).toBe("#6 Brad Keselowski");
+  });
+
+  test("generateWeekPreview returns draft order and track stats", () => {
+    const preview = generateWeekPreview(15, data);
+    expect(preview).not.toBeNull();
+    expect(preview.week).toBe(15);
+    expect(preview.draftOrder).toHaveLength(4);
+    // Track stats for W15 Michigan (intermediate) based on W5,W6,W9,W11,W13,W14
+    expect(preview.trackStats.length).toBeGreaterThan(0);
+    expect(preview.trackStats[0].avgScore).toBeGreaterThan(0);
+  });
+
+  test("getDriverStatsByTrackType returns only intermediates", () => {
+    const stats = getDriverStatsByTrackType(data, "intermediate");
+    expect(stats.length).toBeGreaterThan(0);
+    // All returned stats should have at least 1 appearance
+    stats.forEach(s => expect(s.appearances).toBeGreaterThan(0));
+  });
+
+  test("getSeasonStorylines returns at least 3 storylines", () => {
+    const lines = getSeasonStorylines(data);
+    expect(lines.length).toBeGreaterThanOrEqual(3);
+    // Should have a leader storyline
+    expect(lines.some(l => l.icon === "🏁")).toBe(true);
   });
 });

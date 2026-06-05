@@ -84,6 +84,7 @@ export function Nav({ player, tab, setTab, onLogout }) {
     { id:"mulligans",    l:"Mulligans"  },
     { id:"live",         l:"🔴 Live"    },
     { id:"results",      l:"Results"    },
+    { id:"feed",         l:"Feed"       },
     { id:"stats",        l:"Stats"      },
     { id:"history",      l:"History"    },
     { id:"playoffs",     l:"Playoffs"   },

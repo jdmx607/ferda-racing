@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { C, PClr, TTC, TTL, r, shadow } from "../theme";
 import { PLAYERS, PNAME, TRACK_MULTS } from "../constants";
 import { getSeasonTimeline, getHeadToHead, getWeeklyFinishes, getAchievements } from "../engine/history";
+import { getSeasonStorylines } from "../engine/narrative";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -382,6 +383,7 @@ const SECTIONS = [
   { id:"timeline",     label:"Season Results"  },
   { id:"form",         label:"Form Guide"      },
   { id:"h2h",          label:"Head-to-Head"    },
+  { id:"storylines",   label:"Storylines"      },
   { id:"achievements", label:"Achievements"    },
 ];
 
@@ -392,6 +394,7 @@ export function HistoryTab({ data }) {
   const h2h         = useMemo(() => getHeadToHead(data),        [data]);
   const finishes    = useMemo(() => getWeeklyFinishes(data),    [data]);
   const achievements= useMemo(() => getAchievements(data),      [data]);
+  const storylines  = useMemo(() => getSeasonStorylines(data),  [data]);
 
   const weeksScored = timeline.length;
   const totalWinner = Object.fromEntries(
@@ -451,9 +454,29 @@ export function HistoryTab({ data }) {
       </div>
 
       {/* ── Content ───────────────────────────────────────────────────────── */}
-      {section === "timeline"     && <SeasonTimeline  timeline={timeline} />}
-      {section === "form"         && <FormGuide       finishes={finishes} />}
+      {section === "timeline"     && <SeasonTimeline   timeline={timeline} />}
+      {section === "form"         && <FormGuide        finishes={finishes} />}
       {section === "h2h"          && <HeadToHeadMatrix h2h={h2h} />}
+      {section === "storylines"   && (
+        <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+          {storylines.length === 0
+            ? <div style={{ color:C.muted, textAlign:"center", padding:32 }}>No storylines yet</div>
+            : storylines.map((s, i) => (
+                <div key={i} style={{
+                  display:"flex", gap:12, padding:"12px 14px",
+                  background:s.weight==="high" ? C.card : "transparent",
+                  borderRadius:r.md, border:`1px solid ${s.weight==="high"?C.border:"transparent"}`,
+                  alignItems:"flex-start",
+                }}>
+                  <span style={{ fontSize:20, flexShrink:0 }}>{s.icon}</span>
+                  <span style={{ color:s.weight==="high"?C.text:C.textDim, fontSize:13, lineHeight:1.6, fontWeight:s.weight==="high"?600:400 }}>
+                    {s.text}
+                  </span>
+                </div>
+              ))
+          }
+        </div>
+      )}
       {section === "achievements" && <AchievementsPanel achievements={achievements} />}
     </div>
   );

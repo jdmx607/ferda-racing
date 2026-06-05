@@ -28,6 +28,7 @@ import { ProjectionsTab } from "./components/ProjectionsTab";
 import { RulesTab } from "./components/RulesTab";
 import { StatsTab } from "./components/StatsTab";
 import { HistoryTab } from "./components/HistoryTab";
+import { FeedTab } from "./components/FeedTab";
 import { CommissionerTab } from "./components/CommissionerTab";
 import { ScoreTicker } from "./components/ScoreTicker";
 import { C } from "./theme";
@@ -191,6 +192,7 @@ export default function App() {
     {tab==="mulligans"&&<MulligansTab player={user} data={data} currentWeek={currentWeek} onApplyMulligan={handleApplyMulligan}/>}
     {tab==="live"&&<LiveTab data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo} currentWeek={currentWeek}/>}
     {tab==="results"&&<ResultsTab data={data}/>}
+    {tab==="feed"&&<FeedTab data={data}/>}
     {tab==="stats"&&<StatsTab data={data}/>}
     {tab==="history"&&<HistoryTab data={data}/>}
     {tab==="playoffs"&&<PlayoffsTab data={data}/>}
