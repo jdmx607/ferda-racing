@@ -1,6 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { buildInitialData, calcDriverScore, scoreWeekFull } from "./scoring.js";
 import { getWeekTopDrivers, getDriverSeasonStats, getSeasonRecords } from "./stats.js";
+import { getSeasonTimeline, getHeadToHead, getAchievements } from "./history.js";
 import { HISTORICAL_RESULTS } from "../historicalData.js";
 
 // ─── W1-W14 SCORING LOCK TESTS ──────────────────────────────────────────────
@@ -155,5 +156,50 @@ describe("stats engine", () => {
     expect(records.bestPlayerWeek).toMatchSnapshot();
     expect(records.bestDriverPerf.name).toMatchSnapshot();
     expect(records.bestDriverPerf.score).toMatchSnapshot();
+  });
+});
+
+// ─── HISTORY ENGINE TESTS ─────────────────────────────────────────────────────
+
+describe("history engine", () => {
+  const data = buildInitialData();
+
+  test("season timeline has 14 entries, one per scored week", () => {
+    const timeline = getSeasonTimeline(data);
+    expect(timeline).toHaveLength(14);
+    expect(timeline[0].week).toBe(1);
+    expect(timeline[13].week).toBe(14);
+    // Every entry has scores for all 4 players
+    timeline.forEach(row => {
+      expect(Object.keys(row.scores)).toHaveLength(4);
+    });
+  });
+
+  test("each week has exactly one weekly winner", () => {
+    const timeline = getSeasonTimeline(data);
+    timeline.forEach(row => {
+      const winners = Object.values(row.scores).filter(s => s.weeklyWin);
+      expect(winners).toHaveLength(1);
+    });
+  });
+
+  test("head-to-head records sum correctly (each pair: wins+losses = total weeks)", () => {
+    const h2h  = getHeadToHead(data);
+    const weeks = 14;
+    // Justin vs Rich: wins + losses + ties should = 14
+    const jvr = h2h.justin.rich;
+    const rvj = h2h.rich.justin;
+    expect(jvr.wins + jvr.losses + jvr.ties).toBe(weeks);
+    // Symmetric
+    expect(jvr.wins).toBe(rvj.losses);
+    expect(jvr.losses).toBe(rvj.wins);
+  });
+
+  test("achievements snapshot for all players", () => {
+    const ach = getAchievements(data);
+    const summary = Object.fromEntries(
+      Object.entries(ach).map(([pid, { unlocked }]) => [pid, unlocked.map(a => a.id)])
+    );
+    expect(summary).toMatchSnapshot();
   });
 });

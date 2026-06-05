@@ -321,6 +321,47 @@ exports[`W1-W14 scoring lock > mulligan usage counts match known output 1`] = `
 }
 `;
 
+exports[`history engine > achievements snapshot for all players 1`] = `
+{
+  "bigmonroe": [
+    "first_win",
+    "ironman",
+    "comeback",
+    "sharpshooter",
+    "high_roller",
+  ],
+  "justin": [
+    "first_win",
+    "hat_trick",
+    "streak2",
+    "iron_will",
+    "ironman",
+    "comeback",
+    "sharpshooter",
+    "high_roller",
+    "consistent",
+  ],
+  "monroe": [
+    "first_win",
+    "hat_trick",
+    "ironman",
+    "comeback",
+    "sharpshooter",
+    "high_roller",
+    "consistent",
+  ],
+  "rich": [
+    "first_win",
+    "hat_trick",
+    "iron_will",
+    "ironman",
+    "comeback",
+    "sharpshooter",
+    "high_roller",
+  ],
+}
+`;
+
 exports[`stats engine > season driver stats includes all drivers and snapshots 1`] = `145.5`;
 
 exports[`stats engine > season records snapshot 1`] = `

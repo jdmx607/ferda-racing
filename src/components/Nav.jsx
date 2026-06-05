@@ -85,6 +85,7 @@ export function Nav({ player, tab, setTab, onLogout }) {
     { id:"live",         l:"🔴 Live"    },
     { id:"results",      l:"Results"    },
     { id:"stats",        l:"Stats"      },
+    { id:"history",      l:"History"    },
     { id:"playoffs",     l:"Playoffs"   },
     { id:"projections",  l:"Projections"},
     { id:"schedule",     l:"Schedule"   },
