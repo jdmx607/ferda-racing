@@ -3,19 +3,18 @@ import { fetchLiveRaceData } from "../nascar";
 import { scoreWeekFull } from "../engine/scoring";
 import { PLAYERS } from "../constants";
 
-const LIVE_POLL_INTERVAL = 30000; // 30 seconds — same cadence as NASCAR Race Center
+const LIVE_POLL_INTERVAL = 30000;
 
-// Polls the NASCAR live feed every 30s when data.liveRace.active is true.
-// Scores the current week's picks provisionally against live positions.
-// Clears liveScores automatically when the race is deactivated.
 export function useLivePolling(data) {
   const [liveScores, setLiveScores] = useState(null);
   const [liveStatus, setLiveStatus] = useState("");
+  const [raceInfo, setRaceInfo] = useState(null);
 
   useEffect(() => {
     if (!data?.liveRace?.active) {
       setLiveScores(null);
       setLiveStatus("");
+      setRaceInfo(null);
       return;
     }
     const week = data.liveRace.week;
@@ -32,6 +31,13 @@ export function useLivePolling(data) {
         });
         const scored = scoreWeekFull(wp, { drivers: result.drivers, threeStages: result.threeStages }, week, mo);
         setLiveScores(scored);
+        setRaceInfo({
+          raceName: result.raceName || null,
+          source: result.source || "NASCAR.com",
+          note: result.note || null,
+          isLive: result.isLive !== false,
+          isOver: !!result.isOver,
+        });
         const now = new Date();
         setLiveStatus(`Live · ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`);
       } catch (e) {
@@ -39,10 +45,10 @@ export function useLivePolling(data) {
       }
     };
 
-    poll(); // immediate first fetch on activation
+    poll();
     timer = setInterval(poll, LIVE_POLL_INTERVAL);
     return () => clearInterval(timer);
   }, [data?.liveRace?.active, data?.liveRace?.week]);
 
-  return { liveScores, liveStatus };
+  return { liveScores, liveStatus, raceInfo };
 }

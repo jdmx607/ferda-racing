@@ -36,7 +36,7 @@ export default function App() {
   const [showWinnerModal,setShowWinnerModal]=useState(false);
 
   const { data, setData, loading, dbStatus } = useLeagueData();
-  const { liveScores, liveStatus } = useLivePolling(data);
+  const { liveScores, liveStatus, raceInfo } = useLivePolling(data);
 
   const handleLogin=(p)=>{
     setUser(p);
@@ -175,7 +175,7 @@ export default function App() {
     {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
     {tab==="lineups"&&<LineupsTab data={data} currentWeek={currentWeek}/>}
     {tab==="mulligans"&&<MulligansTab player={user} data={data} currentWeek={currentWeek} onApplyMulligan={handleApplyMulligan}/>}
-    {tab==="live"&&<LiveTab data={data} liveScores={liveScores} liveStatus={liveStatus} currentWeek={currentWeek}/>}
+    {tab==="live"&&<LiveTab data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo} currentWeek={currentWeek}/>}
     {tab==="results"&&<ResultsTab data={data}/>}
     {tab==="playoffs"&&<PlayoffsTab data={data}/>}
     {tab==="projections"&&<ProjectionsTab data={data} currentWeek={currentWeek}/>}
