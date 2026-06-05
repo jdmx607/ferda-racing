@@ -320,3 +320,18 @@ exports[`W1-W14 scoring lock > mulligan usage counts match known output 1`] = `
   "rich": 0,
 }
 `;
+
+exports[`stats engine > season driver stats includes all drivers and snapshots 1`] = `145.5`;
+
+exports[`stats engine > season records snapshot 1`] = `
+{
+  "pid": "rich",
+  "race": "Pennzoil 400",
+  "score": 300,
+  "week": 5,
+}
+`;
+
+exports[`stats engine > season records snapshot 2`] = `"#97 Shane Van Gisbergen"`;
+
+exports[`stats engine > season records snapshot 3`] = `194`;

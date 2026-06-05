@@ -1,5 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { buildInitialData, calcDriverScore, scoreWeekFull } from "./scoring.js";
+import { getWeekTopDrivers, getDriverSeasonStats, getSeasonRecords } from "./stats.js";
+import { HISTORICAL_RESULTS } from "../historicalData.js";
 
 // ─── W1-W14 SCORING LOCK TESTS ──────────────────────────────────────────────
 // These tests freeze the scoring engine output against all 14 real race results.
@@ -114,5 +116,44 @@ describe("calcDriverScore", () => {
     );
     const netEntry = result.breakdown.find(b => b.label.startsWith("Net"));
     expect(netEntry.pts).toBe(-10);
+  });
+});
+
+// ─── STATS ENGINE TESTS ───────────────────────────────────────────────────────
+
+describe("stats engine", () => {
+  const data = buildInitialData();
+
+  test("W14 top driver is Denny Hamlin (dominant Nashville race)", () => {
+    const top = getWeekTopDrivers(HISTORICAL_RESULTS.w14, 14, 1);
+    expect(top[0].name).toBe("#11 Denny Hamlin");
+    expect(top[0].total).toBeGreaterThan(100);
+  });
+
+  test("getWeekTopDrivers returns N results", () => {
+    const top5 = getWeekTopDrivers(HISTORICAL_RESULTS.w1, 1, 5);
+    expect(top5).toHaveLength(5);
+    // Results are sorted descending
+    expect(top5[0].total).toBeGreaterThanOrEqual(top5[1].total);
+  });
+
+  test("season driver stats includes all drivers and snapshots", () => {
+    const stats = getDriverSeasonStats(data);
+    expect(stats.length).toBeGreaterThan(20);
+    // Hamlin should be near the top — dominated Nashville and appeared in many weeks
+    const hamlin = stats.find(s => s.name === "#11 Denny Hamlin");
+    expect(hamlin).toBeDefined();
+    expect(hamlin.appearances).toBeGreaterThan(0);
+    expect(hamlin.totalFerdaPts).toBeGreaterThan(0);
+    expect(hamlin.bestScore).toMatchSnapshot();
+  });
+
+  test("season records snapshot", () => {
+    const records = getSeasonRecords(data);
+    expect(records.bestPlayerWeek).toBeDefined();
+    expect(records.bestDriverPerf).toBeDefined();
+    expect(records.bestPlayerWeek).toMatchSnapshot();
+    expect(records.bestDriverPerf.name).toMatchSnapshot();
+    expect(records.bestDriverPerf.score).toMatchSnapshot();
   });
 });

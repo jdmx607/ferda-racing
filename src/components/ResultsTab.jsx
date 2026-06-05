@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { C, PClr, TTC, TTL, r, shadow } from "../theme";
 import { PNAME, SCHEDULE, TRACK_MULTS, isMemorial } from "../constants";
+import { getWeekTopDrivers, generateWeekRecap } from "../engine/stats";
 
 const BONUS_CHIP = {
   "Top 5":    "#10b981", "Top 10":   "#10b981",
@@ -77,6 +78,33 @@ export function ResultsTab({ data }) {
   const sorted   = wr?.scored ? Object.entries(wr.scored).sort((a, b) => b[1].total - a[1].total) : [];
   const winner   = sorted[0]?.[0];
   const loser    = sorted[sorted.length - 1]?.[0];
+
+  // Top performers (all drivers, not just picked ones)
+  const topDrivers = useMemo(() => {
+    if (!wr?.raw?.drivers) return [];
+    return getWeekTopDrivers(wr.raw, week, 5);
+  }, [wr, week]);
+
+  // Who picked each driver this week
+  const weekPicks = data.picks?.["w" + week] || {};
+  const pickerMap = useMemo(() => {
+    const m = {};
+    Object.entries(weekPicks).forEach(([pid, picks]) => {
+      (picks || []).forEach(pk => {
+        if (pk.driver) {
+          if (!m[pk.driver]) m[pk.driver] = [];
+          m[pk.driver].push(pid);
+        }
+      });
+    });
+    return m;
+  }, [weekPicks]);
+
+  // Recap blurb
+  const recap = useMemo(() => {
+    if (!wr?.scored || !wr?.raw) return null;
+    return generateWeekRecap(week, wr.scored, wr.raw);
+  }, [wr, week]);
 
   return (
     <div style={{ padding:20, maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>
@@ -224,6 +252,86 @@ export function ResultsTab({ data }) {
             })}
           </div>
       }
+
+      {/* ── Recap blurb ─────────────────────────────────────────────────────── */}
+      {recap && (
+        <div style={{
+          marginTop:16, background:C.card, borderRadius:r.md, padding:"12px 16px",
+          border:`1px solid ${C.border}`,
+          color:C.dim, fontSize:13, lineHeight:1.6,
+        }}>
+          <span style={{ color:C.accent, fontWeight:700 }}>W{week} recap —</span>{" "}
+          <span style={{ color:C.text, fontWeight:700 }}>{PNAME[recap.winnerPid]}</span>{" "}
+          wins with <span style={{ color:C.text, fontWeight:700 }}>{recap.winnerScore} pts</span>
+          {recap.hadWinner && <span> (had race winner {recap.raceWinner})</span>}.{" "}
+          {recap.mvpDriver && (
+            <>
+              <span style={{ color:C.text }}>{recap.mvpDriver}</span>{" "}
+              scored <span style={{ color:recap.mvpWasPicked ? C.green : C.red, fontWeight:700 }}>{recap.mvpScore} pts</span>{" "}
+              — {recap.mvpWasPicked
+                ? <span style={{ color:C.green }}>someone cashed in ✓</span>
+                : <span style={{ color:C.red }}>nobody had them 😤</span>
+              }.
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ── Top performers this week ─────────────────────────────────────────── */}
+      {topDrivers.length > 0 && (
+        <div style={{ marginTop:16 }}>
+          <div style={{
+            color:C.textDim, fontSize:11, fontWeight:700,
+            textTransform:"uppercase", letterSpacing:2, marginBottom:10,
+          }}>
+            Top Performers This Week
+          </div>
+          <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+            {topDrivers.map((d, i) => {
+              const pickers   = pickerMap[d.name] || [];
+              const wasPicked = pickers.length > 0;
+              return (
+                <div key={d.name} style={{
+                  display:"flex", alignItems:"center", gap:10, padding:"9px 14px",
+                  background: i === 0 ? C.accent+"0f" : C.card,
+                  borderRadius:r.sm,
+                  border:`1px solid ${i === 0 ? C.accent+"44" : wasPicked ? C.border : C.red+"22"}`,
+                }}>
+                  <span style={{
+                    color:i === 0 ? C.accent : C.muted,
+                    fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:700, width:24, flexShrink:0,
+                  }}>{i + 1}</span>
+                  <span style={{ color:C.text, fontWeight:700, fontSize:13, flex:1 }}>
+                    {d.name}
+                    {i === 0 && <span style={{ marginLeft:6, fontSize:11 }}>👑</span>}
+                  </span>
+                  <span style={{
+                    fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900,
+                    color:i === 0 ? C.accent : C.text, flexShrink:0,
+                  }}>+{d.total}</span>
+                  {wasPicked ? (
+                    <div style={{ display:"flex", gap:3, flexShrink:0 }}>
+                      {pickers.map(pid => (
+                        <div key={pid} style={{
+                          width:20, height:20, borderRadius:"50%",
+                          background:PClr[pid].fg, border:`2px solid ${PClr[pid].bg === "#000000" ? "#ffffff33" : PClr[pid].bg}`,
+                          title:PNAME[pid],
+                        }}/>
+                      ))}
+                    </div>
+                  ) : (
+                    <span style={{
+                      fontSize:9, fontWeight:700, color:C.red,
+                      background:C.red+"18", padding:"2px 7px", borderRadius:r.pill,
+                      border:`1px solid ${C.red}33`, flexShrink:0, letterSpacing:0.5,
+                    }}>MISSED 😤</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
