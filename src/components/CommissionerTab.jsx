@@ -3,7 +3,7 @@ import { C, PClr, PC, TTC, TTL, r } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, DRIVERS, ACTIVE_PICKS, TRACK_MULTS, isMemorial } from "../constants";
 import { scoreWeekFull } from "../engine/scoring";
 import { getDraftOrder, buildSnakeOrder } from "../engine/draft";
-import { fetchNASCARResults } from "../nascar";
+import { fetchNASCARResults, fetchPostRaceFromLive } from "../nascar";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const iS = {
@@ -43,8 +43,19 @@ function QuickScoreCard({ fetchResult, week, race, playerPicks, onConfirm, onAdv
         padding:"16px 20px",
         boxShadow:`0 0 20px ${TTC[trackType] || C.accent}22`,
       }}>
-        <div style={{ color: TTC[trackType] || C.accent, fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
-          ✅ {drivers.length} drivers loaded · W{week} · {TTL[trackType] || ""} ×{TRACK_MULTS[trackType] || 1}
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
+          <div style={{ color: TTC[trackType] || C.accent, fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>
+            ✅ {drivers.length} drivers loaded · W{week} · {TTL[trackType] || ""} ×{TRACK_MULTS[trackType] || 1}
+          </div>
+          <div style={{
+            fontSize:9, fontWeight:700, padding:"2px 8px", borderRadius:20,
+            background: fetchResult.source === "NASCAR Live Feed" ? "#f59e0b22" : "#10b98122",
+            color:      fetchResult.source === "NASCAR Live Feed" ? "#f59e0b"   : "#10b981",
+            border:     `1px solid ${fetchResult.source === "NASCAR Live Feed" ? "#f59e0b44" : "#10b98144"}`,
+            letterSpacing:1, textTransform:"uppercase",
+          }}>
+            {fetchResult.source === "NASCAR Live Feed" ? "🏁 LIVE FEED" : "📦 CACHER"}
+          </div>
         </div>
         <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900, letterSpacing:1 }}>
           {raceName}
@@ -220,14 +231,24 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
     return pp;
   }
 
-  // ── Fetch from NASCAR.com ───────────────────────────────────────────────
+  // ── Fetch helpers ───────────────────────────────────────────────────────
   const handleFetch = async () => {
     setFetching(true); setFetchError(""); setMsg(""); setQuickScore(null);
+    // fetchNASCARResults tries live feed first, then falls back to weekend-feed cacher
     const result = await fetchNASCARResults(week);
     setFetching(false);
     if (!result.ok) { setFetchError("⚠️ " + result.error); return; }
-    const pp = loadPicksFromStore();
-    setPlayerPicks(pp);
+    setPlayerPicks(loadPicksFromStore());
+    setQuickScore(result);
+  };
+
+  // Direct live-feed fetch (bypasses the weekend-feed fallback chain)
+  const handleFetchLive = async () => {
+    setFetching(true); setFetchError(""); setMsg(""); setQuickScore(null);
+    const result = await fetchPostRaceFromLive();
+    setFetching(false);
+    if (!result.ok) { setFetchError("⚠️ " + result.error); return; }
+    setPlayerPicks(loadPicksFromStore());
     setQuickScore(result);
   };
 
@@ -382,6 +403,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
       {/* ── Action buttons (idle state) ────────────────────────────────────── */}
       {!editing && !quickScore && (
         <div style={{ display:"flex", gap:8, marginBottom:16, flexWrap:"wrap" }}>
+          {/* Primary: tries live feed first, then cacher */}
           <button
             onClick={handleFetch}
             disabled={fetching}
@@ -394,7 +416,22 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
               opacity: fetching ? 0.6 : 1,
             }}
           >
-            {fetching ? "⏳ Fetching from NASCAR.com…" : "🔌 Fetch & Score W" + week}
+            {fetching ? "⏳ Fetching…" : "🔌 Fetch & Score W" + week}
+          </button>
+          {/* Direct live feed — useful right when the race ends */}
+          <button
+            onClick={handleFetchLive}
+            disabled={fetching}
+            title="Pulls from the live feed (updated every second). Use this immediately after the checkered flag."
+            style={{
+              padding:"12px 16px", borderRadius:8,
+              border:"1px solid #f59e0b", background:"#f59e0b22", color:"#f59e0b",
+              fontSize:12, fontFamily:"inherit", fontWeight:700,
+              cursor:"pointer", opacity: fetching ? 0.6 : 1,
+              display:"flex", alignItems:"center", gap:6,
+            }}
+          >
+            🏁 Live Feed Only
           </button>
           {done && (
             <button onClick={startEdit} style={{ padding:"10px 16px", borderRadius:8, border:`1px solid ${C.accent}`, background:C.accent+"22", color:C.accent, fontSize:13, fontFamily:"inherit", fontWeight:600, cursor:"pointer" }}>

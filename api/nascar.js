@@ -61,7 +61,28 @@ export default async function handler(req, res) {
     });
   }
 
-  // NASCAR cacher (free, no key needed)
+  // NASCAR live feeds — cf.nascar.com/live/feeds/* (updated every second during a race)
+  // Endpoints used:
+  //   live-feed.json        → running positions, laps led, best lap times, flag state
+  //   live-points.json      → is_fastest_lap_point, stage_N_winner flags
+  //   live-stage-points.json → stage finish positions per driver
+  if(source === "nascar-live") {
+    const liveUrl = `https://cf.nascar.com/live/feeds/${p}`;
+    try {
+      const response = await fetch(liveUrl, {
+        headers:{ "User-Agent":"FERDA-Racing/1.0", Accept:"application/json" },
+      });
+      if(!response.ok) return res.status(response.status).json({ error:`Live feed returned ${response.status}` });
+      const data = await response.json();
+      // Short cache — 5 seconds for live data, longer after race ends
+      res.setHeader("Cache-Control","public, max-age=5, s-maxage=5");
+      return res.status(200).json(data);
+    } catch(err) {
+      return res.status(500).json({ error:err.message });
+    }
+  }
+
+  // NASCAR cacher (free, no key needed) — post-race static data
   const url = `https://cf.nascar.com/cacher${p}`;
   try {
     const response = await fetch(url, { headers:{ "User-Agent":"FERDA-Racing/1.0", Accept:"application/json" } });
