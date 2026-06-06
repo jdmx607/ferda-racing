@@ -10,7 +10,7 @@ import { scoreWeekFull } from "./engine/scoring";
 import { getDraftOrder, buildSnakeOrder } from "./engine/draft";
 import { useLeagueData } from "./hooks/useLeagueData";
 import { useLivePolling } from "./hooks/useLivePolling";
-import { sendPushToPlayer } from "./hooks/usePushNotifications";
+import { notifyDraftTurn, notifyRaceScored } from "./hooks/useNotifications";
 
 // ── Eagerly-loaded shell + high-traffic tabs ───────────────────────────────────
 // These are in the main bundle — they render on first load or first tap.
@@ -94,7 +94,6 @@ export default function App() {
   const currentWeek=useMemo(()=>data?(data.meta.lastScoredWeek||13)+1:14,[data]);
 
   const notifyNextPicker=async(week,dataAfterPick)=>{
-    if(!isEmailConfigured())return;
     const draftKey="w"+week;
     const draftState=dataAfterPick.drafts?.[draftKey]||[];
     const snakeSequence=buildSnakeOrder(getDraftOrder(dataAfterPick,week));
@@ -102,19 +101,25 @@ export default function App() {
     if(nextPickIdx>=snakeSequence.length)return;
     const nextPicker=snakeSequence[nextPickIdx];
     const settings=dataAfterPick.playerSettings?.[nextPicker.pid]||{};
-    const email=settings.email||DEFAULT_EMAILS[nextPicker.pid];
-    if(!email||settings.notifyOnTurn===false)return;
+    // Don't notify yourself for your own pick (unless it's the very first pick)
     if(user&&nextPicker.pid===user.id&&nextPickIdx>0)return;
     const raceInfo2=SCHEDULE.find(s=>s.w===week);
-    sendDraftEmail({toEmail:email,name:PNAME[nextPicker.pid],week,race:raceInfo2?.r||"the next race",track:raceInfo2?.t||"",pickNumber:nextPickIdx+1,round:nextPicker.round});
-    const pushSub=dataAfterPick.playerSettings?.[nextPicker.pid]?.pushSubscription;
-    if(pushSub?.endpoint){
-      sendPushToPlayer(pushSub,{
-        title:"FERDA Racing — Your Pick!",
-        message:`Pick ${nextPickIdx+1} of ${snakeSequence.length} · W${week} ${raceInfo2?.r||"Draft"}`,
-        url:"/",
-      }).catch(()=>{});
+
+    // Email (original channel — kept as-is)
+    if(isEmailConfigured()){
+      const email=settings.email||DEFAULT_EMAILS[nextPicker.pid];
+      if(email&&settings.notifyOnTurn!==false){
+        sendDraftEmail({toEmail:email,name:PNAME[nextPicker.pid],week,race:raceInfo2?.r||"the next race",track:raceInfo2?.t||"",pickNumber:nextPickIdx+1,round:nextPicker.round});
+      }
     }
+
+    // Push + SMS via unified notifications helper
+    notifyDraftTurn(nextPicker.pid,dataAfterPick.playerSettings,{
+      week,
+      pickNumber:nextPickIdx+1,
+      totalPicks:snakeSequence.length,
+      raceName:raceInfo2?.r||"Draft",
+    }).catch(()=>{});
   };
 
   const handleDraftPick=async(week,pid,driver,pickNum)=>{
@@ -147,6 +152,8 @@ export default function App() {
     const d=JSON.parse(JSON.stringify(data)); if(!d.results)d.results={}; if(!d.picks)d.picks={};
     d.results["w"+week]={scored,raw:rr}; d.picks["w"+week]=wp; recalcMeta(d);
     setData(d); await saveLeagueData(d);
+    // Notify all players with the final scores (push + SMS)
+    notifyRaceScored(week,scored,d.playerSettings,PLAYERS).catch(()=>{});
   };
 
   const handleSavePicksOnly=async(week,wp)=>{
