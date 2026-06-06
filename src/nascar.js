@@ -259,6 +259,34 @@ function parseStages(weekendData) {
   return stageMap;
 }
 
+// ── Fastest-lap auto-detection ────────────────────────────────────────────────
+// The cacher exposes individual lap timing in a few possible shapes.
+// We try all known field names; lower time wins, higher speed wins.
+function detectFastestLapDriver(raceResults) {
+  let fastestByTime = null, bestTime = Infinity;
+  let fastestBySpeed = null, bestSpeed = 0;
+
+  for (const r of raceResults) {
+    // Lap-time fields (seconds — lower is better)
+    const t = parseFloat(
+      r.best_lap_time ?? r.bestLapTime ?? r.BestLapTime ??
+      r.fastest_lap_time ?? r.fastestLapTime ?? 0
+    );
+    // Speed fields (MPH — higher is better)
+    const s = parseFloat(
+      r.best_lap_speed ?? r.bestLapSpeed ?? r.BestLapSpeed ??
+      r.fastest_lap_speed ?? r.fastestLapSpeed ?? 0
+    );
+
+    if (t > 0 && t < bestTime) { bestTime = t; fastestByTime = r; }
+    if (s > bestSpeed)          { bestSpeed = s; fastestBySpeed = r; }
+  }
+
+  const winner = fastestByTime ?? fastestBySpeed;
+  if (!winner) return null;
+  return carToDriver(winner.car_number ?? "", winner.driver_first_name ?? "", winner.driver_last_name ?? "");
+}
+
 export async function fetchNASCARResults(week) {
   const raceId = await getCacherRaceId(week);
   const data = await tryFetch(cacherUrl(`/2026/1/${raceId}/weekend-feed.json`));
@@ -267,6 +295,8 @@ export async function fetchNASCARResults(week) {
   if (!raceResults.length) return { ok: false, error: "Race results not available yet." };
 
   const stageMap = parseStages(data);
+
+  // Laps led from lead_changes array (more accurate than per-driver totals)
   const lapsLedTotals = {};
   (data?.lead_changes || []).forEach(lc => {
     const n = carToDriver(lc.car_number || "", lc.driver_first_name || "", lc.driver_last_name || "");
@@ -276,28 +306,55 @@ export async function fetchNASCARResults(week) {
   let mostLapsLedDriver = null, maxLL = 0;
   const drivers = raceResults.map(r => {
     const name = carToDriver(r.car_number || "", r.driver_first_name || "", r.driver_last_name || "");
-    const finish = parseInt(r.finishing_position || 0), start = parseInt(r.starting_position || 0);
+    const finish = parseInt(r.finishing_position || 0);
+    const start  = parseInt(r.starting_position  || 0);
     const lapsLed = lapsLedTotals[name] || parseInt(r.Laps_Led || 0);
-    const status = (r.status || "").toLowerCase();
+    const status  = (r.status || "").toLowerCase();
     const dnf = status === "out" || status.includes("accident");
-    const dq = status.includes("dq");
+    const dq  = status.includes("dq");
     if (lapsLed > maxLL) { maxLL = lapsLed; mostLapsLedDriver = name; }
     const stages = stageMap[name] || {};
     return {
       name, finish, qualPos: start, lapsLed,
       stage1: stages.stage1||0, stage2: stages.stage2||0, stage3: stages.stage3||0,
-      pole: start===1, stageWin1:!!stages.stageWin1, stageWin2:!!stages.stageWin2,
-      stageWin3:!!stages.stageWin3, fastestLap:false, mostLapsLed:false, dnf, dq,
+      pole: start === 1,
+      stageWin1: !!stages.stageWin1, stageWin2: !!stages.stageWin2, stageWin3: !!stages.stageWin3,
+      fastestLap: false, mostLapsLed: false, dnf, dq,
+      // Preserve raw timing for debugging
+      _rawBestLapTime:  r.best_lap_time  ?? r.bestLapTime  ?? null,
+      _rawBestLapSpeed: r.best_lap_speed ?? r.bestLapSpeed ?? null,
     };
   }).filter(d => d.finish > 0).sort((a, b) => a.finish - b.finish);
 
-  if (mostLapsLedDriver) { const d = drivers.find(x => x.name === mostLapsLedDriver); if (d) d.mostLapsLed = true; }
+  if (mostLapsLedDriver) {
+    const d = drivers.find(x => x.name === mostLapsLedDriver);
+    if (d) d.mostLapsLed = true;
+  }
+
+  // Auto-detect fastest lap — marks driver if timing data is available
+  const fastestLapDriver = detectFastestLapDriver(raceResults);
+  const fastestLapAutoDetected = !!fastestLapDriver;
+  if (fastestLapDriver) {
+    const d = drivers.find(x => x.name === fastestLapDriver);
+    if (d) d.fastestLap = true;
+  }
+
   const threeStages = (data?.weekend_stage_results || []).some(s => s.stage_number >= 3);
+  const stageWinners = [1, 2, ...(threeStages ? [3] : [])].map(n => {
+    const winner = drivers.find(d => d[`stageWin${n}`]);
+    return { stage: n, driver: winner?.name || null };
+  });
+
   return {
-    ok: true, drivers, threeStages,
-    raceName: data?.race_name || `Week ${week}`, trackName: data?.track_name || "",
-    poleSitter: drivers.find(d => d.pole)?.name || null, mostLapsLedDriver, driverCount: drivers.length,
-    note: `✓ ${drivers.length} drivers loaded. Enter fastest lap manually before scoring.`,
+    ok: true, drivers, threeStages, stageWinners,
+    raceName:    data?.race_name  || `Week ${week}`,
+    trackName:   data?.track_name || "",
+    poleSitter:  drivers.find(d => d.pole)?.name       || null,
+    winner:      drivers.find(d => d.finish === 1)?.name || null,
+    mostLapsLedDriver,
+    fastestLapDriver,
+    fastestLapAutoDetected,
+    driverCount: drivers.length,
     source: "NASCAR Cacher",
   };
 }
