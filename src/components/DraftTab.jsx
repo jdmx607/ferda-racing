@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { C, PClr, PC, TTC, TTL, r, shadow } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, DRIVERS, DRIVER_INFO, MAKE_COLORS, ACTIVE_PICKS, TRACK_MULTS, isMemorial } from "../constants";
 import { getDraftOrder, buildSnakeOrder } from "../engine/draft";
+import { analyzeLineups } from "../engine/draftAnalysis";
 
 const MAKE_BADGE = { Chevy:"#b8b8b8", Ford:"#4a90e2", Toyota:"#eb0a1e" };
 
@@ -67,6 +68,17 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
   const playerPicks = {};
   PLAYERS.forEach(p => { playerPicks[p.id] = []; });
   draftState.forEach(d => { if (playerPicks[d.pid]) playerPicks[d.pid].push(d.driver); });
+
+  // Post-draft analysis — computed once draft is locked
+  const savedPicks = data.picks?.[draftKey] || {};
+  const picksForAnalysis = draftComplete ? playerPicks : savedPicks;
+  const analysis = useMemo(() => {
+    if (!draftComplete) return null;
+    // Build picks shape for analyzeLineups: {pid: [{driver, mulligan}]}
+    const wp = {};
+    PLAYERS.forEach(p => { wp[p.id] = (picksForAnalysis[p.id] || []).map(d => typeof d === "string" ? { driver:d, mulligan:false } : d); });
+    return analyzeLineups(wp, currentWeek, data);
+  }, [draftComplete, currentWeek, data]);
 
   const handlePick = (driver) => {
     if (!isMyTurn || draftComplete || isMemorial(driver)) return;
@@ -283,6 +295,195 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ── Post-draft lineup analysis ────────────────────────────────────────── */}
+      {draftComplete && analysis && (
+        <div style={{ marginTop:24 }}>
+          {/* Header */}
+          <div style={{
+            background:`linear-gradient(135deg,#001a10,${C.bg})`,
+            borderRadius:`${r.lg}px ${r.lg}px 0 0`,
+            padding:"16px 20px",
+            border:`1px solid ${TTC[analysis.trackType]}44`,
+            borderBottom:"none",
+            boxShadow:shadow.glow(TTC[analysis.trackType]),
+          }}>
+            <div style={{ color:TTC[analysis.trackType], fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
+              📊 Lineup Analysis — W{analysis.week}
+            </div>
+            <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900, letterSpacing:1 }}>
+              {analysis.raceName}
+            </div>
+            <div style={{ color:C.muted, fontSize:11, marginTop:3 }}>
+              @ {analysis.trackName} · Based on {analysis.racesOfType} {TTL[analysis.trackType]} race{analysis.racesOfType!==1?"s":""} this season
+            </div>
+          </div>
+
+          {/* Overall ranking */}
+          <div style={{
+            background:C.card, border:`1px solid ${C.border}`,
+            borderTop:"none", padding:"14px 20px",
+          }}>
+            <div style={{ color:C.muted, fontSize:9, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:10 }}>
+              Projected Ranking (avg pts at this track type)
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+              {analysis.lineups.map((p, i) => {
+                const barW = analysis.maxProjected > 0 ? (p.projectedTotal / analysis.maxProjected) * 100 : 0;
+                const isFirst = i === 0;
+                return (
+                  <div key={p.id}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:4 }}>
+                      <span style={{
+                        fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:900,
+                        color:isFirst ? C.accent : C.muted,
+                        width:22, flexShrink:0,
+                      }}>{i+1}</span>
+                      <div style={{
+                        width:28, height:28, borderRadius:"50%", flexShrink:0,
+                        background:PClr[p.id].bg, border:`2px solid ${PClr[p.id].fg}44`,
+                        display:"flex", alignItems:"center", justifyContent:"center",
+                        fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:900,
+                        color:PClr[p.id].fg,
+                      }}>{PNAME[p.id][0]}</div>
+                      <span style={{ color:PClr[p.id].fg === "#AA0000" ? C.text : PClr[p.id].fg, fontWeight:700, fontSize:14, flex:1 }}>
+                        {PNAME[p.id]}
+                        {isFirst && <span style={{ color:C.accent, fontSize:10, marginLeft:8 }}>PAPER FAVORITE</span>}
+                      </span>
+                      <span style={{
+                        fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900,
+                        color:isFirst ? C.accent : C.text,
+                      }}>{p.projectedTotal}</span>
+                    </div>
+                    <div style={{ marginLeft:60, height:5, background:C.border, borderRadius:r.pill, overflow:"hidden" }}>
+                      <div style={{
+                        height:"100%", width:`${barW}%`,
+                        background:isFirst ? C.accent : PClr[p.id].fg,
+                        opacity:0.75, transition:"width 0.6s ease",
+                      }}/>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ color:C.muted, fontSize:10, marginTop:10 }}>
+              Mulliganed drivers discounted ~60% (finish pts only). Projected ≠ actual — just historical avg.
+            </div>
+          </div>
+
+          {/* Per-player driver breakdown */}
+          <div style={{
+            display:"grid", gridTemplateColumns:"repeat(2,1fr)",
+            gap:1, border:`1px solid ${C.border}`,
+            borderTop:"none",
+            borderRadius:`0 0 ${r.lg}px ${r.lg}px`, overflow:"hidden",
+          }}>
+            {analysis.lineups.map((p, idx) => {
+              const miss = analysis.perPlayerMiss[p.id];
+              const maxAvg = p.drivers[0]?.avgScore || 1;
+              return (
+                <div key={p.id} style={{
+                  background:PClr[p.id].bg, padding:"12px 14px",
+                  borderRight: idx % 2 === 0 ? `1px solid ${C.border}` : "none",
+                }}>
+                  <div style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:14, fontWeight:900, letterSpacing:0.5, marginBottom:8 }}>
+                    {PNAME[p.id].toUpperCase()}
+                    <span style={{ color:PClr[p.id].fg+"66", fontSize:9, fontWeight:400, marginLeft:6 }}>
+                      {p.projectedTotal} proj
+                    </span>
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+                    {p.drivers.map(d => (
+                      <div key={d.driver} style={{
+                        display:"flex", alignItems:"center", gap:6, padding:"5px 8px",
+                        background:PClr[p.id].bg==="#000000"?"rgba(255,255,255,0.05)":"rgba(0,0,0,0.15)",
+                        borderRadius:r.sm,
+                      }}>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ color:PClr[p.id].fg, fontSize:11, fontWeight:700,
+                            overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+                          }}>
+                            {d.driver}{d.isMulligan?" 🔄":""}
+                          </div>
+                          {/* Mini bar */}
+                          <div style={{ height:2, background:C.border+"55", borderRadius:r.pill, marginTop:3 }}>
+                            <div style={{
+                              height:"100%",
+                              width:`${maxAvg>0?(d.avgScore/maxAvg)*100:0}%`,
+                              background:PClr[p.id].fg, opacity:0.6,
+                            }}/>
+                          </div>
+                        </div>
+                        <div style={{ textAlign:"right", flexShrink:0 }}>
+                          <span style={{
+                            fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:700,
+                            color:d.avgScore>=40?C.accent:d.avgScore>=20?C.green:PClr[p.id].fg+"88",
+                          }}>
+                            {d.avgScore>0?d.avgScore:"—"}
+                          </span>
+                          {d.appearances>0&&<div style={{ color:PClr[p.id].fg+"44", fontSize:8 }}>{d.appearances}r avg</div>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Best miss for this player */}
+                  {miss && (
+                    <div style={{
+                      marginTop:8, padding:"6px 8px",
+                      background:C.red+"18", borderRadius:r.sm,
+                      border:`1px solid ${C.red}33`,
+                      display:"flex", justifyContent:"space-between", alignItems:"center",
+                    }}>
+                      <div>
+                        <div style={{ color:C.red, fontSize:8, fontWeight:700, letterSpacing:1, textTransform:"uppercase" }}>Best left on board</div>
+                        <div style={{ color:C.text, fontSize:10, fontWeight:700, marginTop:1 }}>{miss.name}</div>
+                      </div>
+                      <span style={{ color:C.red, fontFamily:"'Oswald',sans-serif", fontSize:14, fontWeight:900 }}>
+                        {miss.avgScore} avg
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Overall best available */}
+          {analysis.bestAvailable && (
+            <div style={{
+              marginTop:8, background:C.card, borderRadius:r.md, padding:"12px 16px",
+              border:`1px solid ${C.border}`,
+              display:"flex", alignItems:"center", justifyContent:"space-between",
+            }}>
+              <div>
+                <div style={{ color:C.muted, fontSize:9, fontWeight:700, textTransform:"uppercase", letterSpacing:1.5, marginBottom:3 }}>
+                  🔥 Best Driver Left on the Board
+                </div>
+                <div style={{ color:C.text, fontWeight:700, fontSize:14 }}>{analysis.bestAvailable.name}</div>
+                <div style={{ color:C.muted, fontSize:10, marginTop:1 }}>
+                  {analysis.bestAvailable.appearances} race{analysis.bestAvailable.appearances!==1?"s":""} at {TTL[analysis.trackType]}
+                </div>
+              </div>
+              <div style={{ textAlign:"right" }}>
+                <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:26, fontWeight:900, color:C.accent }}>
+                  {analysis.bestAvailable.avgScore}
+                </div>
+                <div style={{ color:C.muted, fontSize:9, textTransform:"uppercase" }}>avg pts</div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* No track data yet */}
+      {draftComplete && !analysis && (
+        <div style={{
+          marginTop:16, background:C.card, borderRadius:r.md, padding:"14px 18px",
+          border:`1px solid ${C.border}`, color:C.dim, fontSize:13, textAlign:"center",
+        }}>
+          📊 Lineup analysis will be available once we have results from this track type.
         </div>
       )}
     </div>

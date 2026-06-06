@@ -203,7 +203,10 @@ export default function App() {
 
   return (
     <div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Barlow Condensed',sans-serif",color:C.text}}>
-      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.75}}`}</style>
+      <style>{`
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.75}}
+        @media(max-width:640px){body{padding-bottom:72px}}
+      `}</style>
       <MemorialBackdrop/>
       {showWinnerModal&&<WinnerModal player={user} data={data} onDismiss={()=>setShowWinnerModal(false)}/>}
       <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)}/>
