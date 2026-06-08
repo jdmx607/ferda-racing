@@ -248,7 +248,7 @@ async function getCacherRaceId(week) {
     const r = pts[week - 1];
     if (r?.race_id) return r.race_id;
   }
-  return week;
+  return null; // Race ID unknown — callers must handle null
 }
 
 function parseStages(weekendData) {
@@ -292,13 +292,18 @@ export async function fetchPostRaceFromLive() {
     return { ok: false, error: `Live feed shows a ${types[runType] || "non-race"} session ("${liveFeed.run_name}"), not a race. Try after the race starts.` };
   }
 
-  // Guard: race must be finished (flag_state 5 = checkered)
+  // Guard: race must be finished.
+  // flag_state 5 = checkered flag. However, NASCAR resets flag_state to 0 within a few
+  // minutes of the checkered flag, while laps_to_go stays at 0. Accept either condition
+  // so we can score immediately after the race even if the flag state has already reset.
   const flagState = liveFeed.flag_state;
-  if (flagState !== 5) {
-    const lapsLeft = liveFeed.laps_to_go ?? "?";
+  const lapsLeft  = liveFeed.laps_to_go ?? liveFeed.laps_remaining ?? null;
+  const raceOver  = flagState === 5 || lapsLeft === 0;
+
+  if (!raceOver) {
     return {
       ok: false,
-      error: `Race still in progress — ${lapsLeft} laps to go · Flag: ${FLAG_NAMES[flagState] ?? flagState}`,
+      error: `Race still in progress — ${lapsLeft ?? "?"} laps to go · Flag: ${FLAG_NAMES[flagState] ?? flagState}`,
       raceInProgress: true,
       lapsToGo: lapsLeft,
       flagState,
@@ -389,6 +394,12 @@ export async function fetchPostRaceFromLive() {
     };
   }).filter(d => d.finish > 0).sort((a, b) => a.finish - b.finish);
 
+  // Guard: if the live feed cleared all positions post-race, don't return empty data.
+  // The caller will fall through to the cacher or manual results.
+  if (drivers.length === 0) {
+    return { ok: false, error: "Live feed has no driver positions. Feed data may have cleared post-race — try the Cacher source." };
+  }
+
   // Mark most laps led
   if (mostLapsLedDriver) {
     const d = drivers.find(x => x.name === mostLapsLedDriver);
@@ -467,6 +478,64 @@ function detectFastestLapDriver(raceResults) {
   return carToDriver(winner.car_number ?? "", winner.driver_first_name ?? "", winner.driver_last_name ?? "");
 }
 
+// ── Manually-entered results for weeks where APIs were unavailable ─────────────
+// Format matches live feed output. Add an entry here whenever both sources fail.
+// Stage 1 Top 10: 45,54,77,9,23,38,5,17,35,7  Stage 2 Top 10: 9,43,7,5,24,20,77,11,22,38
+// Laps led from official lead-changes: Elliott 67, Hamlin 40, Reddick 33, Hocevar 27,
+//   Suarez 10, Byron 7, Gibbs 6, Larson 4, Wallace 3, Chastain 1.
+const MANUAL_RESULTS = {
+  15: {
+    ok: true, source: "Manual Entry",
+    raceName: "FireKeepers Casino 400", trackName: "Michigan International Speedway",
+    winner: "#11 Denny Hamlin", poleSitter: "#11 Denny Hamlin",
+    mostLapsLedDriver: "#9 Chase Elliott", fastestLapDriver: "#77 Carson Hocevar",
+    fastestLapAutoDetected: true, threeStages: false, driverCount: 37, raceComplete: true,
+    stageWinners: [
+      { stage:1, driver:"#45 Tyler Reddick" },
+      { stage:2, driver:"#9 Chase Elliott" },
+    ],
+    drivers: [
+      {name:"#11 Denny Hamlin",       finish:1, qualPos:1,  stage1:0,  stage2:8,  lapsLed:40, pole:true,  stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#43 Erik Jones",         finish:2, qualPos:10, stage1:0,  stage2:2,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#23 Bubba Wallace",      finish:3, qualPos:13, stage1:5,  stage2:0,  lapsLed:3,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#5 Kyle Larson",         finish:4, qualPos:7,  stage1:7,  stage2:4,  lapsLed:4,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#77 Carson Hocevar",     finish:5, qualPos:2,  stage1:3,  stage2:7,  lapsLed:27, pole:false, stageWin1:false,stageWin2:false,fastestLap:true, mostLapsLed:false,dnf:false,dq:false},
+      {name:"#7 Daniel Suarez",       finish:6, qualPos:11, stage1:10, stage2:3,  lapsLed:10, pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#22 Joey Logano",        finish:7, qualPos:18, stage1:0,  stage2:9,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#12 Ryan Blaney",        finish:8, qualPos:19, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#17 Chris Buescher",     finish:9, qualPos:14, stage1:8,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#19 Chase Briscoe",      finish:10,qualPos:5,  stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#2 Austin Cindric",      finish:11,qualPos:31, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#41 Cole Custer",        finish:12,qualPos:15, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#35 Riley Herbst",       finish:13,qualPos:12, stage1:9,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#42 John Hunter Nemechek",finish:14,qualPos:17,stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#21 Josh Berry",         finish:15,qualPos:37, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#1 Ross Chastain",       finish:16,qualPos:32, stage1:0,  stage2:0,  lapsLed:1,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#16 AJ Allmendinger",    finish:17,qualPos:25, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#24 William Byron",      finish:18,qualPos:9,  stage1:0,  stage2:5,  lapsLed:7,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#48 Alex Bowman",        finish:19,qualPos:29, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#33 Austin Hill / Jesse Love",finish:20,qualPos:28,stage1:0,stage2:0,lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#44 JJ Yeley / Joey Gase",finish:21,qualPos:36,stage1:0, stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#34 Todd Gilliland",     finish:22,qualPos:35, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#51 Cody Ware",          finish:23,qualPos:33, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#10 Ty Dillon",          finish:24,qualPos:24, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#54 Ty Gibbs",           finish:25,qualPos:4,  stage1:2,  stage2:0,  lapsLed:6,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:false,dq:false},
+      {name:"#71 Michael McDowell",   finish:26,qualPos:20, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true, dq:false},
+      {name:"#4 Noah Gragson",        finish:27,qualPos:22, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true, dq:false},
+      {name:"#60 Ryan Preece",        finish:28,qualPos:27, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true, dq:false},
+      {name:"#47 Ricky Stenhouse Jr", finish:29,qualPos:23, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true, dq:false},
+      {name:"#97 Shane Van Gisbergen",finish:30,qualPos:30, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true, dq:false},
+      {name:"#20 Christopher Bell",   finish:31,qualPos:8,  stage1:0,  stage2:6,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true, dq:false},
+      {name:"#9 Chase Elliott",       finish:32,qualPos:6,  stage1:4,  stage2:1,  lapsLed:67, pole:false, stageWin1:false,stageWin2:true, fastestLap:false,mostLapsLed:true, dnf:true, dq:false},
+      {name:"#38 Zane Smith",         finish:33,qualPos:16, stage1:6,  stage2:10, lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true, dq:false},
+      {name:"#6 Brad Keselowski",     finish:34,qualPos:26, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true, dq:false},
+      {name:"#45 Tyler Reddick",      finish:35,qualPos:3,  stage1:1,  stage2:0,  lapsLed:33, pole:false, stageWin1:true, stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true, dq:false},
+      {name:"#3 Austin Dillon",       finish:36,qualPos:21, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true, dq:false},
+      {name:"#88 Connor Zilisch",     finish:37,qualPos:34, stage1:0,  stage2:0,  lapsLed:0,  pole:false, stageWin1:false,stageWin2:false,fastestLap:false,mostLapsLed:false,dnf:true, dq:false},
+    ],
+  },
+};
+
 // ── fetchNASCARResults — try live feed first, fall back to weekend-feed ────────
 // Strategy:
 //   1. Hit live-feed.json. If race is over (flag_state=5) → use live data (fastest)
@@ -480,10 +549,20 @@ export async function fetchNASCARResults(week) {
 
   // ── Attempt 2: weekend-feed cacher (populated 30-60 min after race) ───────
   const raceId = await getCacherRaceId(week);
-  const data = await tryFetch(cacherUrl(`/2026/1/${raceId}/weekend-feed.json`));
-  if (!data) return { ok: false, error: `No post-race data found.\n\nLive feed: ${liveResult.error}\nCacher: no response for Week ${week} (ID ${raceId}).` };
+  const data   = raceId ? await tryFetch(cacherUrl(`/2026/1/${raceId}/weekend-feed.json`)) : null;
   const raceResults = data?.race_results || [];
-  if (!raceResults.length) return { ok: false, error: "Race results not available yet in the cacher feed. Try again in a few minutes." };
+
+  if (!raceResults.length) {
+    // ── Attempt 3: manually-entered results for specific weeks ───────────
+    if (MANUAL_RESULTS[week]) return MANUAL_RESULTS[week];
+    const why = raceId
+      ? `no results in cacher (race ID ${raceId})`
+      : `race ID not found for Week ${week}`;
+    return {
+      ok: false,
+      error: `No post-race data available.\n\nLive feed: ${liveResult.error}\nCacher: ${why}.\n\nTry again in a few minutes, or use Manual Entry.`,
+    };
+  }
 
   const stageMap = parseStages(data);
 

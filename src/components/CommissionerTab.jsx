@@ -47,15 +47,20 @@ function QuickScoreCard({ fetchResult, week, race, playerPicks, onConfirm, onAdv
           <div style={{ color: TTC[trackType] || C.accent, fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>
             ✅ {drivers.length} drivers loaded · W{week} · {TTL[trackType] || ""} ×{TRACK_MULTS[trackType] || 1}
           </div>
-          <div style={{
-            fontSize:9, fontWeight:700, padding:"2px 8px", borderRadius:20,
-            background: fetchResult.source === "NASCAR Live Feed" ? "#f59e0b22" : "#10b98122",
-            color:      fetchResult.source === "NASCAR Live Feed" ? "#f59e0b"   : "#10b981",
-            border:     `1px solid ${fetchResult.source === "NASCAR Live Feed" ? "#f59e0b44" : "#10b98144"}`,
-            letterSpacing:1, textTransform:"uppercase",
-          }}>
-            {fetchResult.source === "NASCAR Live Feed" ? "🏁 LIVE FEED" : "📦 CACHER"}
-          </div>
+          {(() => {
+            const src = fetchResult.source;
+            const [bg,clr,lbl] =
+              src === "NASCAR Live Feed" ? ["#f59e0b22","#f59e0b","🏁 LIVE FEED"] :
+              src === "Manual Entry"     ? ["#3b82f622","#3b82f6","📋 MANUAL"]    :
+                                          ["#10b98122","#10b981","📦 CACHER"];
+            return (
+              <div style={{
+                fontSize:9, fontWeight:700, padding:"2px 8px", borderRadius:20,
+                background:bg, color:clr, border:`1px solid ${clr}44`,
+                letterSpacing:1, textTransform:"uppercase",
+              }}>{lbl}</div>
+            );
+          })()}
         </div>
         <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900, letterSpacing:1 }}>
           {raceName}
