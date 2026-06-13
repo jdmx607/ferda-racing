@@ -421,35 +421,24 @@ function StorylinesPanel({ storylines }) {
   );
 }
 
-// ─── Section: NASCAR News (Reddit r/NASCAR) ───────────────────────────────────
-
-const FLAIR_COLORS = {
-  "News": "#ef4444",
-  "Race Results": "#10b981",
-  "Race Thread": "#f59e0b",
-  "Race Day Thread": "#f59e0b",
-  "Discussion": "#3b82f6",
-  "Stats": "#8b5cf6",
-  "Media": "#f97316",
-  "Video": "#f97316",
-  "Photo": "#ec4899",
-  "Humor": "#06b6d4",
-};
+// ─── Section: NASCAR News (Jayski) ───────────────────────────────────────────
 
 function NascarNews() {
-  const [posts,     setPosts    ] = useState([]);
+  const [items,     setItems    ] = useState([]);
   const [loading,   setLoading  ] = useState(true);
   const [error,     setError    ] = useState(null);
+  const [source,    setSource   ] = useState("");
   const [fetchedAt, setFetchedAt] = useState(null);
 
   async function load() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/reddit");
-      if (!res.ok) throw new Error(`Reddit returned ${res.status}`);
+      const res = await fetch("/api/jayski");
       const json = await res.json();
-      setPosts(json.data.children.map(c => c.data).filter(p => !p.stickied));
+      if (!res.ok || json.error) throw new Error(json.error || `HTTP ${res.status}`);
+      setItems(json.items || []);
+      setSource(json.source || "");
       setFetchedAt(Date.now());
     } catch (e) {
       setError(e.message);
@@ -460,18 +449,19 @@ function NascarNews() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { load(); }, []);
 
-  const ago = (utc) => {
-    const s = Math.floor(Date.now() / 1000 - utc);
-    if (s < 3600)  return `${Math.floor(s / 60)}m ago`;
-    if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
-    return `${Math.floor(s / 86400)}d ago`;
+  const fmtDate = (str) => {
+    if (!str) return "";
+    try {
+      return new Date(str).toLocaleDateString("en-US", { month:"short", day:"numeric", year:"numeric" });
+    } catch { return str; }
   };
 
   return (
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
         <div style={{ color:C.muted, fontSize:11 }}>
-          r/NASCAR · hot posts{fetchedAt && ` · ${ago(fetchedAt / 1000)}`}
+          Jayski.com · NASCAR news
+          {source && <span style={{ marginLeft:6, opacity:0.6 }}>via {source}</span>}
         </div>
         <button
           onClick={load} disabled={loading}
@@ -485,9 +475,9 @@ function NascarNews() {
         </button>
       </div>
 
-      {loading && !posts.length && (
+      {loading && !items.length && (
         <div style={{ textAlign:"center", color:C.muted, padding:"40px 0", fontSize:13 }}>
-          Fetching r/NASCAR…
+          Fetching Jayski…
         </div>
       )}
 
@@ -504,40 +494,36 @@ function NascarNews() {
       )}
 
       <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-        {posts.map(post => {
-          const href = post.is_self ? `https://reddit.com${post.permalink}` : post.url;
-          const fc   = FLAIR_COLORS[post.link_flair_text] || C.accent;
-          return (
-            <a key={post.id} href={href} target="_blank" rel="noopener noreferrer" style={{ textDecoration:"none" }}>
-              <div style={{
-                background:C.card, borderRadius:r.md, padding:"11px 14px",
-                border:`1px solid ${C.border}`,
-                transition:"border-color 0.12s",
-              }}>
-                {post.link_flair_text && (
-                  <span style={{
-                    display:"inline-block", marginBottom:5,
-                    fontSize:9, fontWeight:700, letterSpacing:1, textTransform:"uppercase",
-                    padding:"2px 7px", borderRadius:r.pill,
-                    background:`${fc}22`, color:fc, border:`1px solid ${fc}44`,
-                  }}>
-                    {post.link_flair_text}
-                  </span>
-                )}
-                <div style={{ color:C.text, fontWeight:600, fontSize:13, lineHeight:1.4, marginBottom:5 }}>
-                  {post.title}
-                </div>
-                <div style={{ display:"flex", gap:12, color:C.muted, fontSize:11, flexWrap:"wrap" }}>
-                  <span>↑ {post.score.toLocaleString()}</span>
-                  <span>💬 {post.num_comments}</span>
-                  <span>{ago(post.created_utc)}</span>
-                  <span style={{ color:C.dim }}>u/{post.author}</span>
-                </div>
+        {items.map((item, i) => (
+          <a key={i} href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration:"none" }}>
+            <div style={{
+              background:C.card, borderRadius:r.md, padding:"12px 14px",
+              border:`1px solid ${C.border}`, transition:"border-color 0.12s",
+            }}>
+              <div style={{ color:C.text, fontWeight:600, fontSize:13, lineHeight:1.4, marginBottom: item.excerpt ? 5 : 0 }}>
+                {item.title}
               </div>
-            </a>
-          );
-        })}
+              {item.excerpt && (
+                <div style={{ color:C.textDim, fontSize:12, lineHeight:1.5, marginBottom:5 }}>
+                  {item.excerpt}
+                </div>
+              )}
+              {item.date && (
+                <div style={{ color:C.muted, fontSize:11 }}>{fmtDate(item.date)}</div>
+              )}
+            </div>
+          </a>
+        ))}
       </div>
+
+      {!loading && !error && items.length > 0 && (
+        <div style={{ textAlign:"center", marginTop:12 }}>
+          <a href="https://www.jayski.com" target="_blank" rel="noopener noreferrer"
+            style={{ color:C.muted, fontSize:11, textDecoration:"none" }}>
+            More at jayski.com →
+          </a>
+        </div>
+      )}
     </div>
   );
 }
@@ -547,7 +533,7 @@ function NascarNews() {
 const SECTIONS = [
   { id:"recap",      label:"Last Race Recap"   },
   { id:"preview",    label:"Next Race Preview"  },
-  { id:"news",       label:"NASCAR News"        },
+  { id:"news",       label:"Jayski News"         },
   { id:"storylines", label:"Season Storylines"  },
   { id:"archive",    label:"Browse Recaps"      },
 ];
