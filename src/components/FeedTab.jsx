@@ -438,7 +438,7 @@ function NascarNews() {
       const json = await res.json();
       if (!res.ok || json.error) throw new Error(json.error || `HTTP ${res.status}`);
       setItems(json.items || []);
-      setSource(json.source || "");
+      setSource((json.sources || []).join(", "));
       setFetchedAt(Date.now());
     } catch (e) {
       setError(e.message);
@@ -460,8 +460,7 @@ function NascarNews() {
     <div>
       <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
         <div style={{ color:C.muted, fontSize:11 }}>
-          Jayski.com · NASCAR news
-          {source && <span style={{ marginLeft:6, opacity:0.6 }}>via {source}</span>}
+          NASCAR news · {source ? source.split(",").join(" · ") : "loading sources…"}
         </div>
         <button
           onClick={load} disabled={loading}
@@ -500,7 +499,7 @@ function NascarNews() {
               background:C.card, borderRadius:r.md, padding:"12px 14px",
               border:`1px solid ${C.border}`, transition:"border-color 0.12s",
             }}>
-              <div style={{ color:C.text, fontWeight:600, fontSize:13, lineHeight:1.4, marginBottom: item.excerpt ? 5 : 0 }}>
+              <div style={{ color:C.text, fontWeight:600, fontSize:13, lineHeight:1.4, marginBottom:5 }}>
                 {item.title}
               </div>
               {item.excerpt && (
@@ -508,9 +507,16 @@ function NascarNews() {
                   {item.excerpt}
                 </div>
               )}
-              {item.date && (
-                <div style={{ color:C.muted, fontSize:11 }}>{fmtDate(item.date)}</div>
-              )}
+              <div style={{ display:"flex", gap:10, alignItems:"center" }}>
+                {item.sourceName && (
+                  <span style={{ fontSize:9, fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:C.accent, opacity:0.7 }}>
+                    {item.sourceName}
+                  </span>
+                )}
+                {item.date && (
+                  <span style={{ color:C.muted, fontSize:11 }}>{fmtDate(item.date)}</span>
+                )}
+              </div>
             </div>
           </a>
         ))}
