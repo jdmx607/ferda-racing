@@ -446,7 +446,7 @@ function NascarNews() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("https://www.reddit.com/r/nascar/hot.json?limit=25&raw_json=1");
+      const res = await fetch("/api/reddit");
       if (!res.ok) throw new Error(`Reddit returned ${res.status}`);
       const json = await res.json();
       setPosts(json.data.children.map(c => c.data).filter(p => !p.stickied));
