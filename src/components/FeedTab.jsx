@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { C, PClr, TTC, TTL, r, shadow } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, TRACK_MULTS } from "../constants";
 import { generateFullRecap, generateWeekPreview, getSeasonStorylines } from "../engine/narrative";
@@ -421,13 +421,135 @@ function StorylinesPanel({ storylines }) {
   );
 }
 
+// ─── Section: NASCAR News (Reddit r/NASCAR) ───────────────────────────────────
+
+const FLAIR_COLORS = {
+  "News": "#ef4444",
+  "Race Results": "#10b981",
+  "Race Thread": "#f59e0b",
+  "Race Day Thread": "#f59e0b",
+  "Discussion": "#3b82f6",
+  "Stats": "#8b5cf6",
+  "Media": "#f97316",
+  "Video": "#f97316",
+  "Photo": "#ec4899",
+  "Humor": "#06b6d4",
+};
+
+function NascarNews() {
+  const [posts,     setPosts    ] = useState([]);
+  const [loading,   setLoading  ] = useState(true);
+  const [error,     setError    ] = useState(null);
+  const [fetchedAt, setFetchedAt] = useState(null);
+
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("https://www.reddit.com/r/nascar/hot.json?limit=25&raw_json=1");
+      if (!res.ok) throw new Error(`Reddit returned ${res.status}`);
+      const json = await res.json();
+      setPosts(json.data.children.map(c => c.data).filter(p => !p.stickied));
+      setFetchedAt(Date.now());
+    } catch (e) {
+      setError(e.message);
+    }
+    setLoading(false);
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, []);
+
+  const ago = (utc) => {
+    const s = Math.floor(Date.now() / 1000 - utc);
+    if (s < 3600)  return `${Math.floor(s / 60)}m ago`;
+    if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+    return `${Math.floor(s / 86400)}d ago`;
+  };
+
+  return (
+    <div>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:14 }}>
+        <div style={{ color:C.muted, fontSize:11 }}>
+          r/NASCAR · hot posts{fetchedAt && ` · ${ago(fetchedAt / 1000)}`}
+        </div>
+        <button
+          onClick={load} disabled={loading}
+          style={{
+            padding:"5px 12px", borderRadius:r.pill, border:`1px solid ${C.border}`,
+            background:"transparent", color:loading ? C.muted : C.dim,
+            fontSize:11, cursor:loading ? "default" : "pointer", fontFamily:"inherit",
+          }}
+        >
+          {loading ? "Loading…" : "↻ Refresh"}
+        </button>
+      </div>
+
+      {loading && !posts.length && (
+        <div style={{ textAlign:"center", color:C.muted, padding:"40px 0", fontSize:13 }}>
+          Fetching r/NASCAR…
+        </div>
+      )}
+
+      {error && (
+        <div style={{
+          background:C.card, borderRadius:r.md, padding:"12px 16px",
+          border:`1px solid ${C.red}44`, color:C.red, fontSize:13, marginBottom:12,
+        }}>
+          Couldn't load news: {error}
+          <button onClick={load} style={{ marginLeft:12, color:C.accent, background:"none", border:"none", cursor:"pointer", fontSize:13 }}>
+            Retry
+          </button>
+        </div>
+      )}
+
+      <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+        {posts.map(post => {
+          const href = post.is_self ? `https://reddit.com${post.permalink}` : post.url;
+          const fc   = FLAIR_COLORS[post.link_flair_text] || C.accent;
+          return (
+            <a key={post.id} href={href} target="_blank" rel="noopener noreferrer" style={{ textDecoration:"none" }}>
+              <div style={{
+                background:C.card, borderRadius:r.md, padding:"11px 14px",
+                border:`1px solid ${C.border}`,
+                transition:"border-color 0.12s",
+              }}>
+                {post.link_flair_text && (
+                  <span style={{
+                    display:"inline-block", marginBottom:5,
+                    fontSize:9, fontWeight:700, letterSpacing:1, textTransform:"uppercase",
+                    padding:"2px 7px", borderRadius:r.pill,
+                    background:`${fc}22`, color:fc, border:`1px solid ${fc}44`,
+                  }}>
+                    {post.link_flair_text}
+                  </span>
+                )}
+                <div style={{ color:C.text, fontWeight:600, fontSize:13, lineHeight:1.4, marginBottom:5 }}>
+                  {post.title}
+                </div>
+                <div style={{ display:"flex", gap:12, color:C.muted, fontSize:11, flexWrap:"wrap" }}>
+                  <span>↑ {post.score.toLocaleString()}</span>
+                  <span>💬 {post.num_comments}</span>
+                  <span>{ago(post.created_utc)}</span>
+                  <span style={{ color:C.dim }}>u/{post.author}</span>
+                </div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main FeedTab ─────────────────────────────────────────────────────────────
 
 const SECTIONS = [
-  { id:"recap",      label:"Last Race Recap" },
-  { id:"preview",    label:"Next Race Preview" },
-  { id:"storylines", label:"Season Storylines" },
-  { id:"archive",    label:"Browse Recaps" },
+  { id:"recap",      label:"Last Race Recap"   },
+  { id:"preview",    label:"Next Race Preview"  },
+  { id:"news",       label:"NASCAR News"        },
+  { id:"storylines", label:"Season Storylines"  },
+  { id:"archive",    label:"Browse Recaps"      },
 ];
 
 export function FeedTab({ data }) {
@@ -502,6 +624,7 @@ export function FeedTab({ data }) {
       {section==="preview"    && (preview ? <PreviewCard preview={preview} /> : (
         <div style={{ color:C.muted, textAlign:"center", padding:40 }}>No upcoming race data available</div>
       ))}
+      {section==="news"       && <NascarNews />}
       {section==="storylines" && <StorylinesPanel storylines={storylines} />}
     </div>
   );
