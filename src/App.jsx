@@ -36,7 +36,6 @@ const HistoryTab   = lazy(() => import("./components/HistoryTab").then(m  => ({ 
 
 // "info" chunk: reference/settings screens
 const PlayoffsTab   = lazy(() => import("./components/PlayoffsTab").then(m   => ({ default: m.PlayoffsTab   })));
-const ProjectionsTab= lazy(() => import("./components/ProjectionsTab").then(m=> ({ default: m.ProjectionsTab})));
 const ScheduleTab   = lazy(() => import("./components/ScheduleTab").then(m   => ({ default: m.ScheduleTab   })));
 const RulesTab      = lazy(() => import("./components/RulesTab").then(m      => ({ default: m.RulesTab      })));
 const SettingsTab   = lazy(() => import("./components/SettingsTab").then(m   => ({ default: m.SettingsTab   })));
@@ -254,7 +253,6 @@ export default function App() {
         {tab==="stats"&&<StatsTab data={data}/>}
         {tab==="history"&&<HistoryTab data={data}/>}
         {tab==="playoffs"&&<PlayoffsTab data={data}/>}
-        {tab==="projections"&&<ProjectionsTab data={data} currentWeek={currentWeek}/>}
         {tab==="schedule"&&<ScheduleTab data={data}/>}
         {tab==="rules"&&<RulesTab/>}
         {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}

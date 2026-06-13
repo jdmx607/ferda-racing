@@ -459,6 +459,20 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
               📧 Notify First Picker
             </button>
           )}
+          {!done && hasDraft && (() => {
+            const totalPicks = ACTIVE_PICKS * PLAYERS.length;
+            const draftEntries = data.drafts?.["w"+week] || [];
+            if (draftEntries.length >= totalPicks) return null;
+            const snakeOrder = buildSnakeOrder(getDraftOrder(data, week));
+            const currentPid = snakeOrder[draftEntries.length]?.pid;
+            const currentName = currentPid ? PNAME[currentPid] : "Current Picker";
+            return (
+              <button onClick={async () => { await onNotifyDraft(week); setMsg(`Reminder sent to ${currentName}!`); setTimeout(()=>setMsg(""),3000); }}
+                style={{ padding:"10px 16px", borderRadius:8, border:`1px solid ${C.purple}`, background:C.purple+"22", color:C.purple, fontSize:13, fontFamily:"inherit", fontWeight:600, cursor:"pointer" }}>
+                🔔 Remind {currentName}
+              </button>
+            );
+          })()}
         </div>
       )}
 
