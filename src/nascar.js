@@ -199,7 +199,8 @@ export async function fetchLiveRaceData(week) {
   }
 
   // Fallback: NASCAR cacher feed — updates at stage breaks and race end (free, no key)
-  const cacherRaceId = await getCacherRaceId(week);
+  const cacherRaceId = getCacherRaceId(week);
+  if (!cacherRaceId) return { ok:false, error:"Race ID unknown for this week." };
   const data = await tryFetch(cacherUrl(`/2026/1/${cacherRaceId}/weekend-feed.json`));
   if (!data) return { ok:false, error:"No live data available. Race may not have started." };
 
@@ -235,20 +236,18 @@ export async function fetchLiveRaceData(week) {
 
 // ─── POST-RACE DATA (NASCAR cacher via proxy) ────────────────────────────────
 
+// All 36 Cup Series points-race IDs for 2026, confirmed from
+// https://cf.nascar.com/cacher/2026/race_list_basic.json (series_1, race_type_id=1)
 const CACHER_RACE_IDS = {
-  1:5596,2:5597,3:5598,4:5599,5:5600,6:5603,7:5602,8:5604,
-  9:5607,10:5605,11:5606,12:5621,13:5610,
+   1:5596,  2:5597,  3:5598,  4:5599,  5:5600,  6:5603,  7:5602,  8:5604,
+   9:5607, 10:5605, 11:5606, 12:5621, 13:5610, 14:5611, 15:5612, 16:5614,
+  17:5613, 18:5617, 19:5616, 20:5615, 21:5618, 22:5619, 23:5620, 24:5622,
+  25:5627, 26:5623, 27:5624, 28:5625, 29:5626, 30:5628, 31:5630, 32:5629,
+  33:5633, 34:5631, 35:5632, 36:5601,
 };
 
-async function getCacherRaceId(week) {
-  if (CACHER_RACE_IDS[week]) return CACHER_RACE_IDS[week];
-  const schedule = await tryFetch(cacherUrl("/2026/race_list_basic.json"));
-  if (schedule?.series_1) {
-    const pts = schedule.series_1.filter(r => r.race_type_id !== 2);
-    const r = pts[week - 1];
-    if (r?.race_id) return r.race_id;
-  }
-  return null; // Race ID unknown — callers must handle null
+function getCacherRaceId(week) {
+  return CACHER_RACE_IDS[week] ?? null;
 }
 
 function parseStages(weekendData) {
