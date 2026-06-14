@@ -49,16 +49,8 @@ export function analyzeLineups(weekPicks, week, data) {
     return { ...p, drivers, projectedTotal };
   }).sort((a, b) => b.projectedTotal - a.projectedTotal);
 
-  // Best driver left on the board (not in anyone's lineup)
-  const bestAvailable = trackStats.find(s => !allPickedDrivers.has(s.name)) || null;
-
-  // Per-player "best left on the board" — best unpicked driver they could have taken
-  // (highest avg score that wasn't in *their* lineup specifically)
-  const perPlayerMiss = {};
-  PLAYERS.forEach(p => {
-    const myDrivers = new Set((weekPicks[p.id] || []).map(pk => pk.driver).filter(Boolean));
-    perPlayerMiss[p.id] = trackStats.find(s => !myDrivers.has(s.name)) || null;
-  });
+  // Top 3 drivers left on the board (not in anyone's lineup)
+  const top3Available = trackStats.filter(s => !allPickedDrivers.has(s.name)).slice(0, 3);
 
   return {
     week,
@@ -67,8 +59,7 @@ export function analyzeLineups(weekPicks, week, data) {
     trackType:   weekInfo.ty,
     racesOfType,
     lineups,
-    bestAvailable,
-    perPlayerMiss,
+    top3Available,
     maxProjected: lineups[0]?.projectedTotal || 1,
   };
 }

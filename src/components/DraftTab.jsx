@@ -381,7 +381,6 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
             borderRadius:`0 0 ${r.lg}px ${r.lg}px`, overflow:"hidden",
           }}>
             {analysis.lineups.map((p, idx) => {
-              const miss = analysis.perPlayerMiss[p.id];
               const maxAvg = p.drivers[0]?.avgScore || 1;
               return (
                 <div key={p.id} style={{
@@ -428,50 +427,56 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                       </div>
                     ))}
                   </div>
-                  {/* Best miss for this player */}
-                  {miss && (
-                    <div style={{
-                      marginTop:8, padding:"6px 8px",
-                      background:C.red+"18", borderRadius:r.sm,
-                      border:`1px solid ${C.red}33`,
-                      display:"flex", justifyContent:"space-between", alignItems:"center",
-                    }}>
-                      <div>
-                        <div style={{ color:C.red, fontSize:8, fontWeight:700, letterSpacing:1, textTransform:"uppercase" }}>Best left on board</div>
-                        <div style={{ color:C.text, fontSize:10, fontWeight:700, marginTop:1 }}>{miss.name}</div>
-                      </div>
-                      <span style={{ color:C.red, fontFamily:"'Oswald',sans-serif", fontSize:14, fontWeight:900 }}>
-                        {miss.avgScore} avg
-                      </span>
-                    </div>
-                  )}
                 </div>
               );
             })}
           </div>
 
-          {/* Overall best available */}
-          {analysis.bestAvailable && (
+          {/* Top 3 left on the board */}
+          {analysis.top3Available?.length > 0 && (
             <div style={{
               marginTop:8, background:C.card, borderRadius:r.md, padding:"12px 16px",
               border:`1px solid ${C.border}`,
-              display:"flex", alignItems:"center", justifyContent:"space-between",
             }}>
-              <div>
-                <div style={{ color:C.muted, fontSize:9, fontWeight:700, textTransform:"uppercase", letterSpacing:1.5, marginBottom:3 }}>
-                  🔥 Best Driver Left on the Board
-                </div>
-                <div style={{ color:C.text, fontWeight:700, fontSize:14 }}>{analysis.bestAvailable.name}</div>
-                <div style={{ color:C.muted, fontSize:10, marginTop:1 }}>
-                  {analysis.bestAvailable.appearances} race{analysis.bestAvailable.appearances!==1?"s":""} at {TTL[analysis.trackType]}
-                </div>
+              <div style={{ color:C.muted, fontSize:9, fontWeight:700, textTransform:"uppercase", letterSpacing:1.5, marginBottom:10 }}>
+                🔥 Best Drivers Left on the Board
               </div>
-              <div style={{ textAlign:"right" }}>
-                <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:26, fontWeight:900, color:C.accent }}>
-                  {analysis.bestAvailable.avgScore}
+              {analysis.top3Available.map((d, i) => (
+                <div key={d.name} style={{
+                  display:"flex", alignItems:"center", justifyContent:"space-between",
+                  padding:"8px 0",
+                  borderBottom: i < analysis.top3Available.length - 1 ? `1px solid ${C.border}` : "none",
+                }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                    <div style={{
+                      width:24, height:24, borderRadius:"50%", flexShrink:0,
+                      background: i === 0 ? C.accent+"22" : "transparent",
+                      border:`1px solid ${i === 0 ? C.accent : C.border}`,
+                      display:"flex", alignItems:"center", justifyContent:"center",
+                      fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700,
+                      color: i === 0 ? C.accent : C.muted,
+                    }}>{i + 1}</div>
+                    <div>
+                      <div style={{ color: i === 0 ? C.text : C.textDim, fontWeight: i === 0 ? 700 : 400, fontSize:13 }}>
+                        {d.name}
+                      </div>
+                      <div style={{ color:C.muted, fontSize:10, marginTop:1 }}>
+                        {d.appearances} race{d.appearances!==1?"s":""} at {TTL[analysis.trackType]}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ textAlign:"right" }}>
+                    <div style={{
+                      fontFamily:"'Oswald',sans-serif", fontWeight:900,
+                      fontSize: i === 0 ? 24 : 18,
+                      color: i === 0 ? C.accent : C.text,
+                    }}>
+                      {d.avgScore}
+                    </div>
+                    <div style={{ color:C.muted, fontSize:9, textTransform:"uppercase" }}>avg pts</div>
+                  </div>
                 </div>
-                <div style={{ color:C.muted, fontSize:9, textTransform:"uppercase" }}>avg pts</div>
-              </div>
+              ))}
             </div>
           )}
         </div>
