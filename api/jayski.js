@@ -3,6 +3,8 @@ const FEEDS = [
   { name: "Daily Downforce",url: "https://dailydownforce.com/feed" },
   { name: "Motorsport.com", url: "https://www.motorsport.com/rss/nascar-cup/news/" },
   { name: "On3 NASCAR",     url: "https://www.on3.com/pro/category/nascar/news/feed/" },
+  { name: "Frontstretch",   url: "https://frontstretch.com/feed/podcast" },
+  { name: "Speedway Media", url: "https://speedwaymedia.com/category/cup/feed/" },
 ];
 
 const REQ_HEADERS = {

@@ -118,7 +118,7 @@ export function NewsTab() {
           NASCAR News
         </h2>
         <div style={{ color:C.dim, fontSize:13, marginTop:4 }}>
-          Jayski · Daily Downforce · Motorsport.com · On3
+          Jayski · Daily Downforce · Motorsport.com · On3 · Frontstretch · Speedway Media
         </div>
       </div>
       <NascarNews />
