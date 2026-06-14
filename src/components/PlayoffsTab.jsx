@@ -118,7 +118,7 @@ export function PlayoffsTab({ data }) {
                       fontSize:22, fontWeight:900, letterSpacing:1, lineHeight:1,
                       display:"flex", alignItems:"center", gap:8,
                     }}>
-                      {p.name.toUpperCase()}
+                      {(p.id === "rich" ? "Dickie Doo" : p.name).toUpperCase()}
                       {p.champBonus > 0 && (
                         <span style={{
                           fontSize:10, fontWeight:700, letterSpacing:1.5,

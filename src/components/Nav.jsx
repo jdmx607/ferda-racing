@@ -130,6 +130,7 @@ function DesktopNav({ player, tab, setTab, onLogout }) {
     { id:"live",         l:"🔴 Live"     },
     { id:"results",      l:"Results"     },
     { id:"feed",         l:"Feed"        },
+    { id:"news",         l:"News"        },
     { id:"stats",        l:"Stats"       },
     { id:"history",      l:"History"     },
     { id:"playoffs",     l:"Playoffs"    },
@@ -206,6 +207,7 @@ const PRIMARY_TABS = [
 
 const MORE_TABS = [
   { id:"feed",         label:"Feed"        },
+  { id:"news",         label:"News"        },
   { id:"stats",        label:"Stats"       },
   { id:"history",      label:"History"     },
   { id:"playoffs",     label:"Playoffs"    },

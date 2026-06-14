@@ -32,6 +32,7 @@ const ResultsTab   = lazy(() => import("./components/ResultsTab").then(m  => ({ 
 
 // "story" chunk: data-heavy analysis tabs
 const FeedTab      = lazy(() => import("./components/FeedTab").then(m     => ({ default: m.FeedTab      })));
+const NewsTab      = lazy(() => import("./components/NewsTab").then(m     => ({ default: m.NewsTab      })));
 const StatsTab     = lazy(() => import("./components/StatsTab").then(m    => ({ default: m.StatsTab     })));
 const HistoryTab   = lazy(() => import("./components/HistoryTab").then(m  => ({ default: m.HistoryTab   })));
 
@@ -252,6 +253,7 @@ export default function App() {
         {tab==="mulligans"&&<MulligansTab player={user} data={data} currentWeek={currentWeek} onApplyMulligan={handleApplyMulligan}/>}
         {tab==="results"&&<ResultsTab data={data}/>}
         {tab==="feed"&&<FeedTab data={data}/>}
+        {tab==="news"&&<NewsTab/>}
         {tab==="stats"&&<StatsTab data={data}/>}
         {tab==="history"&&<HistoryTab data={data}/>}
         {tab==="playoffs"&&<PlayoffsTab data={data}/>}

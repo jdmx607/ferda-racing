@@ -539,7 +539,6 @@ function NascarNews() {
 const SECTIONS = [
   { id:"recap",      label:"Last Race Recap"   },
   { id:"preview",    label:"Next Race Preview"  },
-  { id:"news",       label:"Jayski News"         },
   { id:"storylines", label:"Season Storylines"  },
   { id:"archive",    label:"Browse Recaps"      },
 ];
@@ -616,7 +615,6 @@ export function FeedTab({ data }) {
       {section==="preview"    && (preview ? <PreviewCard preview={preview} /> : (
         <div style={{ color:C.muted, textAlign:"center", padding:40 }}>No upcoming race data available</div>
       ))}
-      {section==="news"       && <NascarNews />}
       {section==="storylines" && <StorylinesPanel storylines={storylines} />}
     </div>
   );
