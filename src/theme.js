@@ -28,8 +28,8 @@ export const C = {
 
 // Per-player brand colors — always use these for player identity
 export const PClr = {
-  justin:   { bg:"#000000", fg:"#CFC493" },
-  bigmonroe:{ bg:"#DC0019", fg:"#FFFFFF" },
+  justin:   { bg:"#FFFFFF", fg:"#7BAFD4" },
+  bigmonroe:{ bg:"#000000", fg:"#65FE08" },
   monroe:   { bg:"#046A38", fg:"#91999F" },
   rich:     { bg:"#B3995D", fg:"#AA0000" },
 };
