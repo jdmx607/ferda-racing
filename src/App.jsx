@@ -10,6 +10,7 @@ import { scoreWeekFull } from "./engine/scoring";
 import { getDraftOrder, buildSnakeOrder } from "./engine/draft";
 import { useLeagueData } from "./hooks/useLeagueData";
 import { useLivePolling } from "./hooks/useLivePolling";
+import { useLiveTiming } from "./hooks/useLiveTiming";
 import { notifyDraftTurn, notifyRaceScored } from "./hooks/useNotifications";
 
 // ── Eagerly-loaded shell + high-traffic tabs ───────────────────────────────────
@@ -69,6 +70,7 @@ export default function App() {
 
   const { data, setData, loading, dbStatus } = useLeagueData();
   const { liveScores, liveStatus, raceInfo } = useLivePolling(data);
+  const timingData = useLiveTiming(data);
 
   const handleLogin=(p)=>{
     setUser(p);
@@ -242,7 +244,7 @@ export default function App() {
       {/* Eager tabs — no Suspense needed */}
       {tab==="welcome"&&<WelcomeTab player={user} data={data} setTab={setTab} liveScores={liveScores} liveStatus={liveStatus}/>}
       {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
-      {tab==="live"&&<LiveTab data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo} currentWeek={currentWeek}/>}
+      {tab==="live"&&<LiveTab data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo} currentWeek={currentWeek} timingData={timingData}/>}
 
       {/* Lazy tabs — wrapped in Suspense */}
       <Suspense fallback={<TabLoader/>}>

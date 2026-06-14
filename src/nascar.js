@@ -250,6 +250,25 @@ function getCacherRaceId(week) {
   return CACHER_RACE_IDS[week] ?? null;
 }
 
+export async function fetchLapTimes(week) {
+  const raceId = getCacherRaceId(week);
+  if (!raceId) return { ok:false, error:`Race ID not found for week ${week}` };
+  const raw = await tryFetch(cacherUrl(`/2026/1/${raceId}/lap-times.json`));
+  if (!raw?.laps) return { ok:false, error:"Lap time data not available yet." };
+  return {
+    ok: true,
+    drivers: raw.laps.map(d => ({
+      carNumber: d.Number,
+      name:      d.FullName,
+      make:      d.Manufacturer,
+      finalPos:  d.RunningPos,
+      laps: d.Laps
+        .filter(l => l.LapTime != null && l.LapTime > 0)
+        .map(l => ({ lap:l.Lap, time:l.LapTime, speed:parseFloat(l.LapSpeed)||0, pos:l.RunningPos })),
+    })).sort((a, b) => a.finalPos - b.finalPos),
+  };
+}
+
 function parseStages(weekendData) {
   const stageMap = {};
   (weekendData?.weekend_stage_results || []).forEach(e => {
