@@ -42,6 +42,7 @@ const ScheduleTab   = lazy(() => import("./components/ScheduleTab").then(m   => 
 const RulesTab      = lazy(() => import("./components/RulesTab").then(m      => ({ default: m.RulesTab      })));
 const SettingsTab   = lazy(() => import("./components/SettingsTab").then(m   => ({ default: m.SettingsTab   })));
 const CommissionerTab=lazy(() => import("./components/CommissionerTab").then(m=>({ default: m.CommissionerTab})));
+const ISCTab         =lazy(() => import("./components/ISCTab").then(m         =>({ default: m.ISCTab         })));
 
 // ── Tab loading fallback ───────────────────────────────────────────────────────
 function TabLoader() {
@@ -260,6 +261,7 @@ export default function App() {
         {tab==="schedule"&&<ScheduleTab data={data}/>}
         {tab==="rules"&&<RulesTab/>}
         {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}
+        {tab==="isc"&&<ISCTab data={data} setData={setData} user={user}/>}
         {tab==="commissioner"&&user.id==="justin"&&
           <CommissionerTab data={data} onPostResults={handlePostResults} onSavePicks={handleSavePicksOnly} onResetWeek={handleResetWeek} onNotifyDraft={handleStartDraftNotify} onToggleLive={handleToggleLive} currentWeek={currentWeek}/>}
       </Suspense>
