@@ -24,17 +24,20 @@ export function PlayoffsTab({ data }) {
   const regLeader    = regStandings[0]?.id;
   const isTied       = regStandings[0]?.pts === regStandings[1]?.pts;
 
+  const iscChamp = data.iscBracket?.results?.CHAMP;
+
   const ps = useMemo(() => PLAYERS.map(p => {
     const pp         = data.meta.playoffPts[p.id] || 0;
     const champBonus = (p.id === regLeader && !isTied) ? REG_SEASON_CHAMP_BONUS : 0;
+    const iscBonus   = iscChamp && data.iscBracket?.picks?.[p.id]?.CHAMP === iscChamp ? 25 : 0;
     return {
       ...p,
-      pp, champBonus,
+      pp, champBonus, iscBonus,
       total: 1000 + pp + champBonus,
       wins:  Object.values(data.results || {}).filter(r => r.scored?.[p.id]?.weeklyWin).length,
       regPts: data.meta.standings[p.id] || 0,
     };
-  }).sort((a,b) => b.total - a.total), [data, regLeader, isTied]);
+  }).sort((a,b) => b.total - a.total), [data, regLeader, isTied, iscChamp]);
 
   const maxTotal = ps[0]?.total || 1;
 
@@ -127,6 +130,14 @@ export function PlayoffsTab({ data }) {
                           border:`1px solid ${C.accent}55`,
                         }}>👑 CHAMP</span>
                       )}
+                      {p.iscBonus > 0 && (
+                        <span style={{
+                          fontSize:10, fontWeight:700, letterSpacing:1.5,
+                          color:"#8b5cf6", background:"#8b5cf622",
+                          padding:"2px 8px", borderRadius:r.pill,
+                          border:"1px solid #8b5cf655",
+                        }}>🏁 ISC +25</span>
+                      )}
                     </div>
                     <div style={{ color:PClr[p.id].fg+"77", fontSize:11, marginTop:3 }}>
                       {p.wins} weekly win{p.wins !== 1 ? "s" : ""} · {p.regPts.toLocaleString()} reg-season pts
@@ -160,6 +171,9 @@ export function PlayoffsTab({ data }) {
                   { label:"Playoff Pts",  value:`+${p.pp}`,    col:C.accent           },
                   ...(p.champBonus > 0
                     ? [{ label:"Champ Bonus", value:`+${p.champBonus}`, col:C.accent }]
+                    : []),
+                  ...(p.iscBonus > 0
+                    ? [{ label:"ISC Bonus", value:"+25", col:"#8b5cf6" }]
                     : []),
                   { label:"Reg Season",   value:p.regPts.toLocaleString(), col:PClr[p.id].fg+"66" },
                 ].map(({ label, value, col }) => (

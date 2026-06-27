@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { C, PClr, TTC, TTL, r, shadow } from "../theme";
-import { PNAME, SCHEDULE, TRACK_MULTS, isMemorial } from "../constants";
+import { PNAME, SCHEDULE, TRACK_MULTS, ACTIVE_PICKS, isMemorial } from "../constants";
 import { getWeekTopDrivers, generateWeekRecap } from "../engine/stats";
 
 const BONUS_CHIP = {
@@ -67,6 +67,14 @@ function DriverResultRow({ d, playerBg, playerFg }) {
   );
 }
 
+function getGrade(pct) {
+  if (pct >= 0.90) return { grade:"A", color:"#10b981" };
+  if (pct >= 0.75) return { grade:"B", color:"#3b82f6" };
+  if (pct >= 0.60) return { grade:"C", color:"#f59e0b" };
+  if (pct >= 0.45) return { grade:"D", color:"#ef4444" };
+  return { grade:"F", color:"#dc2626" };
+}
+
 export function ResultsTab({ data }) {
   const weeks = Object.keys(data.results || {})
     .map(k => parseInt(k.replace("w","")))
@@ -79,11 +87,16 @@ export function ResultsTab({ data }) {
   const winner   = sorted[0]?.[0];
   const loser    = sorted[sorted.length - 1]?.[0];
 
-  // Top performers (all drivers, not just picked ones)
+  // Top performers (all drivers, not just picked ones) + perfect score for grading
   const topDrivers = useMemo(() => {
     if (!wr?.raw?.drivers) return [];
-    return getWeekTopDrivers(wr.raw, week, 5);
+    return getWeekTopDrivers(wr.raw, week, ACTIVE_PICKS);
   }, [wr, week]);
+
+  const perfectScore = useMemo(
+    () => topDrivers.reduce((sum, d) => sum + d.total, 0),
+    [topDrivers]
+  );
 
   // Who picked each driver this week
   const weekPicks = data.picks?.["w" + week] || {};
@@ -172,6 +185,9 @@ export function ResultsTab({ data }) {
             {sorted.map(([pid, ps], idx) => {
               const isWinner = idx === 0 && sorted.length > 1;
               const isLoser  = idx === sorted.length - 1 && sorted.length === 4;
+              const { grade, color: gradeColor } = perfectScore > 0
+                ? getGrade(ps.total / perfectScore)
+                : { grade:"—", color:C.muted };
               return (
                 <div key={pid} style={{
                   background:PClr[pid].bg, borderRadius:r.lg,
@@ -217,11 +233,24 @@ export function ResultsTab({ data }) {
                       </div>
                     </div>
                     <div style={{ textAlign:"right" }}>
-                      <div style={{
-                        fontFamily:"'Oswald',sans-serif", fontSize:40, fontWeight:900, lineHeight:1,
-                        color: isWinner ? C.accent : PClr[pid].fg,
-                      }}>
-                        {ps.total}
+                      <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"flex-end", gap:8 }}>
+                        <div style={{
+                          fontFamily:"'Oswald',sans-serif", fontSize:40, fontWeight:900, lineHeight:1,
+                          color: isWinner ? C.accent : PClr[pid].fg,
+                        }}>
+                          {ps.total}
+                        </div>
+                        {perfectScore > 0 && (
+                          <div style={{
+                            width:34, height:34, borderRadius:r.sm, flexShrink:0,
+                            background:gradeColor+"22", border:`1px solid ${gradeColor}55`,
+                            display:"flex", alignItems:"center", justifyContent:"center",
+                            fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900,
+                            color:gradeColor, marginBottom:2,
+                          }}>
+                            {grade}
+                          </div>
+                        )}
                       </div>
                       <div style={{ color:PClr[pid].fg+"55", fontSize:9, textTransform:"uppercase", letterSpacing:1 }}>pts</div>
                     </div>

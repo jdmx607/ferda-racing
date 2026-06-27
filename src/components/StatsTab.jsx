@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { C, PClr, TTC, TTL, r, shadow } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, DRIVER_INFO, MAKE_COLORS } from "../constants";
-import { getWeekTopDrivers, getDriverSeasonStats, getSeasonRecords } from "../engine/stats";
+import { getWeekTopDrivers, getDriverSeasonStats, getSeasonRecords, getDriverStreaks, getSeasonAwards } from "../engine/stats";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -312,6 +312,191 @@ function WeeklyTopPerformers({ data }) {
   );
 }
 
+// ─── Section: Hot Streaks ─────────────────────────────────────────────────────
+
+function HotStreaks({ data }) {
+  const streaks = useMemo(() => getDriverStreaks(data), [data]);
+  if (!streaks.length) {
+    return (
+      <div style={{ color:C.muted, textAlign:"center", padding:40, fontSize:13 }}>
+        No active streaks yet — check back after more races are scored.
+      </div>
+    );
+  }
+  return (
+    <div>
+      <div style={{ color:C.dim, fontSize:12, marginBottom:14, lineHeight:1.6 }}>
+        Drivers on a current hot streak entering the next race.
+        🔥 = consecutive top-5s · 🌶️ = consecutive top-10s
+      </div>
+      <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+        {streaks.map((s, i) => {
+          const isTop5Hot = s.top5 >= 2;
+          const color = isTop5Hot ? "#f59e0b" : "#10b981";
+          const icon  = isTop5Hot ? "🔥" : "🌶️";
+          const label = isTop5Hot
+            ? `${s.top5} straight top-5${s.top5 !== 1 ? "s" : ""}`
+            : `${s.top10} straight top-10${s.top10 !== 1 ? "s" : ""}`;
+          return (
+            <div key={s.name} style={{
+              display:"flex", alignItems:"center", gap:12, padding:"10px 14px",
+              background: i === 0 ? color + "12" : C.card,
+              borderRadius:r.md,
+              border:`1px solid ${i === 0 ? color + "55" : C.border}`,
+            }}>
+              <span style={{ fontSize:20, flexShrink:0 }}>{icon}</span>
+              <div style={{ flex:1 }}>
+                <span style={{ color:C.text, fontWeight:700, fontSize:14 }}>{s.name}</span>
+                <div style={{ display:"flex", gap:8, marginTop:3, flexWrap:"wrap" }}>
+                  {s.top5 >= 2 && (
+                    <span style={{
+                      fontSize:10, fontWeight:700, color:"#f59e0b",
+                      background:"#f59e0b20", padding:"2px 8px", borderRadius:r.pill,
+                      border:"1px solid #f59e0b44",
+                    }}>
+                      {s.top5} × TOP 5
+                    </span>
+                  )}
+                  {s.top5 < 2 && s.top10 >= 3 && (
+                    <span style={{
+                      fontSize:10, fontWeight:700, color:"#10b981",
+                      background:"#10b98120", padding:"2px 8px", borderRadius:r.pill,
+                      border:"1px solid #10b98144",
+                    }}>
+                      {s.top10} × TOP 10
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div style={{
+                fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900,
+                color, flexShrink:0,
+              }}>
+                {label}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Section: Season Awards ───────────────────────────────────────────────────
+
+function AwardCard({ emoji, title, children, accent }) {
+  const col = accent || C.accent;
+  return (
+    <div style={{
+      background:C.bg, borderRadius:r.lg, padding:"16px 18px",
+      border:`1px solid ${col}44`,
+      display:"flex", flexDirection:"column", gap:6,
+    }}>
+      <div style={{ color:col, fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>
+        {emoji} {title}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function SeasonAwards({ data }) {
+  const awards = useMemo(() => getSeasonAwards(data), [data]);
+  if (!awards) {
+    return (
+      <div style={{ color:C.muted, textAlign:"center", padding:40, fontSize:13 }}>
+        Need at least 2 scored races to generate awards.
+      </div>
+    );
+  }
+  const { consistencyKing, sleeperHit, eyeOfTiger, comebackKing, bestMulligan } = awards;
+
+  return (
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))", gap:12 }}>
+
+      {consistencyKing && (
+        <AwardCard emoji="🎯" title="Consistency King" accent="#3b82f6">
+          <div style={{
+            color:PClr[consistencyKing.pid]?.fg || C.text,
+            fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900,
+          }}>
+            {PNAME[consistencyKing.pid]}
+          </div>
+          <div style={{ color:C.dim, fontSize:12, lineHeight:1.6 }}>
+            Avg <span style={{ color:C.text, fontWeight:700 }}>{consistencyKing.mean} pts</span> ·{" "}
+            σ <span style={{ color:C.text, fontWeight:700 }}>{consistencyKing.stddev}</span> over {consistencyKing.weeks} races
+          </div>
+          <div style={{ color:C.muted, fontSize:11 }}>Tightest week-to-week spread</div>
+        </AwardCard>
+      )}
+
+      {sleeperHit && (
+        <AwardCard emoji="😴" title="Sleeper Hit" accent="#8b5cf6">
+          <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900 }}>
+            {sleeperHit.name}
+          </div>
+          <div style={{ color:C.dim, fontSize:12 }}>
+            <span style={{ color:"#8b5cf6", fontWeight:700 }}>+{sleeperHit.score} pts</span> · W{sleeperHit.week}
+          </div>
+          {sleeperHit.race && <div style={{ color:C.muted, fontSize:11 }}>{sleeperHit.race}</div>}
+          <div style={{ color:C.muted, fontSize:11 }}>Nobody picked them — free points left on the table</div>
+        </AwardCard>
+      )}
+
+      {eyeOfTiger && (
+        <AwardCard emoji="👁️" title="Eye of the Tiger" accent="#f59e0b">
+          <div style={{
+            color:PClr[eyeOfTiger.pid]?.fg || C.text,
+            fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900,
+          }}>
+            {PNAME[eyeOfTiger.pid]}
+          </div>
+          <div style={{ color:C.dim, fontSize:12 }}>
+            Had the race winner in{" "}
+            <span style={{ color:"#f59e0b", fontWeight:700 }}>{eyeOfTiger.count}</span>{" "}
+            race{eyeOfTiger.count !== 1 ? "s" : ""}
+          </div>
+          <div style={{ color:C.muted, fontSize:11 }}>Best at drafting winners</div>
+        </AwardCard>
+      )}
+
+      {comebackKing && (
+        <AwardCard emoji="⬆️" title="Comeback King" accent="#10b981">
+          <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900 }}>
+            {comebackKing.name}
+          </div>
+          <div style={{ color:C.dim, fontSize:12 }}>
+            P{comebackKing.qualPos} → P{comebackKing.finish}{" "}
+            (<span style={{ color:"#10b981", fontWeight:700 }}>+{comebackKing.gain} spots</span>)
+          </div>
+          {comebackKing.race && <div style={{ color:C.muted, fontSize:11 }}>{comebackKing.race} · W{comebackKing.week}</div>}
+        </AwardCard>
+      )}
+
+      {bestMulligan && (
+        <AwardCard emoji="🔀" title="Best Mulligan" accent="#ec4899">
+          <div style={{
+            color:PClr[bestMulligan.pid]?.fg || C.text,
+            fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900,
+          }}>
+            {PNAME[bestMulligan.pid]}
+          </div>
+          <div style={{ color:C.dim, fontSize:12, lineHeight:1.6 }}>
+            Swapped <span style={{ color:C.text }}>{bestMulligan.origDriver}</span>{" "}
+            ({bestMulligan.origScore > 0 ? "+" : ""}{bestMulligan.origScore}) →{" "}
+            <span style={{ color:C.text }}>{bestMulligan.newDriver}</span>{" "}
+            ({bestMulligan.newScore > 0 ? "+" : ""}{bestMulligan.newScore})
+          </div>
+          <div style={{ color:"#ec4899", fontWeight:700, fontSize:13 }}>
+            +{bestMulligan.gain} pts gained · W{bestMulligan.week}
+          </div>
+        </AwardCard>
+      )}
+
+    </div>
+  );
+}
+
 // ─── Section: Season Records ──────────────────────────────────────────────────
 
 function SeasonRecords({ data, records }) {
@@ -421,7 +606,9 @@ function SeasonRecords({ data, records }) {
 const SECTIONS = [
   { id:"leaderboard", label:"Driver Leaderboard" },
   { id:"weekly",      label:"Weekly Top Performers" },
-  { id:"records",     label:"Season Records"   },
+  { id:"streaks",     label:"Hot Streaks" },
+  { id:"awards",      label:"Awards" },
+  { id:"records",     label:"Season Records" },
 ];
 
 export function StatsTab({ data }) {
@@ -464,6 +651,8 @@ export function StatsTab({ data }) {
       <div style={{ background:C.card, borderRadius:r.lg, padding:16, border:`1px solid ${C.border}` }}>
         {section === "leaderboard" && <DriverLeaderboard driverStats={driverStats} />}
         {section === "weekly"      && <WeeklyTopPerformers data={data} />}
+        {section === "streaks"     && <HotStreaks data={data} />}
+        {section === "awards"      && <SeasonAwards data={data} />}
         {section === "records"     && <SeasonRecords data={data} records={records} />}
       </div>
 

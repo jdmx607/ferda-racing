@@ -151,6 +151,13 @@ export default function App() {
       Object.entries(wr.scored).forEach(([pid,s])=>{fs[pid]=Math.round((fs[pid]+s.total)*100)/100;fp2[pid]=Math.round((fp2[pid]+(s.bonusPoints||0))*100)/100;if(s.weeklyWin)fp2[pid]=Math.round((fp2[pid]+25)*100)/100;});});
     const mc={justin:0,bigmonroe:0,monroe:0,rich:0};
     Object.entries(d.picks||{}).forEach(([,wp])=>{Object.entries(wp).forEach(([pid,pks])=>{(pks||[]).forEach(pk=>{if(pk.mulligan)mc[pid]++;});});});
+    // ISC champion bonus: +25 regular-season pts for every player who correctly picked the champion
+    const iscChamp = d.iscBracket?.results?.CHAMP;
+    if (iscChamp) {
+      PLAYERS.forEach(p => {
+        if (d.iscBracket?.picks?.[p.id]?.CHAMP === iscChamp) fs[p.id] = Math.round((fs[p.id] + 25) * 100) / 100;
+      });
+    }
     d.meta.standings=fs; d.meta.playoffPts=fp2; d.meta.lastScoredWeek=last; d.meta.mulligansUsed=mc;
   };
 

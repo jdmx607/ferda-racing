@@ -160,6 +160,156 @@ export function getSeasonRecords(data) {
   return { bestPlayerWeek, bestDriverPerf, winStreaks, currentStreaks };
 }
 
+// ── Driver finish streaks ─────────────────────────────────────────────────────
+
+// Returns drivers currently on a notable consecutive top-5 or top-10 finish streak.
+export function getDriverStreaks(data) {
+  const orderedWeeks = Object.keys(data.results || {})
+    .filter(k => data.results[k].raw?.drivers?.length)
+    .map(k => parseInt(k.replace("w", "")))
+    .sort((a, b) => a - b);
+
+  const streaks = {}; // name -> { top5, top10 }
+
+  orderedWeeks.forEach(w => {
+    const drivers = data.results["w" + w].raw.drivers;
+    drivers.forEach(d => {
+      if (!streaks[d.name]) streaks[d.name] = { top5: 0, top10: 0 };
+      if (d.finish <= 5) {
+        streaks[d.name].top5++;
+        streaks[d.name].top10++;
+      } else if (d.finish <= 10) {
+        streaks[d.name].top5 = 0;
+        streaks[d.name].top10++;
+      } else {
+        streaks[d.name].top5 = 0;
+        streaks[d.name].top10 = 0;
+      }
+    });
+    // Drivers absent from the race: don't reset their streak
+  });
+
+  return Object.entries(streaks)
+    .filter(([, s]) => s.top5 >= 2 || s.top10 >= 3)
+    .map(([name, s]) => ({ name, top5: s.top5, top10: s.top10 }))
+    .sort((a, b) => b.top5 - a.top5 || b.top10 - a.top10)
+    .slice(0, 12);
+}
+
+// ── Season awards ─────────────────────────────────────────────────────────────
+
+export function getSeasonAwards(data) {
+  const orderedWeeks = Object.keys(data.results || {})
+    .filter(k => data.results[k].raw?.drivers?.length && data.results[k].scored)
+    .map(k => parseInt(k.replace("w", "")))
+    .sort((a, b) => a - b);
+
+  if (orderedWeeks.length < 2) return null;
+
+  // 1. Consistency King — lowest coefficient of variation across weekly scores
+  const playerWeeklyScores = {};
+  PLAYERS.forEach(p => { playerWeeklyScores[p.id] = []; });
+  orderedWeeks.forEach(w => {
+    const scored = data.results["w" + w].scored || {};
+    PLAYERS.forEach(p => {
+      if (scored[p.id] != null) playerWeeklyScores[p.id].push(scored[p.id].total);
+    });
+  });
+
+  let consistencyKing = null, lowestCV = Infinity;
+  PLAYERS.forEach(p => {
+    const scores = playerWeeklyScores[p.id];
+    if (scores.length < 2) return;
+    const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
+    if (mean <= 0) return;
+    const stddev = Math.sqrt(scores.reduce((a, b) => a + (b - mean) ** 2, 0) / scores.length);
+    const cv = stddev / mean;
+    if (cv < lowestCV) {
+      lowestCV = cv;
+      consistencyKing = { pid: p.id, mean: Math.round(mean * 10) / 10, stddev: Math.round(stddev * 10) / 10, weeks: scores.length };
+    }
+  });
+
+  // 2. Sleeper Hit — highest single-race score by a driver nobody picked
+  let sleeperHit = null;
+  orderedWeeks.forEach(w => {
+    const key = "w" + w;
+    const wr = data.results[key];
+    const weekPicks = data.picks?.[key] || {};
+    const pickedDrivers = new Set(
+      Object.values(weekPicks).flatMap(picks => (picks || []).map(pk => pk.driver).filter(Boolean))
+    );
+    const trackType = trackTypeForWeek(w);
+    const threeStages = !!wr.raw.threeStages;
+    const raceInfo = SCHEDULE.find(s => s.w === w);
+    wr.raw.drivers.forEach(d => {
+      if (pickedDrivers.has(d.name)) return;
+      const sc = calcDriverScore(d, trackType, false, threeStages);
+      if (sc.total > 0 && (!sleeperHit || sc.total > sleeperHit.score)) {
+        sleeperHit = { name: d.name, score: sc.total, week: w, race: raceInfo?.r || "" };
+      }
+    });
+  });
+
+  // 3. Eye of the Tiger — player who had the race winner in their lineup most often
+  const winnerPickCounts = {};
+  PLAYERS.forEach(p => { winnerPickCounts[p.id] = 0; });
+  orderedWeeks.forEach(w => {
+    const key = "w" + w;
+    const wr = data.results[key];
+    const raceWinner = wr.raw.drivers.find(d => d.finish === 1)?.name;
+    if (!raceWinner) return;
+    const weekPicks = data.picks?.[key] || {};
+    PLAYERS.forEach(p => {
+      if ((weekPicks[p.id] || []).some(pk => pk.driver === raceWinner)) winnerPickCounts[p.id]++;
+    });
+  });
+  const bestEye = PLAYERS.reduce(
+    (best, p) => winnerPickCounts[p.id] > (winnerPickCounts[best?.id] ?? -1) ? p : best,
+    null
+  );
+  const eyeOfTiger = bestEye && winnerPickCounts[bestEye.id] > 0
+    ? { pid: bestEye.id, count: winnerPickCounts[bestEye.id] }
+    : null;
+
+  // 4. Comeback King — biggest single-race position gain (qualPos → finish)
+  let comebackKing = null;
+  orderedWeeks.forEach(w => {
+    const wr = data.results["w" + w];
+    const raceInfo = SCHEDULE.find(s => s.w === w);
+    wr.raw.drivers.forEach(d => {
+      if (!d.qualPos || !d.finish || d.qualPos <= 0 || d.finish <= 0) return;
+      const gain = d.qualPos - d.finish;
+      if (gain > 0 && (!comebackKing || gain > comebackKing.gain)) {
+        comebackKing = { name: d.name, gain, qualPos: d.qualPos, finish: d.finish, week: w, race: raceInfo?.r || "" };
+      }
+    });
+  });
+
+  // 5. Best Mulligan — biggest pts gain from a single mulligan swap
+  let bestMulligan = null;
+  PLAYERS.forEach(p => {
+    (data.mulligans?.[p.id] || []).forEach(mul => {
+      const key = "w" + mul.week;
+      const wr = data.results?.[key];
+      if (!wr?.raw?.drivers) return;
+      const trackType = trackTypeForWeek(mul.week);
+      const threeStages = !!wr.raw.threeStages;
+      const origData = wr.raw.drivers.find(d => d.name === mul.driver);
+      const newData  = wr.raw.drivers.find(d => d.name === mul.replacement);
+      if (!origData || !newData) return;
+      const origScore = calcDriverScore(origData, trackType, false, threeStages).total;
+      const newScore  = calcDriverScore(newData,  trackType, true,  threeStages).total;
+      const gain = Math.round((newScore - origScore) * 10) / 10;
+      if (!bestMulligan || gain > bestMulligan.gain) {
+        bestMulligan = { pid: p.id, gain, origDriver: mul.driver, origScore, newDriver: mul.replacement, newScore, week: mul.week };
+      }
+    });
+  });
+
+  return { consistencyKing, sleeperHit, eyeOfTiger, comebackKing, bestMulligan };
+}
+
 // ── Weekly recap blurb ────────────────────────────────────────────────────────
 
 export function generateWeekRecap(week, scoredResult, rawResult) {
