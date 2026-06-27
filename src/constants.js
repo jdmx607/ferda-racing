@@ -31,7 +31,7 @@ export const ACTIVE_PICKS        = 5;
 export const PICKS_PER_WEEK      = 6;
 export const MAX_MULLIGANS       = 10;
 export const PLAYOFF_START_WEEK  = 27;
-export const REG_SEASON_CHAMP_BONUS = 50;
+export const REG_SEASON_CHAMP_BONUS = 100;
 export const GARAGE_PICK_ENABLED = false;
 
 // Drivers frozen in memoriam — cannot be picked, shown with tribute marker

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DRIVERS, DRIVER_INFO, MAKE_COLORS } from "../constants";
 
-const KYLE_QUOTES = [
+export const KYLE_QUOTES = [
   "I hate second place. There's nothing good about it.",
   "My goal every single weekend is a win — not a top five, not a top ten. A win.",
   "You can call me whatever you want. I'll let the trophy do the talking.",
@@ -54,8 +54,6 @@ export function MemorialBackdrop() {
     const team = DRIVER_INFO[d]?.team ?? "";
     return { num, name, team, color: MAKE_COLORS[make] ?? "#ffffff" };
   });
-  const [quote] = useState(() => KYLE_QUOTES[Math.floor(Math.random() * KYLE_QUOTES.length)]);
-
   const vw = info.num.length === 1 ? 200 : 380;
   const cx = vw / 2;
 
@@ -71,23 +69,12 @@ export function MemorialBackdrop() {
         </svg>
       </div>
       <div style={{
-        position:"absolute", bottom:98, left:0, right:0,
+        position:"absolute", bottom:80, left:0, right:0,
         textAlign:"center", color:"rgba(255,255,255,0.05)",
         fontSize:10, letterSpacing:3, textTransform:"uppercase",
         fontFamily:"'Oswald',sans-serif",
       }}>
         #{info.num} · {info.name} · {info.team}
-      </div>
-      <div style={{
-        position:"absolute", bottom:75, left:0, right:0,
-        textAlign:"center", color:"rgba(255,255,255,0.06)",
-        fontSize:10, fontStyle:"italic", padding:"0 12%", lineHeight:1.5,
-        fontFamily:"'Barlow Condensed',sans-serif",
-      }}>
-        "{quote}"
-        <span style={{ fontSize:8, fontStyle:"normal", letterSpacing:1.5, marginLeft:6 }}>
-          — KYLE BUSCH, 1985–2026
-        </span>
       </div>
     </div>
   );

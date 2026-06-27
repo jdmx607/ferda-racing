@@ -130,6 +130,9 @@ export default function App() {
     if(!d.drafts[key])d.drafts[key]=[]; d.drafts[key].push({pid,driver,pickNum});
     if(!d.picks)d.picks={}; if(!d.picks[key])d.picks[key]={}; if(!d.picks[key][pid])d.picks[key][pid]=[];
     d.picks[key][pid].push({driver,mulligan:false});
+    // Reset draft turn timer for the next picker
+    if(!d.draftTimers)d.draftTimers={};
+    d.draftTimers[key]={startedAt:new Date().toISOString(),reminderSent:false};
     setData(d); await saveLeagueData(d);
     notifyNextPicker(week,d).catch(e=>console.error("Email notify failed:",e));
   };
@@ -195,7 +198,20 @@ export default function App() {
     d.meta.mulligansUsed=mc; setData(d); await saveLeagueData(d);
   };
 
-  const handleStartDraftNotify=async(week)=>{await notifyNextPicker(week,data);};
+  const handleStartDraftNotify=async(week)=>{
+    const d=JSON.parse(JSON.stringify(data));
+    if(!d.draftTimers)d.draftTimers={};
+    d.draftTimers["w"+week]={startedAt:new Date().toISOString(),reminderSent:false};
+    setData(d); await saveLeagueData(d);
+    await notifyNextPicker(week,d);
+  };
+
+  const handleMarkReminderSent=async(week)=>{
+    const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
+    if(!d.draftTimers)d.draftTimers={}; if(!d.draftTimers[key])d.draftTimers[key]={};
+    d.draftTimers[key].reminderSent=true;
+    setData(d); await saveLeagueData(d);
+  };
 
   const handleToggleLive=async(week,active)=>{
     const d=JSON.parse(JSON.stringify(data));
@@ -245,7 +261,7 @@ export default function App() {
 
       {/* Eager tabs — no Suspense needed */}
       {tab==="welcome"&&<WelcomeTab player={user} data={data} setTab={setTab} liveScores={liveScores} liveStatus={liveStatus}/>}
-      {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
+      {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} onReminderSent={handleMarkReminderSent} currentWeek={currentWeek}/>}
       {tab==="live"&&<LiveTab data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo} currentWeek={currentWeek} timingData={timingData}/>}
 
       {/* Lazy tabs — wrapped in Suspense */}

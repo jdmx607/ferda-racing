@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { C, PClr } from "../theme";
 import { PLAYERS, SCHEDULE, MEMORIAL_DRIVERS } from "../constants";
-import { FerdaLogo } from "./FerdaLogo";
+import { FerdaLogo, KYLE_QUOTES } from "./FerdaLogo";
 
 export function getLastWeekResults(data) {
   const weeks=Object.keys(data.results||{}).map(k=>parseInt(k.replace("w",""))).sort((a,b)=>b-a);
@@ -32,6 +32,7 @@ export function WinnerModal({player, data, onDismiss}) {
 
 export function LoginScreen({onLogin}) {
   const [sel,setSel]=useState(null); const [pw,setPw]=useState(""); const [err,setErr]=useState("");
+  const [quote] = useState(() => KYLE_QUOTES[Math.floor(Math.random() * KYLE_QUOTES.length)]);
   const go=()=>{const p=PLAYERS.find(x=>x.id===sel);if(p&&pw===p.password)onLogin(p);else setErr("Wrong password");};
   return (<div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,"+C.bg+" 0%,#111 50%,#1a1000 100%)"}}>
     <div style={{background:C.card,borderRadius:16,padding:"40px 32px",width:340,maxWidth:"90vw",border:"1px solid "+C.border,boxShadow:"0 25px 60px rgba(0,0,0,0.5)"}}>
@@ -45,6 +46,15 @@ export function LoginScreen({onLogin}) {
         <div style={{color:C.dim,fontSize:11,letterSpacing:1}}>🕊️ In loving memory of</div>
         <div style={{color:C.text,fontSize:14,fontWeight:700,marginTop:2}}>Kyle Busch · #8</div>
         <div style={{color:C.dim,fontSize:11,marginTop:1}}>{MEMORIAL_DRIVERS["#8 Kyle Busch"].years}</div>
+        <div style={{
+          marginTop:14,paddingTop:14,borderTop:"1px solid "+C.border+"66",
+          color:C.muted,fontSize:11,fontStyle:"italic",lineHeight:1.6,
+        }}>
+          "{quote}"
+          <div style={{color:C.border,fontSize:9,fontStyle:"normal",letterSpacing:1.5,marginTop:4}}>
+            — KYLE BUSCH, 1985–2026
+          </div>
+        </div>
       </div>
     </div></div>);
 }

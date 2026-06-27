@@ -292,7 +292,7 @@ function parseStages(weekendData) {
 
 const FLAG_NAMES = { 0:"None", 1:"Green", 2:"Yellow", 3:"Red", 4:"White", 5:"Checkered" };
 
-export async function fetchPostRaceFromLive() {
+export async function fetchPostRaceFromLive(week) {
   // Fetch all three live endpoints in parallel
   const [liveFeed, livePoints, stagePoints] = await Promise.all([
     tryFetch(liveUrl("live-feed.json")),
@@ -302,6 +302,21 @@ export async function fetchPostRaceFromLive() {
 
   // Guard: live feed must respond
   if (!liveFeed) return { ok: false, error: "NASCAR live feed is not responding. Check your connection or try again." };
+
+  // Guard: verify the live feed matches the expected race for this week.
+  // The live feed always reflects the CURRENT or most-recent race, so scoring a past
+  // week could inadvertently pull in data from a different race.
+  if (week != null) {
+    const expectedId = CACHER_RACE_IDS[week];
+    const feedId     = liveFeed.race_id;
+    if (expectedId && feedId && feedId !== expectedId) {
+      return {
+        ok: false,
+        wrongRace: true,
+        error: `Live feed is showing race_id ${feedId} but Week ${week} expects race_id ${expectedId}. The live feed has moved on to a different race — using cacher data instead.`,
+      };
+    }
+  }
 
   // Guard: must be a race session (not practice/qualifying)
   const runType = liveFeed.run_type;
@@ -561,7 +576,7 @@ const MANUAL_RESULTS = {
 //   3. If live feed is unavailable (no race active) → fall back to weekend-feed cacher
 export async function fetchNASCARResults(week) {
   // ── Attempt 1: live feeds (immediate post-race data) ──────────────────────
-  const liveResult = await fetchPostRaceFromLive();
+  const liveResult = await fetchPostRaceFromLive(week);
   if (liveResult.ok) return liveResult;                         // ✓ race just ended, use this
   if (liveResult.raceInProgress) return liveResult;             // race not over yet, stop here
 
