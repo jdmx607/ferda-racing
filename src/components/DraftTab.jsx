@@ -1,41 +1,16 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { C, PClr, PC, TTC, TTL, r, shadow } from "../theme";
-import { PLAYERS, PNAME, SCHEDULE, DRIVERS, DRIVER_INFO, MAKE_COLORS, ACTIVE_PICKS, TRACK_MULTS, isMemorial } from "../constants";
+import { PLAYERS, PNAME, SCHEDULE, DRIVERS, DRIVER_INFO, MAKE_COLORS, ACTIVE_PICKS, TRACK_MULTS, DRAFT_TIMER_MS, isMemorial } from "../constants";
 import { getDraftOrder, buildSnakeOrder } from "../engine/draft";
 import { analyzeLineups } from "../engine/draftAnalysis";
-import { calcDriverScore } from "../engine/scoring";
-import { notifyDraftTurn } from "../hooks/useNotifications";
 
 const MAKE_BADGE = { Chevy:"#b8b8b8", Ford:"#4a90e2", Toyota:"#eb0a1e" };
-
-const TIMER_12H = 12 * 3600 * 1000;
-const TIMER_6H  =  6 * 3600 * 1000;
 
 function fmtCountdown(msRemaining) {
   if (msRemaining <= 0) return "0m";
   const h = Math.floor(msRemaining / 3600000);
   const m = Math.floor((msRemaining % 3600000) / 60000);
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
-}
-
-// Returns the best driver not yet drafted, ranked by total FERDA pts across all scored weeks
-function getBestAvailableDriver(data, takenSet) {
-  const totals = {};
-  Object.entries(data.results || {}).forEach(([key, wr]) => {
-    if (!wr.raw?.drivers) return;
-    const week = parseInt(key.replace("w", ""));
-    const ty   = SCHEDULE.find(s => s.w === week)?.ty || "intermediate";
-    const three = !!wr.raw.threeStages;
-    wr.raw.drivers.forEach(d => {
-      if (!totals[d.name]) totals[d.name] = 0;
-      totals[d.name] += calcDriverScore(d, ty, false, three).total;
-    });
-  });
-  return DRIVERS
-    .filter(d => !takenSet.has(d) && !isMemorial(d) && (totals[d] ?? 0) > 0)
-    .sort((a, b) => (totals[b] ?? 0) - (totals[a] ?? 0))[0]
-    ?? DRIVERS.find(d => !takenSet.has(d) && !isMemorial(d))
-    ?? null;
 }
 
 function DriverButton({ d, onPick, disabled }) {
@@ -78,12 +53,10 @@ function DriverButton({ d, onPick, disabled }) {
   );
 }
 
-export function DraftTab({ player, data, onDraftPick, onUndoDraft, onReminderSent, currentWeek }) {
+export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }) {
   const [search,  setSearch]  = useState("");
   const [undoMsg, setUndoMsg] = useState("");
   const [now,     setNow    ] = useState(() => Date.now());
-  const autopickFiredRef = useRef(false);
-  const reminderFiredRef = useRef(false);
 
   const weekInfo      = SCHEDULE.find(s => s.w === currentWeek);
   const draftKey      = "w" + currentWeek;
@@ -122,45 +95,16 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, onReminderSen
     setSearch("");
   };
 
-  // ── Timer: tick every 30s ────────────────────────────────────────────────────
+  // ── Timer countdown display (autopick + reminders now run app-wide in App.jsx) ─
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 30000);
     return () => clearInterval(t);
   }, []);
 
-  // Reset fired refs when the current pick slot changes
-  useEffect(() => {
-    autopickFiredRef.current = false;
-    reminderFiredRef.current = false;
-  }, [currentPickNum, draftKey]);
-
   const timerMeta   = data.draftTimers?.[draftKey];
   const msElapsed   = timerMeta?.startedAt ? now - new Date(timerMeta.startedAt).getTime() : null;
-  const msRemaining = msElapsed !== null ? Math.max(0, TIMER_12H - msElapsed) : null;
-  const timerExpired = msElapsed !== null && msElapsed >= TIMER_12H;
-
-  // ── Autopick / 6hr reminder ──────────────────────────────────────────────────
-  useEffect(() => {
-    if (!timerMeta?.startedAt || !currentTurn || draftComplete) return;
-    const elapsed = now - new Date(timerMeta.startedAt).getTime();
-
-    if (elapsed >= TIMER_12H && !autopickFiredRef.current) {
-      autopickFiredRef.current = true;
-      const best = getBestAvailableDriver(data, takenDrivers);
-      if (best) onDraftPick(currentWeek, currentTurn.pid, best, currentPickNum);
-      return;
-    }
-
-    if (elapsed >= TIMER_6H && !reminderFiredRef.current && !timerMeta.reminderSent) {
-      reminderFiredRef.current = true;
-      onReminderSent?.(currentWeek);
-      const ri = SCHEDULE.find(s => s.w === currentWeek);
-      notifyDraftTurn(currentTurn.pid, data.playerSettings, {
-        week: currentWeek, pickNumber: currentPickNum + 1,
-        totalPicks: snakeSequence.length, raceName: ri?.r || "Draft",
-      }).catch(() => {});
-    }
-  }, [now]); // eslint-disable-line react-hooks/exhaustive-deps
+  const msRemaining = msElapsed !== null ? Math.max(0, DRAFT_TIMER_MS - msElapsed) : null;
+  const timerExpired = msElapsed !== null && msElapsed >= DRAFT_TIMER_MS;
 
   return (
     <div style={{ padding:20, maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>

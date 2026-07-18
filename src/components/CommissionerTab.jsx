@@ -250,7 +250,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
   // Direct live-feed fetch (bypasses the weekend-feed fallback chain)
   const handleFetchLive = async () => {
     setFetching(true); setFetchError(""); setMsg(""); setQuickScore(null);
-    const result = await fetchPostRaceFromLive();
+    const result = await fetchPostRaceFromLive(week);
     setFetching(false);
     if (!result.ok) { setFetchError("⚠️ " + result.error); return; }
     setPlayerPicks(loadPicksFromStore());

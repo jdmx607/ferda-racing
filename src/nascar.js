@@ -1,7 +1,27 @@
 // NASCAR Data Service
 // ALL external calls route through /api/nascar (Vercel proxy)
 
+import { DRIVERS } from "./constants";
+
 const PROXY = "/api/nascar";
+
+// Canonical driver name lookup by car number — maps any feed spelling to the
+// exact name used in picks/constants, so scoring always matches.
+const DRIVER_BY_NUM = {};
+DRIVERS.forEach(d => {
+  const m = d.match(/^#(\S+)\s/);
+  if (m) DRIVER_BY_NUM[m[1]] = d;
+});
+
+// NASCAR feeds decorate names with "(i)" (points-ineligible), "#" (rookie), "*".
+// e.g. "Connor Zilisch #", "Jimmie Johnson(i)" — strip all of it.
+function cleanDriverName(s) {
+  return String(s || "")
+    .replace(/\((i|p)\)/gi, "")
+    .replace(/[#*]+\s*$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 // Basic fetch — returns null on any failure
 async function tryFetch(url) {
@@ -39,13 +59,11 @@ function liveUrl(path) {
 function carToDriver(carNo, firstName, lastName) {
   const raw = String(carNo || "");
   const num = raw.replace(/^0+/, "") || raw;
-  const specials = {
-    "33":"#33 Austin Hill / Jesse Love","66":"#66 Various",
-    "78":"#78 BJ McLeod / Daniel Dye / Katherine Legge",
-  };
   if (raw === "01" || raw === "001") return "#01 Corey LaJoie";
-  if (specials[num]) return specials[num];
-  const name = [firstName, lastName].filter(Boolean).join(" ").trim();
+  // Canonical name from the league driver list — immune to feed spelling
+  // quirks like "Connor Zilisch #" or "Jimmie Johnson(i)"
+  if (DRIVER_BY_NUM[num]) return DRIVER_BY_NUM[num];
+  const name = cleanDriverName([firstName, lastName].filter(Boolean).join(" "));
   return `#${num} ${name}`;
 }
 
@@ -155,7 +173,34 @@ async function getSportsDataRace(week) {
 }
 
 export async function fetchLiveRaceData(week) {
-  // Try SportsDataIO first (real-time, 30s updates) — requires paid Discovery Lab key
+  // ── Attempt 1: NASCAR live feed (1-second updates, free) ──────────────────
+  // Only trusted when its race_id matches this week's race and it's a race
+  // session (run_type 3) — the feed serves stale data between race weekends.
+  const expectedId = CACHER_RACE_IDS[week];
+  const [liveFeed, stagePoints] = await Promise.all([
+    tryFetch(liveUrl("live-feed.json")),
+    tryFetch(liveUrl("live-stage-points.json")),
+  ]);
+  if (liveFeed && expectedId && liveFeed.race_id === expectedId && liveFeed.run_type === 3) {
+    const built = buildDriversFromLiveFeeds(liveFeed, stagePoints);
+    if (built.drivers.length > 0) {
+      const lapsLeft = liveFeed.laps_to_go ?? liveFeed.laps_remaining ?? null;
+      const isOver   = liveFeed.flag_state === 5 || lapsLeft === 0;
+      return {
+        ok: true,
+        drivers: built.drivers,
+        threeStages: built.threeStages,
+        raceName: liveFeed.run_name || `Week ${week}`,
+        isLive: !isOver,
+        isOver,
+        lapsToGo: lapsLeft,
+        note: "Live · NASCAR.com live feed · real-time positions",
+        source: "NASCAR Live Feed",
+      };
+    }
+  }
+
+  // ── Attempt 2: SportsDataIO (30s updates) — requires paid Discovery Lab key ─
   const sdResult = await diagFetch(sdUrl("/Races/2026"));
   if (sdResult.ok && Array.isArray(sdResult.data)) {
     const cup = sdResult.data
@@ -292,11 +337,109 @@ function parseStages(weekendData) {
 
 const FLAG_NAMES = { 0:"None", 1:"Green", 2:"Yellow", 3:"Red", 4:"White", 5:"Checkered" };
 
+// Shared builder — converts live-feed.json (+ live-stage-points.json) into the
+// standard driver-result shape. Stage entries are ONLY used when their race_id
+// matches the live feed's race_id: NASCAR leaves stale stage data from previous
+// races in live-stage-points.json, which used to contaminate stage positions
+// (e.g. Hamlin showing P35 in both stages).
+function buildDriversFromLiveFeeds(liveFeed, stagePoints) {
+  const vehicles  = liveFeed.vehicles   || [];
+  const totalLaps = liveFeed.lap_number || 0;
+
+  const carMap = {};
+  for (const v of vehicles) {
+    const d = v.driver || {};
+    carMap[String(v.vehicle_number)] = carToDriver(v.vehicle_number, d.first_name || "", d.last_name || "");
+  }
+
+  // ── Stage positions — validated against the live feed's race_id ────────────
+  // Shape: [{race_id, stage_number, results:[{position, vehicle_number, full_name}]}]
+  const stagePosMap = {};   // name → { stage1, stage2, stage3 }
+  let   threeStages = false;
+  if (Array.isArray(stagePoints)) {
+    for (const stage of stagePoints) {
+      if (stage.race_id && liveFeed.race_id && stage.race_id !== liveFeed.race_id) continue;
+      const sn = stage.stage_number;
+      if (sn >= 3) threeStages = true;
+      for (const r of (stage.results || [])) {
+        const name = carMap[String(r.vehicle_number)] || `#${r.vehicle_number} ${cleanDriverName(r.full_name)}`.trim();
+        if (!stagePosMap[name]) stagePosMap[name] = {};
+        stagePosMap[name][`stage${sn}`] = r.position || 0;
+      }
+    }
+  }
+
+  let mostLapsLedDriver = null, maxLL = 0;
+
+  const drivers = vehicles.map(v => {
+    const d      = v.driver || {};
+    const name   = carToDriver(v.vehicle_number, d.first_name || "", d.last_name || "");
+    const finish = v.running_position  || 99;
+    const start  = v.starting_position || 99;
+
+    // Laps led: array of {start_lap, end_lap} segments
+    const lapsLedArr = Array.isArray(v.laps_led) ? v.laps_led : [];
+    const lapsLed    = lapsLedArr.reduce((sum, seg) =>
+      sum + ((seg.end_lap || 0) - (seg.start_lap || 0) + 1), 0
+    );
+
+    if (lapsLed > maxLL) { maxLL = lapsLed; mostLapsLedDriver = name; }
+
+    // DNF: not running (status !== 1) and significantly fewer laps than winner
+    const dnf = v.status !== 1 && (v.laps_completed || 0) < totalLaps * 0.9;
+
+    const stages = stagePosMap[name] || {};
+
+    return {
+      name, finish, qualPos: start, lapsLed, dnf, dq: false,
+      stage1: stages.stage1 || 0,
+      stage2: stages.stage2 || 0,
+      stage3: stages.stage3 || 0,
+      pole:      start === 1,
+      // Stage wins derive from validated stage positions, not live-points.json
+      // (live-points carries race_id 0 so its winner flags can't be validated)
+      stageWin1: stages.stage1 === 1,
+      stageWin2: stages.stage2 === 1,
+      stageWin3: stages.stage3 === 1,
+      fastestLap:  false,   // set below
+      mostLapsLed: false,   // set below
+      _bestLapTime:  v.best_lap_time  || 0,
+      _bestLapSpeed: v.best_lap_speed || 0,
+    };
+  }).filter(d => d.finish > 0).sort((a, b) => a.finish - b.finish);
+
+  // Mark most laps led
+  if (mostLapsLedDriver) {
+    const d = drivers.find(x => x.name === mostLapsLedDriver);
+    if (d) d.mostLapsLed = true;
+  }
+
+  // Fastest lap: lowest best_lap_time in the (race-validated) live feed
+  let fastestLapDriver = null, bestTime = Infinity;
+  for (const d of drivers) {
+    if (d._bestLapTime > 0 && d._bestLapTime < bestTime) {
+      bestTime = d._bestLapTime; fastestLapDriver = d.name;
+    }
+  }
+  if (fastestLapDriver) {
+    const d = drivers.find(x => x.name === fastestLapDriver);
+    if (d) d.fastestLap = true;
+  }
+
+  const stageWinners = [1, 2, ...(threeStages ? [3] : [])].map(n => ({
+    stage: n, driver: drivers.find(d => d[`stageWin${n}`])?.name || null,
+  }));
+
+  return {
+    drivers, threeStages, stageWinners, totalLaps,
+    mostLapsLedDriver, fastestLapDriver,
+    fastestLapAutoDetected: !!fastestLapDriver,
+  };
+}
+
 export async function fetchPostRaceFromLive(week) {
-  // Fetch all three live endpoints in parallel
-  const [liveFeed, livePoints, stagePoints] = await Promise.all([
+  const [liveFeed, stagePoints] = await Promise.all([
     tryFetch(liveUrl("live-feed.json")),
-    tryFetch(liveUrl("live-points.json")),
     tryFetch(liveUrl("live-stage-points.json")),
   ]);
 
@@ -343,142 +486,24 @@ export async function fetchPostRaceFromLive(week) {
     };
   }
 
-  const vehicles    = liveFeed.vehicles    || [];
-  const totalLaps   = liveFeed.lap_number  || 0;
-
-  // ── Build car-number → standardised name map from live feed ───────────────
-  const carMap = {};
-  for (const v of vehicles) {
-    const d = v.driver || {};
-    carMap[String(v.vehicle_number)] = carToDriver(v.vehicle_number, d.first_name || "", d.last_name || "");
-  }
-
-  // ── Stage positions from live-stage-points ─────────────────────────────────
-  // Shape: [{stage_number, results:[{position, vehicle_number, full_name}]}]
-  const stagePosMap = {};   // name → { stage1, stage2, stage3 }
-  if (Array.isArray(stagePoints)) {
-    for (const stage of stagePoints) {
-      const sn = stage.stage_number;
-      for (const r of (stage.results || [])) {
-        const name = carMap[String(r.vehicle_number)] || `#${r.vehicle_number} ${r.full_name || ""}`.trim();
-        if (!stagePosMap[name]) stagePosMap[name] = {};
-        stagePosMap[name][`stage${sn}`] = r.position || 0;
-      }
-    }
-  }
-
-  // ── Stage wins + fastest lap from live-points ──────────────────────────────
-  // Shape: [{car_number, first_name, last_name, is_fastest_lap_point,
-  //          stage_1_winner, stage_2_winner, stage_3_winner, ...}]
-  const stageWinMap  = {};  // name → { stageWin1, stageWin2, stageWin3 }
-  let   fastestLapDriver = null;
-  let   threeStages = false;
-
-  if (Array.isArray(livePoints)) {
-    for (const p of livePoints) {
-      const name = carToDriver(p.car_number, p.first_name || "", p.last_name || "");
-      stageWinMap[name] = {
-        stageWin1: !!p.stage_1_winner,
-        stageWin2: !!p.stage_2_winner,
-        stageWin3: !!p.stage_3_winner,
-      };
-      if (p.is_fastest_lap_point) fastestLapDriver = name;
-      if ((p.stage_3_points ?? 0) > 0 || p.stage_3_winner) threeStages = true;
-    }
-  }
-
-  // ── Build driver results from live feed ────────────────────────────────────
-  let mostLapsLedDriver = null, maxLL = 0;
-
-  const drivers = vehicles.map(v => {
-    const d      = v.driver || {};
-    const name   = carToDriver(v.vehicle_number, d.first_name || "", d.last_name || "");
-    const finish = v.running_position  || 99;
-    const start  = v.starting_position || 99;
-
-    // Laps led: array of {start_lap, end_lap} segments
-    const lapsLedArr = Array.isArray(v.laps_led) ? v.laps_led : [];
-    const lapsLed    = lapsLedArr.reduce((sum, seg) =>
-      sum + ((seg.end_lap || 0) - (seg.start_lap || 0) + 1), 0
-    );
-
-    if (lapsLed > maxLL) { maxLL = lapsLed; mostLapsLedDriver = name; }
-
-    // DNF: not running (status !== 1) and significantly fewer laps than winner
-    const dnf = v.status !== 1 && (v.laps_completed || 0) < totalLaps * 0.9;
-
-    const stages = stagePosMap[name] || {};
-    const wins   = stageWinMap[name] || {};
-
-    return {
-      name, finish, qualPos: start, lapsLed, dnf, dq: false,
-      stage1: stages.stage1 || 0,
-      stage2: stages.stage2 || 0,
-      stage3: stages.stage3 || 0,
-      pole:      start === 1,
-      stageWin1: !!wins.stageWin1,
-      stageWin2: !!wins.stageWin2,
-      stageWin3: !!wins.stageWin3,
-      fastestLap:  false,   // set below
-      mostLapsLed: false,   // set below
-      // Keep raw timing for fallback fastest-lap detection
-      _bestLapTime:  v.best_lap_time  || 0,
-      _bestLapSpeed: v.best_lap_speed || 0,
-    };
-  }).filter(d => d.finish > 0).sort((a, b) => a.finish - b.finish);
+  const built = buildDriversFromLiveFeeds(liveFeed, stagePoints);
 
   // Guard: if the live feed cleared all positions post-race, don't return empty data.
   // The caller will fall through to the cacher or manual results.
-  if (drivers.length === 0) {
+  if (built.drivers.length === 0) {
     return { ok: false, error: "Live feed has no driver positions. Feed data may have cleared post-race — try the Cacher source." };
   }
 
-  // Mark most laps led
-  if (mostLapsLedDriver) {
-    const d = drivers.find(x => x.name === mostLapsLedDriver);
-    if (d) d.mostLapsLed = true;
-  }
-
-  // Mark fastest lap (live-points is authoritative; fall back to best_lap_time)
-  let fastestLapAutoDetected = false;
-  if (fastestLapDriver) {
-    const d = drivers.find(x => x.name === fastestLapDriver);
-    if (d) { d.fastestLap = true; fastestLapAutoDetected = true; }
-  } else {
-    // Fallback: driver with lowest best_lap_time (> 0)
-    let bestTime = Infinity;
-    for (const d of drivers) {
-      if (d._bestLapTime > 0 && d._bestLapTime < bestTime) {
-        bestTime = d._bestLapTime; fastestLapDriver = d.name;
-      }
-    }
-    if (fastestLapDriver) {
-      const d = drivers.find(x => x.name === fastestLapDriver);
-      if (d) { d.fastestLap = true; fastestLapAutoDetected = true; }
-    }
-  }
-
-  const stageWinners = [1, 2, ...(threeStages ? [3] : [])].map(n => ({
-    stage: n, driver: drivers.find(d => d[`stageWin${n}`])?.name || null,
-  }));
-
   return {
     ok: true,
-    source:   "NASCAR Live Feed",
-    drivers,
-    threeStages,
-    stageWinners,
+    source: "NASCAR Live Feed",
+    ...built,
     raceName:   liveFeed.run_name   || "Race",
     trackName:  liveFeed.track_name || "",
-    winner:     drivers[0]?.name    || null,
-    poleSitter: drivers.find(d => d.pole)?.name || null,
-    mostLapsLedDriver,
-    fastestLapDriver,
-    fastestLapAutoDetected,
-    driverCount: drivers.length,
+    winner:     built.drivers[0]?.name || null,
+    poleSitter: built.drivers.find(d => d.pole)?.name || null,
+    driverCount: built.drivers.length,
     raceComplete: true,
-    // Extra context for the UI
-    totalLaps,
     raceId: liveFeed.race_id,
   };
 }

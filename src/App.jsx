@@ -1,17 +1,18 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from "react";
+import { useState, useEffect, useMemo, useRef, lazy, Suspense } from "react";
 import { saveLeagueData } from "./firebase";
 import { sendDraftEmail, isEmailConfigured, DEFAULT_EMAILS } from "./email";
 import { fetchNASCARResults } from "./nascar";
 import {
   PLAYERS, PNAME, SCHEDULE,
   GARAGE_PICK_ENABLED, PICKS_PER_WEEK, ACTIVE_PICKS,
+  DRAFT_TIMER_MS, DRAFT_REMINDER_MS,
 } from "./constants";
 import { scoreWeekFull } from "./engine/scoring";
-import { getDraftOrder, buildSnakeOrder } from "./engine/draft";
+import { getDraftOrder, buildSnakeOrder, getBestAvailableDriver } from "./engine/draft";
 import { useLeagueData } from "./hooks/useLeagueData";
 import { useLivePolling } from "./hooks/useLivePolling";
 import { useLiveTiming } from "./hooks/useLiveTiming";
-import { notifyDraftTurn, notifyRaceScored } from "./hooks/useNotifications";
+import { notifyDraftTurn, notifyRaceScored, notifyPlayer } from "./hooks/useNotifications";
 
 // ── Eagerly-loaded shell + high-traffic tabs ───────────────────────────────────
 // These are in the main bundle — they render on first load or first tap.
@@ -127,7 +128,10 @@ export default function App() {
 
   const handleDraftPick=async(week,pid,driver,pickNum)=>{
     const d=JSON.parse(JSON.stringify(data)); if(!d.drafts)d.drafts={}; const key="w"+week;
-    if(!d.drafts[key])d.drafts[key]=[]; d.drafts[key].push({pid,driver,pickNum});
+    if(!d.drafts[key])d.drafts[key]=[];
+    // Ignore stale/duplicate picks: another client may have already filled this slot
+    if(d.drafts[key].length!==pickNum)return;
+    d.drafts[key].push({pid,driver,pickNum});
     if(!d.picks)d.picks={}; if(!d.picks[key])d.picks[key]={}; if(!d.picks[key][pid])d.picks[key][pid]=[];
     d.picks[key][pid].push({driver,mulligan:false});
     // Reset draft turn timer for the next picker
@@ -226,6 +230,50 @@ export default function App() {
     setData(d); await saveLeagueData(d);
   };
 
+  // ── Draft timer watchdog ─────────────────────────────────────────────────────
+  // Runs app-wide (any tab, any logged-in player) so autopick and the 6h reminder
+  // fire as long as SOMEONE has the app open — not just when the Draft tab is up.
+  const [timerTick,setTimerTick]=useState(()=>Date.now());
+  useEffect(()=>{
+    const t=setInterval(()=>setTimerTick(Date.now()),60000);
+    return ()=>clearInterval(t);
+  },[]);
+  const draftTimerGuard=useRef({slot:"",autopicked:false,reminded:false});
+  useEffect(()=>{
+    if(!data||!user)return;
+    const week=currentWeek,key="w"+week;
+    const timerMeta=data.draftTimers?.[key];
+    if(!timerMeta?.startedAt)return;
+    const draftState=data.drafts?.[key]||[];
+    const snake=buildSnakeOrder(getDraftOrder(data,week));
+    if(draftState.length>=snake.length)return; // draft complete
+    // Reset one-shot guards whenever the pick slot advances
+    const slot=key+":"+draftState.length;
+    if(draftTimerGuard.current.slot!==slot)draftTimerGuard.current={slot,autopicked:false,reminded:false};
+    const elapsed=Date.now()-new Date(timerMeta.startedAt).getTime();
+    const turn=snake[draftState.length];
+
+    if(elapsed>=DRAFT_TIMER_MS&&!draftTimerGuard.current.autopicked){
+      draftTimerGuard.current.autopicked=true;
+      const taken=new Set(draftState.map(x=>x.driver));
+      const best=getBestAvailableDriver(data,taken,week);
+      if(best){
+        handleDraftPick(week,turn.pid,best,draftState.length);
+        notifyPlayer(turn.pid,data.playerSettings,{
+          title:"⏰ FERDA — Auto-Pick Made",
+          message:`Your 12-hour draft clock expired. ${best} was auto-drafted for you for W${week}.`,
+        }).catch(()=>{});
+      }
+    } else if(elapsed>=DRAFT_REMINDER_MS&&elapsed<DRAFT_TIMER_MS&&!timerMeta.reminderSent&&!draftTimerGuard.current.reminded){
+      draftTimerGuard.current.reminded=true;
+      handleMarkReminderSent(week);
+      const ri=SCHEDULE.find(s=>s.w===week);
+      notifyDraftTurn(turn.pid,data.playerSettings,{
+        week,pickNumber:draftState.length+1,totalPicks:snake.length,raceName:ri?.r||"Draft",
+      }).catch(()=>{});
+    }
+  },[data,timerTick,user,currentWeek]); // eslint-disable-line react-hooks/exhaustive-deps
+
   if(loading)return(
     <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:C.bg,gap:12}}>
       <FerdaLogo size="large"/>
@@ -268,7 +316,7 @@ export default function App() {
 
       {/* Eager tabs — no Suspense needed */}
       {tab==="welcome"&&<WelcomeTab player={user} data={data} setTab={setTab} liveScores={liveScores} liveStatus={liveStatus}/>}
-      {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} onReminderSent={handleMarkReminderSent} currentWeek={currentWeek}/>}
+      {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
       {tab==="live"&&<LiveTab data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo} currentWeek={currentWeek} timingData={timingData}/>}
 
       {/* Lazy tabs — wrapped in Suspense */}

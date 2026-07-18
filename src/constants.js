@@ -34,6 +34,10 @@ export const PLAYOFF_START_WEEK  = 27;
 export const REG_SEASON_CHAMP_BONUS = 100;
 export const GARAGE_PICK_ENABLED = false;
 
+// Draft turn timer: autopick after 12h, reminder notification at 6h
+export const DRAFT_TIMER_MS    = 12 * 3600 * 1000;
+export const DRAFT_REMINDER_MS =  6 * 3600 * 1000;
+
 // Drivers frozen in memoriam — cannot be picked, shown with tribute marker
 export const MEMORIAL_DRIVERS = {
   "#8 Kyle Busch": { years: "1985 – 2026" },

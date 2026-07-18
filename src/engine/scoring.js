@@ -84,7 +84,11 @@ export function scoreWeekFull(picks, raceResult, week, mullData) {
     let hadWinner = false, topDriverScore = 0;
 
     finalPicks.forEach(pick => {
-      const r = raceResult.drivers?.find(d => d.name === pick.driver);
+      // Match by exact name, then by car number — feeds sometimes decorate names
+      // with rookie "#" or "(i)" suffixes that break exact matching
+      const num = (pick.driver.match(/^#(\S+)\s/) || [])[1];
+      const r = raceResult.drivers?.find(d => d.name === pick.driver)
+             || (num ? raceResult.drivers?.find(d => d.name.startsWith(`#${num} `)) : null);
       if (!r) {
         ds.push({ driver: pick.driver, total: 0, breakdown: [{ label: "Did not race", pts: 0 }], bonusPoints: 0, isMulligan: !!pick.mulligan, dnr: true });
         return;
