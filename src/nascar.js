@@ -177,12 +177,12 @@ export async function fetchLiveRaceData(week) {
   // Only trusted when its race_id matches this week's race and it's a race
   // session (run_type 3) — the feed serves stale data between race weekends.
   const expectedId = CACHER_RACE_IDS[week];
-  const [liveFeed, stagePoints] = await Promise.all([
+  const [liveFeed, livePoints] = await Promise.all([
     tryFetch(liveUrl("live-feed.json")),
-    tryFetch(liveUrl("live-stage-points.json")),
+    tryFetch(liveUrl("live-points.json")),
   ]);
   if (liveFeed && expectedId && liveFeed.race_id === expectedId && liveFeed.run_type === 3) {
-    const built = buildDriversFromLiveFeeds(liveFeed, stagePoints);
+    const built = buildDriversFromLiveFeeds(liveFeed, livePoints);
     if (built.drivers.length > 0) {
       const lapsLeft = liveFeed.laps_to_go ?? liveFeed.laps_remaining ?? null;
       const isOver   = liveFeed.flag_state === 5 || lapsLeft === 0;
@@ -327,45 +327,49 @@ function parseStages(weekendData) {
 }
 
 // ── Live-feed post-race scoring ───────────────────────────────────────────────
-// Uses three NASCAR live endpoints (no race ID needed — always current race):
-//   live-feed.json       → positions, laps led, best lap times (1-second updates)
-//   live-points.json     → is_fastest_lap_point, stage_N_winner flags
-//   live-stage-points.json → stage finish positions per driver
+// Uses two NASCAR live endpoints (no race ID needed — always current race):
+//   live-feed.json   → positions, laps led, best lap times (1-second updates)
+//   live-points.json → per-driver stage_N_points + stage_N_winner (1-second updates)
+//
+// live-stage-points.json (a third endpoint) looks like the natural source for
+// stage finish positions, but NASCAR's copy of it has been observed stuck on a
+// stale race for weeks at a time (wrong race_id, unchanging) — using it produced
+// bogus stage positions (e.g. Hamlin showing P35 in both stages). live-points.json
+// doesn't carry finish position directly, but its stage_N_points value maps 1:1
+// to position via the standard stage points table, and it updates live — so we
+// derive position from points instead of trusting the broken endpoint.
 //
 // These are available IMMEDIATELY after the checkered flag, vs. weekend-feed
 // which can take 30-60 min to populate.
 
 const FLAG_NAMES = { 0:"None", 1:"Green", 2:"Yellow", 3:"Red", 4:"White", 5:"Checkered" };
 
-// Shared builder — converts live-feed.json (+ live-stage-points.json) into the
-// standard driver-result shape. Stage entries are ONLY used when their race_id
-// matches the live feed's race_id: NASCAR leaves stale stage data from previous
-// races in live-stage-points.json, which used to contaminate stage positions
-// (e.g. Hamlin showing P35 in both stages).
-function buildDriversFromLiveFeeds(liveFeed, stagePoints) {
+// Inverse of STAGE_POINTS (position → points): points → position, top 10 only.
+const POINTS_TO_STAGE_POS = { 10:1, 9:2, 8:3, 7:4, 6:5, 5:6, 4:7, 3:8, 2:9, 1:10 };
+
+// Shared builder — converts live-feed.json (+ live-points.json) into the
+// standard driver-result shape.
+function buildDriversFromLiveFeeds(liveFeed, livePoints) {
   const vehicles  = liveFeed.vehicles   || [];
   const totalLaps = liveFeed.lap_number || 0;
 
-  const carMap = {};
-  for (const v of vehicles) {
-    const d = v.driver || {};
-    carMap[String(v.vehicle_number)] = carToDriver(v.vehicle_number, d.first_name || "", d.last_name || "");
-  }
-
-  // ── Stage positions — validated against the live feed's race_id ────────────
-  // Shape: [{race_id, stage_number, results:[{position, vehicle_number, full_name}]}]
-  const stagePosMap = {};   // name → { stage1, stage2, stage3 }
+  // ── Stage data, keyed by car number so it only ever attaches to a vehicle
+  // that's actually racing right now (live-feed.json's vehicle list, which IS
+  // race_id-validated by the caller) ─────────────────────────────────────────
+  const stageByCar = {};   // car number → { stage1, stage2, stage3, win1, win2, win3 }
   let   threeStages = false;
-  if (Array.isArray(stagePoints)) {
-    for (const stage of stagePoints) {
-      if (stage.race_id && liveFeed.race_id && stage.race_id !== liveFeed.race_id) continue;
-      const sn = stage.stage_number;
-      if (sn >= 3) threeStages = true;
-      for (const r of (stage.results || [])) {
-        const name = carMap[String(r.vehicle_number)] || `#${r.vehicle_number} ${cleanDriverName(r.full_name)}`.trim();
-        if (!stagePosMap[name]) stagePosMap[name] = {};
-        stagePosMap[name][`stage${sn}`] = r.position || 0;
-      }
+  if (Array.isArray(livePoints)) {
+    for (const p of livePoints) {
+      const car = String(p.car_number ?? "");
+      if (!car) continue;
+      const entry = {
+        stage1: p.stage_1_points > 0 ? POINTS_TO_STAGE_POS[p.stage_1_points] || 0 : 0,
+        stage2: p.stage_2_points > 0 ? POINTS_TO_STAGE_POS[p.stage_2_points] || 0 : 0,
+        stage3: p.stage_3_points > 0 ? POINTS_TO_STAGE_POS[p.stage_3_points] || 0 : 0,
+        win1: !!p.stage_1_winner, win2: !!p.stage_2_winner, win3: !!p.stage_3_winner,
+      };
+      if ((p.stage_3_points ?? 0) > 0 || p.stage_3_winner) threeStages = true;
+      stageByCar[car] = entry;
     }
   }
 
@@ -388,7 +392,7 @@ function buildDriversFromLiveFeeds(liveFeed, stagePoints) {
     // DNF: not running (status !== 1) and significantly fewer laps than winner
     const dnf = v.status !== 1 && (v.laps_completed || 0) < totalLaps * 0.9;
 
-    const stages = stagePosMap[name] || {};
+    const stages = stageByCar[String(v.vehicle_number)] || {};
 
     return {
       name, finish, qualPos: start, lapsLed, dnf, dq: false,
@@ -396,11 +400,9 @@ function buildDriversFromLiveFeeds(liveFeed, stagePoints) {
       stage2: stages.stage2 || 0,
       stage3: stages.stage3 || 0,
       pole:      start === 1,
-      // Stage wins derive from validated stage positions, not live-points.json
-      // (live-points carries race_id 0 so its winner flags can't be validated)
-      stageWin1: stages.stage1 === 1,
-      stageWin2: stages.stage2 === 1,
-      stageWin3: stages.stage3 === 1,
+      stageWin1: !!stages.win1,
+      stageWin2: !!stages.win2,
+      stageWin3: !!stages.win3,
       fastestLap:  false,   // set below
       mostLapsLed: false,   // set below
       _bestLapTime:  v.best_lap_time  || 0,
@@ -438,9 +440,9 @@ function buildDriversFromLiveFeeds(liveFeed, stagePoints) {
 }
 
 export async function fetchPostRaceFromLive(week) {
-  const [liveFeed, stagePoints] = await Promise.all([
+  const [liveFeed, livePoints] = await Promise.all([
     tryFetch(liveUrl("live-feed.json")),
-    tryFetch(liveUrl("live-stage-points.json")),
+    tryFetch(liveUrl("live-points.json")),
   ]);
 
   // Guard: live feed must respond
@@ -486,7 +488,7 @@ export async function fetchPostRaceFromLive(week) {
     };
   }
 
-  const built = buildDriversFromLiveFeeds(liveFeed, stagePoints);
+  const built = buildDriversFromLiveFeeds(liveFeed, livePoints);
 
   // Guard: if the live feed cleared all positions post-race, don't return empty data.
   // The caller will fall through to the cacher or manual results.
