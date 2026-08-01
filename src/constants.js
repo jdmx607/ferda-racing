@@ -11,6 +11,15 @@ export const PLAYERS = [
 
 export const PNAME = { justin: "Justin", bigmonroe: "Big Monroe", monroe: "Monroe", rich: "Rich" };
 
+// Default SMS numbers — used as a fallback when a player hasn't set their own
+// phone in Settings, so texting works with zero action required from anyone.
+export const DEFAULT_PHONES = {
+  justin:    "607-242-2378",
+  bigmonroe: "845-803-0398",
+  monroe:    "845-803-0398",
+  rich:      "607-821-9286",
+};
+
 export const FINISH_POINTS = {
   1:55,2:35,3:34,4:33,5:32,6:31,7:30,8:29,9:28,10:27,
   11:26,12:25,13:24,14:23,15:22,16:21,17:20,18:19,19:18,20:17,

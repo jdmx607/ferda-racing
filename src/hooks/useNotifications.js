@@ -2,7 +2,7 @@
 // Fires Web Push and/or SMS depending on what each player has configured.
 // Both channels are optional and gracefully no-op when not set up.
 
-import { PNAME, SCHEDULE } from "../constants";
+import { PNAME, SCHEDULE, DEFAULT_PHONES } from "../constants";
 
 // ── SMS ───────────────────────────────────────────────────────────────────────
 export async function sendSms(phone, message) {
@@ -37,16 +37,20 @@ export async function sendPush(subscription, { title, message, url = "/" }) {
 }
 
 // ── Notify a single player through all configured channels ────────────────────
+// SMS is on by default (falls back to DEFAULT_PHONES) — a player must
+// explicitly set notifySms:false in Settings to opt out.
 export async function notifyPlayer(pid, playerSettings, { title, message, url = "/" }) {
   const s = playerSettings?.[pid] || {};
+  const phone = s.phone || DEFAULT_PHONES[pid];
+  const smsEnabled = s.notifySms !== false && !!phone;
   const results = await Promise.allSettled([
     // Web Push
     s.pushSubscription?.endpoint
       ? sendPush(s.pushSubscription, { title, message, url })
       : Promise.resolve({ ok: false, reason: "no push" }),
     // SMS
-    s.notifySms && s.phone
-      ? sendSms(s.phone, `${title}\n${message}`)
+    smsEnabled
+      ? sendSms(phone, `${title}\n${message}`)
       : Promise.resolve({ ok: false, reason: "no sms" }),
   ]);
   return results.map(r => r.value ?? r.reason);

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { C, r, shadow } from "../theme";
 import { DEFAULT_EMAILS } from "../email";
+import { DEFAULT_PHONES } from "../constants";
 import { usePushNotifications } from "../hooks/usePushNotifications";
 import { sendSms, sendPush } from "../hooks/useNotifications";
 
@@ -9,12 +10,13 @@ export function SettingsTab({ player, data, onSaveSettings }) {
   const [email,       setEmail]       = useState(settings.email || "");
   const [notifyEmail, setNotifyEmail] = useState(settings.notifyOnTurn !== false);
   const [phone,       setPhone]       = useState(settings.phone || "");
-  const [notifySms,   setNotifySms]   = useState(!!settings.notifySms);
+  const [notifySms,   setNotifySms]   = useState(settings.notifySms !== false);
   const [saving,      setSaving]      = useState(false);
   const [msg,         setMsg]         = useState("");
   const [testing,     setTesting]     = useState(null);   // "sms" | "push" | null
   const [testResult,  setTestResult]  = useState(null);
   const defaultEmail  = DEFAULT_EMAILS[player.id];
+  const defaultPhone  = DEFAULT_PHONES[player.id];
 
   const { isSupported, isSubscribed, isLoading, error: pushError, subscribe, unsubscribe } =
     usePushNotifications(player, data, onSaveSettings);
@@ -35,9 +37,10 @@ export function SettingsTab({ player, data, onSaveSettings }) {
   };
 
   const testSms = async () => {
-    if (!phone) return;
+    const target = phone || defaultPhone;
+    if (!target) return;
     setTesting("sms"); setTestResult(null);
-    const result = await sendSms(phone, `FERDA Racing test 🏁 — SMS notifications are working! This is ${player.name}'s FERDA Racing test message.`);
+    const result = await sendSms(target, `FERDA Racing test 🏁 — SMS notifications are working! This is ${player.name}'s FERDA Racing test message.`);
     setTestResult({ channel:"sms", ...result });
     setTesting(null);
   };
@@ -106,18 +109,15 @@ export function SettingsTab({ player, data, onSaveSettings }) {
       </div>
 
       {/* ── SMS notifications ─────────────────────────────────────────────── */}
-      <div style={{ ...sectionStyle, borderColor: notifySms && phone ? `${C.green}44` : C.border }}>
-        <span style={labelStyle}>💬 SMS Notifications (Recommended)</span>
+      <div style={{ ...sectionStyle, borderColor: notifySms && (phone || defaultPhone) ? `${C.green}44` : C.border }}>
+        <span style={labelStyle}>💬 SMS Notifications (On by Default)</span>
         <div style={{
           background:`${C.green}11`, border:`1px solid ${C.green}33`,
           borderRadius:r.sm, padding:"10px 12px", marginBottom:14, fontSize:12,
           color:C.textDim, lineHeight:1.6,
         }}>
           Text messages reach you even when the app isn't open — no installation required.
-          Draft turn alerts + final race scores sent to your phone.
-          <div style={{ color:C.muted, fontSize:10, marginTop:4 }}>
-            Requires TWILIO_SID, TWILIO_AUTH, TWILIO_FROM in Vercel env vars.
-          </div>
+          Draft turn alerts + final race scores sent to your phone automatically.
         </div>
 
         <div style={{ marginBottom:14 }}>
@@ -125,27 +125,29 @@ export function SettingsTab({ player, data, onSaveSettings }) {
           <input
             type="tel" value={phone}
             onChange={e => setPhone(e.target.value)}
-            placeholder="555-867-5309 or +15558675309"
+            placeholder={defaultPhone || "555-867-5309 or +15558675309"}
             style={inputStyle}
           />
-          <div style={{ color:C.muted, fontSize:11, marginTop:5 }}>
-            US numbers: enter 10 digits. International: include country code (+1…).
-          </div>
+          {defaultPhone && (
+            <div style={{ color:C.muted, fontSize:11, marginTop:5 }}>
+              Default: <span style={{ color:C.green }}>{defaultPhone}</span> — leave blank to use default
+            </div>
+          )}
         </div>
 
-        <label style={{ display:"flex", alignItems:"center", gap:12, cursor:"pointer", marginBottom: phone ? 12 : 0 }}>
+        <label style={{ display:"flex", alignItems:"center", gap:12, cursor:"pointer", marginBottom: (phone||defaultPhone) ? 12 : 0 }}>
           <input type="checkbox" checked={notifySms}
             onChange={e => setNotifySms(e.target.checked)}
             style={{ width:18, height:18, cursor:"pointer" }}/>
           <div>
             <div style={{ color:C.text, fontSize:14, fontWeight:600 }}>Text me draft turns + race scores</div>
             <div style={{ color:C.muted, fontSize:11, marginTop:2 }}>
-              When it's your pick, and when weekly scores are posted
+              When it's your pick, and when weekly scores are posted. On by default — uncheck to opt out.
             </div>
           </div>
         </label>
 
-        {phone && (
+        {(phone || defaultPhone) && (
           <button
             onClick={testSms}
             disabled={testing === "sms"}
