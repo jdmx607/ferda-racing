@@ -186,6 +186,23 @@ export default function App() {
     setData(d); await saveLeagueData(d);
   };
 
+  // ISC bracket saves (pick/result/lock changes) go through here so standings
+  // always reflect the current champion bonus — ISCTab used to save straight
+  // to Firestore, bypassing recalcMeta entirely.
+  const handleIscSave=async(newData)=>{
+    const d=JSON.parse(JSON.stringify(newData));
+    recalcMeta(d);
+    setData(d); await saveLeagueData(d);
+  };
+
+  // Manual trigger to re-derive meta.standings/playoffPts from current data —
+  // useful to fix stale standings after a bug, with no data actually changing.
+  const handleRecalcMeta=async()=>{
+    const d=JSON.parse(JSON.stringify(data));
+    recalcMeta(d);
+    setData(d); await saveLeagueData(d);
+  };
+
   const handleResetWeek=async(week)=>{
     const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
     delete d.results[key]; delete d.picks[key]; if(d.drafts)delete d.drafts[key];
@@ -290,7 +307,7 @@ export default function App() {
       `}</style>
       <MemorialBackdrop/>
       {showWinnerModal&&<WinnerModal player={user} data={data} onDismiss={()=>setShowWinnerModal(false)}/>}
-      <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)}/>
+      <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)} data={data}/>
       <ScoreTicker data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo}/>
       {dbStatus==="offline"&&(
         <div style={{background:C.red+"22",color:C.red,textAlign:"center",padding:"6px",fontSize:11,fontWeight:600,position:"relative",zIndex:1}}>
@@ -332,9 +349,9 @@ export default function App() {
         {tab==="schedule"&&<ScheduleTab data={data}/>}
         {tab==="rules"&&<RulesTab/>}
         {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}
-        {tab==="isc"&&<ISCTab data={data} setData={setData} user={user}/>}
+        {tab==="isc"&&<ISCTab data={data} user={user} onSave={handleIscSave}/>}
         {tab==="commissioner"&&user.id==="justin"&&
-          <CommissionerTab data={data} onPostResults={handlePostResults} onSavePicks={handleSavePicksOnly} onResetWeek={handleResetWeek} onNotifyDraft={handleStartDraftNotify} onToggleLive={handleToggleLive} currentWeek={currentWeek}/>}
+          <CommissionerTab data={data} onPostResults={handlePostResults} onSavePicks={handleSavePicksOnly} onResetWeek={handleResetWeek} onNotifyDraft={handleStartDraftNotify} onToggleLive={handleToggleLive} onRecalcMeta={handleRecalcMeta} currentWeek={currentWeek}/>}
       </Suspense>
     </div>
   );

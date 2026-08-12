@@ -24,11 +24,13 @@ export const C = {
   border:  "#1e293b",
   borderBright: "#334155",
   input:   "#0f172a",
+  gold:    "#FFD700",
+  goldDim: "#C9A227",
 };
 
 // Per-player brand colors — always use these for player identity
 export const PClr = {
-  justin:   { bg:"#FFF44F", fg:"#1C2541" },
+  justin:   { bg:"#FFD400", fg:"#FF1F8F" },
   bigmonroe:{ bg:"#000000", fg:"#65FE08" },
   monroe:   { bg:"#046A38", fg:"#91999F" },
   rich:     { bg:"#B3995D", fg:"#AA0000" },

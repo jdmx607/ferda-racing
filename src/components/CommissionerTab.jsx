@@ -209,7 +209,7 @@ function QuickScoreCard({ fetchResult, week, race, playerPicks, onConfirm, onAdv
 }
 
 // ─── Main Commissioner Tab ────────────────────────────────────────────────────
-export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek, onNotifyDraft, onToggleLive, currentWeek }) {
+export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek, onNotifyDraft, onToggleLive, onRecalcMeta, currentWeek }) {
   const [week,       setWeek]       = useState(currentWeek);
   const [editing,    setEditing]    = useState(false);
   const [quickScore, setQuickScore] = useState(null);   // fetched race data for Quick Score mode
@@ -403,6 +403,27 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
             : <button onClick={() => onToggleLive(week, true)}              style={{ padding:"8px 16px", borderRadius:8, border:"1px solid #10b981", background:"#10b98122", color:"#10b981", fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:1 }}>🟢 START LIVE — W{week}</button>
           }
         </div>
+      </div>
+
+      {/* ── Standings maintenance ─────────────────────────────────────────── */}
+      <div style={{
+        background:C.card, borderRadius:10, padding:"12px 16px", marginBottom:16,
+        border:`1px solid ${C.border}`,
+        display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8,
+      }}>
+        <div>
+          <div style={{ color:C.muted, fontWeight:700, fontSize:13, letterSpacing:1 }}>🔄 Recalculate Standings</div>
+          <div style={{ color:C.muted, fontSize:11, marginTop:2 }}>
+            Re-derives everyone's total pts from scored races + ISC champion bonus. No data changes — use if standings look stale.
+          </div>
+        </div>
+        <button
+          onClick={async () => { setSaving(true); await onRecalcMeta(); setSaving(false); setMsg("Standings recalculated!"); setTimeout(()=>setMsg(""),3000); }}
+          disabled={saving}
+          style={{ padding:"8px 16px", borderRadius:8, border:`1px solid ${C.accent}`, background:C.accent+"22", color:C.accent, fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700, cursor:saving?"wait":"pointer", letterSpacing:1, opacity:saving?0.6:1 }}
+        >
+          {saving ? "Recalculating…" : "Recalculate"}
+        </button>
       </div>
 
       {/* ── Action buttons (idle state) ────────────────────────────────────── */}

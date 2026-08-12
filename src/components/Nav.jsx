@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { C, PClr, r } from "../theme";
-import { PLAYERS, PNAME, ACTIVE_PICKS } from "../constants";
+import { PLAYERS, PNAME, ACTIVE_PICKS, PLAYOFF_START_WEEK } from "../constants";
+
+function isChaseLive(data) {
+  return Object.keys(data?.results || {}).length >= PLAYOFF_START_WEEK;
+}
 import { getDraftOrder, buildSnakeOrder } from "../engine/draft";
 import { FerdaLogo } from "./FerdaLogo";
 
@@ -120,8 +124,9 @@ export function FlagBanner({ user, data, currentWeek, onGoTo }) {
 }
 
 // ── Desktop horizontal nav (unchanged from before) ────────────────────────────
-function DesktopNav({ player, tab, setTab, onLogout }) {
+function DesktopNav({ player, tab, setTab, onLogout, data }) {
   const clr = PClr[player.id];
+  const chaseLive = isChaseLive(data);
   const tabs = [
     { id:"welcome",      l:"Home"        },
     { id:"draft",        l:"Draft"       },
@@ -133,7 +138,7 @@ function DesktopNav({ player, tab, setTab, onLogout }) {
     { id:"news",         l:"News"        },
     { id:"stats",        l:"Stats"       },
     { id:"history",      l:"History"     },
-    { id:"playoffs",     l:"Playoffs"    },
+    { id:"playoffs",     l:"THE CHASE", gold:chaseLive },
     { id:"isc",          l:"ISC"         },
     { id:"schedule",     l:"Schedule"    },
     { id:"rules",        l:"Rules"       },
@@ -156,17 +161,20 @@ function DesktopNav({ player, tab, setTab, onLogout }) {
           {tabs.map(t => {
             const isActive = tab === t.id;
             const isRed    = !!t.red;
+            const isGold   = !!t.gold;
+            const tone     = isGold ? C.gold : C.accent;
             return (
               <button key={t.id} onClick={() => setTab(t.id)} style={{
                 padding:"6px 8px", borderRadius:r.sm,
-                border:isRed ? `1px solid ${isActive?"#ef4444":"#ef444466"}` : "none",
-                background:isActive ? (isRed?"#ef4444":C.accent+"22") : "transparent",
-                color:isActive ? (isRed?"#fff":C.accent) : (isRed?"#ef4444":C.dim),
+                border:isRed ? `1px solid ${isActive?"#ef4444":"#ef444466"}` : isGold ? `1px solid ${C.gold}66` : "none",
+                background:isActive ? (isRed?"#ef4444":tone+"22") : isGold ? C.gold+"11" : "transparent",
+                color:isActive ? (isRed?"#fff":tone) : (isRed?"#ef4444":isGold?C.gold:C.dim),
                 fontFamily:"'Barlow Condensed',sans-serif",
-                fontSize:11, fontWeight:isActive?700:600,
+                fontSize:11, fontWeight:isActive||isGold?700:600,
                 cursor:"pointer", letterSpacing:1, textTransform:"uppercase",
                 whiteSpace:"nowrap",
-                borderBottom:isActive&&!isRed?`2px solid ${C.accent}`:"2px solid transparent",
+                borderBottom:isActive&&!isRed?`2px solid ${tone}`:"2px solid transparent",
+                textShadow:isGold?`0 0 8px ${C.gold}66`:"none",
                 transition:"all 0.12s ease",
               }}>{t.l}</button>
             );
@@ -211,7 +219,7 @@ const MORE_TABS = [
   { id:"news",         label:"News"        },
   { id:"stats",        label:"Stats"       },
   { id:"history",      label:"History"     },
-  { id:"playoffs",     label:"Playoffs"    },
+  { id:"playoffs",     label:"THE CHASE"   },
   { id:"isc",          label:"ISC"         },
   { id:"lineups",      label:"Lineups"     },
   { id:"mulligans",    label:"Mulligans"   },
@@ -220,9 +228,10 @@ const MORE_TABS = [
   { id:"settings",     label:"Settings"    },
 ];
 
-function MobileNav({ player, tab, setTab, onLogout }) {
+function MobileNav({ player, tab, setTab, onLogout, data }) {
   const [showMore, setShowMore] = useState(false);
   const clr = PClr[player.id];
+  const chaseLive = isChaseLive(data);
   const isInMore = [...MORE_TABS, { id:"commissioner" }].some(t => t.id === tab);
   const moreTabs = player.id === "justin"
     ? [...MORE_TABS, { id:"commissioner", label:"COMMISH" }]
@@ -293,12 +302,14 @@ function MobileNav({ player, tab, setTab, onLogout }) {
           {moreTabs.map(t => {
             const isActive = tab === t.id;
             const isCommish = t.id === "commissioner";
+            const isGold   = t.id === "playoffs" && chaseLive;
+            const tone     = isGold ? C.gold : C.accent;
             return (
               <button key={t.id} onClick={() => goTo(t.id)} style={{
                 padding:"12px 8px", borderRadius:r.md,
-                border:`1px solid ${isActive?(isCommish?"#ef4444":C.accent)+"66":C.border}`,
-                background:isActive?(isCommish?"#ef444422":C.accent+"18"):"transparent",
-                color:isActive?(isCommish?"#ef4444":C.accent):C.textDim,
+                border:`1px solid ${isActive?(isCommish?"#ef4444":tone)+"66":isGold?C.gold+"44":C.border}`,
+                background:isActive?(isCommish?"#ef444422":tone+"18"):isGold?C.gold+"0f":"transparent",
+                color:isActive?(isCommish?"#ef4444":tone):isGold?C.gold:C.textDim,
                 fontFamily:"'Barlow Condensed',sans-serif",
                 fontSize:12, fontWeight:700, cursor:"pointer",
                 letterSpacing:1, textTransform:"uppercase",
@@ -374,9 +385,9 @@ function MobileNav({ player, tab, setTab, onLogout }) {
 }
 
 // ── Exported Nav (picks desktop vs. mobile automatically) ─────────────────────
-export function Nav({ player, tab, setTab, onLogout }) {
+export function Nav({ player, tab, setTab, onLogout, data }) {
   const isMobile = useMobile();
   return isMobile
-    ? <MobileNav  player={player} tab={tab} setTab={setTab} onLogout={onLogout}/>
-    : <DesktopNav player={player} tab={tab} setTab={setTab} onLogout={onLogout}/>;
+    ? <MobileNav  player={player} tab={tab} setTab={setTab} onLogout={onLogout} data={data}/>
+    : <DesktopNav player={player} tab={tab} setTab={setTab} onLogout={onLogout} data={data}/>;
 }

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { C, PClr, r, shadow } from "../theme";
 import { PLAYERS, PNAME } from "../constants";
-import { saveLeagueData } from "../firebase";
 
 // ── 2026 NASCAR In-Season Challenge bracket ───────────────────────────────────
 
@@ -147,7 +146,7 @@ function MatchupCard({ id, picks, results, onPick, locked }) {
 }
 
 // ── Main export ───────────────────────────────────────────────────────────────
-export function ISCTab({ data, setData, user }) {
+export function ISCTab({ data, user, onSave }) {
   const [view,   setView  ] = useState("bracket");
   const [round,  setRound ] = useState("r1");
   const [saving, setSaving] = useState(false);
@@ -159,10 +158,11 @@ export function ISCTab({ data, setData, user }) {
   const isCommish = user?.id === "justin";
   const champion  = results.CHAMP || null;
 
+  // Routes through App's recalcMeta so the +25 champion bonus always lands
+  // in meta.standings the moment the result is set — not just on next race post.
   async function save(newData) {
-    setData(newData);
     setSaving(true);
-    try { await saveLeagueData(newData); } finally { setSaving(false); }
+    try { await onSave(newData); } finally { setSaving(false); }
   }
 
   async function pick(matchupId, driver) {

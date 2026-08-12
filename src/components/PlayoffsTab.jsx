@@ -40,14 +40,20 @@ export function PlayoffsTab({ data }) {
   }).sort((a,b) => b.total - a.total), [data, regLeader, isTied, iscChamp]);
 
   const maxTotal = ps[0]?.total || 1;
+  // Gold theme kicks in once the Chase actually starts — plain amber accent until then
+  const theme = playoffsStarted ? C.gold : C.accent;
 
   return (
     <div style={{ padding:20, maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>
 
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div style={{ marginBottom:20 }}>
-        <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, marginBottom:4, margin:0 }}>
-          Playoff Picture
+        <h2 style={{
+          color:playoffsStarted ? C.gold : C.text, fontFamily:"'Oswald',sans-serif",
+          fontSize:26, letterSpacing:1, marginBottom:4, margin:0,
+          textShadow:playoffsStarted ? `0 0 16px ${C.gold}55` : "none",
+        }}>
+          {playoffsStarted ? "🏆 THE CHASE" : "THE CHASE"}
         </h2>
         <div style={{ color:C.dim, fontSize:13, marginTop:6 }}>
           {playoffsStarted
@@ -59,11 +65,11 @@ export function PlayoffsTab({ data }) {
       {/* ── Rules callout ───────────────────────────────────────────────────── */}
       <div style={{
         background:C.card, borderRadius:r.md, padding:"14px 16px", marginBottom:20,
-        border:`1px solid ${C.border}`,
+        border:`1px solid ${playoffsStarted ? C.gold+"33" : C.border}`,
         display:"flex", flexWrap:"wrap", gap:16, alignItems:"flex-start",
       }}>
         <div style={{ flex:1, minWidth:200 }}>
-          <div style={{ color:C.accent, fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
+          <div style={{ color:theme, fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
             How It Works
           </div>
           <div style={{ color:C.dim, fontSize:12, lineHeight:1.7 }}>
@@ -72,17 +78,17 @@ export function PlayoffsTab({ data }) {
           </div>
         </div>
         <div style={{ flex:1, minWidth:200 }}>
-          <div style={{ color:C.accent, fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
+          <div style={{ color:theme, fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
             Champ Bonus
           </div>
           {isTied
             ? <div style={{ color:"#f59e0b", fontSize:12 }}>⚠️ Tied at the top — no bonus until the lead is broken</div>
             : <div style={{ color:C.dim, fontSize:12, lineHeight:1.7 }}>
-                Regular-season leader earns <span style={{ color:C.accent, fontWeight:700 }}>+{REG_SEASON_CHAMP_BONUS} bonus pts</span>{" "}
+                Regular-season leader earns <span style={{ color:theme, fontWeight:700 }}>+{REG_SEASON_CHAMP_BONUS} bonus pts</span>{" "}
                 entering the Chase.{" "}
                 {!playoffsStarted && regLeader && (
                   <span style={{ color:C.text }}>
-                    Currently: <span style={{ color:C.accent, fontWeight:700 }}>{PNAME[regLeader]}</span>
+                    Currently: <span style={{ color:theme, fontWeight:700 }}>{PNAME[regLeader]}</span>
                     {" "}{playoffsStarted ? "(applied)" : "(projected)"}
                   </span>
                 )}
@@ -98,9 +104,9 @@ export function PlayoffsTab({ data }) {
           return (
             <div key={p.id} style={{
               background:PClr[p.id].bg, borderRadius:r.lg,
-              border:`2px solid ${isFirst ? C.accent : PClr[p.id].bg==="#000000" ? C.border : PClr[p.id].bg+"66"}`,
+              border:`2px solid ${isFirst ? theme : PClr[p.id].bg==="#000000" ? C.border : PClr[p.id].bg+"66"}`,
               overflow:"hidden",
-              boxShadow:isFirst ? shadow.glow(C.accent) : shadow.card,
+              boxShadow:isFirst ? shadow.glow(theme) : shadow.card,
             }}>
 
               {/* Main row */}
@@ -125,9 +131,9 @@ export function PlayoffsTab({ data }) {
                       {p.champBonus > 0 && (
                         <span style={{
                           fontSize:10, fontWeight:700, letterSpacing:1.5,
-                          color:C.accent, background:C.accent+"22",
+                          color:theme, background:theme+"22",
                           padding:"2px 8px", borderRadius:r.pill,
-                          border:`1px solid ${C.accent}55`,
+                          border:`1px solid ${theme}55`,
                         }}>👑 CHAMP</span>
                       )}
                       {p.iscBonus > 0 && (
@@ -149,7 +155,8 @@ export function PlayoffsTab({ data }) {
                 <div style={{ textAlign:"right", flexShrink:0 }}>
                   <div style={{
                     fontFamily:"'Oswald',sans-serif", fontSize:40, fontWeight:900, lineHeight:1,
-                    color:isFirst ? C.accent : PClr[p.id].fg,
+                    color:isFirst ? theme : PClr[p.id].fg,
+                    textShadow:isFirst && playoffsStarted ? `0 0 12px ${C.gold}66` : "none",
                   }}>
                     {p.total.toLocaleString()}
                   </div>
@@ -161,16 +168,16 @@ export function PlayoffsTab({ data }) {
 
               {/* Progress bar */}
               <div style={{ padding:"0 20px 4px" }}>
-                <ProgressBar value={p.total} max={maxTotal} color={isFirst ? C.accent : PClr[p.id].fg} />
+                <ProgressBar value={p.total} max={maxTotal} color={isFirst ? theme : PClr[p.id].fg} />
               </div>
 
               {/* Breakdown tiles */}
               <div style={{ padding:"10px 16px 14px", display:"flex", gap:8, flexWrap:"wrap" }}>
                 {[
                   { label:"Base",         value:1000,          col:PClr[p.id].fg+"88" },
-                  { label:"Playoff Pts",  value:`+${p.pp}`,    col:C.accent           },
+                  { label:"Playoff Pts",  value:`+${p.pp}`,    col:theme              },
                   ...(p.champBonus > 0
-                    ? [{ label:"Champ Bonus", value:`+${p.champBonus}`, col:C.accent }]
+                    ? [{ label:"Champ Bonus", value:`+${p.champBonus}`, col:theme }]
                     : []),
                   ...(p.iscBonus > 0
                     ? [{ label:"ISC Bonus", value:"+25", col:"#8b5cf6" }]
