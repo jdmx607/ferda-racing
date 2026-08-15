@@ -20,6 +20,7 @@ import { MemorialBackdrop, FerdaLogo } from "./components/FerdaLogo";
 import { LoginScreen, WinnerModal, RichRoastModal, getLastWeekResults } from "./components/LoginScreen";
 import { Nav, FlagBanner } from "./components/Nav";
 import { ScoreTicker } from "./components/ScoreTicker";
+import { RightRail } from "./components/RightRail";
 import { WelcomeTab } from "./components/WelcomeTab";
 import { DraftTab } from "./components/DraftTab";
 import { LiveTab } from "./components/LiveTab";
@@ -320,6 +321,7 @@ export default function App() {
       {showRichRoast&&<RichRoastModal onDismiss={()=>setShowRichRoast(false)}/>}
       {!showRichRoast&&showWinnerModal&&<WinnerModal player={user} data={data} onDismiss={()=>setShowWinnerModal(false)}/>}
       <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)} data={data}/>
+      <RightRail data={data}/>
       <ScoreTicker data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo}/>
       {dbStatus==="offline"&&(
         <div style={{background:C.red+"22",color:C.red,textAlign:"center",padding:"6px",fontSize:11,fontWeight:600,position:"relative",zIndex:1}}>
