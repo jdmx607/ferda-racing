@@ -129,10 +129,9 @@ function DesktopNav({ player, tab, setTab, onLogout, data }) {
   const chaseLive = isChaseLive(data);
   const tabs = [
     { id:"welcome",      l:"Home"        },
+    { id:"live",         l:"🔴 Live"     },
     { id:"draft",        l:"Draft"       },
     { id:"lineups",      l:"Lineups"     },
-    { id:"mulligans",    l:"Mulligans"   },
-    { id:"live",         l:"🔴 Live"     },
     { id:"results",      l:"Results"     },
     { id:"feed",         l:"Feed"        },
     { id:"news",         l:"News"        },
@@ -141,6 +140,7 @@ function DesktopNav({ player, tab, setTab, onLogout, data }) {
     { id:"playoffs",     l:"THE CHASE", gold:chaseLive },
     { id:"isc",          l:"ISC"         },
     { id:"schedule",     l:"Schedule"    },
+    { id:"mulligans",    l:"Mulligans"   },
     { id:"rules",        l:"Rules"       },
     { id:"settings",     l:"Settings"    },
   ];
@@ -209,8 +209,8 @@ function DesktopNav({ player, tab, setTab, onLogout, data }) {
 // ── Mobile bottom nav ─────────────────────────────────────────────────────────
 const PRIMARY_TABS = [
   { id:"welcome", label:"Home",    Icon:Icon.Home    },
-  { id:"draft",   label:"Draft",   Icon:Icon.Draft   },
   { id:"live",    label:"Live",    Icon:Icon.Live    },
+  { id:"draft",   label:"Draft",   Icon:Icon.Draft   },
   { id:"results", label:"Results", Icon:Icon.Results },
 ];
 
@@ -222,8 +222,8 @@ const MORE_TABS = [
   { id:"playoffs",     label:"THE CHASE"   },
   { id:"isc",          label:"ISC"         },
   { id:"lineups",      label:"Lineups"     },
-  { id:"mulligans",    label:"Mulligans"   },
   { id:"schedule",     label:"Schedule"    },
+  { id:"mulligans",    label:"Mulligans"   },
   { id:"rules",        label:"Rules"       },
   { id:"settings",     label:"Settings"    },
 ];

@@ -13,6 +13,16 @@ export function getLastWeekResults(data) {
   return { week:weeks[0], winner:sorted[0]?.[0], loser:sorted[sorted.length-1]?.[0], scores:scored };
 }
 
+export function RichRoastModal({onDismiss}) {
+  return (<div style={{position:"fixed",inset:0,zIndex:200,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.9)"}} onClick={onDismiss}>
+    <div style={{background:"#1a1a1a",borderRadius:20,padding:"48px 32px",maxWidth:340,width:"90vw",textAlign:"center",border:"3px solid "+C.red,boxShadow:"0 0 60px "+C.red+"66"}} onClick={e=>e.stopPropagation()}>
+      <div style={{fontSize:72,marginBottom:16}}>💩</div>
+      <div style={{color:C.red,fontFamily:"'Oswald',sans-serif",fontSize:32,fontWeight:900,letterSpacing:2,marginBottom:24}}>YOU SUCK</div>
+      <button onClick={onDismiss} style={{width:"100%",padding:"12px 0",borderRadius:10,border:"none",background:C.red,color:"#fff",fontFamily:"'Oswald',sans-serif",fontSize:15,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:"pointer"}}>fine</button>
+    </div>
+  </div>);
+}
+
 export function WinnerModal({player, data, onDismiss}) {
   const last=getLastWeekResults(data);
   if(!last||last.winner!==player.id) return null;

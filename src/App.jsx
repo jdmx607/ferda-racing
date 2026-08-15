@@ -17,7 +17,7 @@ import { notifyDraftTurn, notifyRaceScored, notifyPlayer } from "./hooks/useNoti
 // ── Eagerly-loaded shell + high-traffic tabs ───────────────────────────────────
 // These are in the main bundle — they render on first load or first tap.
 import { MemorialBackdrop, FerdaLogo } from "./components/FerdaLogo";
-import { LoginScreen, WinnerModal, getLastWeekResults } from "./components/LoginScreen";
+import { LoginScreen, WinnerModal, RichRoastModal, getLastWeekResults } from "./components/LoginScreen";
 import { Nav, FlagBanner } from "./components/Nav";
 import { ScoreTicker } from "./components/ScoreTicker";
 import { WelcomeTab } from "./components/WelcomeTab";
@@ -70,6 +70,7 @@ export default function App() {
   const [installPrompt,setInstallPrompt]=useState(null);
   const [showInstall,setShowInstall]=useState(false);
   const [showWinnerModal,setShowWinnerModal]=useState(false);
+  const [showRichRoast,setShowRichRoast]=useState(false);
 
   const { data, setData, loading, dbStatus } = useLeagueData();
   const { liveScores, liveStatus, raceInfo } = useLivePolling(data);
@@ -77,6 +78,7 @@ export default function App() {
 
   const handleLogin=(p)=>{
     setUser(p);
+    if(p.id==="rich") setShowRichRoast(true);
     const last=getLastWeekResults(data);
     if(last?.winner===p.id) setShowWinnerModal(true);
   };
@@ -203,6 +205,15 @@ export default function App() {
     setData(d); await saveLeagueData(d);
   };
 
+  // NASCAR playoff field tracker (commissioner-managed list of who's still in
+  // the actual Chase + elimination status) — purely informational, no scoring
+  // impact, so no recalcMeta needed.
+  const handleSaveChaseField=async(chaseField)=>{
+    const d=JSON.parse(JSON.stringify(data));
+    d.chaseField=chaseField;
+    setData(d); await saveLeagueData(d);
+  };
+
   const handleResetWeek=async(week)=>{
     const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
     delete d.results[key]; delete d.picks[key]; if(d.drafts)delete d.drafts[key];
@@ -306,7 +317,8 @@ export default function App() {
         @media(max-width:640px){body{padding-bottom:72px}}
       `}</style>
       <MemorialBackdrop/>
-      {showWinnerModal&&<WinnerModal player={user} data={data} onDismiss={()=>setShowWinnerModal(false)}/>}
+      {showRichRoast&&<RichRoastModal onDismiss={()=>setShowRichRoast(false)}/>}
+      {!showRichRoast&&showWinnerModal&&<WinnerModal player={user} data={data} onDismiss={()=>setShowWinnerModal(false)}/>}
       <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)} data={data}/>
       <ScoreTicker data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo}/>
       {dbStatus==="offline"&&(
@@ -345,7 +357,7 @@ export default function App() {
         {tab==="news"&&<NewsTab/>}
         {tab==="stats"&&<StatsTab data={data}/>}
         {tab==="history"&&<HistoryTab data={data}/>}
-        {tab==="playoffs"&&<PlayoffsTab data={data}/>}
+        {tab==="playoffs"&&<PlayoffsTab data={data} user={user} currentWeek={currentWeek} onSaveChaseField={handleSaveChaseField}/>}
         {tab==="schedule"&&<ScheduleTab data={data}/>}
         {tab==="rules"&&<RulesTab/>}
         {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}
