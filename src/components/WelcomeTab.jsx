@@ -1,6 +1,8 @@
 import { useMemo, useState, useEffect } from "react";
 import { C, PClr, TTC, TTL, r, shadow, sp } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, MAX_MULLIGANS, TRACK_MULTS } from "../constants";
+import { getPowerRankings } from "../engine/history";
+import { TrophyCaseModal } from "./TrophyCase";
 
 const MONTH_IDX = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
 
@@ -76,6 +78,7 @@ function StatTile({ value, label, color, bg, small }) {
 export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
   const pid = player.id;
   const clr = PClr[pid];
+  const [trophyPid, setTrophyPid] = useState(null);
 
   const standings = useMemo(() =>
     PLAYERS.map(p => ({
@@ -86,6 +89,9 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
       mullsLeft: MAX_MULLIGANS - (data.meta.mulligansUsed[p.id] || 0),
     })).sort((a, b) => b.pts - a.pts),
   [data]);
+
+  const powerRankings = useMemo(() => getPowerRankings(data), [data]);
+  const powerLeader    = powerRankings[0];
 
   const myStats  = standings.find(s => s.id === pid);
   const myRank   = standings.findIndex(s => s.id === pid) + 1;
@@ -151,6 +157,15 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
           <StatTile value={`+${myStats?.pp || 0}`}              label="Playoff"       color={C.accent} />
           <StatTile value={myStats?.mullsLeft ?? MAX_MULLIGANS} label="Mulligans"     color={mullColor} />
         </div>
+
+        <button onClick={() => setTrophyPid(pid)} style={{
+          marginTop:14, padding:"7px 14px", borderRadius:r.pill,
+          border:`1px solid ${clr.fg}44`, background:"rgba(0,0,0,0.2)",
+          color:clr.fg, fontSize:11, fontWeight:700, cursor:"pointer",
+          fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+        }}>
+          🏆 View Trophy Case
+        </button>
       </div>
 
       {/* ── Live race widget ───────────────────────────────────────────────── */}
@@ -249,10 +264,10 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
             const barW = maxPts > 0 ? (p.pts / maxPts) * 100 : 0;
             const isMe = p.id === pid;
             return (
-              <div key={p.id} style={{
+              <div key={p.id} onClick={() => setTrophyPid(p.id)} style={{
                 background:PClr[p.id].bg, borderRadius:r.md,
                 border:`2px solid ${isMe ? C.accent : PClr[p.id].bg === "#000000" ? C.border : PClr[p.id].bg+"55"}`,
-                overflow:"hidden",
+                overflow:"hidden", cursor:"pointer",
                 boxShadow: isMe ? shadow.glow(C.accent) : "none",
               }}>
                 <div style={{ padding:"10px 14px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
@@ -303,6 +318,28 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
           })}
         </div>
       </div>
+
+      {/* ── Power rankings teaser ────────────────────────────────────────────── */}
+      {powerLeader && (
+        <div onClick={() => setTab("stats")} style={{
+          background:C.card, borderRadius:r.lg, padding:"14px 16px", marginBottom:20,
+          border:`1px solid ${C.border}`, boxShadow:shadow.sm, cursor:"pointer",
+          display:"flex", alignItems:"center", justifyContent:"space-between", gap:10, flexWrap:"wrap",
+        }}>
+          <div>
+            <div style={{ color:C.muted, fontSize:10, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
+              🔥 Power Rankings — who's hot right now
+            </div>
+            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+              <span style={{ color:PClr[powerLeader.id].fg, background:PClr[powerLeader.id].bg, padding:"3px 10px", borderRadius:r.pill, fontFamily:"'Oswald',sans-serif", fontWeight:900, fontSize:13, border:`1px solid ${PClr[powerLeader.id].fg}44` }}>
+                #1 {PNAME[powerLeader.id]}
+              </span>
+              <span style={{ color:C.dim, fontSize:12 }}>{powerLeader.powerScore} pts (weighted, last 3 races)</span>
+            </div>
+          </div>
+          <span style={{ color:C.accent, fontSize:11, fontWeight:700, whiteSpace:"nowrap" }}>Full Rankings →</span>
+        </div>
+      )}
 
       {/* ── Last race recap ────────────────────────────────────────────────── */}
       {lastWeek && lastRaceInfo && (
@@ -356,6 +393,8 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
           </div>
         </div>
       )}
+
+      {trophyPid && <TrophyCaseModal pid={trophyPid} data={data} onClose={() => setTrophyPid(null)} />}
     </div>
   );
 }

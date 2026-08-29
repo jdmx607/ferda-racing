@@ -3,7 +3,7 @@
 // All inputs come from the Firestore data shape + HISTORICAL data.
 
 import { calcDriverScore } from "./scoring.js";
-import { SCHEDULE, PLAYERS } from "../constants.js";
+import { SCHEDULE, PLAYERS, PNAME } from "../constants.js";
 
 // ── Weekly helpers ────────────────────────────────────────────────────────────
 
@@ -307,10 +307,42 @@ export function getSeasonAwards(data) {
     });
   });
 
-  return { consistencyKing, sleeperHit, eyeOfTiger, comebackKing, bestMulligan };
+  // 6. Biggest Bust — worst single-driver score among all real (non-mulligan,
+  // non-DNR) picks made all season. The inverse of Sleeper Hit.
+  let biggestBust = null;
+  orderedWeeks.forEach(w => {
+    const wr = data.results["w" + w];
+    const raceInfo = SCHEDULE.find(s => s.w === w);
+    Object.entries(wr.scored || {}).forEach(([pid, s]) => {
+      (s.drivers || []).forEach(d => {
+        if (d.dnr || d.isMulligan) return;
+        if (!biggestBust || d.total < biggestBust.score) {
+          biggestBust = { pid, name: d.driver, score: d.total, week: w, race: raceInfo?.r || "" };
+        }
+      });
+    });
+  });
+
+  return { consistencyKing, sleeperHit, eyeOfTiger, comebackKing, bestMulligan, biggestBust };
 }
 
 // ── Weekly recap blurb ────────────────────────────────────────────────────────
+
+// Roast-line templates for the weekly loser — {name}/{score}/{gap} get filled in.
+// Picked deterministically by week number so a given week's roast doesn't change
+// on refresh, but the whole league sees a new one every week.
+const ROAST_LINES = [
+  "{name} put up {score} pts and still found a way to finish last. Impressive, in a bad way.",
+  "{name} lost by {gap} pts. Not close enough to blame bad luck.",
+  "Somewhere, {name}'s lineup is still trying to figure out what happened.",
+  "{name} brought a spoon to a gunfight this week — {score} pts, dead last.",
+  "The math says {name} finished 4th. The math is being kind.",
+  "{name} trailed by {gap} pts. The garage is that way. 🚗💨",
+  "Another week, another {name} lineup that peaked in the draft room.",
+  "{name} scored {score} — technically a number, technically a lineup.",
+  "{name} is now mathematically eliminated from having a good week.",
+  "Somebody had to finish last. This week it's {name}. Again.",
+];
 
 export function generateWeekRecap(week, scoredResult, rawResult) {
   if (!scoredResult || !rawResult?.drivers) return null;
@@ -322,6 +354,13 @@ export function generateWeekRecap(week, scoredResult, rawResult) {
   const topDrivers  = getWeekTopDrivers(rawResult, week, 1);
   const mvp         = topDrivers[0];
   const raceInfo    = SCHEDULE.find(s => s.w === week);
+
+  const gap = (winnerEntry && loserEntry) ? Math.round((winnerEntry[1].total - loserEntry[1].total) * 10) / 10 : 0;
+  const roastTemplate = ROAST_LINES[week % ROAST_LINES.length];
+  const roastLine = loserEntry ? roastTemplate
+    .replace("{name}", PNAME[loserEntry[0]] || loserEntry[0])
+    .replace("{score}", loserEntry[1].total)
+    .replace("{gap}", gap) : null;
 
   return {
     winnerPid:    winnerEntry?.[0],
@@ -337,5 +376,6 @@ export function generateWeekRecap(week, scoredResult, rawResult) {
                   ) : false,
     race:         raceInfo?.r,
     track:        raceInfo?.t,
+    roastLine,
   };
 }

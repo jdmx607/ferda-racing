@@ -94,6 +94,45 @@ export function getWeeklyFinishes(data) {
   return finishes;
 }
 
+// ── Power Rankings ──────────────────────────────────────────────────────────
+// Recency-weighted "who's hot right now" — distinct from cumulative season
+// standings. Weighted average of each player's last 3 scored weeks (most
+// recent weighted highest), with movement vs. the ranking one week ago.
+
+const POWER_WEIGHTS = [1, 2, 3]; // oldest -> newest across the trailing window
+
+function weightedRecentScore(hist) {
+  const recent = hist.slice(-POWER_WEIGHTS.length);
+  if (!recent.length) return 0;
+  const weights = POWER_WEIGHTS.slice(POWER_WEIGHTS.length - recent.length);
+  const wSum = weights.reduce((a, b) => a + b, 0);
+  const score = recent.reduce((sum, h, i) => sum + h.score * weights[i], 0) / wSum;
+  return Math.round(score * 10) / 10;
+}
+
+export function getPowerRankings(data) {
+  const finishes = getWeeklyFinishes(data);
+  if (!Object.values(finishes).some(h => h.length > 0)) return [];
+
+  const rank = (histSlicer) => PLAYERS
+    .map(p => ({ id: p.id, powerScore: weightedRecentScore(histSlicer(finishes[p.id] || [])) }))
+    .sort((a, b) => b.powerScore - a.powerScore);
+
+  const current  = rank(h => h);
+  const previous = rank(h => h.slice(0, -1));
+  const prevRank = {};
+  previous.forEach((p, i) => { prevRank[p.id] = i + 1; });
+
+  return current.map((p, i) => ({
+    id: p.id,
+    powerScore: p.powerScore,
+    weeksPlayed: (finishes[p.id] || []).length,
+    rank: i + 1,
+    prevRank: prevRank[p.id] || i + 1,
+    delta: (prevRank[p.id] || i + 1) - (i + 1),
+  }));
+}
+
 // ── Achievements ──────────────────────────────────────────────────────────────
 
 const ALL_ACHIEVEMENTS = [

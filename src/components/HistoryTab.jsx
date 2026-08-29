@@ -3,6 +3,8 @@ import { C, PClr, TTC, TTL, r, shadow } from "../theme";
 import { PLAYERS, PNAME, TRACK_MULTS } from "../constants";
 import { getSeasonTimeline, getHeadToHead, getWeeklyFinishes, getAchievements } from "../engine/history";
 import { getSeasonStorylines } from "../engine/narrative";
+import { getSeasonAwards, getSeasonRecords, getDriverSeasonStats } from "../engine/stats";
+import { TrophyCaseModal } from "./TrophyCase";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -319,7 +321,7 @@ function HeadToHeadMatrix({ h2h }) {
 
 // ── Achievements ──────────────────────────────────────────────────────────────
 
-function AchievementsPanel({ achievements }) {
+function AchievementsPanel({ achievements, onOpenTrophy }) {
   return (
     <div style={{ display:"grid", gap:14 }}>
       {PLAYERS.map(p => {
@@ -331,13 +333,13 @@ function AchievementsPanel({ achievements }) {
             overflow:"hidden",
           }}>
             {/* Player header */}
-            <div style={{
-              padding:"10px 16px",
+            <div onClick={() => onOpenTrophy?.(p.id)} style={{
+              padding:"10px 16px", cursor:onOpenTrophy ? "pointer" : "default",
               borderBottom:`1px solid ${PClr[p.id].bg==="#000000"?C.border:"rgba(0,0,0,0.2)"}`,
               display:"flex", alignItems:"center", justifyContent:"space-between",
             }}>
               <div style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:17, fontWeight:900, letterSpacing:0.5 }}>
-                {PNAME[p.id].toUpperCase()}
+                🏆 {PNAME[p.id].toUpperCase()}
               </div>
               <div style={{
                 background:C.accent+"22", border:`1px solid ${C.accent}44`,
@@ -377,9 +379,129 @@ function AchievementsPanel({ achievements }) {
   );
 }
 
+// ── Season Recap ──────────────────────────────────────────────────────────────
+
+function RecapCard({ emoji, title, value, sub }) {
+  return (
+    <div style={{ background:C.card, borderRadius:r.lg, padding:"14px 16px", border:`1px solid ${C.border}` }}>
+      <div style={{ color:C.accent, fontSize:9, fontWeight:700, textTransform:"uppercase", letterSpacing:1.5, marginBottom:6 }}>
+        {emoji} {title}
+      </div>
+      <div style={{ color:C.text, fontWeight:700, fontSize:14, lineHeight:1.3 }}>{value}</div>
+      {sub && <div style={{ color:C.muted, fontSize:11, marginTop:3 }}>{sub}</div>}
+    </div>
+  );
+}
+
+function SeasonRecap({ data, onOpenTrophy }) {
+  const awards       = useMemo(() => getSeasonAwards(data), [data]);
+  const records      = useMemo(() => getSeasonRecords(data), [data]);
+  const driverStats  = useMemo(() => getDriverSeasonStats(data), [data]);
+  const achievements = useMemo(() => getAchievements(data), [data]);
+
+  const standings = PLAYERS.map(p => ({ id:p.id, pts:data.meta.standings[p.id] || 0 })).sort((a,b) => b.pts - a.pts);
+  const champion  = standings[0];
+  const isTied    = standings[0]?.pts === standings[1]?.pts;
+
+  const iscChamp   = data.iscBracket?.results?.CHAMP;
+  const iscWinners = iscChamp ? PLAYERS.filter(p => data.iscBracket?.picks?.[p.id]?.CHAMP === iscChamp) : [];
+
+  const driverOfYear = [...driverStats].sort((a,b) => b.totalFerdaPts - a.totalFerdaPts)[0];
+  const mostMulls     = Object.entries(data.meta.mulligansUsed || {}).sort((a,b) => b[1] - a[1])[0];
+
+  const scoredWeeks     = Object.keys(data.results || {}).length;
+  const seasonComplete  = scoredWeeks >= 36;
+
+  if (scoredWeeks < 2) {
+    return <div style={{ color:C.muted, textAlign:"center", padding:40, fontSize:13 }}>Need at least 2 scored races for a recap.</div>;
+  }
+
+  return (
+    <div>
+      <div style={{ textAlign:"center", marginBottom:24 }}>
+        <div style={{ color:C.accent, fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:3, marginBottom:6 }}>
+          {seasonComplete ? "Final Season Recap" : "Season Recap So Far"}
+        </div>
+        <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900 }}>
+          2026 FERDA Racing League
+        </div>
+        <div style={{ color:C.muted, fontSize:12, marginTop:4 }}>{scoredWeeks} of 36 races complete</div>
+      </div>
+
+      {champion && !isTied && (
+        <div
+          onClick={() => onOpenTrophy(champion.id)}
+          style={{
+            background:PClr[champion.id].bg, borderRadius:r.xl, padding:24, marginBottom:16, textAlign:"center",
+            border:`2px solid ${PClr[champion.id].fg}55`, boxShadow:shadow.glow(PClr[champion.id].fg), cursor:"pointer",
+          }}
+        >
+          <div style={{ fontSize:40, marginBottom:6 }}>👑</div>
+          <div style={{ color:PClr[champion.id].fg+"99", fontSize:11, textTransform:"uppercase", letterSpacing:2 }}>
+            {seasonComplete ? "Season Champion" : "Current Leader"}
+          </div>
+          <div style={{ color:PClr[champion.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:32, fontWeight:900 }}>
+            {PNAME[champion.id]}
+          </div>
+          <div style={{ color:PClr[champion.id].fg+"88", fontSize:14, marginTop:4 }}>{champion.pts.toLocaleString()} pts</div>
+        </div>
+      )}
+
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))", gap:12, marginBottom:20 }}>
+        {driverOfYear && (
+          <RecapCard emoji="🚗" title="Driver of the Year" value={driverOfYear.name} sub={`${driverOfYear.totalFerdaPts} total FERDA pts`} />
+        )}
+        {records.bestPlayerWeek && (
+          <RecapCard emoji="🚀" title="Best Week Ever" value={`${PNAME[records.bestPlayerWeek.pid]} · ${records.bestPlayerWeek.score} pts`} sub={`W${records.bestPlayerWeek.week}${records.bestPlayerWeek.race ? " — "+records.bestPlayerWeek.race : ""}`} />
+        )}
+        {iscChamp && (
+          <RecapCard emoji="🏁" title="ISC Champion" value={iscChamp} sub={iscWinners.length ? `Called by ${iscWinners.map(p=>PNAME[p.id]).join(", ")}` : "Nobody called it"} />
+        )}
+        {mostMulls && mostMulls[1] > 0 && (
+          <RecapCard emoji="🔄" title="Most Mulligans Burned" value={PNAME[mostMulls[0]]} sub={`${mostMulls[1]} used this season`} />
+        )}
+        {awards?.biggestBust && (
+          <RecapCard emoji="💩" title="Biggest Bust" value={PNAME[awards.biggestBust.pid]} sub={`${awards.biggestBust.name} · ${awards.biggestBust.score} pts (W${awards.biggestBust.week})`} />
+        )}
+        {awards?.sleeperHit && (
+          <RecapCard emoji="😴" title="Sleeper Hit" value={awards.sleeperHit.name} sub={`+${awards.sleeperHit.score} pts, nobody picked them`} />
+        )}
+      </div>
+
+      <div>
+        <div style={{ color:C.textDim, fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:10 }}>
+          {seasonComplete ? "Final Standings" : "Standings So Far"}
+        </div>
+        <div style={{ display:"grid", gap:6 }}>
+          {standings.map((p, i) => {
+            const achv = achievements[p.id];
+            return (
+              <div key={p.id} onClick={() => onOpenTrophy(p.id)} style={{
+                display:"flex", alignItems:"center", justifyContent:"space-between", padding:"10px 14px",
+                background:PClr[p.id].bg, borderRadius:r.md, cursor:"pointer",
+                border:`1px solid ${PClr[p.id].bg==="#000000" ? C.border : PClr[p.id].fg+"33"}`,
+              }}>
+                <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                  <span style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:900, width:20 }}>{i+1}</span>
+                  <div>
+                    <div style={{ color:PClr[p.id].fg, fontWeight:700, fontSize:14 }}>{PNAME[p.id]}</div>
+                    <div style={{ color:PClr[p.id].fg+"77", fontSize:10 }}>{achv?.unlocked.length || 0} achievements unlocked</div>
+                  </div>
+                </div>
+                <div style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900 }}>{p.pts.toLocaleString()}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main HistoryTab ───────────────────────────────────────────────────────────
 
 const SECTIONS = [
+  { id:"recap",        label:"Season Recap"   },
   { id:"timeline",     label:"Season Results"  },
   { id:"form",         label:"Form Guide"      },
   { id:"h2h",          label:"Head-to-Head"    },
@@ -389,6 +511,7 @@ const SECTIONS = [
 
 export function HistoryTab({ data }) {
   const [section, setSection] = useState("timeline");
+  const [trophyPid, setTrophyPid] = useState(null);
 
   const timeline    = useMemo(() => getSeasonTimeline(data),    [data]);
   const h2h         = useMemo(() => getHeadToHead(data),        [data]);
@@ -454,6 +577,7 @@ export function HistoryTab({ data }) {
       </div>
 
       {/* ── Content ───────────────────────────────────────────────────────── */}
+      {section === "recap"        && <SeasonRecap data={data} onOpenTrophy={setTrophyPid} />}
       {section === "timeline"     && <SeasonTimeline   timeline={timeline} />}
       {section === "form"         && <FormGuide        finishes={finishes} />}
       {section === "h2h"          && <HeadToHeadMatrix h2h={h2h} />}
@@ -477,7 +601,9 @@ export function HistoryTab({ data }) {
           }
         </div>
       )}
-      {section === "achievements" && <AchievementsPanel achievements={achievements} />}
+      {section === "achievements" && <AchievementsPanel achievements={achievements} onOpenTrophy={setTrophyPid} />}
+
+      {trophyPid && <TrophyCaseModal pid={trophyPid} data={data} onClose={() => setTrophyPid(null)} />}
     </div>
   );
 }

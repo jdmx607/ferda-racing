@@ -306,6 +306,17 @@ export function ResultsTab({ data }) {
         </div>
       )}
 
+      {/* ── Roast of the week ──────────────────────────────────────────────── */}
+      {recap?.roastLine && (
+        <div style={{
+          marginTop:8, background:"#ef444411", borderRadius:r.md, padding:"10px 16px",
+          border:"1px solid #ef444433",
+          color:"#f8b4b4", fontSize:12, lineHeight:1.6, fontStyle:"italic",
+        }}>
+          💩 {recap.roastLine}
+        </div>
+      )}
+
       {/* ── Top performers this week ─────────────────────────────────────────── */}
       {topDrivers.length > 0 && (
         <div style={{ marginTop:16 }}>

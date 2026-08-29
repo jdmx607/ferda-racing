@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { C, PClr, TTC, TTL, r, shadow } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, DRIVER_INFO, MAKE_COLORS } from "../constants";
 import { getWeekTopDrivers, getDriverSeasonStats, getSeasonRecords, getDriverStreaks, getSeasonAwards } from "../engine/stats";
+import { getPowerRankings } from "../engine/history";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -409,7 +410,7 @@ function SeasonAwards({ data }) {
       </div>
     );
   }
-  const { consistencyKing, sleeperHit, eyeOfTiger, comebackKing, bestMulligan } = awards;
+  const { consistencyKing, sleeperHit, eyeOfTiger, comebackKing, bestMulligan, biggestBust } = awards;
 
   return (
     <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))", gap:12 }}>
@@ -490,6 +491,23 @@ function SeasonAwards({ data }) {
           <div style={{ color:"#ec4899", fontWeight:700, fontSize:13 }}>
             +{bestMulligan.gain} pts gained · W{bestMulligan.week}
           </div>
+        </AwardCard>
+      )}
+
+      {biggestBust && (
+        <AwardCard emoji="💩" title="Biggest Bust" accent="#ef4444">
+          <div style={{
+            color:PClr[biggestBust.pid]?.fg || C.text,
+            fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900,
+          }}>
+            {PNAME[biggestBust.pid]}
+          </div>
+          <div style={{ color:C.dim, fontSize:12 }}>
+            Started <span style={{ color:C.text }}>{biggestBust.name}</span> for{" "}
+            <span style={{ color:"#ef4444", fontWeight:700 }}>{biggestBust.score} pts</span> · W{biggestBust.week}
+          </div>
+          {biggestBust.race && <div style={{ color:C.muted, fontSize:11 }}>{biggestBust.race}</div>}
+          <div style={{ color:C.muted, fontSize:11 }}>The pick nobody wants to talk about</div>
         </AwardCard>
       )}
 
@@ -603,7 +621,70 @@ function SeasonRecords({ data, records }) {
 
 // ─── Main StatsTab ────────────────────────────────────────────────────────────
 
+// ─── Section: Power Rankings ──────────────────────────────────────────────────
+
+function PowerRankings({ data }) {
+  const rankings = useMemo(() => getPowerRankings(data), [data]);
+  if (!rankings.length) {
+    return (
+      <div style={{ color:C.muted, textAlign:"center", padding:40, fontSize:13 }}>
+        No scored weeks yet.
+      </div>
+    );
+  }
+  return (
+    <div>
+      <div style={{ color:C.dim, fontSize:12, marginBottom:14, lineHeight:1.6 }}>
+        Who's hot right now — weighted toward the last 3 races, not season-long cumulative points.
+      </div>
+      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+        {rankings.map(p => {
+          const isUp = p.delta > 0, isDown = p.delta < 0;
+          const recentN = Math.min(p.weeksPlayed, 3);
+          return (
+            <div key={p.id} style={{
+              display:"flex", alignItems:"center", gap:12, padding:"12px 14px",
+              background:PClr[p.id].bg, borderRadius:r.md,
+              border:`2px solid ${p.rank===1 ? C.accent : PClr[p.id].bg==="#000000" ? C.border : PClr[p.id].bg+"55"}`,
+              boxShadow: p.rank===1 ? shadow.glow(C.accent) : "none",
+            }}>
+              <div style={{
+                width:36, height:36, borderRadius:"50%", flexShrink:0,
+                background:PClr[p.id].fg, color:PClr[p.id].bg,
+                display:"flex", alignItems:"center", justifyContent:"center",
+                fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:900,
+              }}>{p.rank}</div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ color:PClr[p.id].fg, fontWeight:700, fontSize:15, fontFamily:"'Barlow Condensed',sans-serif" }}>
+                  {PNAME[p.id]}
+                </div>
+                <div style={{ color:PClr[p.id].fg+"77", fontSize:10 }}>
+                  Last {recentN} race{recentN !== 1 ? "s" : ""} weighted
+                </div>
+              </div>
+              <div style={{ display:"flex", alignItems:"center", gap:10, flexShrink:0 }}>
+                {p.delta !== 0 && (
+                  <span style={{ fontSize:12, fontWeight:700, color: isUp ? "#10b981" : "#ef4444" }}>
+                    {isUp ? "▲" : "▼"}{Math.abs(p.delta)}
+                  </span>
+                )}
+                <div style={{ textAlign:"right" }}>
+                  <div style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:900, lineHeight:1 }}>
+                    {p.powerScore}
+                  </div>
+                  <div style={{ color:PClr[p.id].fg+"55", fontSize:8, textTransform:"uppercase", letterSpacing:0.5 }}>power score</div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 const SECTIONS = [
+  { id:"power",       label:"Power Rankings" },
   { id:"leaderboard", label:"Driver Leaderboard" },
   { id:"weekly",      label:"Weekly Top Performers" },
   { id:"streaks",     label:"Hot Streaks" },
@@ -649,6 +730,7 @@ export function StatsTab({ data }) {
 
       {/* ── Content ───────────────────────────────────────────────────────── */}
       <div style={{ background:C.card, borderRadius:r.lg, padding:16, border:`1px solid ${C.border}` }}>
+        {section === "power"       && <PowerRankings data={data} />}
         {section === "leaderboard" && <DriverLeaderboard driverStats={driverStats} />}
         {section === "weekly"      && <WeeklyTopPerformers data={data} />}
         {section === "streaks"     && <HotStreaks data={data} />}
