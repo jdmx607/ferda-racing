@@ -1,7 +1,18 @@
-import { PLAYERS, ACTIVE_PICKS, PICKS_PER_WEEK, GARAGE_PICK_ENABLED, SCHEDULE, DRIVERS, isMemorial } from "../constants.js";
+import { PLAYERS, ACTIVE_PICKS, PICKS_PER_WEEK, GARAGE_PICK_ENABLED, SCHEDULE, DRIVERS, PLAYOFF_START_WEEK, isMemorial } from "../constants.js";
 import { calcDriverScore } from "./scoring.js";
+import { getChaseEntryTotals } from "./chase.js";
 
 export function getDraftOrder(data, currentWeek) {
+  // W27 only: draft order is the INVERSE of the Chase-entering standings —
+  // whoever leads the Chase picks last, last place picks first. Every other
+  // week (including W28+) uses the normal "previous week's loser picks
+  // first" rule below.
+  if (currentWeek === PLAYOFF_START_WEEK) {
+    const { totals } = getChaseEntryTotals(data);
+    return PLAYERS.map(p => ({ id: p.id, total: totals[p.id] ?? 1000 }))
+      .sort((a, b) => a.total - b.total)
+      .map(s => s.id);
+  }
   const prev = data.results?.["w" + (currentWeek - 1)];
   if (!prev?.scored) return PLAYERS.map(p => p.id);
   return PLAYERS.map(p => ({ id: p.id, score: prev.scored[p.id]?.total || 0 }))

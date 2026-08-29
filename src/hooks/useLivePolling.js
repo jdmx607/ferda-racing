@@ -29,7 +29,7 @@ export function useLivePolling(data) {
         PLAYERS.forEach(p => {
           mo[p.id] = (wp[p.id] || []).filter(pk => pk.mulligan).map(pk => ({ week, driver: pk.driver }));
         });
-        const scored = scoreWeekFull(wp, { drivers: result.drivers, threeStages: result.threeStages }, week, mo);
+        const scored = scoreWeekFull(wp, { drivers: result.drivers, threeStages: result.threeStages }, week, mo, data.chaseField?.drivers);
         setLiveScores(scored);
         setRaceInfo({
           raceName: result.raceName || null,

@@ -1,12 +1,12 @@
 import {
   PLAYERS, FINISH_POINTS, STAGE_POINTS, TRACK_MULTS,
-  SCHEDULE, ACTIVE_PICKS, GARAGE_PICK_ENABLED, PICKS_PER_WEEK,
+  SCHEDULE, ACTIVE_PICKS, GARAGE_PICK_ENABLED, PICKS_PER_WEEK, PLAYOFF_START_WEEK,
 } from "../constants.js";
 import { HISTORICAL_PICKS, HISTORICAL_RESULTS } from "../historicalData.js";
 
 const LAST_HISTORICAL_WEEK = 14;
 
-export function calcDriverScore(driver, trackType, isMulligan, threeStages) {
+export function calcDriverScore(driver, trackType, isMulligan, threeStages, isChaseGolden) {
   const mult = TRACK_MULTS[trackType] || 0.5;
   const bd = [];
   let score = 0;
@@ -60,12 +60,20 @@ export function calcDriverScore(driver, trackType, isMulligan, threeStages) {
     : (driver.pole && driver.stageWin1 && driver.stageWin2);
   if (sweep) { score += 12.5; bp += 12.5; bd.push({ label: "SWEEP!", pts: 12.5 }); }
 
+  // GOLDEN rule: +5 when the picked driver wins the race AND is in the real
+  // NASCAR playoff field — Chase weeks only.
+  if (isChaseGolden && driver.finish === 1) {
+    score += 5; bp += 5; bd.push({ label: "GOLDEN", pts: 5 });
+  }
+
   return { total: Math.round(score * 100) / 100, breakdown: bd, bonusPoints: bp };
 }
 
-export function scoreWeekFull(picks, raceResult, week, mullData) {
+export function scoreWeekFull(picks, raceResult, week, mullData, chaseFieldDrivers) {
   const ty = SCHEDULE.find(s => s.w === week)?.ty || "intermediate";
   const threeStages = !!raceResult.threeStages;
+  const isChaseWeek = week >= PLAYOFF_START_WEEK;
+  const chaseSet = chaseFieldDrivers instanceof Set ? chaseFieldDrivers : new Set(chaseFieldDrivers || []);
   const ps = {};
   const raceWinner = raceResult.drivers?.find(d => d.finish === 1)?.name;
 
@@ -94,7 +102,8 @@ export function scoreWeekFull(picks, raceResult, week, mullData) {
         return;
       }
       const im = pick.mulligan || (!pick.garageUsed && mullData?.[p.id]?.some(m => m.week === week && m.driver === pick.driver));
-      const sc = calcDriverScore(r, ty, im, threeStages);
+      const isGolden = isChaseWeek && chaseSet.has(r.name);
+      const sc = calcDriverScore(r, ty, im, threeStages, isGolden);
       wt += sc.total;
       wb += sc.bonusPoints;
       if (pick.driver === raceWinner && !im) hadWinner = true;
@@ -172,6 +181,7 @@ export function buildInitialData() {
     meta: {
       standings: { justin: 0, bigmonroe: 0, monroe: 0, rich: 0 },
       playoffPts: { justin: 0, bigmonroe: 0, monroe: 0, rich: 0 },
+      chasePts: { justin: 0, bigmonroe: 0, monroe: 0, rich: 0 },
       mulligansUsed: { justin: 0, bigmonroe: 0, monroe: 0, rich: 0 },
       lastScoredWeek: LAST_HISTORICAL_WEEK,
     },

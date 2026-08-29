@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { C, PClr, r, shadow } from "../theme";
-import { PLAYERS, PNAME, DRIVERS, PLAYOFF_START_WEEK, REG_SEASON_CHAMP_BONUS, isMemorial } from "../constants";
+import { PLAYERS, PNAME, DRIVERS, PLAYOFF_START_WEEK, isMemorial } from "../constants";
 import { getDriverSeasonStats } from "../engine/stats";
+import { getChaseTotals } from "../engine/chase";
 
 function ProgressBar({ value, max, color }) {
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
@@ -228,24 +229,23 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
   const weeksLeft     = Math.max(0, PLAYOFF_START_WEEK - 1 - scored);
   const playoffsStarted = scored >= PLAYOFF_START_WEEK;
 
-  const regStandings = PLAYERS.map(p => ({ id:p.id, pts:data.meta.standings[p.id]||0 })).sort((a,b) => b.pts-a.pts);
-  const regLeader    = regStandings[0]?.id;
-  const isTied       = regStandings[0]?.pts === regStandings[1]?.pts;
+  const { totals: chaseTotals, leader: regLeader, isTied, champBonus } = useMemo(() => getChaseTotals(data), [data]);
 
   const iscChamp = data.iscBracket?.results?.CHAMP;
 
   const ps = useMemo(() => PLAYERS.map(p => {
     const pp         = data.meta.playoffPts[p.id] || 0;
-    const champBonus = (p.id === regLeader && !isTied) ? REG_SEASON_CHAMP_BONUS : 0;
+    const cpts       = data.meta.chasePts?.[p.id] || 0;
+    const pBonus     = (p.id === regLeader && !isTied) ? champBonus : 0;
     const iscBonus   = iscChamp && data.iscBracket?.picks?.[p.id]?.CHAMP === iscChamp ? 25 : 0;
     return {
       ...p,
-      pp, champBonus, iscBonus,
-      total: 1000 + pp + champBonus,
+      pp, champBonus:pBonus, iscBonus, chasePts:cpts,
+      total: chaseTotals[p.id] ?? (1000 + pp + pBonus),
       wins:  Object.values(data.results || {}).filter(r => r.scored?.[p.id]?.weeklyWin).length,
       regPts: data.meta.standings[p.id] || 0,
     };
-  }).sort((a,b) => b.total - a.total), [data, regLeader, isTied, iscChamp]);
+  }).sort((a,b) => b.total - a.total), [data, regLeader, isTied, champBonus, chaseTotals, iscChamp]);
 
   const maxTotal = ps[0]?.total || 1;
   // Gold theme kicks in once the Chase actually starts — plain amber accent until then
@@ -304,8 +304,10 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
             How It Works
           </div>
           <div style={{ color:C.dim, fontSize:12, lineHeight:1.7 }}>
-            Everyone resets to <span style={{ color:C.text, fontWeight:700 }}>1,000</span> base at W{PLAYOFF_START_WEEK} (Darlington).
-            Weekly wins (+25) and bonus pts carry over.
+            Everyone resets to <span style={{ color:C.text, fontWeight:700 }}>1,000</span> base at W{PLAYOFF_START_WEEK} (Darlington),
+            plus regular-season bonus pts and the champ bonus. From there, every scoring factor counts each week —
+            not just bonus points. <span style={{ color:theme, fontWeight:700 }}>GOLDEN rule:</span> +5 when your pick wins the race
+            and is in the real playoff field.
           </div>
         </div>
         <div style={{ flex:1, minWidth:200 }}>
@@ -315,8 +317,8 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
           {isTied
             ? <div style={{ color:"#f59e0b", fontSize:12 }}>⚠️ Tied at the top — no bonus until the lead is broken</div>
             : <div style={{ color:C.dim, fontSize:12, lineHeight:1.7 }}>
-                Regular-season leader earns <span style={{ color:theme, fontWeight:700 }}>+{REG_SEASON_CHAMP_BONUS} bonus pts</span>{" "}
-                entering the Chase.{" "}
+                Regular-season leader earns <span style={{ color:theme, fontWeight:700 }}>+{champBonus} bonus pts</span>{" "}
+                entering the Chase — 90% of the league's average weekly score this season.{" "}
                 {!playoffsStarted && regLeader && (
                   <span style={{ color:C.text }}>
                     Currently: <span style={{ color:theme, fontWeight:700 }}>{PNAME[regLeader]}</span>
@@ -412,6 +414,9 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
                     : []),
                   ...(p.iscBonus > 0
                     ? [{ label:"ISC Bonus", value:"+25", col:"#8b5cf6" }]
+                    : []),
+                  ...(playoffsStarted
+                    ? [{ label:"Chase Pts", value:`+${p.chasePts}`, col:theme }]
                     : []),
                   { label:"Reg Season",   value:p.regPts.toLocaleString(), col:PClr[p.id].fg+"66" },
                 ].map(({ label, value, col }) => (

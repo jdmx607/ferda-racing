@@ -11,7 +11,10 @@ export function RulesTab() {
     {t:"Bonuses",c:"Pole: 5 | Stage Win: 2.5 each | Fastest Lap: 1 | Most Laps Led: 5 | Led a Lap: 0.5/driver | Sweep (Pole + all stage wins): 12.5"},
     {t:"DNF / DQ",c:"DNF drivers score normally — finish position, net position, and any stage points earned still apply. DQ = -5 points total."},
     {t:"Weekly Win",c:"Highest scorer earns 25 playoff points. Tiebreak: had the race winner, then highest single-driver score."},
-    {t:"Playoffs (W27+)",c:"Reset to 1,000 base. Weekly wins (x25) + bonus pts carry over. Regular season leader earns +50 bonus pts entering the Chase."},
+    {t:"Champ Bonus",c:"Regular-season leader (by total pts, weeks 1-26) earns a bonus entering the Chase: 90% of the league's average weekly score across the regular season. Ties earn no bonus until broken."},
+    {t:"The Chase (W27+)",c:"Everyone resets to 1,000 base + their accumulated regular-season bonus/win pts + the champ bonus (leader only). That becomes the anchor — every Chase week's FULL score (not just bonus points) adds on top, same as a regular week."},
+    {t:"W27 Draft Order",c:"One-time exception: Week 27's draft order is the INVERSE of the Chase-entering standings — whoever leads picks last, last place picks first. W28 onward reverts to the normal 'last week's loser picks first' rule."},
+    {t:"GOLDEN Rule",c:"Chase weeks only: +5 bonus pts when your picked driver wins the race AND is in the real NASCAR playoff field (see THE CHASE → Playoff Field)."},
     {t:"Mulligans",c:"10/season. Replacement driver earns finish position points ONLY."},
   ];
   return (<div style={{padding:20,maxWidth:700,margin:"0 auto",position:"relative",zIndex:1}}>

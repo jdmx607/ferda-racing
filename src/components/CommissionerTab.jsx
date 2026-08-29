@@ -274,7 +274,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
     PLAYERS.forEach(p => { wp[p.id] = (pp[p.id] || []).filter(pk => pk.driver); });
     const mo = {};
     PLAYERS.forEach(p => { mo[p.id] = (pp[p.id] || []).filter(pk => pk.mulligan).map(pk => ({ week, driver:pk.driver })); });
-    const scored = scoreWeekFull(wp, rr, week, mo);
+    const scored = scoreWeekFull(wp, rr, week, mo, data.chaseField?.drivers);
     await onPostResults(week, scored, rr, wp);
     setMsg(`✅ Week ${week} scored!`);
     setSaving(false);
@@ -346,7 +346,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
     setSaving(true); setMsg("");
     const rr = buildRR(); const wp = buildWP();
     const mo = {}; PLAYERS.forEach(p => { mo[p.id]=(playerPicks[p.id]||[]).filter(pk=>pk.mulligan).map(pk=>({week,driver:pk.driver})); });
-    const scored = scoreWeekFull(wp, rr, week, mo);
+    const scored = scoreWeekFull(wp, rr, week, mo, data.chaseField?.drivers);
     await onPostResults(week, scored, rr, wp);
     setMsg(`Week ${week} ${done?"updated":"scored"}!`);
     setSaving(false); setEditing(false);

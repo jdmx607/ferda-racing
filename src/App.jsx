@@ -4,7 +4,7 @@ import { sendDraftEmail, isEmailConfigured, DEFAULT_EMAILS } from "./email";
 import { fetchNASCARResults } from "./nascar";
 import {
   PLAYERS, PNAME, SCHEDULE,
-  GARAGE_PICK_ENABLED, PICKS_PER_WEEK, ACTIVE_PICKS,
+  GARAGE_PICK_ENABLED, PICKS_PER_WEEK, ACTIVE_PICKS, PLAYOFF_START_WEEK,
   DRAFT_TIMER_MS, DRAFT_REMINDER_MS,
 } from "./constants";
 import { scoreWeekFull } from "./engine/scoring";
@@ -153,9 +153,29 @@ export default function App() {
   };
 
   const recalcMeta=(d)=>{
-    const fs={justin:0,bigmonroe:0,monroe:0,rich:0},fp2={justin:0,bigmonroe:0,monroe:0,rich:0}; let last=0;
-    Object.entries(d.results||{}).forEach(([key,wr])=>{const w=parseInt(key.replace("w",""));if(w>last)last=w;if(!wr.scored)return;
-      Object.entries(wr.scored).forEach(([pid,s])=>{fs[pid]=Math.round((fs[pid]+s.total)*100)/100;fp2[pid]=Math.round((fp2[pid]+(s.bonusPoints||0))*100)/100;if(s.weeklyWin)fp2[pid]=Math.round((fp2[pid]+25)*100)/100;});});
+    // Regular season (weeks 1-26): full total -> standings, bonus/win pts -> playoffPts.
+    // Both freeze once the Chase starts — Chase weeks accumulate separately below,
+    // so a player's "Chase entering total" (1000+playoffPts+champBonus) stays a
+    // fixed anchor instead of drifting as more Chase weeks get scored.
+    const fs={justin:0,bigmonroe:0,monroe:0,rich:0},fp2={justin:0,bigmonroe:0,monroe:0,rich:0};
+    // Chase weeks (27+): FULL score counts (not just bonus points), plus weekly win bonus.
+    const cp={justin:0,bigmonroe:0,monroe:0,rich:0};
+    let last=0;
+    Object.entries(d.results||{}).forEach(([key,wr])=>{
+      const w=parseInt(key.replace("w",""));
+      if(w>last)last=w;
+      if(!wr.scored)return;
+      const isChaseWeek=w>=PLAYOFF_START_WEEK;
+      Object.entries(wr.scored).forEach(([pid,s])=>{
+        if(isChaseWeek){
+          cp[pid]=Math.round((cp[pid]+s.total+(s.weeklyWin?25:0))*100)/100;
+        } else {
+          fs[pid]=Math.round((fs[pid]+s.total)*100)/100;
+          fp2[pid]=Math.round((fp2[pid]+(s.bonusPoints||0))*100)/100;
+          if(s.weeklyWin)fp2[pid]=Math.round((fp2[pid]+25)*100)/100;
+        }
+      });
+    });
     const mc={justin:0,bigmonroe:0,monroe:0,rich:0};
     Object.entries(d.picks||{}).forEach(([,wp])=>{Object.entries(wp).forEach(([pid,pks])=>{(pks||[]).forEach(pk=>{if(pk.mulligan)mc[pid]++;});});});
     // ISC champion bonus: +25 regular-season pts for every player who correctly picked the champion
@@ -165,7 +185,7 @@ export default function App() {
         if (d.iscBracket?.picks?.[p.id]?.CHAMP === iscChamp) fs[p.id] = Math.round((fs[p.id] + 25) * 100) / 100;
       });
     }
-    d.meta.standings=fs; d.meta.playoffPts=fp2; d.meta.lastScoredWeek=last; d.meta.mulligansUsed=mc;
+    d.meta.standings=fs; d.meta.playoffPts=fp2; d.meta.chasePts=cp; d.meta.lastScoredWeek=last; d.meta.mulligansUsed=mc;
   };
 
   const handlePostResults=async(week,scored,rr,wp)=>{
