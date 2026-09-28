@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, lazy, Suspense } from "react";
-import { saveLeagueData } from "./firebase";
+import { saveLeagueData, saveDraftPick } from "./firebase";
 import { sendDraftEmail, isEmailConfigured, DEFAULT_EMAILS } from "./email";
 import { fetchNASCARResults } from "./nascar";
 import {
@@ -8,7 +8,7 @@ import {
   DRAFT_TIMER_MS, DRAFT_REMINDER_MS,
 } from "./constants";
 import { scoreWeekFull } from "./engine/scoring";
-import { getDraftOrder, buildSnakeOrder, getBestAvailableDriver } from "./engine/draft";
+import { getDraftOrder, buildSnakeOrder, getBestAvailableDriver, getNextDraftOpenTime } from "./engine/draft";
 import { useLeagueData } from "./hooks/useLeagueData";
 import { useLivePolling } from "./hooks/useLivePolling";
 import { useLiveTiming } from "./hooks/useLiveTiming";
@@ -129,19 +129,23 @@ export default function App() {
     }).catch(()=>{});
   };
 
+  // Goes through a Firestore transaction (saveDraftPick) rather than writing
+  // the caller's local `data` — a client with stale state (backgrounded phone,
+  // spotty connection) can no longer overwrite picks made by others in the
+  // meantime. Returns the outcome so DraftTab can tell the user what happened.
   const handleDraftPick=async(week,pid,driver,pickNum)=>{
-    const d=JSON.parse(JSON.stringify(data)); if(!d.drafts)d.drafts={}; const key="w"+week;
-    if(!d.drafts[key])d.drafts[key]=[];
-    // Ignore stale/duplicate picks: another client may have already filled this slot
-    if(d.drafts[key].length!==pickNum)return;
-    d.drafts[key].push({pid,driver,pickNum});
-    if(!d.picks)d.picks={}; if(!d.picks[key])d.picks[key]={}; if(!d.picks[key][pid])d.picks[key][pid]=[];
-    d.picks[key][pid].push({driver,mulligan:false});
-    // Reset draft turn timer for the next picker
-    if(!d.draftTimers)d.draftTimers={};
-    d.draftTimers[key]={startedAt:new Date().toISOString(),reminderSent:false};
-    setData(d); await saveLeagueData(d);
-    notifyNextPicker(week,d).catch(e=>console.error("Email notify failed:",e));
+    const result=await saveDraftPick(week,pid,driver,pickNum);
+    if(!result.ok){
+      return {applied:false,reason:"offline"};
+    }
+    if(!result.applied){
+      // Stale click — someone else already filled this slot. Local state will
+      // resync from the next onSnapshot update; nothing was lost.
+      return {applied:false,reason:"stale",currentLength:result.currentLength};
+    }
+    setData(result.data);
+    notifyNextPicker(week,result.data).catch(e=>console.error("Email notify failed:",e));
+    return {applied:true};
   };
 
   const handleUndoDraft=async(week)=>{
@@ -191,6 +195,10 @@ export default function App() {
   const handlePostResults=async(week,scored,rr,wp)=>{
     const d=JSON.parse(JSON.stringify(data)); if(!d.results)d.results={}; if(!d.picks)d.picks={};
     d.results["w"+week]={scored,raw:rr}; d.picks["w"+week]=wp; recalcMeta(d);
+    // Next week's draft no longer opens the instant results post — gate it
+    // to the following Monday at 5pm so picks stay organized/easier to track.
+    if(!d.draftSchedule)d.draftSchedule={};
+    d.draftSchedule["w"+(week+1)]={opensAt:getNextDraftOpenTime(new Date()).toISOString()};
     setData(d); await saveLeagueData(d);
     // Notify all players with the final scores (push + SMS)
     notifyRaceScored(week,scored,d.playerSettings,PLAYERS).catch(()=>{});
@@ -288,14 +296,31 @@ export default function App() {
     return ()=>clearInterval(t);
   },[]);
   const draftTimerGuard=useRef({slot:"",autopicked:false,reminded:false});
+  const draftOpenGuard=useRef({week:null,opened:false});
   useEffect(()=>{
     if(!data||!user)return;
     const week=currentWeek,key="w"+week;
-    const timerMeta=data.draftTimers?.[key];
-    if(!timerMeta?.startedAt)return;
     const draftState=data.drafts?.[key]||[];
     const snake=buildSnakeOrder(getDraftOrder(data,week));
     if(draftState.length>=snake.length)return; // draft complete
+
+    const timerMeta=data.draftTimers?.[key];
+
+    // Auto-open the draft once its scheduled Monday-5pm time passes (only if
+    // nobody has picked yet and the timer hasn't already been started). Weeks
+    // with no draftSchedule entry (pre-dating this feature) just skip the
+    // gate entirely and behave as before.
+    if(!timerMeta?.startedAt&&draftState.length===0){
+      if(draftOpenGuard.current.week!==week)draftOpenGuard.current={week,opened:false};
+      const opensAt=data.draftSchedule?.[key]?.opensAt;
+      if(opensAt&&Date.now()>=new Date(opensAt).getTime()&&!draftOpenGuard.current.opened){
+        draftOpenGuard.current.opened=true;
+        handleStartDraftNotify(week);
+      }
+      return;
+    }
+
+    if(!timerMeta?.startedAt)return;
     // Reset one-shot guards whenever the pick slot advances
     const slot=key+":"+draftState.length;
     if(draftTimerGuard.current.slot!==slot)draftTimerGuard.current={slot,autopicked:false,reminded:false};

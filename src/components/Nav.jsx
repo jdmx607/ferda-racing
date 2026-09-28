@@ -178,6 +178,8 @@ export function FlagBanner({ user, data, currentWeek, onGoTo }) {
   const hasScored      = !!(data.results?.[draftKey]?.scored);
 
   if (draftState.length === 0 && !hasSavedPicks && !hasScored) {
+    const opensAt = data.draftSchedule?.[draftKey]?.opensAt;
+    if (opensAt && Date.now() < new Date(opensAt).getTime()) return null; // draft not open yet
     const firstUp = snakeSequence[0]?.pid;
     if (firstUp === user.id)
       return <Banner flag="green" text={`Your turn to pick first for Week ${currentWeek}!`} onClick={() => onGoTo("draft")} />;

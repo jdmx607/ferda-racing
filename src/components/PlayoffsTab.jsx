@@ -364,9 +364,9 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
                       {p.champBonus > 0 && (
                         <span style={{
                           fontSize:10, fontWeight:700, letterSpacing:1.5,
-                          color:theme, background:theme+"22",
+                          color:"#000", background:theme,
                           padding:"2px 8px", borderRadius:r.pill,
-                          border:`1px solid ${theme}55`,
+                          border:`1px solid ${theme}`,
                         }}>👑 CHAMP</span>
                       )}
                       {p.iscBonus > 0 && (
@@ -388,8 +388,7 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
                 <div style={{ textAlign:"right", flexShrink:0 }}>
                   <div style={{
                     fontFamily:"'Oswald',sans-serif", fontSize:40, fontWeight:900, lineHeight:1,
-                    color:isFirst ? theme : PClr[p.id].fg,
-                    textShadow:isFirst && playoffsStarted ? `0 0 12px ${C.gold}66` : "none",
+                    color:PClr[p.id].fg,
                   }}>
                     {p.total.toLocaleString()}
                   </div>

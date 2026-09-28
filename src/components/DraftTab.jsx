@@ -13,6 +13,49 @@ function fmtCountdown(msRemaining) {
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
+function DraftGate({ opensAt, now, weekInfo }) {
+  const msRemaining = Math.max(0, new Date(opensAt).getTime() - now);
+  const d = Math.floor(msRemaining / 86400000);
+  const h = Math.floor((msRemaining % 86400000) / 3600000);
+  const m = Math.floor((msRemaining % 3600000) / 60000);
+  const opensDate = new Date(opensAt);
+  return (
+    <div style={{
+      background:C.card, borderRadius:r.lg, padding:"32px 24px", textAlign:"center",
+      border:`1px solid ${C.border}`, marginBottom:16,
+    }}>
+      <div style={{ fontSize:36, marginBottom:10 }}>🔒</div>
+      <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:900, marginBottom:6 }}>
+        Draft Opens Monday at 5:00 PM
+      </div>
+      {weekInfo && (
+        <div style={{ color:C.dim, fontSize:13, marginBottom:16 }}>
+          Week {weekInfo.w} — {weekInfo.r}
+        </div>
+      )}
+      <div style={{ display:"flex", gap:8, justifyContent:"center", marginBottom:16 }}>
+        {[{ v:d, l:"D" }, { v:h, l:"H" }, { v:m, l:"M" }].map(({ v, l }) => (
+          <div key={l} style={{ textAlign:"center" }}>
+            <div style={{
+              background:C.accent+"18", border:`1px solid ${C.accent}44`,
+              borderRadius:r.md, padding:"8px 12px", minWidth:48,
+            }}>
+              <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900, color:C.accent, lineHeight:1 }}>
+                {String(v).padStart(2, "0")}
+              </div>
+            </div>
+            <div style={{ color:C.muted, fontSize:9, fontWeight:700, letterSpacing:1, marginTop:3 }}>{l}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ color:C.muted, fontSize:11 }}>
+        Opens {opensDate.toLocaleDateString(undefined, { weekday:"long", month:"short", day:"numeric" })} at{" "}
+        {opensDate.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" })}
+      </div>
+    </div>
+  );
+}
+
 function DriverButton({ d, onPick, disabled }) {
   const mem  = isMemorial(d);
   const info = DRIVER_INFO[d] || {};
@@ -56,6 +99,7 @@ function DriverButton({ d, onPick, disabled }) {
 export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }) {
   const [search,  setSearch]  = useState("");
   const [undoMsg, setUndoMsg] = useState("");
+  const [pickMsg, setPickMsg] = useState("");
   const [now,     setNow    ] = useState(() => Date.now());
 
   const weekInfo      = SCHEDULE.find(s => s.w === currentWeek);
@@ -88,10 +132,19 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
     return analyzeLineups(wp, currentWeek, data);
   }, [draftComplete, currentWeek, data]);
 
-  const handlePick = (driver) => {
+  const handlePick = async (driver) => {
     if (!isMyTurn || draftComplete || isMemorial(driver)) return;
     if (!window.confirm(`Lock in ${driver}?`)) return;
-    onDraftPick(currentWeek, player.id, driver, currentPickNum);
+    const result = await onDraftPick(currentWeek, player.id, driver, currentPickNum);
+    if (result && !result.applied) {
+      setPickMsg(
+        result.reason === "offline"
+          ? "⚠️ Couldn't save — you appear to be offline. Check your connection and try again."
+          : "⚠️ Someone already picked this slot — the board just refreshed with the latest picks."
+      );
+      setTimeout(() => setPickMsg(""), 5000);
+      return;
+    }
     setSearch("");
   };
 
@@ -105,6 +158,12 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
   const msElapsed   = timerMeta?.startedAt ? now - new Date(timerMeta.startedAt).getTime() : null;
   const msRemaining = msElapsed !== null ? Math.max(0, DRAFT_TIMER_MS - msElapsed) : null;
   const timerExpired = msElapsed !== null && msElapsed >= DRAFT_TIMER_MS;
+
+  // Gate the draft to its scheduled Monday-5pm open time. Only applies before
+  // anyone has picked — weeks with no schedule entry (pre-dating this
+  // feature) just skip the gate and behave as before.
+  const opensAt = data.draftSchedule?.[draftKey]?.opensAt;
+  const isGated = !!opensAt && draftState.length === 0 && now < new Date(opensAt).getTime();
 
   return (
     <div style={{ padding:20, maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>
@@ -124,6 +183,10 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
         )}
       </div>
 
+      {isGated ? (
+        <DraftGate opensAt={opensAt} now={now} weekInfo={weekInfo} />
+      ) : (
+      <>
       {/* ── Status banner ───────────────────────────────────────────────────── */}
       {draftComplete ? (
         <div style={{
@@ -187,6 +250,15 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
               ⏱ {fmtCountdown(msRemaining)} to auto-pick
             </div>
           )}
+        </div>
+      )}
+
+      {pickMsg && (
+        <div style={{
+          background:C.red+"15", border:`1px solid ${C.red}44`, borderRadius:r.md,
+          padding:"10px 16px", marginBottom:16, color:C.red, fontSize:12, textAlign:"center",
+        }}>
+          {pickMsg}
         </div>
       )}
 
@@ -534,6 +606,8 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
         }}>
           📊 Lineup analysis will be available once we have results from this track type.
         </div>
+      )}
+      </>
       )}
     </div>
   );

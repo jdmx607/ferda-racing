@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot, runTransaction } from "firebase/firestore";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // PASTE YOUR FIREBASE CONFIG HERE (from Firebase Console)
@@ -56,6 +56,45 @@ export async function saveLeagueData(data) {
   } catch (e) {
     console.error("Save error:", e.message);
     localStorage.setItem("ferda-backup", JSON.stringify(data));
+  }
+}
+
+// Atomically append a draft pick. Reads the LIVE server document inside the
+// transaction — never trusts the caller's local React state — so a client
+// that's been offline, backgrounded, or just slow to re-sync can never
+// silently overwrite picks another player already made. Firestore retries
+// the transaction automatically if two clients collide on the same read.
+export async function saveDraftPick(week, pid, driver, pickNum) {
+  if (!firebaseReady || !db) return { ok:false, applied:false, reason:"offline" };
+  const ref = doc(db, "leagues", DOC_ID);
+  try {
+    const outcome = await withTimeout(runTransaction(db, async (tx) => {
+      const snap = await tx.get(ref);
+      if (!snap.exists()) throw new Error("League document not found");
+      const d = snap.data();
+      const key = "w" + week;
+      if (!d.drafts) d.drafts = {};
+      if (!d.drafts[key]) d.drafts[key] = [];
+      // Guard: only accept if this is genuinely the next pick in the slot.
+      // Rejects stale clicks (someone already picked) without losing data.
+      if (d.drafts[key].length !== pickNum) {
+        return { applied:false, currentLength:d.drafts[key].length };
+      }
+      d.drafts[key].push({ pid, driver, pickNum });
+      if (!d.picks) d.picks = {};
+      if (!d.picks[key]) d.picks[key] = {};
+      if (!d.picks[key][pid]) d.picks[key][pid] = [];
+      d.picks[key][pid].push({ driver, mulligan:false });
+      if (!d.draftTimers) d.draftTimers = {};
+      d.draftTimers[key] = { startedAt:new Date().toISOString(), reminderSent:false };
+      tx.set(ref, d);
+      return { applied:true, data:d };
+    }));
+    if (outcome.applied) localStorage.setItem("ferda-backup", JSON.stringify(outcome.data));
+    return { ok:true, ...outcome };
+  } catch (e) {
+    console.error("Draft pick transaction failed:", e.message);
+    return { ok:false, applied:false, error:e.message };
   }
 }
 
