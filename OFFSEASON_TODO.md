@@ -68,6 +68,13 @@ committing to any of it.
 
 - [ ] **Better design for regular-season championship vs. playoff (Chase)
       championship** — clearer UI distinguishing the two.
+- [ ] **Driver cards** — a small, minimalistic card per driver: name, car #,
+      manufacturer and stats. (The redesign branch has a `DriverCard` row for
+      live/lineup use; this would be a separate profile-style card, e.g. for the
+      Drivers tab.)
+- [ ] **Points ahead/behind feature** — show how far ahead of / behind the other
+      players each person is. (Live tab already shows the gap to the player above
+      during a race; this is the broader version — scope TBD.)
 
 ## Start the 2027 season (the 2027 schedule is built but NOT active)
 
