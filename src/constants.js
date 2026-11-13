@@ -111,8 +111,9 @@ export const PLAYOFF_MULLIGAN_BONUS = ACTIVE_SEASON >= 2027 ? 2 : 0;
 export const ALL_STAR_PAYOUT = [125, 50, 10, 0];
 
 // 2027 draftable pool, from the 2027 Cup team lineup graphic (grouped by team).
-// Names come from each car number's 2026 driver — see the note by
-// DRIVER_INFO_2027 for the slots that still need confirming. Drivers that
+// Car numbers/teams are from the graphic; names are each number's 2026 driver
+// except the 2027 changes in DRIVER_INFO_2027 (Preece #6, Hill #33, Berry #42,
+// Herbst #84, Heim #35, Love #21; Nemechek and Jimmie Johnson are out). Drivers that
 // only raced in 2026 stay in DRIVER_INFO (below) so past results, stats and
 // history keep their team/make info; they're just no longer draftable.
 export const DRIVERS = [
@@ -127,11 +128,11 @@ export const DRIVERS = [
   // Joe Gibbs
   "#11 Denny Hamlin","#19 Chase Briscoe","#20 Christopher Bell","#54 Ty Gibbs",
   // 23XI
-  "#23 Bubba Wallace","#35 Riley Herbst","#45 Tyler Reddick",
+  "#23 Bubba Wallace","#35 Corey Heim","#45 Tyler Reddick",
   // Legacy
-  "#42 John Hunter Nemechek","#43 Erik Jones","#84 Jimmie Johnson",
+  "#42 Josh Berry","#43 Erik Jones","#84 Riley Herbst",
   // Penske + Wood Brothers
-  "#2 Austin Cindric","#12 Ryan Blaney","#22 Joey Logano","#21 Josh Berry",
+  "#2 Austin Cindric","#12 Ryan Blaney","#22 Joey Logano","#21 Jesse Love",
   // Front Row
   "#4 Noah Gragson","#34 Todd Gilliland","#38 Zane Smith",
   // RFK
@@ -203,6 +204,10 @@ const DRIVER_INFO_2026 = {
 const DRIVER_INFO_2027 = {
   "#6 Ryan Preece":        { team:"RFK Racing",               make:"Ford"  },   // was #60 in 2026
   "#33 Austin Hill":       { team:"Richard Childress Racing", make:"Chevy" },   // full-time in 2027
+  "#42 Josh Berry":        { team:"Legacy Motor Club",        make:"Toyota"},   // moves from Wood Brothers #21
+  "#84 Riley Herbst":      { team:"Legacy Motor Club",        make:"Toyota"},   // moves from 23XI #35
+  "#35 Corey Heim":        { team:"23XI Racing",              make:"Toyota"},   // replaces Herbst; was part-time #67
+  "#21 Jesse Love":        { team:"Wood Brothers Racing",     make:"Ford"  },   // replaces Berry
   "#10 Ty Dillon":         { team:"Kaulig Racing",  make:"Dodge" },
   "#16 AJ Allmendinger":   { team:"Kaulig Racing",  make:"Dodge" },
   // No ride for 2027 yet — `freeAgent` keeps him out of autopick.

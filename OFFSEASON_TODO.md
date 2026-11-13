@@ -25,11 +25,12 @@ committing to any of it.
       scaffolding (`GARAGE_PICK_ENABLED`) already exist in code, currently off.
 - [ ] **Update drivers/teams for the new season** — `DRIVERS` / `DRIVER_INFO`
       in `constants.js`, including the `partTime` flags used by autopick.
-      *First pass done Nov 13, 2026* from the 2027 lineup graphic (draft picker
-      now has a Free Agents tab; Brad Keselowski is the only one in it). Still
-      open: name the drivers in the **#6 (RFK)** and **#33 (RCR)** cars, confirm
-      #10/#16 at Kaulig (Dodge) and #51's team, and re-check Jimmie Johnson's
-      `partTime` flag.
+      *Done Nov 13, 2026* from the 2027 lineup graphic + user-supplied changes:
+      Preece #6 (RFK), Hill #33 (RCR), Berry #42 + Herbst #84 (Legacy), Heim #35
+      (23XI), Love #21 (Wood Bros); Keselowski is the lone Free Agent;
+      Nemechek and Jimmie Johnson are out of the pool. Still open: confirm the
+      remaining names are right (#10 Ty Dillon / #16 Allmendinger at Kaulig
+      Dodge, #51 Cody Ware) and add any part-time / miscellaneous drivers.
 
 ## Drafting
 
