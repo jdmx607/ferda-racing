@@ -17,7 +17,7 @@ export const CHAMPION_HISTORY = [
   { year: 2025, regularSeason: "rich",      overall: "justin",
     notes: "First split-crown season in league history" },
   { year: 2024, regularSeason: "justin",    overall: "justin" },
-  { year: 2023, regularSeason: "monroe",    overall: "monroe" },
+  { year: 2023, regularSeason: "monroe",    overall: "justin" },
   { year: 2022, regularSeason: "rich",      overall: "rich" },
   { year: 2021, regularSeason: "justin",    overall: "justin" },
   { year: 2020, regularSeason: "justin",    overall: "justin" },

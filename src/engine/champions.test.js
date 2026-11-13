@@ -16,20 +16,21 @@ describe("the 2019–2026 dataset", () => {
 
   test("career tallies match the league's records", () => {
     const t = Object.fromEntries(getTitleTally(CHAMPION_HISTORY).map(x => [x.id, x]));
-    expect(t.justin).toMatchObject({ overall: 5, regularSeason: 4 });
+    expect(t.justin).toMatchObject({ overall: 6, regularSeason: 4 });
     expect(t.rich).toMatchObject({ overall: 1, regularSeason: 2 });
     expect(t.bigmonroe).toMatchObject({ overall: 1, regularSeason: 1 });
-    expect(t.monroe).toMatchObject({ overall: 1, regularSeason: 1 });
+    expect(t.monroe).toMatchObject({ overall: 0, regularSeason: 1 });
   });
 
   test("tally order: Justin, Rich, Big Monroe, Monroe", () => {
     expect(getTitleTally(CHAMPION_HISTORY).map(x => x.id)).toEqual(["justin", "rich", "bigmonroe", "monroe"]);
   });
 
-  test("2025 is the only split crown; the other seven are sweeps", () => {
+  test("2023 and 2025 are the split crowns; the other six seasons are sweeps", () => {
     const split = CHAMPION_HISTORY.filter(s => seasonBadges(s).split).map(s => s.year);
-    expect(split).toEqual([2025]);
-    expect(CHAMPION_HISTORY.filter(s => seasonBadges(s).sweep)).toHaveLength(7);
+    expect(split).toEqual([2025, 2023]);
+    expect(CHAMPION_HISTORY.filter(s => seasonBadges(s).sweep)).toHaveLength(6);
+    expect(seasonBadges(CHAMPION_HISTORY.find(s => s.year === 2023)).sweep).toBe(false);
     expect(seasonBadges(CHAMPION_HISTORY.find(s => s.year === 2025)).sweep).toBe(false);
   });
 
@@ -46,13 +47,13 @@ describe("the 2019–2026 dataset", () => {
 });
 
 describe("streaks and the reigning champion", () => {
-  test("Justin's runs: 2020–2021 back-to-back and 2024–2026 three-peat", () => {
+  test("Justin's runs: 2020–2021 back-to-back and the 2023–2026 4-peat", () => {
     const runs = getOverallRuns(CHAMPION_HISTORY);
     expect(runs).toEqual([
       { pid: "justin", startYear: 2020, endYear: 2021, length: 2 },
-      { pid: "justin", startYear: 2024, endYear: 2026, length: 3 },
+      { pid: "justin", startYear: 2023, endYear: 2026, length: 4 },
     ]);
-    expect(runs.map(runLabel)).toEqual(["🏆 2020–2021 BACK-TO-BACK", "🔥 2024–2026 THREE-PEAT DYNASTY"]);
+    expect(runs.map(runLabel)).toEqual(["🏆 2020–2021 BACK-TO-BACK", "🔥 2023–2026 4-PEAT DYNASTY"]);
   });
 
   test("a gap year or a different champion breaks a run", () => {
@@ -65,11 +66,12 @@ describe("streaks and the reigning champion", () => {
     expect(runLabel({ startYear: 2020, endYear: 2023, length: 4 })).toBe("🔥 2020–2023 4-PEAT DYNASTY");
   });
 
-  test("reigning champion is 2026 Justin on a 3-peat", () => {
-    expect(getReigning(CHAMPION_HISTORY)).toMatchObject({ pid: "justin", streak: 3, dynasty: "3-PEAT DYNASTY" });
+  test("reigning champion is 2026 Justin on a 4-peat", () => {
+    expect(getReigning(CHAMPION_HISTORY)).toMatchObject({ pid: "justin", streak: 4, dynasty: "4-PEAT DYNASTY" });
     expect(getReigning(CHAMPION_HISTORY).season.year).toBe(2026);
-    expect(getReigning(CHAMPION_HISTORY.slice(1))).toMatchObject({ pid: "justin", streak: 2, dynasty: "BACK-TO-BACK" });   // as of 2025
-    expect(getReigning(CHAMPION_HISTORY.filter(s => s.year === 2023))).toMatchObject({ pid: "monroe", streak: 1, dynasty: "" });
+    expect(getReigning(CHAMPION_HISTORY.slice(1))).toMatchObject({ pid: "justin", streak: 3, dynasty: "3-PEAT DYNASTY" });   // as of 2025
+    expect(getReigning(CHAMPION_HISTORY.slice(3))).toMatchObject({ pid: "justin", streak: 1, dynasty: "" });                 // as of 2023: first of the run
+    expect(getReigning(CHAMPION_HISTORY.filter(s => s.year === 2022))).toMatchObject({ pid: "rich", streak: 1, dynasty: "" });
     expect(getReigning([])).toBeNull();
   });
 });
@@ -83,9 +85,9 @@ describe("filtering helpers", () => {
   });
   test("filtering by player keeps exactly the seasons they won something", () => {
     const years = pid => newestFirst(CHAMPION_HISTORY).filter(s => wonAnyTitle(s, pid)).map(s => s.year);
-    expect(years("justin")).toEqual([2026, 2025, 2024, 2021, 2020]);
+    expect(years("justin")).toEqual([2026, 2025, 2024, 2023, 2021, 2020]);
     expect(years("rich")).toEqual([2025, 2022]);
-    expect(years("monroe")).toEqual([2023]);
+    expect(years("monroe")).toEqual([2023]);               // his only title is the 2023 regular season
     expect(years("bigmonroe")).toEqual([2019]);
   });
 });
