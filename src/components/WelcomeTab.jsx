@@ -2,7 +2,47 @@ import { useMemo, useState, useEffect } from "react";
 import { C, PClr, TTC, TTL, r, shadow, sp } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, MAX_MULLIGANS, TRACK_MULTS } from "../constants";
 import { getPowerRankings } from "../engine/history";
+import { getSeasonChampion } from "../engine/chase";
 import { TrophyCaseModal } from "./TrophyCase";
+
+// Shown on Home once the final race (W36) is scored.
+function ChampionBanner({ champ, onOpenTrophy }) {
+  const { pids, pid, tied, total, margin, regSeasonChamp } = champ;
+  const clr = PClr[pid];
+  const names = pids.map(p => PNAME[p]).join(" & ");
+  return (
+    <div
+      onClick={() => onOpenTrophy(pid)}
+      style={{
+        background:`linear-gradient(135deg, ${C.gold}22, ${clr.bg})`,
+        border:`2px solid ${C.gold}`, borderRadius:r.xl,
+        padding:"22px 24px", marginBottom:20, textAlign:"center",
+        boxShadow:`0 0 32px ${C.gold}44`, cursor:"pointer",
+      }}
+    >
+      <div style={{ fontSize:42, lineHeight:1, marginBottom:6 }}>🏆</div>
+      <div style={{ color:C.gold, fontSize:11, fontWeight:700, letterSpacing:4, textTransform:"uppercase", marginBottom:4 }}>
+        {tied ? "2026 Co-Champions" : "2026 FERDA Champion"}
+      </div>
+      <div style={{
+        color:clr.bg === "#000000" ? clr.fg : C.text, fontFamily:"'Oswald',sans-serif",
+        fontSize:38, fontWeight:900, letterSpacing:2, lineHeight:1.1,
+        textShadow:`0 0 18px ${C.gold}66`,
+      }}>
+        {names.toUpperCase()}
+      </div>
+      <div style={{ color:C.dim, fontSize:13, marginTop:8 }}>
+        {total.toLocaleString()} Chase pts
+        {!tied && margin > 0 && <> · won by {margin.toLocaleString()}</>}
+      </div>
+      {regSeasonChamp && (
+        <div style={{ color:C.muted, fontSize:11, marginTop:6 }}>
+          Regular season champion: {PNAME[regSeasonChamp]}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const MONTH_IDX = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
 
@@ -90,6 +130,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
     })).sort((a, b) => b.pts - a.pts),
   [data]);
 
+  const seasonChampion = useMemo(() => getSeasonChampion(data), [data]);
   const powerRankings = useMemo(() => getPowerRankings(data), [data]);
   const powerLeader    = powerRankings[0];
 
@@ -115,6 +156,8 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
 
   return (
     <div style={{ padding:20, maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>
+
+      {seasonChampion && <ChampionBanner champ={seasonChampion} onOpenTrophy={setTrophyPid} />}
 
       {/* ── Hero banner ────────────────────────────────────────────────────── */}
       <div style={{

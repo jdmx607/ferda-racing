@@ -197,8 +197,11 @@ export default function App() {
     d.results["w"+week]={scored,raw:rr}; d.picks["w"+week]=wp; recalcMeta(d);
     // Next week's draft no longer opens the instant results post — gate it
     // to the following Monday at 5pm so picks stay organized/easier to track.
-    if(!d.draftSchedule)d.draftSchedule={};
-    d.draftSchedule["w"+(week+1)]={opensAt:getNextDraftOpenTime(new Date()).toISOString()};
+    // (skip after the final race of the season — there's no next draft)
+    if(SCHEDULE.some(s=>s.w===week+1)){
+      if(!d.draftSchedule)d.draftSchedule={};
+      d.draftSchedule["w"+(week+1)]={opensAt:getNextDraftOpenTime(new Date()).toISOString()};
+    }
     setData(d); await saveLeagueData(d);
     // Notify all players with the final scores (push + SMS)
     notifyRaceScored(week,scored,d.playerSettings,PLAYERS).catch(()=>{});
@@ -300,6 +303,7 @@ export default function App() {
   useEffect(()=>{
     if(!data||!user)return;
     const week=currentWeek,key="w"+week;
+    if(!SCHEDULE.some(s=>s.w===week))return; // season over — no draft to run
     const draftState=data.drafts?.[key]||[];
     const snake=buildSnakeOrder(getDraftOrder(data,week));
     if(draftState.length>=snake.length)return; // draft complete

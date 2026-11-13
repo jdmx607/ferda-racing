@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { C, PClr, r } from "../theme";
-import { PLAYERS, PNAME, ACTIVE_PICKS, PLAYOFF_START_WEEK } from "../constants";
+import { PLAYERS, PNAME, ACTIVE_PICKS, PLAYOFF_START_WEEK, SCHEDULE } from "../constants";
 
 function isChaseLive(data) {
   return Object.keys(data?.results || {}).length >= PLAYOFF_START_WEEK;
@@ -167,6 +167,7 @@ function Banner({ flag, text, onClick }) {
 
 export function FlagBanner({ user, data, currentWeek, onGoTo }) {
   if (!user || !data) return null;
+  if (!SCHEDULE.some(s => s.w === currentWeek)) return null; // season over
   const draftKey      = "w" + currentWeek;
   const draftState    = data.drafts?.[draftKey] || [];
   const draftOrder    = getDraftOrder(data, currentWeek);

@@ -1,4 +1,4 @@
-import { PLAYERS, ACTIVE_PICKS, PICKS_PER_WEEK, GARAGE_PICK_ENABLED, SCHEDULE, DRIVERS, PLAYOFF_START_WEEK, isMemorial, isPartTime } from "../constants.js";
+import { PLAYERS, ACTIVE_PICKS, PICKS_PER_WEEK, GARAGE_PICK_ENABLED, SCHEDULE, DRIVERS, PLAYOFF_START_WEEK, isMemorial, isPartTime, isFreeAgent } from "../constants.js";
 import { calcDriverScore } from "./scoring.js";
 import { getChaseEntryTotals } from "./chase.js";
 
@@ -95,7 +95,8 @@ export function getBestAvailableDriver(data, takenSet, week) {
       ?? null;
   };
 
-  const allCandidates = DRIVERS.filter(d => !takenSet.has(d) && !isMemorial(d));
+  // Free agents have no ride, so they can't be in the race — never autopick them.
+  const allCandidates = DRIVERS.filter(d => !takenSet.has(d) && !isMemorial(d) && !isFreeAgent(d));
   const fullTimeCandidates = allCandidates.filter(d => !isPartTime(d));
   return rank(fullTimeCandidates) ?? rank(allCandidates);
 }

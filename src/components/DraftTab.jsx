@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { C, PClr, PC, TTC, TTL, r, shadow } from "../theme";
-import { PLAYERS, PNAME, SCHEDULE, DRIVERS, DRIVER_INFO, MAKE_COLORS, ACTIVE_PICKS, TRACK_MULTS, DRAFT_TIMER_MS, isMemorial } from "../constants";
+import { PLAYERS, PNAME, SCHEDULE, DRIVERS, DRIVER_INFO, MAKE_COLORS, ACTIVE_PICKS, TRACK_MULTS, DRAFT_TIMER_MS, isMemorial, isFreeAgent } from "../constants";
 import { getDraftOrder, buildSnakeOrder } from "../engine/draft";
 import { analyzeLineups } from "../engine/draftAnalysis";
 
-const MAKE_BADGE = { Chevy:"#b8b8b8", Ford:"#4a90e2", Toyota:"#eb0a1e" };
+const MAKE_BADGE = { Chevy:"#b8b8b8", Ford:"#4a90e2", Toyota:"#eb0a1e", Dodge:"#a855f7" };
 
 function fmtCountdown(msRemaining) {
   if (msRemaining <= 0) return "0m";
@@ -100,6 +100,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
   const [search,  setSearch]  = useState("");
   const [undoMsg, setUndoMsg] = useState("");
   const [pickMsg, setPickMsg] = useState("");
+  const [pool,    setPool   ] = useState("drivers");
   const [now,     setNow    ] = useState(() => Date.now());
 
   const weekInfo      = SCHEDULE.find(s => s.w === currentWeek);
@@ -113,9 +114,11 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
   const isMyTurn       = currentTurn?.pid === player.id;
 
   const takenDrivers = new Set(draftState.map(d => d.driver));
-  const available    = DRIVERS.filter(d =>
+  const availableAll = DRIVERS.filter(d =>
     !takenDrivers.has(d) && d.toLowerCase().includes(search.toLowerCase())
   );
+  // "Drivers" tab = anyone with a ride; "Free Agents" tab = drivers with no ride yet
+  const available    = availableAll.filter(d => (pool === "free") === isFreeAgent(d));
 
   const playerPicks = {};
   PLAYERS.forEach(p => { playerPicks[p.id] = []; });
@@ -164,6 +167,23 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
   // feature) just skip the gate and behave as before.
   const opensAt = data.draftSchedule?.[draftKey]?.opensAt;
   const isGated = !!opensAt && draftState.length === 0 && now < new Date(opensAt).getTime();
+
+  if (!weekInfo) {
+    return (
+      <div style={{ padding:20, maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>
+        <div style={{
+          background:C.card, borderRadius:r.lg, padding:"40px 24px", textAlign:"center",
+          border:`1px solid ${C.border}`,
+        }}>
+          <div style={{ fontSize:36, marginBottom:8 }}>🏁</div>
+          <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:900, marginBottom:6 }}>
+            Season Complete
+          </div>
+          <div style={{ color:C.dim, fontSize:13 }}>No draft right now — see you next season.</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding:20, maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>
@@ -329,6 +349,21 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
         <div style={{ marginBottom:20 }}>
           <div style={{ color:C.textDim, fontSize:11, textTransform:"uppercase", letterSpacing:2, fontWeight:700, marginBottom:8 }}>
             Select a Driver
+          </div>
+          <div style={{ display:"flex", gap:6, marginBottom:10 }}>
+            {[
+              { id:"drivers", label:"Drivers",      n:availableAll.filter(d => !isFreeAgent(d)).length },
+              { id:"free",    label:"Free Agents",  n:availableAll.filter(d =>  isFreeAgent(d)).length },
+            ].map(t => (
+              <button key={t.id} onClick={() => setPool(t.id)} style={{
+                padding:"6px 14px", borderRadius:r.pill,
+                border:`1px solid ${pool === t.id ? C.accent : C.border}`,
+                background:pool === t.id ? C.accent : "transparent",
+                color:pool === t.id ? "#000" : C.dim,
+                fontSize:11, fontWeight:700, cursor:"pointer",
+                fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+              }}>{t.label} ({t.n})</button>
+            ))}
           </div>
           <input
             value={search}

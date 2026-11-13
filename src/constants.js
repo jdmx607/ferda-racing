@@ -91,24 +91,42 @@ export const SCHEDULE = [
   {w:36,t:"Homestead",      ty:"intermediate",  d:"Nov 8",  r:"Straight Talk Wireless 400"},
 ];
 
+// 2027 draftable pool, from the 2027 Cup team lineup graphic (grouped by team).
+// Names come from each car number's 2026 driver — see the note by
+// DRIVER_INFO_2027 for the slots that still need confirming. Drivers that
+// only raced in 2026 stay in DRIVER_INFO (below) so past results, stats and
+// history keep their team/make info; they're just no longer draftable.
 export const DRIVERS = [
-  "#1 Ross Chastain","#2 Austin Cindric","#3 Austin Dillon","#4 Noah Gragson",
-  "#5 Kyle Larson","#6 Brad Keselowski","#7 Daniel Suarez","#8 Kyle Busch",
-  "#9 Chase Elliott","#10 Ty Dillon","#11 Denny Hamlin","#12 Ryan Blaney",
-  "#16 AJ Allmendinger","#17 Chris Buescher","#19 Chase Briscoe","#20 Christopher Bell",
-  "#21 Josh Berry","#22 Joey Logano","#23 Bubba Wallace","#24 William Byron",
-  "#33 Austin Hill / Jesse Love","#34 Todd Gilliland","#35 Riley Herbst","#38 Zane Smith",
-  "#41 Cole Custer","#42 John Hunter Nemechek","#43 Erik Jones","#45 Tyler Reddick",
-  "#47 Ricky Stenhouse Jr","#48 Alex Bowman","#50 Burt Myers","#51 Cody Ware",
-  "#54 Ty Gibbs","#60 Ryan Preece","#62 Casey Mears / Anthony Alfredo",
-  "#66 Various","#67 Corey Heim","#71 Michael McDowell","#77 Carson Hocevar",
-  "#78 BJ McLeod / Daniel Dye / Katherine Legge","#84 Jimmie Johnson",
-  "#88 Connor Zilisch","#91 Kevin Magnussen","#97 Shane Van Gisbergen",
-  "#01 Corey LaJoie","#36 Chandler Smith","#40 Justin Allgaier",
-  "#44 JJ Yeley / Joey Gase","#99 Corey LaJoie",
+  // Hendrick
+  "#5 Kyle Larson","#9 Chase Elliott","#24 William Byron","#48 Alex Bowman",
+  // Spire
+  "#7 Daniel Suarez","#71 Michael McDowell","#77 Carson Hocevar",
+  // Trackhouse
+  "#1 Ross Chastain","#88 Connor Zilisch","#97 Shane Van Gisbergen",
+  // RCR, Haas, HYAK, Rick Ware
+  "#3 Austin Dillon","#41 Cole Custer","#47 Ricky Stenhouse Jr","#51 Cody Ware",
+  // Joe Gibbs
+  "#11 Denny Hamlin","#19 Chase Briscoe","#20 Christopher Bell","#54 Ty Gibbs",
+  // 23XI
+  "#23 Bubba Wallace","#35 Riley Herbst","#45 Tyler Reddick",
+  // Legacy
+  "#42 John Hunter Nemechek","#43 Erik Jones","#84 Jimmie Johnson",
+  // Penske + Wood Brothers
+  "#2 Austin Cindric","#12 Ryan Blaney","#22 Joey Logano","#21 Josh Berry",
+  // Front Row
+  "#4 Noah Gragson","#34 Todd Gilliland","#38 Zane Smith",
+  // RFK
+  "#17 Chris Buescher",
+  // Kaulig (Dodge)
+  "#10 Ty Dillon","#16 AJ Allmendinger",
+  // Free agent (no ride yet — shown under the Free Agents tab)
+  "#6 Brad Keselowski",
+  // In memoriam (not draftable)
+  "#8 Kyle Busch",
 ];
 
-export const DRIVER_INFO = {
+// 2026 driver/team info — kept as the legacy lookup for past-season data.
+const DRIVER_INFO_2026 = {
   "#1 Ross Chastain":               { team:"Trackhouse Racing",         make:"Chevy" },
   "#2 Austin Cindric":              { team:"Team Penske",                make:"Ford"  },
   "#3 Austin Dillon":               { team:"Richard Childress Racing",   make:"Chevy" },
@@ -160,7 +178,22 @@ export const DRIVER_INFO = {
   "#99 Corey LaJoie":               { team:"RFK Racing",                 make:"Ford"  },
 };
 
-export const MAKE_COLORS = { Chevy: "#b8b8b8", Ford: "#0052cc", Toyota: "#eb0a1e" };
+// 2027 changes layered over the 2026 info. Still to confirm/add by hand:
+//  • #6 (RFK) and #33 (RCR) are in the lineup graphic but the drivers aren't
+//    named there, so they're not in DRIVERS yet.
+//  • #10 / #16 at Kaulig (now Dodge) and #51's team are carried over from the
+//    2026 numbers — verify them.
+const DRIVER_INFO_2027 = {
+  "#10 Ty Dillon":         { team:"Kaulig Racing",  make:"Dodge" },
+  "#16 AJ Allmendinger":   { team:"Kaulig Racing",  make:"Dodge" },
+  // No ride for 2027 yet — `freeAgent` keeps him out of autopick.
+  "#6 Brad Keselowski":    { team:"Free Agent",     freeAgent:true },
+};
+
+export const DRIVER_INFO = { ...DRIVER_INFO_2026, ...DRIVER_INFO_2027 };
+
+export const MAKE_COLORS = { Chevy: "#b8b8b8", Ford: "#0052cc", Toyota: "#eb0a1e", Dodge: "#a855f7" };
 
 export function isMemorial(driver) { return !!MEMORIAL_DRIVERS[driver]; }
 export function isPartTime(driver) { return !!DRIVER_INFO[driver]?.partTime; }
+export function isFreeAgent(driver) { return !!DRIVER_INFO[driver]?.freeAgent; }

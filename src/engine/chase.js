@@ -41,6 +41,28 @@ export function getChaseEntryTotals(data) {
   return { totals, leader, isTied, champBonus };
 }
 
+// Season champion = highest Chase total once the final race (W36) is scored.
+// Returns null until then. Ties are surfaced (tied: true, all co-leaders in
+// `pids`) rather than silently picking one — the league can settle it.
+export function getSeasonChampion(data) {
+  if (!data?.results?.["w36"]?.scored) return null;
+  const { totals, leader: regLeader, isTied: regTied } = getChaseTotals(data);
+  const ranked = PLAYERS
+    .map(p => ({ pid: p.id, total: totals[p.id] }))
+    .sort((a, b) => b.total - a.total);
+  const top = ranked[0];
+  const coLeaders = ranked.filter(x => x.total === top.total).map(x => x.pid);
+  return {
+    pids: coLeaders,
+    pid: coLeaders[0],
+    tied: coLeaders.length > 1,
+    total: top.total,
+    margin: ranked[1] ? Math.round((top.total - ranked[1].total) * 10) / 10 : 0,
+    runnerUp: ranked[1]?.pid || null,
+    regSeasonChamp: regTied ? null : regLeader,
+  };
+}
+
 // Current Chase total: entry total + accumulated Chase-week scoring so far.
 export function getChaseTotals(data) {
   const { totals, leader, isTied, champBonus } = getChaseEntryTotals(data);
