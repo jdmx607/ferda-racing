@@ -6,8 +6,8 @@ committing to any of it.
 
 ## Big picture
 
-- [~] **Complete redesign — "Pit-Wall Minimalism" (telemetry UI).** First pass built
-      on branch `redesign/pit-wall` (not merged): design tokens + light-mode-ready CSS
+- [~] **Complete redesign — "Pit-Wall Minimalism" (telemetry UI).** First pass merged to main
+      (Nov 2026): design tokens + light-mode-ready CSS
       variables in `src/styles.css`; flat monochrome palette in `theme.js`; new
       `FlagStrip`, `RaceHeader`, `DriverCard` components; Live tab, Lineups, nav
       (bottom-anchored on phones), login, ticker rebuilt. STILL TO DO: migrate the
