@@ -29,11 +29,11 @@ const statusTone = state => (state === "open" ? "up" : state === "waiting" ? "ca
 
 // ── 1. Champion ribbon ──────────────────────────────────────────────────────
 // Shown once the final race (W36) is scored.
-function ChampionRibbon({ champ, onOpenTrophy }) {
-  const { pids, pid, tied, total } = champ;
+function ChampionRibbon({ champ, onOpen }) {
+  const { pids, tied, total } = champ;
   const names = pids.map(p => PNAME[p]).join(" & ").toUpperCase();
   return (
-    <div className="ribbon" role="button" onClick={() => onOpenTrophy(pid)}>
+    <div className="ribbon" role="button" onClick={onOpen}>
       <span>
         🏆 {ACTIVE_SEASON} FERDA {tied ? "CO-CHAMPIONS" : "CHAMPION"} • {names} — <span className="num">{total.toLocaleString()}</span> Chase Pts
       </span>
@@ -249,7 +249,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
   return (
     <div className="home">
 
-      {seasonChampion && <ChampionRibbon champ={seasonChampion} onOpenTrophy={setTrophyPid} />}
+      {seasonChampion && <ChampionRibbon champ={seasonChampion} onOpen={() => setTab("hall")} />}
 
       {/* ── Driver hub ─────────────────────────────────────────────────────── */}
       <section className="card hub">
@@ -258,7 +258,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
             <span className="dot" style={{ width: 10, height: 10, background: clr.accent }} />
             <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{player.name}</span>
           </div>
-          <button className="btn-ghost" onClick={() => setTrophyPid(pid)}>🏆 Trophy Case</button>
+          <button className="btn-ghost" onClick={() => setTab("hall")}>🏆 Trophy Case</button>
         </div>
         <div className="hub-row">
           <span className={`pill lg ${statusTone(status.state)}`}>{status.label}</span>

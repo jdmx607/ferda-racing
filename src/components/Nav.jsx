@@ -100,6 +100,13 @@ const Icon = {
       <path d="M4 9.5h16M8 3v3M16 3v3" strokeLinecap="round"/>
     </svg>
   ),
+  Hall: () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 4h10v4.2a5 5 0 0 1-10 0V4z"/>
+      <path d="M7 5.5H4.2v1.2A3.3 3.3 0 0 0 7 10M17 5.5h2.8v1.2A3.3 3.3 0 0 1 17 10"/>
+      <path d="M12 13.2V17M8 20.5h8M10.2 17v3.5M13.8 17v3.5"/>
+    </svg>
+  ),
   Drivers: () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <circle cx="12" cy="12" r="8.5"/>
@@ -202,6 +209,7 @@ function DesktopNav({ player, tab, setTab, onLogout, data }) {
     { id:"news",         l:"News"        },
     { id:"stats",        l:"Stats"       },
     { id:"history",      l:"History"     },
+    { id:"hall",         l:"Champions"   },
     { id:"playoffs",     l:"The Chase", strong:chaseLive },
     { id:"isc",          l:"ISC"         },
     { id:"schedule",     l:"Schedule"    },
@@ -264,6 +272,7 @@ const MORE_TABS = [
   { id:"news",         label:"News",       Icon:Icon.News       },
   { id:"stats",        label:"Stats",      Icon:Icon.Stats      },
   { id:"history",      label:"History",    Icon:Icon.History    },
+  { id:"hall",         label:"Champions",  Icon:Icon.Hall       },
   { id:"playoffs",     label:"The Chase",  Icon:Icon.Chase      },
   { id:"isc",          label:"ISC",        Icon:Icon.ISC        },
   { id:"lineups",      label:"Lineups",    Icon:Icon.Lineups    },

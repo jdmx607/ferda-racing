@@ -13,6 +13,8 @@
   --surface-2:     #1F232B;   /* raised / inset */
   --surface-active:#20242E;   /* selected card tint */
   --gold:          #D4AF37;   /* champion accents only */
+  --gold-border:   rgba(212, 175, 55, 0.45);
+  --gold-tint:     rgba(212, 175, 55, 0.10);
   --border:        rgba(255, 255, 255, 0.07);
   --border-strong: rgba(255, 255, 255, 0.14);
 
@@ -474,6 +476,76 @@ button, input, select, textarea { font-family: inherit; }
 .trend-up   { color: var(--go); }
 .trend-down { color: var(--stop); }
 .trend-flat { color: var(--text-3); }
+
+/* ── Hall of Champions ─────────────────────────────────────────────────── */
+.hof { max-width: 720px; margin: 0 auto; padding: 12px 16px 24px; display: flex; flex-direction: column; gap: 16px; position: relative; z-index: 1; font-variant-numeric: tabular-nums; }
+.hof-top { display: flex; align-items: center; justify-content: space-between; }
+
+.hof-hero {
+  position: relative; overflow: hidden; text-align: center; padding: 26px 16px 22px;
+  background: var(--surface); border: 1px solid var(--gold-border); border-radius: 16px;
+}
+.hof-glow {                     /* soft gold ambient glow behind the trophy */
+  position: absolute; left: 50%; top: -30px; width: 280px; height: 280px; transform: translateX(-50%); pointer-events: none;
+  background: radial-gradient(closest-side, rgba(212, 175, 55, 0.30), rgba(212, 175, 55, 0.09) 55%, transparent 78%);
+}
+.hof-hero > :not(.hof-glow) { position: relative; }
+.hof-trophy { width: 56px; height: 56px; margin: 0 auto 14px; color: var(--gold); }
+.hof-trophy svg { width: 100%; height: 100%; display: block; }
+.hof-pill {
+  display: inline-block; padding: 5px 12px; border-radius: 999px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em; color: var(--gold);
+  background: var(--gold-tint); border: 1px solid var(--gold-border);
+}
+.hof-season { margin-top: 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.14em; color: var(--text-2); }
+.hof-champ  { margin-top: 4px; font-size: 36px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+.hof-stats  { margin-top: 10px; font-size: 12.5px; color: var(--text-2); }
+
+.hof-reset {
+  padding: 5px 12px; border-radius: 999px; cursor: pointer; font-size: 11px; font-weight: 600;
+  color: var(--text-2); background: transparent; border: 1px solid var(--border-strong);
+}
+.hof-reset[aria-pressed="true"] { color: var(--gold); border-color: var(--gold-border); background: var(--gold-tint); }
+
+.hof-tally { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.hof-t {
+  text-align: center; padding: 10px 4px 9px; cursor: pointer; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.hof-t[aria-pressed="true"] { border-color: var(--gold-border); background: color-mix(in srgb, var(--gold) 9%, var(--surface)); }
+.hof-t .nm { font-size: 11.5px; font-weight: 600; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 2px; }
+.hof-t .n  { margin-top: 4px; font-size: 28px; font-weight: 700; line-height: 1.05; color: var(--gold); }
+.hof-t .l  { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-2); }
+.hof-t .rs { margin-top: 7px; font-size: 10px; color: var(--text-2); white-space: nowrap; }
+.hof-t .rs b { font-weight: 700; color: var(--text); }
+
+.hof-list { display: flex; flex-direction: column; gap: 8px; }
+.hof-card {
+  position: relative; overflow: hidden; display: grid; grid-template-columns: 66px minmax(0, 1fr); gap: 10px;
+  padding: 14px 14px 14px 0; background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+}
+.hof-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--border-strong); }
+.hof-card.sweep::before { background: var(--gold); }
+.hof-yr { padding-left: 16px; font-size: 24px; font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; }
+.hof-ov { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 700; color: var(--text); }
+.hof-ov svg { width: 18px; height: 18px; flex: none; color: var(--gold); }
+.hof-rs { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 13px; color: var(--text-2); }
+.hof-rs svg { width: 16px; height: 16px; flex: none; }
+.hof-rs small { font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); }
+.hof-ov.won .nm, .hof-rs.won .nm { color: var(--gold); }
+.hof-rs.won { color: var(--gold); }
+.hof-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.hof-badge { font-size: 9.5px; font-weight: 700; letter-spacing: 0.1em; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+.hof-badge.sweep { color: var(--gold); background: var(--gold-tint); border: 1px solid var(--gold-border); }
+.hof-badge.split { color: var(--text); background: var(--surface-2); border: 1px dashed var(--text-3); }
+.hof-badge.inaug { color: var(--text-2); border: 1px solid var(--border-strong); }
+.hof-note { margin-top: 9px; font-size: 11.5px; color: var(--text-2); }
+.hof-streak {
+  display: flex; align-items: center; gap: 10px; padding: 6px 2px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; color: var(--gold); white-space: nowrap;
+}
+.hof-streak::before, .hof-streak::after { content: ""; flex: 1; border-top: 1px dashed var(--gold-border); }
 
 /* power rating board */
 .pwr-row { background: var(--surface-2); border-radius: 10px; padding: 11px 12px; }

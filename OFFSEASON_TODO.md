@@ -57,8 +57,11 @@ committing to any of it.
 
 - [ ] **Championship splash screen** for the end of the season. (A champion
       banner on Home shipped Nov 13, 2026 as a first step.)
-- [ ] **Record of past champions** — including adding historical champions.
-      Needs somewhere to store them (e.g. a field on the Firestore doc).
+- [x] **Record of past champions** — Hall of Champions built (Home → Trophy Case, or the
+      Champions tab): 2019–2026 history lives in `src/championsHistory.js` (one object per
+      season; optional `notes`, `margin`, `inaugural`). Titles, sweeps, split crowns and
+      streaks are calculated from it. TODO each season: add the new year at the top of that
+      list. (Per-player profiles are still under Standings → Trophy case →.)
 - [ ] **Fun achievements — overhaul the system.** (Current badges live in
       `engine/history.js` `ALL_ACHIEVEMENTS`.)
 - [ ] **Pictures of driver numbers?**
