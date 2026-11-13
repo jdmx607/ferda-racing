@@ -2,6 +2,8 @@ import { useState } from "react";
 import { C, PClr } from "../theme";
 import { PLAYERS, SCHEDULE, ACTIVE_SEASON } from "../constants";
 import { getCurrentWeek } from "../engine/events";
+import { formatRaceShort } from "../engine/racetime";
+import { useRaceTimes } from "../hooks/useNascarFeeds";
 import { FerdaLogo } from "./FerdaLogo";
 
 export function getLastWeekResults(data) {
@@ -43,7 +45,6 @@ export function WinnerModal({player, data, onDismiss}) {
 
 // ── Login / "Pit Pass" screen ─────────────────────────────────────────────────
 const LAST_PLAYER_KEY = "ferda:lastPlayer";
-const MONTHS = { Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11 };
 
 function readLastPlayer() {
   try {
@@ -55,9 +56,9 @@ function saveLastPlayer(id) {
   try { localStorage.setItem(LAST_PLAYER_KEY, id); } catch { /* private mode etc. */ }
 }
 
-// Live stage/lap if a race is running, otherwise the next event ("NEXT: CHARLOTTE • SUN 2:30 PM").
-// Start time is the same ~2:30 PM assumption the Home countdown uses.
-function raceStatus(data, timing) {
+// Live stage/lap if a race is running, otherwise the next event ("NEXT: CHARLOTTE • SUN 2:30 PM ET").
+// Start time comes from NASCAR's race list; 2:00 PM ET placeholder until it's announced.
+function raceStatus(data, timing, times) {
   if (!data) return null;
   if (data.liveRace?.active) {
     const wk = SCHEDULE.find(s => s.w === data.liveRace.week);
@@ -71,15 +72,8 @@ function raceStatus(data, timing) {
   }
   const next = SCHEDULE.find(s => s.w === getCurrentWeek(data));
   if (!next) return { text: `${ACTIVE_SEASON} SEASON COMPLETE` };
-  const [mon, day] = (next.d || "").split(" ");
-  let when = "";
-  if (mon in MONTHS) {
-    const dt = new Date(ACTIVE_SEASON, MONTHS[mon], parseInt(day), 14, 30);
-    const dow = dt.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
-    const time = dt.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-    when = ` • ${dow} ${time}`;
-  }
-  return { text: `NEXT: ${next.t.toUpperCase()}${when}` };
+  const when = formatRaceShort(next, times);
+  return { text: `NEXT: ${next.t.toUpperCase()}${when ? ` • ${when}` : ""}` };
 }
 
 const initialsOf = name => name.split(/\s+/).map(w => w[0]).join("").toUpperCase();
@@ -89,7 +83,8 @@ export function LoginScreen({ onLogin, data, timing }) {
   const [pw, setPw]   = useState("");
   const [err, setErr] = useState("");
 
-  const status = raceStatus(data, timing);
+  const raceTimes = useRaceTimes();
+  const status = raceStatus(data, timing, raceTimes);
   const standings = data?.meta?.standings || {};
   const rankOf = id => 1 + PLAYERS.filter(p => (standings[p.id] || 0) > (standings[id] || 0)).length;
 

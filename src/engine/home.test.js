@@ -2,7 +2,8 @@ import { describe, test, expect } from "vitest";
 import { PLAYERS } from "../constants.js";
 import {
   getLineupStatus, getPlayerLineup, getHomeLineupWeek, getSeasonWrapUp,
-  getRaceMvp, shortName, pointsBack, formatRaceWhen,
+  getRaceMvp, shortName, pointsBack,
+  defaultStandingsView, standingsProgress, getStandings, cutlineRank, buildBubble,
 } from "./home.js";
 import { buildSnakeOrder, getDraftOrder } from "./draft.js";
 
@@ -103,10 +104,93 @@ describe("small helpers", () => {
     expect(pointsBack([{ pts: 4962 }, { pts: 4551.2 }, { pts: 4253 }, { pts: 4197 }])).toEqual([0, -410.8, -709, -765]);
   });
 
-  test("race date/time label", () => {
-    expect(formatRaceWhen("Feb 15")).toMatch(/^[A-Z]{3} FEB 15 • 2:30 PM$/);
-    expect(formatRaceWhen(undefined)).toBe("");
+  test("all four players exist", () => { expect(PLAYERS).toHaveLength(4); });
+});
+
+describe("standings views: Regular Season (W1–26) vs The Chase (W27–36)", () => {
+  const build = () => {
+    const d = blank();
+    d.meta.standings  = { justin: 3000, bigmonroe: 3200, monroe: 2900, rich: 3100 };   // frozen at W26
+    d.meta.playoffPts = { justin: 100, bigmonroe: 50, monroe: 0, rich: 20 };
+    d.meta.chasePts   = { justin: 0, bigmonroe: 0, monroe: 0, rich: 0 };
+    d.results.w10 = scoredWeek({ justin: 90, bigmonroe: 80, monroe: 70, rich: 60 });
+    d.results.w10.scored.justin.weeklyWin = true;
+    return d;
+  };
+
+  test("defaults to Regular Season until a Chase race is scored", () => {
+    const d = build();
+    expect(defaultStandingsView(d)).toBe("regular");
+    d.results.w27 = scoredWeek({ justin: 10, bigmonroe: 20, monroe: 30, rich: 40 });
+    expect(defaultStandingsView(d)).toBe("chase");
   });
 
-  test("all four players exist", () => { expect(PLAYERS).toHaveLength(4); });
+  test("progress counts only races in that view", () => {
+    const d = build();
+    d.results.w27 = scoredWeek({ justin: 1, bigmonroe: 2, monroe: 3, rich: 4 });
+    d.results.w28 = scoredWeek({ justin: 1, bigmonroe: 2, monroe: 3, rich: 4 });
+    expect(standingsProgress(d, "regular")).toEqual({ done: 1, total: 26 });
+    expect(standingsProgress(d, "chase")).toEqual({ done: 2, total: 10 });
+  });
+
+  test("regular view ranks by season points; wins only count W1–26", () => {
+    const d = build();
+    d.results.w27 = scoredWeek({ justin: 10, bigmonroe: 20, monroe: 30, rich: 40 });
+    d.results.w27.scored.rich.weeklyWin = true;
+    const reg = getStandings(d, "regular");
+    expect(reg.map(r => r.id)).toEqual(["bigmonroe", "rich", "justin", "monroe"]);
+    expect(reg.find(r => r.id === "justin").wins).toBe(1);
+    expect(reg.find(r => r.id === "rich").wins).toBe(0);      // the W27 win is a Chase win
+  });
+
+  test("chase view ranks by Chase total (1,000 + playoff pts + bonus + Chase pts); wins only count W27+", () => {
+    const d = build();
+    d.meta.chasePts = { justin: 10, bigmonroe: 5, monroe: 300, rich: 80 };
+    d.results.w27 = scoredWeek({ justin: 10, bigmonroe: 5, monroe: 300, rich: 80 });
+    d.results.w27.scored.monroe.weeklyWin = true;
+    const ch = getStandings(d, "chase");
+    expect(ch[0].id).toBe("monroe");                           // 1000 + 0 + 300 beats 1000 + 100 + 10
+    expect(ch[0].pts).toBe(1300);
+    expect(ch.find(r => r.id === "justin").wins).toBe(0);      // the W10 win is a regular-season win
+    expect(ch[0].wins).toBe(1);
+  });
+});
+
+describe("chase cutline (top 16 drivers)", () => {
+  const field = Array.from({ length: 30 }, (_, i) => ({
+    num: String(i + 1), name: `#${i + 1} Driver ${i + 1}`, pos: i + 1, points: 1000 - i * 10, inChase: i < 16,
+  }));
+
+  test("cutline rank by week", () => {
+    expect(cutlineRank(1)).toBe(16);
+    expect(cutlineRank(26)).toBe(16);
+    expect(cutlineRank(27)).toBe(12);
+    expect(cutlineRank(29)).toBe(12);
+    expect(cutlineRank(30)).toBe(8);
+    expect(cutlineRank(33)).toBe(4);
+    expect(cutlineRank(35)).toBe(4);
+    expect(cutlineRank(36)).toBeNull();
+  });
+
+  test("regular season: bubble is ranks 14–19 around 16th, gap measured to the 16th driver", () => {
+    const b = buildBubble(field, 26);
+    expect(b.cut).toBe(16);
+    expect(b.rows.map(r => r.rank)).toEqual([14, 15, 16, 17, 18, 19]);
+    const r16 = b.rows.find(r => r.rank === 16), r17 = b.rows.find(r => r.rank === 17), r15 = b.rows.find(r => r.rank === 15);
+    expect(r16).toMatchObject({ gap: 0, inside: true, bubble: true });
+    expect(r17).toMatchObject({ gap: -10, inside: false, bubble: true });
+    expect(r15).toMatchObject({ gap: 10, inside: true, bubble: false });
+  });
+
+  test("Chase rounds only consider playoff drivers", () => {
+    const b = buildBubble(field, 27);                 // round of 16 → cut to 12
+    expect(b.cut).toBe(12);
+    expect(b.rows.every(r => r.inChase)).toBe(true);
+    expect(buildBubble(field, 36)).toBeNull();
+  });
+
+  test("returns null when the feed has too few drivers", () => {
+    expect(buildBubble(field.slice(0, 10), 5)).toBeNull();
+    expect(buildBubble(null, 5)).toBeNull();
+  });
 });

@@ -102,10 +102,6 @@ export const SCHEDULES = { 2026: SCHEDULE_2026, 2027: SCHEDULE_2027 };
 export const ACTIVE_SEASON = 2026;
 export const SCHEDULE = SCHEDULES[ACTIVE_SEASON];
 
-// Home standings: draw a dashed "CHASE CUTLINE" under this many players (null = off).
-// The league has no player eliminations today, so it stays off until a rule exists.
-export const CHASE_CUTLINE_AFTER = null;
-
 // 2027 mulligan rule: 10 for the year (regular season + playoffs only — never
 // in the exhibitions), plus 2 bonus mulligans in the playoffs for anyone who
 // used none during the regular season. 2026 played without the bonus.

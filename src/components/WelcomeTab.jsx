@@ -1,14 +1,17 @@
 import { useMemo, useState, useEffect } from "react";
 import { PClr, TTL } from "../theme";
-import { PLAYERS, PNAME, SCHEDULE, TRACK_MULTS, ACTIVE_SEASON, ACTIVE_PICKS, CHASE_CUTLINE_AFTER } from "../constants";
+import { PLAYERS, PNAME, SCHEDULE, TRACK_MULTS, ACTIVE_SEASON, ACTIVE_PICKS } from "../constants";
 import { getCurrentWeek, storeFor } from "../engine/events";
 import { getMulliganAllowance } from "../engine/mulligans";
 import { getPowerRankings, getWeeklyFinishes } from "../engine/history";
 import { getSeasonChampion } from "../engine/chase";
 import {
   getLineupStatus, getPlayerLineup, getHomeLineupWeek, getSeasonWrapUp,
-  getRaceMvp, shortName, pointsBack, formatRaceWhen, raceStartMs,
+  getRaceMvp, shortName, pointsBack,
+  getStandings, defaultStandingsView, standingsProgress, buildBubble,
 } from "../engine/home";
+import { raceStartMs, formatRaceWhen, hasRealRaceTime } from "../engine/racetime";
+import { useRaceTimes, useDriverStandings } from "../hooks/useNascarFeeds";
 import { weekLabel } from "../exhibitions";
 import { paintFor, carNumber } from "../driverPaint";
 import { TrophyCaseModal } from "./TrophyCase";
@@ -38,8 +41,8 @@ function ChampionRibbon({ champ, onOpenTrophy }) {
 }
 
 // ── Countdown (ticks every second, mono so it never jitters) ────────────────
-function Countdown({ dateStr }) {
-  const target = raceStartMs(dateStr);
+function Countdown({ entry, times }) {
+  const target = raceStartMs(entry, times);
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
@@ -69,7 +72,7 @@ function TrackPlaceholder() {
 }
 
 // ── 2. Race-week hero ───────────────────────────────────────────────────────
-function RaceHero({ data, player, setTab, isLive, liveScores, liveStatus, timingData, week, onTrophy }) {
+function RaceHero({ data, player, setTab, isLive, liveScores, liveStatus, timingData, week, raceTimes }) {
   const info = SCHEDULE.find(s => s.w === week);
   const pid  = player.id;
 
@@ -114,7 +117,11 @@ function RaceHero({ data, player, setTab, isLive, liveScores, liveStatus, timing
           <div className="hero-meta num">
             {isLive
               ? <><span className="live-dot" />LIVE{stage != null ? ` · STAGE ${stage}` : ""}</>
-              : formatRaceWhen(info.d)}
+              : <span title={hasRealRaceTime(info, raceTimes) ? undefined : "Start time not announced yet — 2:00 PM ET placeholder"}>
+                  {hasRealRaceTime(info, raceTimes)
+                    ? formatRaceWhen(info, raceTimes)
+                    : formatRaceWhen(info, raceTimes).replace("• ", "• ~")}
+                </span>}
           </div>
         </div>
 
@@ -124,7 +131,7 @@ function RaceHero({ data, player, setTab, isLive, liveScores, liveStatus, timing
             ? <div className="hero-clock num">
                 {timingData?.lapsInRace > 0 ? `LAP ${timingData.lapNumber}/${timingData.lapsInRace}` : (liveStatus || "")}
               </div>
-            : <div style={{ marginTop: 6 }}><Countdown dateStr={info.d} /></div>}
+            : <div style={{ marginTop: 6 }}><Countdown entry={info} times={raceTimes} /></div>}
         </div>
       </div>
 
@@ -183,16 +190,22 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
 
   const currentWeek = getCurrentWeek(data);
 
+  // Two separate standings: Regular Season (W1–26) and The Chase (W27–36)
+  const [view, setView] = useState(() => defaultStandingsView(data));
   const standings = useMemo(() =>
-    PLAYERS.map(p => ({
-      ...p,
-      pts:  data.meta.standings[p.id] || 0,
-      pp:   data.meta.playoffPts[p.id] || 0,
-      wins: Object.values(data.results || {}).filter(r => r.scored?.[p.id]?.weeklyWin).length,
-      mullsLeft: getMulliganAllowance(data, p.id, currentWeek).remaining,
-    })).sort((a, b) => b.pts - a.pts),
-  [data, currentWeek]);
-  const back = pointsBack(standings);
+    getStandings(data, view).map(r => ({
+      ...r,
+      name: PNAME[r.id],
+      mullsLeft: getMulliganAllowance(data, r.id, currentWeek).remaining,
+    })),
+  [data, view, currentWeek]);
+  const back     = pointsBack(standings);
+  const progress = standingsProgress(data, view);
+
+  const raceTimes = useRaceTimes();
+  const seasonOver = !SCHEDULE.some(s => s.w === currentWeek);
+  const driverStandings = useDriverStandings(!seasonOver);
+  const bubble = !seasonOver && driverStandings ? buildBubble(driverStandings.drivers, currentWeek) : null;
 
   const seasonChampion = useMemo(() => getSeasonChampion(data), [data]);
   const powerRankings  = useMemo(() => getPowerRankings(data), [data]);
@@ -223,8 +236,15 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
   const lwInfo   = SCHEDULE.find(s => s.w === lw.week);
   const lwScored = storeFor(data, lw.week).results?.["w" + lw.week]?.scored;
 
-  const seasonOver = !SCHEDULE.some(s => s.w === currentWeek);
-  const showCutline = CHASE_CUTLINE_AFTER != null && !seasonOver;
+  // Which players picked each driver this race (for the cutline card)
+  const pickedBy = useMemo(() => {
+    const m = {};
+    PLAYERS.forEach(p => getPlayerLineup(data, heroWeek, p.id).forEach(l => {
+      const n = carNumber(l.driver);
+      (m[n] ||= []).push(p.id);
+    }));
+    return m;
+  }, [data, heroWeek]);
 
   const trend = d => (d > 0 ? { cls: "trend-up", txt: `▲${d}` } : d < 0 ? { cls: "trend-down", txt: `▼${-d}` } : { cls: "trend-flat", txt: "–" });
 
@@ -255,17 +275,26 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
       <RaceHero
         data={data} player={player} setTab={setTab} isLive={isLive}
         liveScores={liveScores} liveStatus={liveStatus} timingData={timingData}
-        week={heroWeek}
+        week={heroWeek} raceTimes={raceTimes}
       />
 
       {/* ── Season standings ───────────────────────────────────────────────── */}
       <div>
-        <div className="sec-head">
-          <span className="label">Season standings</span>
+        <div className="sec-head" style={{ marginBottom: 8 }}>
+          <span className="label">Standings</span>
           <span className="num" style={{ fontSize: 11, color: "var(--text-3)" }}>
-            {Object.keys(data.results || {}).length} / 36 races
+            {view === "chase" ? "W27–36" : "W1–26"} · {progress.done} / {progress.total} races
           </span>
         </div>
+        <div className="seg" role="tablist" aria-label="Standings" style={{ marginBottom: 8 }}>
+          <button aria-pressed={view === "regular"} onClick={() => { setView("regular"); setOpenRow(null); }}>Regular season</button>
+          <button aria-pressed={view === "chase"}   onClick={() => { setView("chase");   setOpenRow(null); }}>The Chase</button>
+        </div>
+        {view === "chase" && progress.done === 0 && (
+          <div style={{ fontSize: 11, color: "var(--text-2)", margin: "0 2px 8px" }}>
+            Chase entry totals — 1,000 + playoff pts + champion bonus. Weeks 27–36 add on top.
+          </div>
+        )}
 
         <div className="stand">
           {standings.map((p, i) => {
@@ -275,7 +304,6 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
             const dScores = lwScored?.[p.id]?.drivers || [];
             return (
               <div key={p.id}>
-                {showCutline && i === CHASE_CUTLINE_AFTER && <div className="cutline">CHASE CUTLINE</div>}
                 <div className={`stand-item${open ? " open" : ""}`}>
                   <button className="stand-row" aria-expanded={open} onClick={() => setOpenRow(open ? null : p.id)}>
                     <span className="num label" style={{ textAlign: "center" }}>{i + 1}</span>
@@ -285,7 +313,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
                         {p.name}{isMe && <span className="you">YOU</span>}
                       </span>
                       <span className="stand-sub num" style={{ display: "block" }}>
-                        {p.wins}W · +{p.pp} PP ·{" "}
+                        {p.wins}W · {view === "chase" ? `+${p.chasePts} chase` : `+${p.pp} PP`} ·{" "}
                         <span style={{ color: p.mullsLeft <= 1 ? "var(--stop)" : p.mullsLeft <= 5 ? "var(--caution)" : "var(--text-2)" }}>M:{p.mullsLeft}</span>
                       </span>
                     </span>
@@ -329,6 +357,42 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
           })}
         </div>
       </div>
+
+      {/* ── Playoff cutline: NASCAR driver standings around the cut ─────────── */}
+      {bubble && (
+        <section className="card" style={{ padding: "12px 14px" }}>
+          <div className="sec-head" style={{ margin: "0 0 6px" }}>
+            <span className="label">Playoff cutline · top {bubble.cut}</span>
+            <span style={{ fontSize: 11, color: "var(--text-3)" }}>NASCAR points</span>
+          </div>
+          <div>
+            {bubble.rows.map(d => (
+              <div key={d.name}>
+                {d.rank === bubble.cut + 1 && <div className="cutline">CHASE CUTLINE</div>}
+                <div className={`bub-row${d.inside ? "" : " out"}`}>
+                  <span className="rk num">{d.rank}</span>
+                  <span className="bar" style={{ "--paint": paintFor(d.name) }} />
+                  <span className="n num">{d.num}</span>
+                  <span className="nm">
+                    {d.name.replace(/^#\S+\s*/, "")}
+                    {(pickedBy[d.num] || []).map(pid2 => (
+                      <span key={pid2} className="dot" title={`${PNAME[pid2]}'s pick`}
+                            style={{ width: 6, height: 6, marginLeft: 5, background: PClr[pid2].accent, display: "inline-block" }} />
+                    ))}
+                  </span>
+                  <span className="pts num">{d.points.toLocaleString()}</span>
+                  <span className="gap num" style={{ color: d.gap === 0 ? "var(--caution)" : d.gap > 0 ? "var(--go)" : "var(--stop)" }}>
+                    {d.gap === 0 ? "CUT" : signed(d.gap)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 10.5, color: "var(--text-3)", marginTop: 6 }}>
+            Points ahead (+) or behind (−) the driver on the cutline. Dots mark FERDA picks this race.
+          </div>
+        </section>
+      )}
 
       {/* ── Power rankings ─────────────────────────────────────────────────── */}
       {powerLeader && (

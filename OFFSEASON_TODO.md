@@ -75,10 +75,15 @@ committing to any of it.
 - [ ] **Points ahead/behind feature** — show how far ahead of / behind the other
       players each person is. (Live tab already shows the gap to the player above
       during a race; this is the broader version — scope TBD.)
-- [ ] **Chase cutline on Home standings** — the Home screen supports a dashed
-      "CHASE CUTLINE" divider (`CHASE_CUTLINE_AFTER` in `constants.js`, currently
-      `null` = off) but the league has no player eliminations. Decide the rule
-      (e.g. bottom N cut after week X) and set it.
+- [x] **Chase cutline** — built as a NASCAR *driver* card on Home ("Playoff cutline"),
+      from the official points feed: top 16 in the regular season, then 12 / 8 / 4
+      for the Chase rounds (W27–29 / W30–32 / W33–35; W36 has no cut). The 12/8/4
+      round sizes are the NASCAR format — confirm that matches the league. Needs the
+      live-points feed, so it only shows when that feed is up.
+- [ ] **Race start times** — looked up from NASCAR's race list (ET) with a 2:00 PM ET
+      placeholder (shown as ~2:00 PM) until a season's list is published. Optional
+      per-race override: add `time:"15:30"` (24h, ET) to a schedule entry. For 2027,
+      the race list endpoint (and 2027 race IDs) won't exist until NASCAR publishes it.
 
 ## Start the 2027 season (the 2027 schedule is built but NOT active)
 

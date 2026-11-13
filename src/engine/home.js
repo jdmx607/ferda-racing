@@ -2,30 +2,10 @@
 // Everything the Home "command center" derives from league data, kept here so
 // it can be unit-tested and reused.
 
-import { PLAYERS, SCHEDULE, ACTIVE_SEASON, ACTIVE_PICKS } from "../constants.js";
+import { PLAYERS, SCHEDULE, ACTIVE_PICKS, PLAYOFF_START_WEEK } from "../constants.js";
 import { storeFor, getCurrentWeek } from "./events.js";
 import { getDraftOrder, buildSnakeOrder } from "./draft.js";
-
-const MONTH_IDX = { Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11 };
-
-// Races start ~2:30 PM local (same assumption the countdown has always used)
-export function raceStartMs(dateStr) {
-  if (!dateStr) return null;
-  const [mon, day] = dateStr.split(" ");
-  if (!(mon in MONTH_IDX)) return null;
-  return new Date(ACTIVE_SEASON, MONTH_IDX[mon], parseInt(day), 14, 30, 0).getTime();
-}
-
-/** "Feb 15" → "SUN FEB 15 • 2:30 PM" */
-export function formatRaceWhen(dateStr) {
-  const ms = raceStartMs(dateStr);
-  if (ms == null) return dateStr || "";
-  const dt = new Date(ms);
-  const dow  = dt.toLocaleDateString("en-US", { weekday: "short" });
-  const md   = dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const time = dt.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  return `${dow} ${md} • ${time}`.toUpperCase();
-}
+import { getChaseTotals } from "./chase.js";
 
 /** Lineup for one player in one event — drafted picks if a draft ran, else saved picks. */
 export function getPlayerLineup(data, week, pid) {
@@ -130,6 +110,76 @@ export function getRaceMvp(playerScored) {
 export function pointsBack(sorted) {
   const lead = sorted[0]?.pts ?? 0;
   return sorted.map(p => Math.round((p.pts - lead) * 10) / 10);   // 0 for the leader, negative otherwise
+}
+
+// ── Standings: Regular Season (W1–26) vs The Chase (W27–36) ───────────────────
+
+const weekOf = key => parseInt(key.replace("w", ""), 10);
+const inView = (view, w) => (view === "chase" ? w >= PLAYOFF_START_WEEK : w < PLAYOFF_START_WEEK);
+
+/** Chase tab by default once any Chase race has been scored, else Regular Season. */
+export function defaultStandingsView(data) {
+  const chaseStarted = Object.entries(data.results || {})
+    .some(([k, wr]) => wr?.scored && weekOf(k) >= PLAYOFF_START_WEEK);
+  return chaseStarted ? "chase" : "regular";
+}
+
+/** Scored races in this view vs how many it has in total (26 regular / 10 Chase). */
+export function standingsProgress(data, view) {
+  const total = view === "chase" ? 36 - PLAYOFF_START_WEEK + 1 : PLAYOFF_START_WEEK - 1;
+  const done = Object.entries(data.results || {})
+    .filter(([k, wr]) => wr?.scored && inView(view, weekOf(k))).length;
+  return { done, total };
+}
+
+/**
+ * The four players ranked for one standings view.
+ *   regular — season points through Week 26 (meta.standings)
+ *   chase   — Chase total: 1,000 + playoff pts + champ bonus + Chase-week points (Weeks 27–36)
+ * Each row: { id, pts, wins (in this view), pp (playoff pts), chasePts }.
+ */
+export function getStandings(data, view) {
+  const chase = view === "chase" ? getChaseTotals(data).totals : null;
+  return PLAYERS.map(p => ({
+    id: p.id,
+    pts: chase ? chase[p.id] : (data.meta?.standings?.[p.id] || 0),
+    pp: data.meta?.playoffPts?.[p.id] || 0,
+    chasePts: data.meta?.chasePts?.[p.id] || 0,
+    wins: Object.entries(data.results || {})
+      .filter(([k, wr]) => inView(view, weekOf(k)) && wr?.scored?.[p.id]?.weeklyWin).length,
+  })).sort((a, b) => b.pts - a.pts);
+}
+
+// ── Chase cutline (NASCAR driver standings) ───────────────────────────────────
+// Regular season: the top 16 drivers make the playoffs, so the cutline is 16th.
+// Chase rounds (NASCAR format): the field is cut to 12 after W29, 8 after W32,
+// 4 after W35; W36 is the title race (no cut).
+
+/** Rank of the last driver still safe at this week's cutline, or null when there is none. */
+export function cutlineRank(week) {
+  if (week < PLAYOFF_START_WEEK) return 16;
+  const round = Math.floor((week - PLAYOFF_START_WEEK) / 3);
+  return [12, 8, 4][round] ?? null;
+}
+
+/**
+ * Drivers around the cutline. `drivers`: [{ num, name, pos, points, inChase }].
+ * Returns { cut, rows:[{...driver, rank, gap, inside, bubble}], cutPoints } or null.
+ * gap = points ahead (+) / behind (−) of the driver sitting on the cutline.
+ */
+export function buildBubble(drivers, week, span = 3) {
+  const cut = cutlineRank(week);
+  if (!cut || !Array.isArray(drivers)) return null;
+  const pool = week >= PLAYOFF_START_WEEK ? drivers.filter(d => d.inChase) : drivers;
+  const sorted = [...pool].sort((a, b) => b.points - a.points || a.pos - b.pos);
+  if (sorted.length < cut) return null;
+  const cutPoints = sorted[cut - 1].points;
+  const start = Math.max(0, cut - span);
+  const rows = sorted.slice(start, cut + span).map((d, i) => {
+    const rank = start + i + 1;
+    return { ...d, rank, gap: d.points - cutPoints, inside: rank <= cut, bubble: rank === cut || rank === cut + 1 };
+  });
+  return { cut, rows, cutPoints };
 }
 
 export { ACTIVE_PICKS };

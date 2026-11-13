@@ -1,7 +1,7 @@
 // NASCAR Data Service
 // ALL external calls route through /api/nascar (Vercel proxy)
 
-import { DRIVERS } from "./constants";
+import { DRIVERS, DRIVER_INFO } from "./constants";
 
 const PROXY = "/api/nascar";
 
@@ -65,6 +65,59 @@ function carToDriver(carNo, firstName, lastName) {
   if (DRIVER_BY_NUM[num]) return DRIVER_BY_NUM[num];
   const name = cleanDriverName([firstName, lastName].filter(Boolean).join(" "));
   return `#${num} ${name}`;
+}
+
+// ─── RACE START TIMES + DRIVER STANDINGS (NASCAR feeds via proxy) ────────────
+
+/**
+ * Scheduled start times, from NASCAR's race list: { "2026-02-15": "14:30", … }
+ * (Eastern time, "HH:MM"). Points races win if two events share a date. Returns
+ * {} when the season isn't published yet — callers fall back to a 2:00 PM placeholder.
+ */
+export async function fetchRaceStartTimes(season) {
+  const data = await tryFetch(cacherUrl(`/${season}/race_list_basic.json`));
+  const list = Array.isArray(data?.series_1) ? data.series_1 : [];
+  const out = {};
+  [...list]
+    .sort((a, b) => (a.race_type_id === 1 ? 0 : 1) - (b.race_type_id === 1 ? 0 : 1))
+    .forEach(r => {
+      const m = String(r.race_date || "").match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})/);
+      if (m && !(m[1] in out)) out[m[1]] = m[2];
+    });
+  return out;
+}
+
+/**
+ * Official NASCAR Cup points standings (the live-points feed — it keeps serving the
+ * latest race's standings between weekends). Returns
+ * { drivers: [{ num, name, pos, points, deltaLeader, inChase, wins }], raceId } or null.
+ */
+export async function fetchDriverStandings() {
+  const rows = await tryFetch(liveUrl("live-points.json"));
+  if (!Array.isArray(rows)) return null;
+  // The feed is Cup-only (its series_id is 0, so don't filter on it). Names carry
+  // decorations like "Larson (C)" (champion); a few rows have a blank car number.
+  const known = [...DRIVERS, ...Object.keys(DRIVER_INFO)];
+  const drivers = rows
+    .filter(r => r.is_points_eligible !== false && Number(r.points_position) > 0)
+    .map(r => {
+      const full = [r.first_name, r.last_name].filter(Boolean).join(" ")
+        .replace(/\s*\([^)]*\)/g, "").replace(/[#*]+\s*$/, "").replace(/\s+/g, " ").trim();
+      const raw = String(r.car_number || "");
+      let num = raw.replace(/^0+/, "") || raw;
+      if (!num) num = known.find(d => d.endsWith(` ${full}`))?.match(/^#(\S+)/)?.[1] || "";
+      return {
+        num,
+        name: num ? `#${num} ${full}` : full,
+        pos: Number(r.points_position),
+        points: Number(r.points) || 0,
+        deltaLeader: Number(r.delta_leader) || 0,
+        inChase: !!r.is_in_chase,
+        wins: parseInt(r.wins, 10) || 0,
+      };
+    })
+    .sort((a, b) => a.pos - b.pos);
+  return drivers.length ? { drivers, raceId: rows[0]?.race_id ?? null } : null;
 }
 
 // ─── PROJECTIONS (SportsDataIO via proxy) ────────────────────────────────────
