@@ -26,11 +26,11 @@ export function ProjectionsTab({data, currentWeek}) {
   Object.values(weekPicks).forEach(pks=>(pks||[]).forEach(pk=>{if(pk.driver||typeof pk==="string")pickedDrivers.add(pk.driver||pk);}));
 
   return (<div style={{padding:20,maxWidth:900,margin:"0 auto",position:"relative",zIndex:1}}>
-    <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:4}}>Driver Projections</h2>
+    <h2 style={{color:C.text,fontFamily:"var(--font-sans)",fontSize:26,marginBottom:4}}>Driver Projections</h2>
     {weekInfo&&<div style={{color:C.dim,fontSize:14,marginBottom:12}}>W{currentWeek} · {weekInfo.r} @ {weekInfo.t} · <span style={{color:TTC[weekInfo.ty],fontWeight:600}}>{TTL[weekInfo.ty]} x{TRACK_MULTS[weekInfo.ty]}</span></div>}
     <div style={{background:C.card,borderRadius:10,padding:14,marginBottom:16,border:"1px solid "+C.border}}>
       <div style={{color:C.dim,fontSize:12,marginBottom:10}}>Pre-race projected fantasy points from SportsDataIO — the same API used for live scoring. Projections are based on historical performance, track history, and practice data. Usually available 2–3 days before the race. <span style={{color:C.accent}}>Drafted drivers are highlighted.</span></div>
-      <button onClick={load} disabled={loading} style={{padding:"10px 20px",borderRadius:8,border:"none",background:loading?"#374151":C.green,color:"#fff",fontFamily:"'Oswald',sans-serif",fontSize:13,fontWeight:700,letterSpacing:1,cursor:loading?"wait":"pointer",textTransform:"uppercase"}}>
+      <button onClick={load} disabled={loading} style={{padding:"10px 20px",borderRadius:8,border:"none",background:loading?"#374151":C.green,color:"#fff",fontFamily:"var(--font-sans)",fontSize:13,fontWeight:700,letterSpacing:1,cursor:loading?"wait":"pointer",textTransform:"uppercase"}}>
         {loading?"⏳ Fetching from SportsDataIO...":"🔌 Load Projections / Test API"}
       </button>
     </div>
@@ -57,7 +57,7 @@ export function ProjectionsTab({data, currentWeek}) {
               <span style={{color:C.dim,fontSize:12,textAlign:"center"}}>{d.projectedStart||"—"}</span>
               <span style={{color:C.dim,fontSize:12,textAlign:"center"}}>{d.projectedFinish||"—"}</span>
               <span style={{color:C.dim,fontSize:12,textAlign:"center"}}>{d.projectedLapsLed||0}</span>
-              <span style={{color:d.projectedPts>=40?C.green:d.projectedPts>=25?C.accent:C.text,fontSize:13,fontWeight:700,textAlign:"right",fontFamily:"'Oswald',sans-serif"}}>{d.projectedPts}</span>
+              <span style={{color:d.projectedPts>=40?C.green:d.projectedPts>=25?C.accent:C.text,fontSize:13,fontWeight:700,textAlign:"right",fontFamily:"var(--font-sans)"}}>{d.projectedPts}</span>
             </div>);
           })}
         </div>

@@ -44,7 +44,7 @@ export function TrophyCaseModal({ pid, data, onClose }) {
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:20 }}>
           <div>
             <div style={{ color:clr.fg+"88", fontSize:11, letterSpacing:2, textTransform:"uppercase" }}>Trophy Case</div>
-            <div style={{ color:clr.fg, fontFamily:"'Oswald',sans-serif", fontSize:28, fontWeight:900 }}>{PNAME[pid]}</div>
+            <div style={{ color:clr.fg, fontFamily:"var(--font-sans)", fontSize:28, fontWeight:900 }}>{PNAME[pid]}</div>
           </div>
           <button onClick={onClose} style={{ background:"transparent", border:"none", color:clr.fg+"88", fontSize:20, cursor:"pointer", lineHeight:1 }}>✕</button>
         </div>
@@ -58,7 +58,7 @@ export function TrophyCaseModal({ pid, data, onClose }) {
             { v:mullLeft,  l:"Mulls Left" },
           ].map(t => (
             <div key={t.l} style={{ background:"rgba(0,0,0,0.2)", borderRadius:r.md, padding:"8px 6px", textAlign:"center" }}>
-              <div style={{ color:clr.fg, fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900 }}>{t.v}</div>
+              <div style={{ color:clr.fg, fontFamily:"var(--font-sans)", fontSize:18, fontWeight:900 }}>{t.v}</div>
               <div style={{ color:clr.fg+"66", fontSize:8, textTransform:"uppercase", letterSpacing:0.5 }}>{t.l}</div>
             </div>
           ))}

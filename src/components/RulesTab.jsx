@@ -19,9 +19,9 @@ export function RulesTab() {
     {t:"Exhibitions (2027)",c:"The Clash (season opener) and the All-Star Race are exhibitions: picks are made, but they never count in the standings. The Clash result sets the Week 1 draft order (last place picks first). The All-Star Race pays playoff points by finish: 1st = 125, 2nd = 50, 3rd = 10, 4th = 0."},
   ];
   return (<div style={{padding:20,maxWidth:700,margin:"0 auto",position:"relative",zIndex:1}}>
-    <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:16}}>Scoring Rules</h2>
+    <h2 style={{color:C.text,fontFamily:"var(--font-sans)",fontSize:26,marginBottom:16}}>Scoring Rules</h2>
     {rules.map(r=>(<div key={r.t} style={{background:C.card,borderRadius:10,padding:"12px 16px",marginBottom:8,border:"1px solid "+C.border}}>
-      <div style={{color:C.accent,fontWeight:700,fontSize:13,marginBottom:3,fontFamily:"'Barlow Condensed',sans-serif",letterSpacing:1}}>{r.t}</div>
+      <div style={{color:C.accent,fontWeight:700,fontSize:13,marginBottom:3,fontFamily:"var(--font-sans)",letterSpacing:1}}>{r.t}</div>
       <div style={{color:C.dim,fontSize:13,lineHeight:1.5}}>{r.c}</div>
     </div>))}
   </div>);

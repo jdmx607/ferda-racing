@@ -27,7 +27,7 @@ function DraftGate({ opensAt, now, weekInfo }) {
       border:`1px solid ${C.border}`, marginBottom:16,
     }}>
       <div style={{ fontSize:36, marginBottom:10 }}>🔒</div>
-      <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:900, marginBottom:6 }}>
+      <div style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:20, fontWeight:900, marginBottom:6 }}>
         Draft Opens Monday at 5:00 PM
       </div>
       {weekInfo && (
@@ -42,7 +42,7 @@ function DraftGate({ opensAt, now, weekInfo }) {
               background:C.accent+"18", border:`1px solid ${C.accent}44`,
               borderRadius:r.md, padding:"8px 12px", minWidth:48,
             }}>
-              <div style={{ fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900, color:C.accent, lineHeight:1 }}>
+              <div style={{ fontFamily:"var(--font-sans)", fontSize:22, fontWeight:900, color:C.accent, lineHeight:1 }}>
                 {String(v).padStart(2, "0")}
               </div>
             </div>
@@ -179,7 +179,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
           border:`1px solid ${C.border}`,
         }}>
           <div style={{ fontSize:36, marginBottom:8 }}>🏁</div>
-          <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:900, marginBottom:6 }}>
+          <div style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:20, fontWeight:900, marginBottom:6 }}>
             Season Complete
           </div>
           <div style={{ color:C.dim, fontSize:13 }}>No draft right now — see you next season.</div>
@@ -193,7 +193,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
 
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div style={{ marginBottom:16 }}>
-        <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:0 }}>
+        <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:0 }}>
           {weekName(currentWeek)} Draft
         </h2>
         {weekInfo && (
@@ -216,7 +216,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
           background:C.accent+"18", borderRadius:r.md, padding:"14px 18px", marginBottom:16,
           border:`1px solid ${C.accent}44`, textAlign:"center",
         }}>
-          <div style={{ color:C.accent, fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:700 }}>
+          <div style={{ color:C.accent, fontFamily:"var(--font-sans)", fontSize:18, fontWeight:700 }}>
             🏁 Draft Complete — All picks locked for {weekLabel(currentWeek)}
           </div>
         </div>
@@ -230,7 +230,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
         }}>
           <div>
             <div style={{
-              fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:900,
+              fontFamily:"var(--font-sans)", fontSize:20, fontWeight:900,
               color: isMyTurn ? "#10b981" : PC[currentTurn?.pid],
               letterSpacing:1,
             }}>
@@ -254,7 +254,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                 </div>
               ) : msRemaining !== null && (
                 <div style={{
-                  fontSize:10, marginTop:4, fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+                  fontSize:10, marginTop:4, fontFamily:"var(--font-sans)", letterSpacing:1,
                   color: msRemaining < 2*3600000 ? C.red : msRemaining < 6*3600000 ? C.accent : C.muted,
                 }}>
                   ⏱ {fmtCountdown(msRemaining)} left
@@ -264,7 +264,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
           )}
           {isMyTurn && msRemaining !== null && !timerExpired && (
             <div style={{
-              fontSize:10, fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+              fontSize:10, fontFamily:"var(--font-sans)", letterSpacing:1,
               color: msRemaining < 2*3600000 ? C.red : msRemaining < 6*3600000 ? C.accent : C.muted,
               padding:"4px 10px", borderRadius:r.pill,
               background: msRemaining < 2*3600000 ? C.red+"15" : "transparent",
@@ -306,7 +306,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                 display:"flex", alignItems:"center", justifyContent:"space-between",
               }}>
                 <div>
-                  <div style={{ color:PClr[pid].fg, fontWeight:700, fontSize:13, fontFamily:"'Oswald',sans-serif", letterSpacing:0.5 }}>
+                  <div style={{ color:PClr[pid].fg, fontWeight:700, fontSize:13, fontFamily:"var(--font-sans)", letterSpacing:0.5 }}>
                     {PNAME[pid]}
                   </div>
                   <div style={{ color:PClr[pid].fg+"66", fontSize:9 }}>#{i+1} · {picks.length}/{ACTIVE_PICKS}</div>
@@ -364,7 +364,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                 background:pool === t.id ? C.accent : "transparent",
                 color:pool === t.id ? "#000" : C.dim,
                 fontSize:11, fontWeight:700, cursor:"pointer",
-                fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+                fontFamily:"var(--font-sans)", letterSpacing:1,
               }}>{t.label} ({t.n})</button>
             ))}
           </div>
@@ -435,7 +435,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                 border:`1px solid ${C.border}`,
                 borderLeft:`3px solid ${PClr[d.pid].fg}55`,
               }}>
-                <span style={{ fontSize:10, color:C.muted, width:26, flexShrink:0, fontFamily:"'Oswald',sans-serif" }}>
+                <span style={{ fontSize:10, color:C.muted, width:26, flexShrink:0, fontFamily:"var(--font-sans)" }}>
                   #{draftState.length - i}
                 </span>
                 <div style={{
@@ -457,7 +457,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
         <div style={{ marginTop:24 }}>
           {/* Header */}
           <div style={{
-            background:`linear-gradient(135deg,#001a10,${C.bg})`,
+            background:C.card,
             borderRadius:`${r.lg}px ${r.lg}px 0 0`,
             padding:"16px 20px",
             border:`1px solid ${TTC[analysis.trackType]}44`,
@@ -467,7 +467,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
             <div style={{ color:TTC[analysis.trackType], fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
               📊 Lineup Analysis — {weekLabel(analysis.week)}
             </div>
-            <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900, letterSpacing:1 }}>
+            <div style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:18, fontWeight:900, letterSpacing:1 }}>
               {analysis.raceName}
             </div>
             <div style={{ color:C.muted, fontSize:11, marginTop:3 }}>
@@ -491,7 +491,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                   <div key={p.id}>
                     <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:4 }}>
                       <span style={{
-                        fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:900,
+                        fontFamily:"var(--font-sans)", fontSize:16, fontWeight:900,
                         color:isFirst ? C.accent : C.muted,
                         width:22, flexShrink:0,
                       }}>{i+1}</span>
@@ -499,7 +499,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                         width:28, height:28, borderRadius:"50%", flexShrink:0,
                         background:PClr[p.id].bg, border:`2px solid ${PClr[p.id].fg}44`,
                         display:"flex", alignItems:"center", justifyContent:"center",
-                        fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:900,
+                        fontFamily:"var(--font-sans)", fontSize:12, fontWeight:900,
                         color:PClr[p.id].fg,
                       }}>{PNAME[p.id][0]}</div>
                       <span style={{ color:PClr[p.id].fg === "#AA0000" ? C.text : PClr[p.id].fg, fontWeight:700, fontSize:14, flex:1 }}>
@@ -507,7 +507,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                         {isFirst && <span style={{ color:C.accent, fontSize:10, marginLeft:8 }}>PAPER FAVORITE</span>}
                       </span>
                       <span style={{
-                        fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900,
+                        fontFamily:"var(--font-sans)", fontSize:18, fontWeight:900,
                         color:isFirst ? C.accent : C.text,
                       }}>{p.projectedTotal}</span>
                     </div>
@@ -541,7 +541,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                   background:PClr[p.id].bg, padding:"12px 14px",
                   borderRight: idx % 2 === 0 ? `1px solid ${C.border}` : "none",
                 }}>
-                  <div style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:14, fontWeight:900, letterSpacing:0.5, marginBottom:8 }}>
+                  <div style={{ color:PClr[p.id].fg, fontFamily:"var(--font-sans)", fontSize:14, fontWeight:900, letterSpacing:0.5, marginBottom:8 }}>
                     {PNAME[p.id].toUpperCase()}
                     <span style={{ color:PClr[p.id].fg+"66", fontSize:9, fontWeight:400, marginLeft:6 }}>
                       {p.projectedTotal} proj
@@ -571,7 +571,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                         </div>
                         <div style={{ textAlign:"right", flexShrink:0 }}>
                           <span style={{
-                            fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:700,
+                            fontFamily:"var(--font-sans)", fontSize:13, fontWeight:700,
                             color:d.avgScore>=40?C.accent:d.avgScore>=20?C.green:PClr[p.id].fg+"88",
                           }}>
                             {d.avgScore>0?d.avgScore:"—"}
@@ -607,7 +607,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                       background: i === 0 ? C.accent+"22" : "transparent",
                       border:`1px solid ${i === 0 ? C.accent : C.border}`,
                       display:"flex", alignItems:"center", justifyContent:"center",
-                      fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700,
+                      fontFamily:"var(--font-sans)", fontSize:12, fontWeight:700,
                       color: i === 0 ? C.accent : C.muted,
                     }}>{i + 1}</div>
                     <div>
@@ -621,7 +621,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                   </div>
                   <div style={{ textAlign:"right" }}>
                     <div style={{
-                      fontFamily:"'Oswald',sans-serif", fontWeight:900,
+                      fontFamily:"var(--font-sans)", fontWeight:900,
                       fontSize: i === 0 ? 24 : 18,
                       color: i === 0 ? C.accent : C.text,
                     }}>

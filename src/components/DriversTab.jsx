@@ -32,7 +32,7 @@ function DriverRow({ driver, note, hideTeam }) {
     }}>
       <div style={{
         width:38, flexShrink:0, textAlign:"center", color:C.accent,
-        fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:700, lineHeight:1,
+        fontFamily:"var(--font-sans)", fontSize:18, fontWeight:700, lineHeight:1,
       }}>{num || "—"}</div>
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{ color:C.text, fontSize:14, fontWeight:700, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
@@ -50,7 +50,7 @@ function Section({ title, count, accent = C.accent, children, empty }) {
     <div style={{ marginBottom:24 }}>
       <div style={{ display:"flex", alignItems:"baseline", gap:8, marginBottom:8 }}>
         <h3 style={{
-          margin:0, color:accent, fontFamily:"'Oswald',sans-serif",
+          margin:0, color:accent, fontFamily:"var(--font-sans)",
           fontSize:15, letterSpacing:2, textTransform:"uppercase",
         }}>{title}</h3>
         <span style={{ color:C.muted, fontSize:12 }}>{count}</span>
@@ -98,14 +98,14 @@ export function DriversTab() {
       border:`1px solid ${view === id ? C.accent : C.border}`,
       background:view === id ? C.accent : "transparent",
       color:view === id ? "#000" : C.dim,
-      fontSize:11, fontWeight:700, fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+      fontSize:11, fontWeight:700, fontFamily:"var(--font-sans)", letterSpacing:1,
     }}>{label}</button>
   );
 
   return (
     <div style={{ padding:20, maxWidth:760, margin:"0 auto", position:"relative", zIndex:1 }}>
       <div style={{ display:"flex", alignItems:"baseline", justifyContent:"space-between", flexWrap:"wrap", gap:8, marginBottom:4 }}>
-        <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:0 }}>
+        <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:0 }}>
           Drivers
         </h2>
         <span style={{ color:C.muted, fontSize:12 }}>

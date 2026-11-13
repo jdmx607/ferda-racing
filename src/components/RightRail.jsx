@@ -51,7 +51,7 @@ export function RightRail({ data }) {
                 <span style={{ color: PClr[s.id].fg + "88", fontSize: 10, fontWeight: 700, width: 14 }}>{i + 1}</span>
                 <span style={{ color: PClr[s.id].fg, fontSize: 12, fontWeight: 700 }}>{PNAME[s.id]}</span>
               </div>
-              <span style={{ color: PClr[s.id].fg, fontFamily: "'Oswald',sans-serif", fontSize: 14, fontWeight: 900 }}>
+              <span style={{ color: PClr[s.id].fg, fontFamily: "var(--font-sans)", fontSize: 14, fontWeight: 900 }}>
                 {s.pts.toLocaleString()}
               </span>
             </div>

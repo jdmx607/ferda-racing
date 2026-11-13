@@ -62,7 +62,7 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
   if (isEx) {
     return (
       <div style={{ padding:20, maxWidth:700, margin:"0 auto", position:"relative", zIndex:1 }}>
-        <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:"0 0 16px" }}>
+        <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:"0 0 16px" }}>
           Mulligans
         </h2>
         <div style={{
@@ -83,7 +83,7 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
     <div style={{ padding:20, maxWidth:700, margin:"0 auto", position:"relative", zIndex:1 }}>
 
       {/* ── Header ──────────────────────────────────────────────────────────── */}
-      <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:"0 0 16px" }}>
+      <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:"0 0 16px" }}>
         Mulligans
       </h2>
 
@@ -95,7 +95,7 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14 }}>
           <div>
             <div style={{
-              color:mullColor, fontFamily:"'Oswald',sans-serif",
+              color:mullColor, fontFamily:"var(--font-sans)",
               fontSize:32, fontWeight:900, lineHeight:1,
             }}>
               {remaining}
@@ -162,7 +162,7 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
         border:`2px solid ${clr.bg === "#000000" ? C.border : clr.bg+"66"}`,
       }}>
         <div style={{
-          color:clr.fg, fontFamily:"'Oswald',sans-serif",
+          color:clr.fg, fontFamily:"var(--font-sans)",
           fontSize:13, fontWeight:700, letterSpacing:1,
           textTransform:"uppercase", marginBottom:10,
         }}>
@@ -393,7 +393,7 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
                   width:"100%", padding:"14px 0", borderRadius:r.md,
                   border:"none", background:saving ? C.border : C.accent,
                   color: saving ? C.dim : "#000",
-                  fontFamily:"'Oswald',sans-serif", fontSize:15, fontWeight:900,
+                  fontFamily:"var(--font-sans)", fontSize:15, fontWeight:900,
                   letterSpacing:2, textTransform:"uppercase", cursor:saving ? "wait" : "pointer",
                   transition:"all 0.15s ease",
                 }}

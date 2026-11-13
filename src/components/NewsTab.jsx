@@ -114,7 +114,7 @@ export function NewsTab() {
   return (
     <div style={{ padding:20, maxWidth:760, margin:"0 auto", position:"relative", zIndex:1 }}>
       <div style={{ marginBottom:20 }}>
-        <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:0 }}>
+        <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:0 }}>
           NASCAR News
         </h2>
         <div style={{ color:C.dim, fontSize:13, marginTop:4 }}>

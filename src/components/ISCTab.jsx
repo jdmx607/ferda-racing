@@ -207,7 +207,7 @@ export function ISCTab({ data, user, onSave }) {
       <div style={{ marginBottom:20 }}>
         <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
           <div>
-            <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:0 }}>
+            <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:0 }}>
               In-Season Challenge
             </h2>
             <div style={{ color:C.dim, fontSize:13, marginTop:4 }}>
@@ -247,7 +247,7 @@ export function ISCTab({ data, user, onSave }) {
             background:view===v.id ? C.accent : "transparent",
             color:view===v.id ? "#000" : C.dim,
             fontSize:11, fontWeight:700, cursor:"pointer",
-            fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+            fontFamily:"var(--font-sans)", letterSpacing:1,
           }}>{v.label}</button>
         ))}
       </div>
@@ -266,7 +266,7 @@ export function ISCTab({ data, user, onSave }) {
                   background:round===rnd.id ? C.card : "transparent",
                   color:round===rnd.id ? C.text : C.muted,
                   fontSize:11, fontWeight:700, cursor:"pointer",
-                  fontFamily:"'Oswald',sans-serif", position:"relative",
+                  fontFamily:"var(--font-sans)", position:"relative",
                 }}>
                   <div>{rnd.label}</div>
                   <div style={{ color:C.dim, fontSize:9, fontWeight:400, marginTop:1 }}>{rnd.track}</div>
@@ -393,10 +393,10 @@ export function ISCTab({ data, user, onSave }) {
                         width:36, height:36, borderRadius:r.md, flexShrink:0,
                         background:PClr[p.id].fg+"22", border:`2px solid ${PClr[p.id].fg}44`,
                         display:"flex", alignItems:"center", justifyContent:"center",
-                        fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900, color:PClr[p.id].fg,
+                        fontFamily:"var(--font-sans)", fontSize:18, fontWeight:900, color:PClr[p.id].fg,
                       }}>{i+1}</div>
                       <div>
-                        <div style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900, lineHeight:1 }}>
+                        <div style={{ color:PClr[p.id].fg, fontFamily:"var(--font-sans)", fontSize:18, fontWeight:900, lineHeight:1 }}>
                           {PNAME[p.id].toUpperCase()}
                         </div>
                         <div style={{ color:PClr[p.id].fg+"77", fontSize:10, marginTop:3 }}>
@@ -412,7 +412,7 @@ export function ISCTab({ data, user, onSave }) {
                     </div>
                     <div style={{ textAlign:"right" }}>
                       <div style={{
-                        fontFamily:"'Oswald',sans-serif", fontSize:34, fontWeight:900, lineHeight:1,
+                        fontFamily:"var(--font-sans)", fontSize:34, fontWeight:900, lineHeight:1,
                         color: p.score > 0 ? C.accent : PClr[p.id].fg,
                       }}>{p.score}</div>
                       <div style={{ color:PClr[p.id].fg+"44", fontSize:9, textTransform:"uppercase" }}>ISC pts</div>

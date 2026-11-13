@@ -38,7 +38,7 @@ export function FerdaLogo({ size = "large" }) {
         ))}
       </div>
       <span style={{
-        fontFamily:"'Oswald',sans-serif", fontSize:fs, fontWeight:900, fontStyle:"italic",
+        fontFamily:"var(--font-sans)", fontSize:fs, fontWeight:900, fontStyle:"italic",
         color:"#ffffff", letterSpacing: lg ? 4 : 2, lineHeight:1, transform:"skewX(-6deg)",
       }}>FERDA</span>
     </div>
@@ -61,7 +61,7 @@ export function MemorialBackdrop() {
     <div aria-hidden style={{ position:"fixed", inset:0, zIndex:0, pointerEvents:"none", overflow:"hidden" }}>
       <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:"100%" }}>
         <svg viewBox={`0 0 ${vw} 280`} style={{ width:"min(70vw,520px)", opacity:0.05 }} xmlns="http://www.w3.org/2000/svg">
-          <text x={cx} y="240" textAnchor="middle" fontFamily="'Oswald',sans-serif"
+          <text x={cx} y="240" textAnchor="middle" fontFamily="var(--font-sans)"
             fontSize="260" fontWeight="900" fontStyle="italic"
             fill="none" stroke={info.color} strokeWidth="6">
             {info.num}
@@ -72,7 +72,7 @@ export function MemorialBackdrop() {
         position:"absolute", bottom:80, left:0, right:0,
         textAlign:"center", color:"rgba(255,255,255,0.05)",
         fontSize:10, letterSpacing:3, textTransform:"uppercase",
-        fontFamily:"'Oswald',sans-serif",
+        fontFamily:"var(--font-sans)",
       }}>
         #{info.num} · {info.name} · {info.team}
       </div>

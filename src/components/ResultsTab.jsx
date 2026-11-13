@@ -10,12 +10,12 @@ const BONUS_CHIP = {
   "Top 5":    "#10b981", "Top 10":   "#10b981",
   "Pole":     "#f59e0b", "S1 Win":   "#f59e0b", "S2 Win": "#f59e0b", "S3 Win": "#f59e0b",
   "Fast Lap": "#8b5cf6", "Most Led": "#3b82f6",
-  "SWEEP!":   "#f59e0b", "Led a lap":"#475569",
-  "DNF":      "#94a3b8", "DQ":       "#ef4444",
+  "SWEEP!":   "#f59e0b", "Led a lap":"#6B7280",
+  "DNF":      "#949BA8", "DQ":       "#ef4444",
 };
 
 function ScoreChip({ label, pts }) {
-  const col = BONUS_CHIP[label] || (pts > 0 ? "#10b981" : pts < 0 ? "#ef4444" : "#475569");
+  const col = BONUS_CHIP[label] || (pts > 0 ? "#10b981" : pts < 0 ? "#ef4444" : "#6B7280");
   const short = label === "SWEEP!" ? "💫 SWEEP" : label;
   return (
     <span style={{
@@ -37,7 +37,7 @@ function DriverResultRow({ d, playerBg, playerFg }) {
   return (
     <div style={{
       padding:"10px 12px",
-      background: playerBg === "#000000" ? "#111827" : "rgba(0,0,0,0.2)",
+      background: playerBg === "#000000" ? "#181B22" : "rgba(0,0,0,0.2)",
       borderRadius:r.sm,
       borderLeft:`3px solid ${isBig ? "#f59e0b88" : d.total > 0 ? playerFg+"44" : "#ef444444"}`,
       display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8,
@@ -47,7 +47,7 @@ function DriverResultRow({ d, playerBg, playerFg }) {
           <span style={{
             color:d.dnr ? playerFg+"55" : playerFg,
             fontWeight:700, fontSize:13,
-            fontFamily:"'Barlow Condensed',sans-serif",
+            fontFamily:"var(--font-sans)",
           }}>
             {d.driver}
             {isMemorial(d.driver) && " 🕊️"}
@@ -60,7 +60,7 @@ function DriverResultRow({ d, playerBg, playerFg }) {
         </div>
       </div>
       <div style={{
-        fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900,
+        fontFamily:"var(--font-sans)", fontSize:22, fontWeight:900,
         color: d.total >= 0 ? (isBig ? "#f59e0b" : "#10b981") : "#ef4444",
         lineHeight:1, flexShrink:0,
       }}>
@@ -131,7 +131,7 @@ export function ResultsTab({ data }) {
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16, flexWrap:"wrap", gap:12 }}>
-        <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, margin:0, letterSpacing:1 }}>
+        <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, margin:0, letterSpacing:1 }}>
           Results
         </h2>
         {/* Week chips — scrollable row */}
@@ -143,7 +143,7 @@ export function ResultsTab({ data }) {
               background: week === w ? C.accent : "transparent",
               color: week === w ? "#000" : C.dim,
               fontSize:11, fontWeight:700, cursor:"pointer",
-              fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+              fontFamily:"var(--font-sans)", letterSpacing:1,
               transition:"all 0.15s ease",
             }}>
               {weekLabel(w)}
@@ -222,7 +222,7 @@ export function ResultsTab({ data }) {
                       </div>
                       <div>
                         <div style={{
-                          color:PClr[pid].fg, fontFamily:"'Oswald',sans-serif",
+                          color:PClr[pid].fg, fontFamily:"var(--font-sans)",
                           fontSize:22, fontWeight:900, letterSpacing:1, lineHeight:1,
                         }}>
                           {PNAME[pid].toUpperCase()}
@@ -269,7 +269,7 @@ export function ResultsTab({ data }) {
                     <div style={{ textAlign:"right" }}>
                       <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"flex-end", gap:8 }}>
                         <div style={{
-                          fontFamily:"'Oswald',sans-serif", fontSize:40, fontWeight:900, lineHeight:1,
+                          fontFamily:"var(--font-sans)", fontSize:40, fontWeight:900, lineHeight:1,
                           color: isWinner ? C.accent : PClr[pid].fg,
                         }}>
                           {ps.total}
@@ -279,7 +279,7 @@ export function ResultsTab({ data }) {
                             width:34, height:34, borderRadius:r.sm, flexShrink:0,
                             background:gradeColor+"22", border:`1px solid ${gradeColor}55`,
                             display:"flex", alignItems:"center", justifyContent:"center",
-                            fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900,
+                            fontFamily:"var(--font-sans)", fontSize:18, fontWeight:900,
                             color:gradeColor, marginBottom:2,
                           }}>
                             {grade}
@@ -373,14 +373,14 @@ export function ResultsTab({ data }) {
                 }}>
                   <span style={{
                     color:i === 0 ? C.accent : C.muted,
-                    fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:700, width:24, flexShrink:0,
+                    fontFamily:"var(--font-sans)", fontSize:13, fontWeight:700, width:24, flexShrink:0,
                   }}>{i + 1}</span>
                   <span style={{ color:C.text, fontWeight:700, fontSize:13, flex:1 }}>
                     {d.name}
                     {i === 0 && <span style={{ marginLeft:6, fontSize:11 }}>👑</span>}
                   </span>
                   <span style={{
-                    fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900,
+                    fontFamily:"var(--font-sans)", fontSize:18, fontWeight:900,
                     color:i === 0 ? C.accent : C.text, flexShrink:0,
                   }}>+{d.total}</span>
                   {wasPicked ? (

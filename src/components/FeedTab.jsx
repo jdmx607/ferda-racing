@@ -6,7 +6,7 @@ import { generateFullRecap, generateWeekPreview, getSeasonStorylines } from "../
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function posColor(pos) {
-  return pos === 1 ? "#f59e0b" : pos === 2 ? "#94a3b8" : pos === 3 ? "#cd7f32" : "#ef4444";
+  return pos === 1 ? "#f59e0b" : pos === 2 ? "#949BA8" : pos === 3 ? "#cd7f32" : "#ef4444";
 }
 
 function PidChip({ pid }) {
@@ -42,7 +42,7 @@ function RecapCard({ recap }) {
 
       {/* ── Week header ──────────────────────────────────────────────── */}
       <div style={{
-        background:"linear-gradient(135deg, #1a1000, #0a0e17)",
+        background:C.card,
         borderRadius:r.lg, padding:"18px 20px",
         border:`1px solid ${C.accent}44`,
         boxShadow:shadow.glow(C.accent),
@@ -50,7 +50,7 @@ function RecapCard({ recap }) {
         <div style={{ color:C.accent, fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
           Race Recap — W{recap.week}
         </div>
-        <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900, letterSpacing:1 }}>
+        <div style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:22, fontWeight:900, letterSpacing:1 }}>
           {recap.raceName}
         </div>
         <div style={{ color:C.dim, fontSize:13, marginTop:3 }}>
@@ -72,7 +72,7 @@ function RecapCard({ recap }) {
               <div key={s.pid}>
                 <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:3 }}>
                   <span style={{
-                    fontFamily:"'Oswald',sans-serif", fontSize:14, fontWeight:900,
+                    fontFamily:"var(--font-sans)", fontSize:14, fontWeight:900,
                     color:posColor(s.position), width:18, textAlign:"center", flexShrink:0,
                   }}>
                     {s.weeklyWin ? "👑" : s.position}
@@ -81,7 +81,7 @@ function RecapCard({ recap }) {
                     width:28, height:28, borderRadius:"50%", flexShrink:0,
                     background:PClr[s.pid].bg, border:`2px solid ${PClr[s.pid].fg}44`,
                     display:"flex", alignItems:"center", justifyContent:"center",
-                    fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:900,
+                    fontFamily:"var(--font-sans)", fontSize:12, fontWeight:900,
                     color:PClr[s.pid].fg,
                   }}>{PNAME[s.pid][0]}</div>
                   <span style={{ color:PClr[s.pid].fg === "#AA0000" ? C.text : PClr[s.pid].fg, fontWeight:700, fontSize:14, flex:1 }}>
@@ -89,7 +89,7 @@ function RecapCard({ recap }) {
                     {s.weeklyWin && <span style={{ color:C.accent, fontSize:10, marginLeft:6 }}>+25 PP</span>}
                   </span>
                   <span style={{
-                    fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900,
+                    fontFamily:"var(--font-sans)", fontSize:18, fontWeight:900,
                     color:posColor(s.position),
                   }}>{s.total}</span>
                 </div>
@@ -203,7 +203,7 @@ function RecapCard({ recap }) {
                 borderRadius:r.sm, border:`1px solid ${i===0?C.accent+"33":C.border+"44"}`,
               }}>
                 <span style={{
-                  fontFamily:"'Oswald',sans-serif", fontSize:14, fontWeight:900,
+                  fontFamily:"var(--font-sans)", fontSize:14, fontWeight:900,
                   color:i===0?C.accent:C.muted, width:20, flexShrink:0,
                 }}>
                   {i+1}
@@ -212,7 +212,7 @@ function RecapCard({ recap }) {
                   {d.name}{i===0&&" 👑"}
                 </span>
                 <span style={{
-                  fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900,
+                  fontFamily:"var(--font-sans)", fontSize:18, fontWeight:900,
                   color:i===0?C.accent:C.green,
                 }}>
                   +{d.total}
@@ -274,7 +274,7 @@ function PreviewCard({ preview }) {
 
       {/* ── Race header ──────────────────────────────────────────────── */}
       <div style={{
-        background:"linear-gradient(135deg, #001a10, #0a0e17)",
+        background:C.card,
         borderRadius:r.lg, padding:"18px 20px",
         border:`1px solid ${TTC[trackType]}44`,
         boxShadow:shadow.glow(TTC[trackType]),
@@ -282,7 +282,7 @@ function PreviewCard({ preview }) {
         <div style={{ color:TTC[trackType], fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
           Up Next — W{preview.week}
         </div>
-        <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900, letterSpacing:1 }}>
+        <div style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:22, fontWeight:900, letterSpacing:1 }}>
           {raceName}
         </div>
         <div style={{ color:C.dim, fontSize:13, marginTop:3 }}>
@@ -310,7 +310,7 @@ function PreviewCard({ preview }) {
             }}>
               <div style={{ color:PClr[pid].fg+"77", fontSize:9, marginBottom:2 }}>#{i+1}</div>
               <div style={{
-                color:PClr[pid].fg, fontFamily:"'Oswald',sans-serif",
+                color:PClr[pid].fg, fontFamily:"var(--font-sans)",
                 fontSize:13, fontWeight:700,
               }}>
                 {PNAME[pid]}
@@ -343,7 +343,7 @@ function PreviewCard({ preview }) {
                   border:`1px solid ${i===0?C.accent+"33":C.border+"33"}`,
                 }}>
                   <span style={{
-                    fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:900,
+                    fontFamily:"var(--font-sans)", fontSize:13, fontWeight:900,
                     color:i===0?C.accent:C.muted, width:20, flexShrink:0,
                   }}>{i+1}</span>
                   <div style={{ flex:1, minWidth:0 }}>
@@ -359,7 +359,7 @@ function PreviewCard({ preview }) {
                   </div>
                   <div style={{ textAlign:"right", flexShrink:0 }}>
                     <div style={{
-                      fontFamily:"'Oswald',sans-serif", fontSize:15, fontWeight:900,
+                      fontFamily:"var(--font-sans)", fontSize:15, fontWeight:900,
                       color:i===0?C.accent:C.text,
                     }}>{s.avgScore}</div>
                     <div style={{ color:C.muted, fontSize:9 }}>{s.appearances} race{s.appearances>1?"s":""}</div>
@@ -570,7 +570,7 @@ export function FeedTab({ data }) {
 
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div style={{ marginBottom:20 }}>
-        <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:0 }}>
+        <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:0 }}>
           Feed
         </h2>
         <div style={{ color:C.dim, fontSize:13, marginTop:4 }}>
@@ -587,7 +587,7 @@ export function FeedTab({ data }) {
             background:section===s.id ? C.accent : "transparent",
             color:section===s.id ? "#000" : C.dim,
             fontSize:11, fontWeight:700, cursor:"pointer",
-            fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+            fontFamily:"var(--font-sans)", letterSpacing:1,
             transition:"all 0.12s ease",
           }}>{s.label}</button>
         ))}
@@ -603,7 +603,7 @@ export function FeedTab({ data }) {
               background:archiveWeek===w||(!archiveWeek&&w===lastWeek) ? C.accent : "transparent",
               color:archiveWeek===w||(!archiveWeek&&w===lastWeek) ? "#000" : C.dim,
               fontSize:11, fontWeight:700, cursor:"pointer",
-              fontFamily:"'Oswald',sans-serif",
+              fontFamily:"var(--font-sans)",
               transition:"all 0.12s ease",
             }}>W{w}</button>
           ))}

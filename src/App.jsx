@@ -19,7 +19,7 @@ import { notifyDraftTurn, notifyRaceScored, notifyPlayer } from "./hooks/useNoti
 
 // ── Eagerly-loaded shell + high-traffic tabs ───────────────────────────────────
 // These are in the main bundle — they render on first load or first tap.
-import { MemorialBackdrop, FerdaLogo } from "./components/FerdaLogo";
+import { FerdaLogo } from "./components/FerdaLogo";
 import { LoginScreen, WinnerModal, RichRoastModal, getLastWeekResults } from "./components/LoginScreen";
 import { Nav, FlagBanner } from "./components/Nav";
 import { ScoreTicker } from "./components/ScoreTicker";
@@ -339,12 +339,7 @@ export default function App() {
   if(!user)return <LoginScreen onLogin={handleLogin}/>;
 
   return (
-    <div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Barlow Condensed',sans-serif",color:C.text}}>
-      <style>{`
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.75}}
-        @media(max-width:640px){body{padding-bottom:72px}}
-      `}</style>
-      <MemorialBackdrop/>
+    <div style={{minHeight:"100vh",background:C.bg,fontFamily:"var(--font-sans)",color:C.text}}>
       {showRichRoast&&<RichRoastModal onDismiss={()=>setShowRichRoast(false)}/>}
       {!showRichRoast&&showWinnerModal&&<WinnerModal player={user} data={data} onDismiss={()=>setShowWinnerModal(false)}/>}
       <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)} data={data}/>
@@ -356,17 +351,17 @@ export default function App() {
         </div>
       )}
       {showInstall&&(
-        <div style={{background:"linear-gradient(90deg,#f59e0b,#ef4444)",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative",zIndex:2}}>
+        <div style={{background:C.card,borderBottom:"1px solid "+C.border,padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"relative",zIndex:2}}>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
             <img src="/icons/icon-72x72.png" style={{width:36,height:36,borderRadius:8}}/>
             <div>
-              <div style={{color:"#000",fontWeight:700,fontSize:13}}>Install FERDA Racing</div>
-              <div style={{color:"#000",fontSize:11,opacity:0.8}}>Add to home screen for the best experience</div>
+              <div style={{color:C.text,fontWeight:700,fontSize:13}}>Install FERDA Racing</div>
+              <div style={{color:C.dim,fontSize:11}}>Add to home screen for the best experience</div>
             </div>
           </div>
           <div style={{display:"flex",gap:8}}>
-            <button onClick={handleInstall} style={{padding:"6px 14px",borderRadius:8,border:"none",background:"#000",color:"#fff",fontFamily:"'Oswald',sans-serif",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:1}}>INSTALL</button>
-            <button onClick={()=>setShowInstall(false)} style={{padding:"6px 8px",borderRadius:8,border:"none",background:"rgba(0,0,0,0.2)",color:"#000",fontSize:12,cursor:"pointer",fontFamily:"inherit"}}>✕</button>
+            <button onClick={handleInstall} style={{padding:"6px 14px",borderRadius:8,border:"none",background:C.text,color:C.bg,fontFamily:"var(--font-sans)",fontSize:12,fontWeight:700,cursor:"pointer",letterSpacing:0.5}}>Install</button>
+            <button onClick={()=>setShowInstall(false)} style={{padding:"6px 8px",borderRadius:8,border:"none",background:"transparent",color:C.dim,fontSize:12,cursor:"pointer",fontFamily:"inherit"}}>✕</button>
           </div>
         </div>
       )}

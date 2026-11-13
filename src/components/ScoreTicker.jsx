@@ -10,7 +10,7 @@ function TickerItem({ children, accent }) {
       display:"inline-flex", alignItems:"center", gap:6,
       padding:"0 16px",
       borderRight:`1px solid rgba(255,255,255,0.12)`,
-      color: accent ? "#f59e0b" : "rgba(255,255,255,0.85)",
+      color: accent ? C.text : "rgba(244,246,249,0.8)",
       whiteSpace:"nowrap",
     }}>
       {children}
@@ -53,7 +53,7 @@ export function ScoreTicker({ data, liveScores, liveStatus, raceInfo }) {
     ...ranked.map(([pid, s], i) => (
       <TickerItem key={`p-${pid}`}>
         <span style={{
-          fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700,
+          fontFamily:"var(--font-sans)", fontSize:12, fontWeight:700,
           color:"rgba(255,255,255,0.45)",
         }}>
           {i + 1}
@@ -63,13 +63,13 @@ export function ScoreTicker({ data, liveScores, liveStatus, raceInfo }) {
           background:PClr[pid].fg, flexShrink:0, display:"inline-block",
         }}/>
         <span style={{
-          fontFamily:"'Barlow Condensed',sans-serif", fontWeight:700, fontSize:13,
+          fontFamily:"var(--font-sans)", fontWeight:700, fontSize:13,
           color:PClr[pid].fg,
         }}>
           {PNAME[pid]}
         </span>
         <span style={{
-          fontFamily:"'Oswald',sans-serif", fontWeight:900, fontSize:14,
+          fontFamily:"var(--font-sans)", fontWeight:900, fontSize:14,
           color: s.total > 0 ? "#10b981" : s.total < 0 ? "#ef4444" : "rgba(255,255,255,0.6)",
         }}>
           {s.total > 0 ? "+" : ""}{s.total}
@@ -87,13 +87,13 @@ export function ScoreTicker({ data, liveScores, liveStatus, raceInfo }) {
           opacity:0.7,
         }}/>
         <span style={{
-          fontFamily:"'Barlow Condensed',sans-serif", fontSize:12,
+          fontFamily:"var(--font-sans)", fontSize:12,
           color:"rgba(255,255,255,0.7)",
         }}>
           {d.driver}
         </span>
         <span style={{
-          fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:13,
+          fontFamily:"var(--font-sans)", fontWeight:700, fontSize:13,
           color: d.total > 0 ? "#10b981" : "#ef4444",
         }}>
           {d.total > 0 ? "+" : ""}{d.total}
@@ -113,20 +113,20 @@ export function ScoreTicker({ data, liveScores, liveStatus, raceInfo }) {
 
   return (
     <div style={{
-      background:"linear-gradient(90deg, #1a0000, #0a0e17 30%, #0a0e17 70%, #1a0000)",
-      borderBottom:`1px solid #ef444433`,
+      background:C.bg,
+      borderBottom:`1px solid ${C.border}`,
       height:36, overflow:"hidden",
       position:"relative", zIndex:99,
     }}>
       {/* Fade masks on edges */}
       <div style={{
         position:"absolute", left:0, top:0, bottom:0, width:60, zIndex:2,
-        background:"linear-gradient(90deg, #0a0e17, transparent)",
+        background:"linear-gradient(90deg, #0F1115, transparent)",
         pointerEvents:"none",
       }}/>
       <div style={{
         position:"absolute", right:0, top:0, bottom:0, width:60, zIndex:2,
-        background:"linear-gradient(270deg, #0a0e17, transparent)",
+        background:"linear-gradient(270deg, #0F1115, transparent)",
         pointerEvents:"none",
       }}/>
 

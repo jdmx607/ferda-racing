@@ -39,11 +39,11 @@ function QuickScoreCard({ fetchResult, week, race, playerPicks, onConfirm, onAdv
 
       {/* ── Race header ───────────────────────────────────────────────────── */}
       <div style={{
-        background:`linear-gradient(135deg,#001a10,${C.bg})`,
+        background:C.card,
         border:`1px solid ${TTC[trackType] || C.accent}55`,
         borderRadius:`${r.lg}px ${r.lg}px 0 0`,
         padding:"16px 20px",
-        boxShadow:`0 0 20px ${TTC[trackType] || C.accent}22`,
+        boxShadow:"none",
       }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
           <div style={{ color: TTC[trackType] || C.accent, fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>
@@ -64,7 +64,7 @@ function QuickScoreCard({ fetchResult, week, race, playerPicks, onConfirm, onAdv
             );
           })()}
         </div>
-        <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900, letterSpacing:1 }}>
+        <div style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:22, fontWeight:900, letterSpacing:1 }}>
           {raceName}
         </div>
         {trackName && <div style={{ color:C.muted, fontSize:12, marginTop:2 }}>@ {trackName}</div>}
@@ -103,7 +103,7 @@ function QuickScoreCard({ fetchResult, week, race, playerPicks, onConfirm, onAdv
               background: i === 0 ? `${C.accent}15` : "transparent",
             }}>
               <span style={{
-                fontFamily:"'Oswald',sans-serif", fontSize:14, fontWeight:900,
+                fontFamily:"var(--font-sans)", fontSize:14, fontWeight:900,
                 color: i === 0 ? C.accent : C.muted, width:20, flexShrink:0,
               }}>P{d.finish}</span>
               <span style={{ color: i === 0 ? C.text : C.textDim, fontSize:13, fontWeight: i===0?700:400, flex:1 }}>{d.name}</span>
@@ -127,7 +127,7 @@ function QuickScoreCard({ fetchResult, week, race, playerPicks, onConfirm, onAdv
                 background:PClr[p.id].bg,
                 border:`1px solid ${PClr[p.id].fg}22`,
               }}>
-                <div style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700, marginBottom:4 }}>
+                <div style={{ color:PClr[p.id].fg, fontFamily:"var(--font-sans)", fontSize:12, fontWeight:700, marginBottom:4 }}>
                   {PNAME[p.id]}
                   <span style={{ color:PClr[p.id].fg+"66", fontSize:9, fontWeight:400, marginLeft:6 }}>
                     {picks.length}/{ACTIVE_PICKS}
@@ -185,7 +185,7 @@ function QuickScoreCard({ fetchResult, week, race, playerPicks, onConfirm, onAdv
           style={{
             flex:1, padding:"16px 0", borderRadius:r.md,
             border:"none", background:C.accent,
-            color:"#000", fontFamily:"'Oswald',sans-serif",
+            color:"#000", fontFamily:"var(--font-sans)",
             fontSize:18, fontWeight:900, letterSpacing:2,
             textTransform:"uppercase", cursor:"pointer",
             opacity: saving ? 0.6 : 1,
@@ -374,7 +374,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
   // ─────────────────────────────────────────────────────────────────────────────
   return (
     <div style={{ padding:20, maxWidth:1000, margin:"0 auto", position:"relative", zIndex:1 }}>
-      <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, marginBottom:4 }}>Commissioner Panel</h2>
+      <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, marginBottom:4 }}>Commissioner Panel</h2>
       <div style={{ color:C.muted, fontSize:13, marginBottom:16 }}>Post race results · manage picks · control live scoring</div>
 
       {/* ── Week selector ──────────────────────────────────────────────────── */}
@@ -402,8 +402,8 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
             </div>
           </div>
           {data.liveRace?.active
-            ? <button onClick={() => onToggleLive(data.liveRace.week, false)} style={{ padding:"8px 16px", borderRadius:8, border:"1px solid #ef4444", background:"#ef444422", color:"#ef4444", fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:1 }}>END RACE</button>
-            : <button onClick={() => onToggleLive(week, true)}              style={{ padding:"8px 16px", borderRadius:8, border:"1px solid #10b981", background:"#10b98122", color:"#10b981", fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:1 }}>🟢 START LIVE — {weekLabel(week)}</button>
+            ? <button onClick={() => onToggleLive(data.liveRace.week, false)} style={{ padding:"8px 16px", borderRadius:8, border:"1px solid #ef4444", background:"#ef444422", color:"#ef4444", fontFamily:"var(--font-sans)", fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:1 }}>END RACE</button>
+            : <button onClick={() => onToggleLive(week, true)}              style={{ padding:"8px 16px", borderRadius:8, border:"1px solid #10b981", background:"#10b98122", color:"#10b981", fontFamily:"var(--font-sans)", fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:1 }}>🟢 START LIVE — {weekLabel(week)}</button>
           }
         </div>
       </div>
@@ -423,7 +423,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
         <button
           onClick={async () => { setSaving(true); await onRecalcMeta(); setSaving(false); setMsg("Standings recalculated!"); setTimeout(()=>setMsg(""),3000); }}
           disabled={saving}
-          style={{ padding:"8px 16px", borderRadius:8, border:`1px solid ${C.accent}`, background:C.accent+"22", color:C.accent, fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700, cursor:saving?"wait":"pointer", letterSpacing:1, opacity:saving?0.6:1 }}
+          style={{ padding:"8px 16px", borderRadius:8, border:`1px solid ${C.accent}`, background:C.accent+"22", color:C.accent, fontFamily:"var(--font-sans)", fontSize:12, fontWeight:700, cursor:saving?"wait":"pointer", letterSpacing:1, opacity:saving?0.6:1 }}
         >
           {saving ? "Recalculating…" : "Recalculate"}
         </button>
@@ -439,7 +439,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
             style={{
               padding:"12px 20px", borderRadius:8,
               border:"1px solid #10b981", background:"#10b98122", color:"#10b981",
-              fontSize:14, fontFamily:"'Oswald',sans-serif", fontWeight:700,
+              fontSize:14, fontFamily:"var(--font-sans)", fontWeight:700,
               letterSpacing:1, cursor:"pointer",
               display:"flex", alignItems:"center", gap:8,
               opacity: fetching ? 0.6 : 1,
@@ -536,7 +536,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
         <>
           {/* Player picks */}
           <div style={{ marginBottom:16 }}>
-            <div style={{ color:C.accent, fontSize:14, fontWeight:700, marginBottom:10, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:1, textTransform:"uppercase" }}>Player Picks</div>
+            <div style={{ color:C.accent, fontSize:14, fontWeight:700, marginBottom:10, fontFamily:"var(--font-sans)", letterSpacing:1, textTransform:"uppercase" }}>Player Picks</div>
             {PLAYERS.map(p => {
               const pks = playerPicks[p.id] || [];
               return (
@@ -568,7 +568,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
 
           {/* Race results */}
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10 }}>
-            <div style={{ color:C.accent, fontSize:14, fontWeight:700, fontFamily:"'Barlow Condensed',sans-serif", letterSpacing:1, textTransform:"uppercase" }}>Race Results</div>
+            <div style={{ color:C.accent, fontSize:14, fontWeight:700, fontFamily:"var(--font-sans)", letterSpacing:1, textTransform:"uppercase" }}>Race Results</div>
             <label style={{ display:"flex", alignItems:"center", gap:6, cursor:"pointer", fontSize:12, color:threeStages?C.purple:C.muted }}>
               <input type="checkbox" checked={threeStages} onChange={e => setThreeStages(e.target.checked)}/>
               3 Stages (Coca-Cola 600)
@@ -606,13 +606,13 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
 
           {/* Save buttons */}
           <div style={{ display:"flex", gap:8, marginTop:12, flexWrap:"wrap" }}>
-            <button onClick={handleScore} disabled={saving} style={{ flex:1, padding:"14px 0", borderRadius:8, border:"none", background:C.accent, color:"#000", fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:700, letterSpacing:2, textTransform:"uppercase", cursor:"pointer" }}>
+            <button onClick={handleScore} disabled={saving} style={{ flex:1, padding:"14px 0", borderRadius:8, border:"none", background:C.accent, color:"#000", fontFamily:"var(--font-sans)", fontSize:16, fontWeight:700, letterSpacing:2, textTransform:"uppercase", cursor:"pointer" }}>
               {saving ? "Saving…" : (done ? `Re-Score ${weekLabel(week)}` : `Score ${weekLabel(week)}`)}
             </button>
-            <button onClick={handleSavePicksOnly} disabled={saving} style={{ padding:"14px 16px", borderRadius:8, border:`1px solid ${C.blue}`, background:C.blue+"22", color:C.blue, fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:700, cursor:"pointer", letterSpacing:1, textTransform:"uppercase" }}>
+            <button onClick={handleSavePicksOnly} disabled={saving} style={{ padding:"14px 16px", borderRadius:8, border:`1px solid ${C.blue}`, background:C.blue+"22", color:C.blue, fontFamily:"var(--font-sans)", fontSize:13, fontWeight:700, cursor:"pointer", letterSpacing:1, textTransform:"uppercase" }}>
               Save Picks Only
             </button>
-            <button onClick={() => { setEditing(false); setQuickScore(null); }} style={{ padding:"14px 16px", borderRadius:8, border:`1px solid ${C.border}`, background:"transparent", color:C.muted, fontFamily:"'Oswald',sans-serif", fontSize:14, cursor:"pointer" }}>
+            <button onClick={() => { setEditing(false); setQuickScore(null); }} style={{ padding:"14px 16px", borderRadius:8, border:`1px solid ${C.border}`, background:"transparent", color:C.muted, fontFamily:"var(--font-sans)", fontSize:14, cursor:"pointer" }}>
               Cancel
             </button>
           </div>

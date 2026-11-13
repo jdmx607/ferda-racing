@@ -6,9 +6,17 @@ committing to any of it.
 
 ## Big picture
 
-- [ ] **Complete redesign.** Keep the minimalistic vibe, but the current UI is
-      "too much" and needs an overhaul. Scope and direction TBD — the user will
-      come back with a clearer idea first.
+- [~] **Complete redesign — "Pit-Wall Minimalism" (telemetry UI).** First pass built
+      on branch `redesign/pit-wall` (not merged): design tokens + light-mode-ready CSS
+      variables in `src/styles.css`; flat monochrome palette in `theme.js`; new
+      `FlagStrip`, `RaceHeader`, `DriverCard` components; Live tab, Lineups, nav
+      (bottom-anchored on phones), login, ticker rebuilt. STILL TO DO: migrate the
+      other tabs (Results, Welcome, Feed, Draft, Stats, Playoffs, ISC, Commissioner…)
+      off inline hex colours onto the CSS vars/classes (needed before a light-mode
+      toggle works), and replace the ~100 remaining literal green/red/amber uses that
+      aren't live telemetry. Swap `DriverCard`'s number badge for official number art when
+      available; fill `RaceHeader`'s 64×64 slot with track outlines; edit paint colours
+      in `src/driverPaint.js`.
 - [ ] **New logo?**
 - [ ] **Remove extra nonsense** — e.g. the Stats page. (Note: Power Rankings,
       Awards, Hot Streaks, Trophy Case and Season Recap all read from

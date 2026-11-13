@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { C, PClr, r } from "../theme";
+import { PClr, r } from "../theme";
 import { PLAYERS, PNAME, ACTIVE_PICKS, PLAYOFF_START_WEEK, SCHEDULE } from "../constants";
 
 function isChaseLive(data) {
@@ -138,38 +138,15 @@ const Icon = {
   ),
 };
 
-// ── Flag banner (used by both nav types) ──────────────────────────────────────
+// ── Status banner (draft turn) — flat, with a left tone bar ──────────────────
+// tone: go = your turn · caution = you're up next · stop = waiting · done = settled
 function Banner({ flag, text, onClick }) {
-  const flags = {
-    green:    { bg:"#10b981", fg:"#000", icon:"🟢" },
-    yellow:   { bg:"#fbbf24", fg:"#000", icon:"🟡" },
-    red:      { bg:"#dc2626", fg:"#fff", icon:"🔴" },
-    white:    { bg:"#f8fafc", fg:"#000", icon:"⚪" },
-    checkered:{ bg:"#1f2937", fg:"#fff", icon:"🏁" },
-  };
-  const f = flags[flag];
-  const bg = flag === "checkered"
-    ? "repeating-linear-gradient(45deg,#1f2937 0,#1f2937 10px,#f8fafc 10px,#f8fafc 20px)"
-    : f.bg;
+  const tone = { green:"go", white:"go", yellow:"caution", red:"stop", checkered:"done" }[flag] || "done";
   return (
-    <div onClick={onClick} style={{
-      background:bg, color:f.fg,
-      padding:"10px 16px", textAlign:"center",
-      fontFamily:"'Oswald',sans-serif", fontWeight:700, fontSize:14,
-      letterSpacing:1, textTransform:"uppercase",
-      cursor:onClick?"pointer":"default",
-      display:"flex", alignItems:"center", justifyContent:"center", gap:10,
-      borderBottom:"2px solid rgba(0,0,0,0.3)",
-      position:"relative", zIndex:1,
-      animation:flag==="green"?"pulse 2s infinite":"none",
-    }}>
-      <span style={{ fontSize:20 }}>{f.icon}</span>
-      <span style={{
-        background:flag==="checkered"?"rgba(0,0,0,0.6)":"transparent",
-        padding:flag==="checkered"?"4px 10px":0,
-        borderRadius:6,
-      }}>{text}</span>
-      {onClick&&<span style={{ fontSize:11, opacity:0.7, marginLeft:4 }}>→</span>}
+    <div className="status-banner" data-tone={tone} onClick={onClick}
+         style={{ cursor:onClick ? "pointer" : "default" }} role={onClick ? "button" : "status"}>
+      <span style={{ flex:1, minWidth:0 }}>{text}</span>
+      {onClick && <span style={{ color:"var(--text-2)", fontSize:12 }}>→</span>}
     </div>
   );
 }
@@ -212,13 +189,12 @@ export function FlagBanner({ user, data, currentWeek, onGoTo }) {
   return <Banner flag="red" text={`Waiting on ${PNAME[currentTurn.pid]} to pick`} />;
 }
 
-// ── Desktop horizontal nav (unchanged from before) ────────────────────────────
+// ── Desktop top nav — flat, text tabs with an underline for the active one ────
 function DesktopNav({ player, tab, setTab, onLogout, data }) {
-  const clr = PClr[player.id];
   const chaseLive = isChaseLive(data);
   const tabs = [
     { id:"welcome",      l:"Home"        },
-    { id:"live",         l:"🔴 Live"     },
+    { id:"live",         l:"Live"        },
     { id:"draft",        l:"Draft"       },
     { id:"lineups",      l:"Lineups"     },
     { id:"results",      l:"Results"     },
@@ -226,7 +202,7 @@ function DesktopNav({ player, tab, setTab, onLogout, data }) {
     { id:"news",         l:"News"        },
     { id:"stats",        l:"Stats"       },
     { id:"history",      l:"History"     },
-    { id:"playoffs",     l:"THE CHASE", gold:chaseLive },
+    { id:"playoffs",     l:"The Chase", strong:chaseLive },
     { id:"isc",          l:"ISC"         },
     { id:"schedule",     l:"Schedule"    },
     { id:"drivers",      l:"Drivers"     },
@@ -234,69 +210,48 @@ function DesktopNav({ player, tab, setTab, onLogout, data }) {
     { id:"rules",        l:"Rules"       },
     { id:"settings",     l:"Settings"    },
   ];
-  if (player.id === "justin") tabs.push({ id:"commissioner", l:"COMMISH", red:true });
+  if (player.id === "justin") tabs.push({ id:"commissioner", l:"Commish" });
 
   return (
     <nav style={{
-      background:"rgba(0,0,0,0.92)", backdropFilter:"blur(12px)",
-      borderBottom:`1px solid ${C.border}`,
+      background:"var(--bg)", borderBottom:"1px solid var(--border)",
       display:"flex", alignItems:"center", justifyContent:"space-between",
-      padding:"0 12px", height:52,
-      position:"sticky", top:0, zIndex:100,
-      overflowX:"auto",
+      padding:"0 14px", height:52,
+      position:"sticky", top:0, zIndex:100, overflowX:"auto",
     }}>
-      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+      <div style={{ display:"flex", alignItems:"center", gap:12 }}>
         <FerdaLogo size="small" />
-        <div style={{ display:"flex", gap:1 }}>
+        <div style={{ display:"flex", gap:2 }}>
           {tabs.map(t => {
             const isActive = tab === t.id;
-            const isRed    = !!t.red;
-            const isGold   = !!t.gold;
-            const tone     = isGold ? C.gold : C.accent;
             return (
-              <button key={t.id} onClick={() => setTab(t.id)} style={{
-                padding:"6px 8px", borderRadius:r.sm,
-                border:isRed ? `1px solid ${isActive?"#ef4444":"#ef444466"}` : isGold ? `1px solid ${C.gold}66` : "none",
-                background:isActive ? (isRed?"#ef4444":tone+"22") : isGold ? C.gold+"11" : "transparent",
-                color:isActive ? (isRed?"#fff":tone) : (isRed?"#ef4444":isGold?C.gold:C.dim),
-                fontFamily:"'Barlow Condensed',sans-serif",
-                fontSize:11, fontWeight:isActive||isGold?700:600,
-                cursor:"pointer", letterSpacing:1, textTransform:"uppercase",
+              <button key={t.id} onClick={() => setTab(t.id)} aria-current={isActive ? "page" : undefined} style={{
+                padding:"6px 9px", border:"none", background:"transparent", cursor:"pointer",
+                color:isActive ? "var(--text)" : "var(--text-2)",
+                fontSize:12.5, fontWeight:isActive || t.strong ? 700 : 500,
                 whiteSpace:"nowrap",
-                borderBottom:isActive&&!isRed?`2px solid ${tone}`:"2px solid transparent",
-                textShadow:isGold?`0 0 8px ${C.gold}66`:"none",
-                transition:"all 0.12s ease",
+                borderBottom:`2px solid ${isActive ? "var(--text)" : "transparent"}`,
+                transition:"color .12s",
               }}>{t.l}</button>
             );
           })}
         </div>
       </div>
-      <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0, marginLeft:8 }}>
-        <div style={{
-          background:clr.bg, border:`2px solid ${clr.fg}44`,
-          borderRadius:r.pill, padding:"4px 12px",
-          display:"flex", alignItems:"center", gap:6,
-        }}>
-          <div style={{
-            width:18, height:18, borderRadius:"50%",
-            background:clr.fg, color:clr.bg,
-            display:"flex", alignItems:"center", justifyContent:"center",
-            fontSize:10, fontWeight:900, fontFamily:"'Oswald',sans-serif",
-          }}>{player.name[0].toUpperCase()}</div>
-          <span style={{ color:clr.fg, fontSize:11, fontWeight:700 }}>{player.name}</span>
+      <div style={{ display:"flex", alignItems:"center", gap:10, flexShrink:0, marginLeft:10 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:8, fontSize:12.5, fontWeight:600 }}>
+          <span className="dot" style={{ background:PClr[player.id].accent }} />
+          {player.name}
         </div>
         <button onClick={onLogout} style={{
-          padding:"4px 8px", borderRadius:r.sm,
-          border:`1px solid ${C.border}`,
-          background:"transparent", color:C.muted,
-          fontFamily:"inherit", fontSize:10, cursor:"pointer",
-        }}>Out</button>
+          padding:"4px 10px", borderRadius:r.sm, border:"1px solid var(--border)",
+          background:"transparent", color:"var(--text-2)", fontSize:11.5, cursor:"pointer",
+        }}>Sign out</button>
       </div>
     </nav>
   );
 }
 
-// ── Mobile bottom nav ─────────────────────────────────────────────────────────
+// ── Mobile bottom nav — thumb-reachable, safe-area aware ──────────────────────
 const PRIMARY_TABS = [
   { id:"welcome", label:"Home",    Icon:Icon.Home    },
   { id:"live",    label:"Live",    Icon:Icon.Live    },
@@ -309,7 +264,7 @@ const MORE_TABS = [
   { id:"news",         label:"News",       Icon:Icon.News       },
   { id:"stats",        label:"Stats",      Icon:Icon.Stats      },
   { id:"history",      label:"History",    Icon:Icon.History    },
-  { id:"playoffs",     label:"THE CHASE",  Icon:Icon.Chase      },
+  { id:"playoffs",     label:"The Chase",  Icon:Icon.Chase      },
   { id:"isc",          label:"ISC",        Icon:Icon.ISC        },
   { id:"lineups",      label:"Lineups",    Icon:Icon.Lineups    },
   { id:"schedule",     label:"Schedule",   Icon:Icon.Schedule   },
@@ -319,95 +274,38 @@ const MORE_TABS = [
   { id:"settings",     label:"Settings",   Icon:Icon.Settings   },
 ];
 
-function MobileNav({ player, tab, setTab, onLogout, data }) {
+function MobileNav({ player, tab, setTab, onLogout }) {
   const [showMore, setShowMore] = useState(false);
-  const clr = PClr[player.id];
-  const chaseLive = isChaseLive(data);
   const isInMore = [...MORE_TABS, { id:"commissioner" }].some(t => t.id === tab);
   const moreTabs = player.id === "justin"
-    ? [...MORE_TABS, { id:"commissioner", label:"COMMISH", Icon:Icon.Commissioner }]
+    ? [...MORE_TABS, { id:"commissioner", label:"Commish", Icon:Icon.Commissioner }]
     : MORE_TABS;
 
   const goTo = (id) => { setTab(id); setShowMore(false); };
 
   return (
     <>
-      {/* ── More sheet overlay ───────────────────────────────────────────── */}
-      {showMore && (
-        <div
-          onClick={() => setShowMore(false)}
-          style={{
-            position:"fixed", inset:0, zIndex:198,
-            background:"rgba(0,0,0,0.6)", backdropFilter:"blur(4px)",
-          }}
-        />
-      )}
+      {showMore && <div className="sheet-scrim" onClick={() => setShowMore(false)} />}
 
-      {/* ── More sheet content ───────────────────────────────────────────── */}
-      <div style={{
-        position:"fixed", bottom:64, left:0, right:0, zIndex:199,
-        transform:showMore?"translateY(0)":"translateY(110%)",
-        transition:"transform 0.28s cubic-bezier(0.4,0,0.2,1)",
-        background:C.card,
-        borderTop:`1px solid ${C.borderBright}`,
-        borderRadius:"20px 20px 0 0",
-        padding:"16px 12px 8px",
-        boxShadow:"0 -8px 32px rgba(0,0,0,0.5)",
-      }}>
-        {/* Handle bar */}
-        <div style={{
-          width:36, height:4, borderRadius:r.pill,
-          background:C.border, margin:"0 auto 16px",
-        }}/>
+      <div className="sheet" style={{ transform:showMore ? "translateY(0)" : "translateY(120%)", visibility:showMore ? "visible" : "hidden" }}>
+        <div style={{ width:36, height:4, borderRadius:r.pill, background:"var(--border-strong)", margin:"0 auto 14px" }}/>
 
-        {/* Player chip + logout */}
-        <div style={{
-          display:"flex", alignItems:"center", justifyContent:"space-between",
-          marginBottom:16, padding:"0 4px",
-        }}>
-          <div style={{
-            display:"flex", alignItems:"center", gap:8,
-            background:clr.bg, borderRadius:r.pill, padding:"6px 14px",
-            border:`1px solid ${clr.fg}33`,
-          }}>
-            <div style={{
-              width:22, height:22, borderRadius:"50%",
-              background:clr.fg, color:clr.bg,
-              display:"flex", alignItems:"center", justifyContent:"center",
-              fontSize:11, fontWeight:900, fontFamily:"'Oswald',sans-serif",
-            }}>{player.name[0]}</div>
-            <span style={{ color:clr.fg, fontWeight:700, fontSize:13 }}>{player.name}</span>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:14, padding:"0 4px" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:8, fontSize:14, fontWeight:600 }}>
+            <span className="dot" style={{ background:PClr[player.id].accent }} />
+            {player.name}
           </div>
           <button onClick={onLogout} style={{
-            padding:"6px 14px", borderRadius:r.pill,
-            border:`1px solid ${C.border}`, background:"transparent",
-            color:C.muted, fontSize:12, cursor:"pointer", fontFamily:"inherit",
-          }}>Sign Out</button>
+            padding:"8px 14px", minHeight:36, borderRadius:r.pill, border:"1px solid var(--border)",
+            background:"transparent", color:"var(--text-2)", fontSize:12, cursor:"pointer",
+          }}>Sign out</button>
         </div>
 
-        {/* Tab grid */}
-        <div style={{
-          display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:6,
-          paddingBottom:8,
-        }}>
+        <div className="sheet-grid">
           {moreTabs.map(t => {
-            const isActive = tab === t.id;
-            const isCommish = t.id === "commissioner";
-            const isGold   = t.id === "playoffs" && chaseLive;
-            const tone     = isGold ? C.gold : C.accent;
             const TabIcon = t.Icon;
             return (
-              <button key={t.id} onClick={() => goTo(t.id)} style={{
-                padding:"14px 8px", borderRadius:r.md,
-                border:`1px solid ${isActive?(isCommish?"#ef4444":tone)+"66":isGold?C.gold+"44":C.border}`,
-                background:isActive?(isCommish?"#ef444422":tone+"18"):isGold?C.gold+"0f":"transparent",
-                color:isActive?(isCommish?"#ef4444":tone):isGold?C.gold:C.textDim,
-                fontFamily:"'Barlow Condensed',sans-serif",
-                fontSize:11, fontWeight:700, cursor:"pointer",
-                letterSpacing:1, textTransform:"uppercase",
-                textAlign:"center",
-                display:"flex", flexDirection:"column", alignItems:"center", gap:6,
-              }}>
+              <button key={t.id} onClick={() => goTo(t.id)} aria-current={tab === t.id ? "page" : undefined}>
                 {TabIcon && <TabIcon/>}
                 {t.label}
               </button>
@@ -416,64 +314,16 @@ function MobileNav({ player, tab, setTab, onLogout, data }) {
         </div>
       </div>
 
-      {/* ── Bottom tab bar ───────────────────────────────────────────────── */}
-      <nav style={{
-        position:"fixed", bottom:0, left:0, right:0, zIndex:200,
-        background:"rgba(0,0,0,0.95)", backdropFilter:"blur(16px)",
-        borderTop:`1px solid ${C.border}`,
-        display:"flex", alignItems:"stretch",
-        height:64,
-        paddingBottom:"env(safe-area-inset-bottom, 0px)",
-      }}>
-        {PRIMARY_TABS.map(({ id, label, Icon: TabIcon }) => {
-          const isActive = tab === id;
-          return (
-            <button key={id} onClick={() => goTo(id)} style={{
-              flex:1, display:"flex", flexDirection:"column",
-              alignItems:"center", justifyContent:"center", gap:3,
-              background:"transparent", border:"none",
-              color:isActive ? C.accent : C.muted,
-              cursor:"pointer", padding:"8px 0",
-              transition:"all 0.12s ease",
-            }}>
-              <TabIcon/>
-              <span style={{
-                fontSize:9, fontWeight:700, letterSpacing:0.5,
-                textTransform:"uppercase",
-                color:isActive ? C.accent : C.muted,
-              }}>{label}</span>
-              {isActive && (
-                <div style={{
-                  position:"absolute", top:0, width:20, height:2,
-                  background:C.accent, borderRadius:r.pill,
-                }}/>
-              )}
-            </button>
-          );
-        })}
-
-        {/* More button */}
-        <button onClick={() => setShowMore(s => !s)} style={{
-          flex:1, display:"flex", flexDirection:"column",
-          alignItems:"center", justifyContent:"center", gap:3,
-          background:"transparent", border:"none",
-          color:(showMore || isInMore) ? C.accent : C.muted,
-          cursor:"pointer", padding:"8px 0",
-          position:"relative",
-        }}>
+      <nav className="bnav" aria-label="Primary">
+        {PRIMARY_TABS.map(({ id, label, Icon: TabIcon }) => (
+          <button key={id} onClick={() => goTo(id)} aria-current={tab === id ? "page" : undefined}>
+            <TabIcon/>
+            <span>{label}</span>
+          </button>
+        ))}
+        <button onClick={() => setShowMore(s => !s)} aria-current={(showMore || isInMore) ? "page" : undefined} aria-expanded={showMore}>
           <Icon.More/>
-          <span style={{
-            fontSize:9, fontWeight:700, letterSpacing:0.5,
-            textTransform:"uppercase",
-            color:(showMore || isInMore) ? C.accent : C.muted,
-          }}>More</span>
-          {isInMore && !showMore && (
-            <div style={{
-              width:5, height:5, borderRadius:"50%",
-              background:C.accent,
-              position:"absolute", top:8, right:"28%",
-            }}/>
-          )}
+          <span>More</span>
         </button>
       </nav>
     </>
@@ -484,6 +334,6 @@ function MobileNav({ player, tab, setTab, onLogout, data }) {
 export function Nav({ player, tab, setTab, onLogout, data }) {
   const isMobile = useMobile();
   return isMobile
-    ? <MobileNav  player={player} tab={tab} setTab={setTab} onLogout={onLogout} data={data}/>
+    ? <MobileNav  player={player} tab={tab} setTab={setTab} onLogout={onLogout}/>
     : <DesktopNav player={player} tab={tab} setTab={setTab} onLogout={onLogout} data={data}/>;
 }

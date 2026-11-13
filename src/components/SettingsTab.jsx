@@ -76,7 +76,7 @@ export function SettingsTab({ player, data, onSaveSettings }) {
 
   return (
     <div style={{ padding:20, maxWidth:600, margin:"0 auto", position:"relative", zIndex:1 }}>
-      <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:"0 0 20px" }}>
+      <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:"0 0 20px" }}>
         Settings
       </h2>
 
@@ -252,7 +252,7 @@ export function SettingsTab({ player, data, onSaveSettings }) {
               </div>
             ) : (
               <button onClick={subscribe} disabled={isLoading}
-                style={{ width:"100%", padding:"12px 0", borderRadius:r.md, border:"none", background:isLoading?C.border:C.accent, color:isLoading?C.muted:"#000", fontFamily:"'Oswald',sans-serif", fontSize:14, fontWeight:900, letterSpacing:2, textTransform:"uppercase", cursor:isLoading?"wait":"pointer", transition:"all 0.15s ease" }}>
+                style={{ width:"100%", padding:"12px 0", borderRadius:r.md, border:"none", background:isLoading?C.border:C.accent, color:isLoading?C.muted:"#000", fontFamily:"var(--font-sans)", fontSize:14, fontWeight:900, letterSpacing:2, textTransform:"uppercase", cursor:isLoading?"wait":"pointer", transition:"all 0.15s ease" }}>
                 {isLoading ? "Setting up…" : "Enable Push Notifications"}
               </button>
             )}
@@ -266,7 +266,7 @@ export function SettingsTab({ player, data, onSaveSettings }) {
 
       {/* ── Save button ───────────────────────────────────────────────────── */}
       <button onClick={save} disabled={saving}
-        style={{ width:"100%", padding:"14px 0", borderRadius:r.md, border:"none", background:saving?C.border:C.accent, color:saving?C.muted:"#000", fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:900, letterSpacing:2, textTransform:"uppercase", cursor:saving?"wait":"pointer", transition:"all 0.15s ease" }}>
+        style={{ width:"100%", padding:"14px 0", borderRadius:r.md, border:"none", background:saving?C.border:C.accent, color:saving?C.muted:"#000", fontFamily:"var(--font-sans)", fontSize:16, fontWeight:900, letterSpacing:2, textTransform:"uppercase", cursor:saving?"wait":"pointer", transition:"all 0.15s ease" }}>
         {saving ? "Saving…" : "Save Settings"}
       </button>
 

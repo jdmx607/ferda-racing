@@ -1,55 +1,69 @@
 // ─── UI DESIGN TOKENS ─────────────────────────────────────────────────────────
-// Single source of truth for all visual constants.
+// "Pit-Wall Minimalism": monochrome base, colour reserved for live telemetry.
+//
+// The CSS variables in styles.css are the source of truth for theming (they carry
+// the light-mode overrides). This JS object mirrors the DARK values as plain hex
+// because much of the UI still builds colours like `C.accent + "22"` (hex + alpha),
+// which `var(--x)` strings can't do. Migrate call sites to the CSS vars / classes
+// in styles.css over time; once they're gone these can become `var(--…)`.
 // League data (players, scoring, schedule) lives in constants.js.
 
-// Color palette
 export const C = {
-  bg:      "#0a0e17",
-  bgDeep:  "#060912",
-  card:    "#111827",
-  cardAlt: "#0d1520",
-  accent:  "#f59e0b",
-  accentDim:"#d97706",
-  green:   "#10b981",
+  // surfaces
+  bg:      "#0F1115",
+  bgDeep:  "#0B0D10",
+  card:    "#181B22",
+  cardAlt: "#14171D",
+  input:   "#14171D",
+  border:       "#24272E",   // ≈ rgba(255,255,255,0.07) on --surface
+  borderBright: "#363A43",
+
+  // text
+  text:    "#F4F6F9",
+  textDim: "#C4C9D2",
+  dim:     "#949BA8",
+  muted:   "#6B7280",
+
+  // base UI is monochrome — "accent" is just high-contrast white
+  accent:    "#F4F6F9",
+  accentDim: "#C4C9D2",
+  gold:      "#E7E9EE",
+  goldDim:   "#A6ACB8",
+  blue:      "#B4BAC6",
+  blueDim:   "#8B93A1",
+  purple:    "#A5ABB7",
+
+  // live telemetry — the only bright colours
+  green:   "#10B981",   // green flag / position gain
   greenDim:"#059669",
-  red:     "#ef4444",
-  redDim:  "#dc2626",
-  blue:    "#3b82f6",
-  blueDim: "#2563eb",
-  purple:  "#8b5cf6",
-  text:    "#f1f5f9",
-  textDim: "#cbd5e1",
-  dim:     "#94a3b8",
-  muted:   "#475569",
-  border:  "#1e293b",
-  borderBright: "#334155",
-  input:   "#0f172a",
-  gold:    "#FFD700",
-  goldDim: "#C9A227",
+  red:     "#EF4444",   // red flag / position loss / DNF
+  redDim:  "#DC2626",
+  amber:   "#F59E0B",   // caution / cutoff warning
 };
 
-// Per-player brand colors — always use these for player identity
+// Per-player identity. Cards are flat dark surfaces; `accent` is the one small
+// splash of identity colour (dots, bars). `fg` is neutral so names stay readable.
 export const PClr = {
-  justin:   { bg:"#FFD400", fg:"#FF1F8F" },
-  bigmonroe:{ bg:"#000000", fg:"#65FE08" },
-  monroe:   { bg:"#046A38", fg:"#91999F" },
-  rich:     { bg:"#B3995D", fg:"#AA0000" },
+  justin:   { bg:"#181B22", fg:"#F4F6F9", accent:"#FF1F8F" },
+  bigmonroe:{ bg:"#181B22", fg:"#F4F6F9", accent:"#65FE08" },
+  monroe:   { bg:"#181B22", fg:"#F4F6F9", accent:"#91999F" },
+  rich:     { bg:"#181B22", fg:"#F4F6F9", accent:"#B3995D" },
 };
 
-// Per-player accent (for text highlights, score colors)
+// Per-player accent (chart lines, highlights)
 export const PC = {
-  justin:    PClr.justin.fg,
-  bigmonroe: "#ef4444",
-  monroe:    PClr.monroe.fg,
-  rich:      PClr.rich.fg,
+  justin:    PClr.justin.accent,
+  bigmonroe: PClr.bigmonroe.accent,
+  monroe:    PClr.monroe.accent,
+  rich:      PClr.rich.accent,
 };
 
-// Track type colors and labels
+// Track types are shown in greys — the label (SS / ST / INT / RC) carries the meaning
 export const TTC = {
-  superspeedway: C.blue,
-  short_track:   C.red,
-  intermediate:  C.accent,
-  road_course:   C.green,
+  superspeedway: "#D5D9E0",
+  short_track:   "#B0B6C2",
+  intermediate:  "#8D95A3",
+  road_course:   "#6F7786",
 };
 
 export const TTL = {
@@ -63,17 +77,17 @@ export const TTL = {
 export const sp = { 1:4, 2:8, 3:12, 4:16, 5:20, 6:24, 7:32, 8:40, 9:48, 10:64 };
 
 // ─── BORDER RADIUS ────────────────────────────────────────────────────────────
-export const r = { sm:6, md:10, lg:16, xl:20, pill:9999 };
+export const r = { sm:6, md:8, lg:12, xl:14, pill:9999 };
 
-// ─── BOX SHADOWS ──────────────────────────────────────────────────────────────
+// ─── BOX SHADOWS — flat UI: depth comes from borders, not glow ────────────────
 export const shadow = {
-  sm:  "0 1px 4px rgba(0,0,0,0.4)",
-  md:  "0 4px 16px rgba(0,0,0,0.5)",
-  lg:  "0 8px 32px rgba(0,0,0,0.6)",
-  xl:  "0 16px 48px rgba(0,0,0,0.75)",
-  glow:      (col) => `0 0 20px ${col}55`,
-  glowStrong:(col) => `0 0 30px ${col}77, 0 0 60px ${col}33`,
-  card: "0 2px 12px rgba(0,0,0,0.5)",
+  sm:  "none",
+  md:  "none",
+  lg:  "0 8px 24px rgba(0,0,0,0.35)",
+  xl:  "0 16px 40px rgba(0,0,0,0.45)",
+  glow:      () => "none",
+  glowStrong:() => "none",
+  card: "none",
 };
 
 // ─── TRANSITIONS ──────────────────────────────────────────────────────────────
@@ -83,11 +97,10 @@ export const t = {
   slow:   "all 0.35s ease",
 };
 
-// ─── POSITION RANK PALETTE ────────────────────────────────────────────────────
-// Used by Live tab and any ranked display
+// ─── POSITION RANK PALETTE (monochrome) ───────────────────────────────────────
 export const rankColor = {
-  1: { fg:"#f59e0b", bg:"rgba(245,158,11,0.15)", label:"GOLD"   },
-  2: { fg:"#94a3b8", bg:"rgba(148,163,184,0.12)", label:"SILVER" },
-  3: { fg:"#cd7f32", bg:"rgba(205,127,50,0.12)",  label:"BRONZE" },
-  4: { fg:"#475569", bg:"rgba(71,85,105,0.1)",    label:""       },
+  1: { fg:"#F4F6F9", bg:"rgba(244,246,249,0.10)", label:"1ST" },
+  2: { fg:"#C4C9D2", bg:"rgba(196,201,210,0.08)", label:"2ND" },
+  3: { fg:"#949BA8", bg:"rgba(148,155,168,0.08)", label:"3RD" },
+  4: { fg:"#6B7280", bg:"rgba(107,114,128,0.08)", label:""    },
 };

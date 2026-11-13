@@ -4,7 +4,7 @@ const PROXY    = "/api/nascar";
 const POLL_MS  = 30_000;
 
 const FLAG_NAME  = { 0:"No Race", 1:"Green", 2:"Caution", 3:"Red Flag", 4:"White", 5:"Checkered" };
-const FLAG_COLOR = { 0:"#64748b", 1:"#10b981", 2:"#f59e0b", 3:"#ef4444", 4:"#e2e8f0", 5:"#f1f5f9" };
+const FLAG_COLOR = { 0:"#64748b", 1:"#10b981", 2:"#f59e0b", 3:"#ef4444", 4:"#e2e8f0", 5:"#F4F6F9" };
 
 export function useLiveTiming(data) {
   const [timing, setTiming] = useState(null);

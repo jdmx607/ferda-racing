@@ -9,10 +9,10 @@ import { TrophyCaseModal } from "./TrophyCase";
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function positionColor(pos) {
-  return pos === 1 ? "#f59e0b" : pos === 2 ? "#94a3b8" : pos === 3 ? "#cd7f32" : "#ef4444";
+  return pos === 1 ? "#f59e0b" : pos === 2 ? "#949BA8" : pos === 3 ? "#cd7f32" : "#ef4444";
 }
 function positionBg(pos) {
-  return pos === 1 ? "#f59e0b20" : pos === 2 ? "#94a3b820" : pos === 3 ? "#cd7f3220" : "#ef444420";
+  return pos === 1 ? "#f59e0b20" : pos === 2 ? "#949BA820" : pos === 3 ? "#cd7f3220" : "#ef444420";
 }
 function formIcon(pos) {
   return pos === 1 ? "W" : pos === 2 ? "2" : pos === 3 ? "3" : "L";
@@ -63,7 +63,7 @@ function SeasonTimeline({ timeline }) {
                 }}>
                   <div style={{ display:"flex", alignItems:"center", gap:7 }}>
                     <span style={{
-                      fontFamily:"'Oswald',sans-serif", fontSize:11, fontWeight:700,
+                      fontFamily:"var(--font-sans)", fontSize:11, fontWeight:700,
                       color:C.muted, width:24, flexShrink:0,
                     }}>W{row.week}</span>
                     <div>
@@ -99,7 +99,7 @@ function SeasonTimeline({ timeline }) {
                         gap:2,
                       }}>
                         <span style={{
-                          fontFamily:"'Oswald',sans-serif", fontSize:14, fontWeight:900,
+                          fontFamily:"var(--font-sans)", fontSize:14, fontWeight:900,
                           color: positionColor(s.position),
                         }}>
                           {s.total}
@@ -129,7 +129,7 @@ function SeasonTimeline({ timeline }) {
                       <div style={{ color:C.text, fontSize:11, fontWeight:700 }}>
                         {row.mvp.name}
                       </div>
-                      <div style={{ color:C.accent, fontFamily:"'Oswald',sans-serif", fontSize:11, fontWeight:700 }}>
+                      <div style={{ color:C.accent, fontFamily:"var(--font-sans)", fontSize:11, fontWeight:700 }}>
                         +{row.mvp.score}
                       </div>
                     </div>
@@ -172,12 +172,12 @@ function FormGuide({ finishes }) {
                 width:36, height:36, borderRadius:"50%", flexShrink:0,
                 background:PClr[p.id].fg, color:PClr[p.id].bg,
                 display:"flex", alignItems:"center", justifyContent:"center",
-                fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:900,
+                fontFamily:"var(--font-sans)", fontSize:16, fontWeight:900,
               }}>
                 {PNAME[p.id][0]}
               </div>
               <div>
-                <div style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:900, letterSpacing:0.5 }}>
+                <div style={{ color:PClr[p.id].fg, fontFamily:"var(--font-sans)", fontSize:16, fontWeight:900, letterSpacing:0.5 }}>
                   {PNAME[p.id]}
                 </div>
                 <div style={{ color:PClr[p.id].fg+"66", fontSize:10 }}>
@@ -197,7 +197,7 @@ function FormGuide({ finishes }) {
                   background:positionBg(h.position),
                   border:`1.5px solid ${positionColor(h.position)}66`,
                   display:"flex", alignItems:"center", justifyContent:"center",
-                  fontFamily:"'Oswald',sans-serif", fontSize:11, fontWeight:900,
+                  fontFamily:"var(--font-sans)", fontSize:11, fontWeight:900,
                   color:positionColor(h.position),
                 }}>
                   {formIcon(h.position)}
@@ -215,7 +215,7 @@ function FormGuide({ finishes }) {
                 background:positionBg(trend),
                 border:`2px solid ${positionColor(trend)}`,
                 display:"flex", alignItems:"center", justifyContent:"center",
-                fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:900,
+                fontFamily:"var(--font-sans)", fontSize:16, fontWeight:900,
                 color:positionColor(trend),
               }}>
                 {trend}
@@ -244,7 +244,7 @@ function HeadToHeadMatrix({ h2h }) {
                 <div style={{
                   background:PClr[p.id].bg, color:PClr[p.id].fg,
                   padding:"4px 10px", borderRadius:r.md,
-                  fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700, letterSpacing:0.5,
+                  fontFamily:"var(--font-sans)", fontSize:12, fontWeight:700, letterSpacing:0.5,
                   border:`1px solid ${PClr[p.id].bg==="#000000"?C.border:PClr[p.id].bg+"66"}`,
                 }}>
                   {PNAME[p.id]}
@@ -261,7 +261,7 @@ function HeadToHeadMatrix({ h2h }) {
                 <div style={{
                   background:PClr[rowP.id].bg, color:PClr[rowP.id].fg,
                   padding:"6px 10px", borderRadius:r.md,
-                  fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700, letterSpacing:0.5,
+                  fontFamily:"var(--font-sans)", fontSize:12, fontWeight:700, letterSpacing:0.5,
                   border:`1px solid ${PClr[rowP.id].bg==="#000000"?C.border:PClr[rowP.id].bg+"66"}`,
                   textAlign:"center",
                 }}>
@@ -290,7 +290,7 @@ function HeadToHeadMatrix({ h2h }) {
                         : (
                           <>
                             <span style={{
-                              fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900, lineHeight:1,
+                              fontFamily:"var(--font-sans)", fontSize:18, fontWeight:900, lineHeight:1,
                               color: winRate > 0.5 ? C.green : winRate < 0.5 ? C.red : C.dim,
                             }}>
                               {rec?.wins ?? 0}-{rec?.losses ?? 0}
@@ -338,7 +338,7 @@ function AchievementsPanel({ achievements, onOpenTrophy }) {
               borderBottom:`1px solid ${PClr[p.id].bg==="#000000"?C.border:"rgba(0,0,0,0.2)"}`,
               display:"flex", alignItems:"center", justifyContent:"space-between",
             }}>
-              <div style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:17, fontWeight:900, letterSpacing:0.5 }}>
+              <div style={{ color:PClr[p.id].fg, fontFamily:"var(--font-sans)", fontSize:17, fontWeight:900, letterSpacing:0.5 }}>
                 🏆 {PNAME[p.id].toUpperCase()}
               </div>
               <div style={{
@@ -422,7 +422,7 @@ function SeasonRecap({ data, onOpenTrophy }) {
         <div style={{ color:C.accent, fontSize:11, fontWeight:700, textTransform:"uppercase", letterSpacing:3, marginBottom:6 }}>
           {seasonComplete ? "Final Season Recap" : "Season Recap So Far"}
         </div>
-        <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900 }}>
+        <div style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:24, fontWeight:900 }}>
           2026 FERDA Racing League
         </div>
         <div style={{ color:C.muted, fontSize:12, marginTop:4 }}>{scoredWeeks} of 36 races complete</div>
@@ -440,7 +440,7 @@ function SeasonRecap({ data, onOpenTrophy }) {
           <div style={{ color:PClr[champion.id].fg+"99", fontSize:11, textTransform:"uppercase", letterSpacing:2 }}>
             {seasonComplete ? "Season Champion" : "Current Leader"}
           </div>
-          <div style={{ color:PClr[champion.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:32, fontWeight:900 }}>
+          <div style={{ color:PClr[champion.id].fg, fontFamily:"var(--font-sans)", fontSize:32, fontWeight:900 }}>
             {PNAME[champion.id]}
           </div>
           <div style={{ color:PClr[champion.id].fg+"88", fontSize:14, marginTop:4 }}>{champion.pts.toLocaleString()} pts</div>
@@ -482,13 +482,13 @@ function SeasonRecap({ data, onOpenTrophy }) {
                 border:`1px solid ${PClr[p.id].bg==="#000000" ? C.border : PClr[p.id].fg+"33"}`,
               }}>
                 <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                  <span style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:900, width:20 }}>{i+1}</span>
+                  <span style={{ color:PClr[p.id].fg, fontFamily:"var(--font-sans)", fontSize:16, fontWeight:900, width:20 }}>{i+1}</span>
                   <div>
                     <div style={{ color:PClr[p.id].fg, fontWeight:700, fontSize:14 }}>{PNAME[p.id]}</div>
                     <div style={{ color:PClr[p.id].fg+"77", fontSize:10 }}>{achv?.unlocked.length || 0} achievements unlocked</div>
                   </div>
                 </div>
-                <div style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900 }}>{p.pts.toLocaleString()}</div>
+                <div style={{ color:PClr[p.id].fg, fontFamily:"var(--font-sans)", fontSize:18, fontWeight:900 }}>{p.pts.toLocaleString()}</div>
               </div>
             );
           })}
@@ -529,7 +529,7 @@ export function HistoryTab({ data }) {
 
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div style={{ marginBottom:20 }}>
-        <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:0 }}>
+        <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:0 }}>
           Season History
         </h2>
         <div style={{ color:C.dim, fontSize:13, marginTop:6 }}>
@@ -548,7 +548,7 @@ export function HistoryTab({ data }) {
               textAlign:"center",
             }}>
               <div style={{
-                fontFamily:"'Oswald',sans-serif", fontSize:28, fontWeight:900, lineHeight:1,
+                fontFamily:"var(--font-sans)", fontSize:28, fontWeight:900, lineHeight:1,
                 color:wins > 0 ? C.accent : PClr[p.id].fg,
               }}>
                 {wins}
@@ -570,7 +570,7 @@ export function HistoryTab({ data }) {
             background:section===s.id ? C.accent : "transparent",
             color:section===s.id ? "#000" : C.dim,
             fontSize:12, fontWeight:700, cursor:"pointer",
-            fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+            fontFamily:"var(--font-sans)", letterSpacing:1,
             transition:"all 0.12s ease",
           }}>{s.label}</button>
         ))}

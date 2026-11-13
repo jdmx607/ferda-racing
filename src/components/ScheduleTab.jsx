@@ -24,7 +24,7 @@ export function ScheduleTab({ data }) {
 
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16, flexWrap:"wrap", gap:8 }}>
-        <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:0 }}>
+        <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:0 }}>
           {season} Schedule
         </h2>
         <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
@@ -50,7 +50,7 @@ export function ScheduleTab({ data }) {
             background:season === Number(y) ? C.accent : "transparent",
             color:season === Number(y) ? "#000" : C.dim,
             fontSize:11, fontWeight:700, cursor:"pointer",
-            fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+            fontFamily:"var(--font-sans)", letterSpacing:1,
           }}>{y}{Number(y) === ACTIVE_SEASON ? " · current" : " · preview"}</button>
         ))}
       </div>
@@ -65,7 +65,7 @@ export function ScheduleTab({ data }) {
           <div style={{ height:6, background:C.border, borderRadius:r.pill, overflow:"hidden" }}>
             <div style={{
               height:"100%", width:`${(pointsDone / raceCount) * 100}%`,
-              background:`linear-gradient(90deg,${C.green},${C.accent})`,
+              background:C.text,
               borderRadius:r.pill, transition:"width 0.8s ease",
             }}/>
           </div>
@@ -95,7 +95,7 @@ export function ScheduleTab({ data }) {
                 <div style={{
                   display:"flex", alignItems:"center", gap:10, margin:"10px 0 6px",
                 }}>
-                  <div style={{ flex:1, height:1, background:`linear-gradient(90deg,transparent,${C.accent})` }}/>
+                  <div style={{ flex:1, height:1, background:C.border }}/>
                   <span style={{
                     color:C.accent, fontSize:10, fontWeight:700,
                     letterSpacing:2, textTransform:"uppercase",
@@ -104,7 +104,7 @@ export function ScheduleTab({ data }) {
                   }}>
                     🏆 PLAYOFFS BEGIN
                   </span>
-                  <div style={{ flex:1, height:1, background:`linear-gradient(90deg,${C.accent},transparent)` }}/>
+                  <div style={{ flex:1, height:1, background:C.border }}/>
                 </div>
               )}
 
@@ -120,7 +120,7 @@ export function ScheduleTab({ data }) {
                   {/* Status indicator */}
                   <div style={{
                     width:44, flexShrink:0, textAlign:"center",
-                    fontFamily:"'Oswald',sans-serif", fontSize:11, fontWeight:700,
+                    fontFamily:"var(--font-sans)", fontSize:11, fontWeight:700,
                     color: isDone ? C.green : isNext ? C.accent : isEx ? C.gold : C.muted,
                   }}>
                     {isDone ? "✓" : isEx ? `★ ${weekLabel(s.w)}` : `W${s.w}`}

@@ -17,10 +17,10 @@ function ChampionBanner({ champ, onOpenTrophy }) {
     <div
       onClick={() => onOpenTrophy(pid)}
       style={{
-        background:`linear-gradient(135deg, ${C.gold}22, ${clr.bg})`,
-        border:`2px solid ${C.gold}`, borderRadius:r.xl,
+        background:C.card,
+        border:`1px solid ${C.borderBright}`, borderRadius:r.xl,
         padding:"22px 24px", marginBottom:20, textAlign:"center",
-        boxShadow:`0 0 32px ${C.gold}44`, cursor:"pointer",
+        boxShadow:"none", cursor:"pointer",
       }}
     >
       <div style={{ fontSize:42, lineHeight:1, marginBottom:6 }}>🏆</div>
@@ -28,9 +28,9 @@ function ChampionBanner({ champ, onOpenTrophy }) {
         {tied ? "2026 Co-Champions" : "2026 FERDA Champion"}
       </div>
       <div style={{
-        color:clr.bg === "#000000" ? clr.fg : C.text, fontFamily:"'Oswald',sans-serif",
+        color:clr.bg === "#000000" ? clr.fg : C.text, fontFamily:"var(--font-sans)",
         fontSize:38, fontWeight:900, letterSpacing:2, lineHeight:1.1,
-        textShadow:`0 0 18px ${C.gold}66`,
+        
       }}>
         {names.toUpperCase()}
       </div>
@@ -82,7 +82,7 @@ function Countdown({ raceDate, trackType }) {
             borderRadius:r.md, padding:"8px 10px", minWidth:44,
           }}>
             <div style={{
-              fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900,
+              fontFamily:"var(--font-sans)", fontSize:22, fontWeight:900,
               color:col, lineHeight:1,
             }}>
               {String(v).padStart(2,"0")}
@@ -103,7 +103,7 @@ function StatTile({ value, label, color, bg, small }) {
       flex:1, minWidth:70, textAlign:"center",
     }}>
       <div style={{
-        color:color, fontFamily:"'Oswald',sans-serif",
+        color:color, fontFamily:"var(--font-sans)",
         fontSize:small ? 20 : 26, fontWeight:700, lineHeight:1,
       }}>
         {value}
@@ -173,7 +173,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
         {/* Subtle number watermark */}
         <div style={{
           position:"absolute", right:-20, top:-20,
-          fontFamily:"'Oswald',sans-serif", fontSize:180, fontWeight:900,
+          fontFamily:"var(--font-sans)", fontSize:180, fontWeight:900,
           color:clr.fg, opacity:0.04, lineHeight:1, pointerEvents:"none",
           userSelect:"none",
         }}>
@@ -183,7 +183,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
         <div style={{ color:clr.fg+"88", fontSize:12, textTransform:"uppercase", letterSpacing:3, marginBottom:4 }}>
           {greeting}
         </div>
-        <div style={{ color:clr.fg, fontFamily:"'Oswald',sans-serif", fontSize:36, fontWeight:900, letterSpacing:2, lineHeight:1, marginBottom:16 }}>
+        <div style={{ color:clr.fg, fontFamily:"var(--font-sans)", fontSize:36, fontWeight:900, letterSpacing:2, lineHeight:1, marginBottom:16 }}>
           {player.name.toUpperCase()}
           {isLive && myLiveRank && (
             <span style={{
@@ -209,7 +209,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
           marginTop:14, padding:"7px 14px", borderRadius:r.pill,
           border:`1px solid ${clr.fg}44`, background:"rgba(0,0,0,0.2)",
           color:clr.fg, fontSize:11, fontWeight:700, cursor:"pointer",
-          fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+          fontFamily:"var(--font-sans)", letterSpacing:1,
         }}>
           🏆 View Trophy Case
         </button>
@@ -219,15 +219,15 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
       {isLive && (
         <div style={{ marginBottom:20 }}>
           <div style={{
-            background:"linear-gradient(90deg,#ef4444,#f59e0b)",
+            background:C.card, border:`1px solid ${C.border}`, borderLeft:`3px solid ${C.red}`,
             borderRadius:r.md, padding:"10px 16px", marginBottom:8,
             display:"flex", justifyContent:"space-between", alignItems:"center",
             cursor:"pointer", boxShadow:shadow.md,
           }} onClick={() => setTab("live")}>
-            <div style={{ color:"#000", fontWeight:900, fontFamily:"'Oswald',sans-serif", fontSize:15, letterSpacing:1 }}>
-              🔴 RACE IN PROGRESS
+            <div style={{ color:C.text, fontWeight:700, fontFamily:"var(--font-sans)", fontSize:14, letterSpacing:0.5 }}>
+              Race in progress
             </div>
-            <div style={{ color:"#000", fontSize:11, fontWeight:700 }}>{liveStatus} → View Live</div>
+            <div style={{ color:C.dim, fontSize:11, fontWeight:600 }}>{liveStatus} → View Live</div>
           </div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
             {Object.entries(liveScores).sort((a,b) => b[1].total - a[1].total).map(([p2,s],i) => (
@@ -241,7 +241,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
                 </span>
                 <span style={{
                   color:s.total>0?"#10b981":s.total<0?"#ef4444":PClr[p2].fg,
-                  fontWeight:900, fontFamily:"'Oswald',sans-serif", fontSize:18,
+                  fontWeight:900, fontFamily:"var(--font-sans)", fontSize:18,
                 }}>
                   {s.total>0?"+":""}{s.total}
                 </span>
@@ -280,7 +280,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
               style={{
                 padding:"8px 18px", borderRadius:r.md,
                 border:`1px solid ${TTC[nextRace.ty]}`, background:TTC[nextRace.ty]+"22",
-                color:TTC[nextRace.ty], fontFamily:"'Oswald',sans-serif",
+                color:TTC[nextRace.ty], fontFamily:"var(--font-sans)",
                 fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:1, textTransform:"uppercase",
               }}
             >
@@ -323,7 +323,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
                       width:28, height:28, borderRadius:"50%",
                       background:PClr[p.id].fg, color:PClr[p.id].bg,
                       display:"flex", alignItems:"center", justifyContent:"center",
-                      fontWeight:900, fontSize:13, fontFamily:"'Oswald',sans-serif",
+                      fontWeight:900, fontSize:13, fontFamily:"var(--font-sans)",
                       flexShrink:0,
                     }}>
                       {i + 1}
@@ -331,7 +331,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
                     <div>
                       <div style={{
                         color:PClr[p.id].fg, fontWeight:700, fontSize:15,
-                        fontFamily:"'Barlow Condensed',sans-serif",
+                        fontFamily:"var(--font-sans)",
                       }}>
                         {p.name}
                         {isMe && <span style={{ color:C.accent, fontSize:10, marginLeft:6, fontWeight:700 }}>YOU</span>}
@@ -344,7 +344,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
                   </div>
                   <div style={{ textAlign:"right" }}>
                     <div style={{
-                      color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif",
+                      color:PClr[p.id].fg, fontFamily:"var(--font-sans)",
                       fontSize:22, fontWeight:700, lineHeight:1,
                     }}>
                       {p.pts.toLocaleString()}
@@ -378,7 +378,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
               🔥 Power Rankings — who's hot right now
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ color:PClr[powerLeader.id].fg, background:PClr[powerLeader.id].bg, padding:"3px 10px", borderRadius:r.pill, fontFamily:"'Oswald',sans-serif", fontWeight:900, fontSize:13, border:`1px solid ${PClr[powerLeader.id].fg}44` }}>
+              <span style={{ color:PClr[powerLeader.id].fg, background:PClr[powerLeader.id].bg, padding:"3px 10px", borderRadius:r.pill, fontFamily:"var(--font-sans)", fontWeight:900, fontSize:13, border:`1px solid ${PClr[powerLeader.id].fg}44` }}>
                 #1 {PNAME[powerLeader.id]}
               </span>
               <span style={{ color:C.dim, fontSize:12 }}>{powerLeader.powerScore} pts (weighted, last 3 races)</span>
@@ -413,7 +413,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
                     <span style={{ fontSize:13 }}>{i===0?"👑":i===3?"💩":"  "}</span>
                     <span style={{
                       color:PClr[p2].fg, fontWeight: s.weeklyWin ? 900 : 600, fontSize:14,
-                      fontFamily:"'Barlow Condensed',sans-serif",
+                      fontFamily:"var(--font-sans)",
                     }}>
                       {PNAME[p2]}
                       {p2 === pid && <span style={{ color:C.accent, fontSize:10, marginLeft:6 }}>YOU</span>}
@@ -428,7 +428,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
                       }}>+25 PP</span>
                     )}
                     <span style={{
-                      color:PClr[p2].fg, fontFamily:"'Oswald',sans-serif",
+                      color:PClr[p2].fg, fontFamily:"var(--font-sans)",
                       fontSize:18, fontWeight:700,
                     }}>
                       {s.total}

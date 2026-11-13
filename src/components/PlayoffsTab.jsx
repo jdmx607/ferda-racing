@@ -147,7 +147,7 @@ function PlayoffField({ data, user, currentWeek, onSaveChaseField }) {
                     color: isOut ? "#ef4444" : C.gold,
                     textDecoration: isOut ? "line-through" : "none",
                   }}>{d}</span>
-                  <span style={{ fontFamily:"'Oswald',sans-serif", fontSize:15, fontWeight:700, color:isOut ? "#ef444488" : C.gold, flexShrink:0 }}>
+                  <span style={{ fontFamily:"var(--font-sans)", fontSize:15, fontWeight:700, color:isOut ? "#ef444488" : C.gold, flexShrink:0 }}>
                     {pts}
                   </span>
                   {isOut && <span style={{ fontSize:9, color:"#ef4444", fontWeight:700, letterSpacing:1, flexShrink:0 }}>OUT</span>}
@@ -171,7 +171,7 @@ function PlayoffField({ data, user, currentWeek, onSaveChaseField }) {
               background:pickWeek === w ? C.gold : "transparent",
               color:pickWeek === w ? "#000" : C.dim,
               fontSize:11, fontWeight:700, cursor:"pointer",
-              fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+              fontFamily:"var(--font-sans)", letterSpacing:1,
             }}>W{w}</button>
           ))}
         </div>
@@ -193,7 +193,7 @@ function PlayoffField({ data, user, currentWeek, onSaveChaseField }) {
               }}>
                 <div style={{
                   padding:"10px 14px", borderBottom:`1px solid ${PClr[p.id].bg==="#000000" ? C.border : "rgba(0,0,0,0.2)"}`,
-                  color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontWeight:900, fontSize:15,
+                  color:PClr[p.id].fg, fontFamily:"var(--font-sans)", fontWeight:900, fontSize:15,
                 }}>
                   {PNAME[p.id].toUpperCase()}
                 </div>
@@ -257,7 +257,7 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div style={{ marginBottom:20 }}>
         <h2 style={{
-          color:playoffsStarted ? C.gold : C.text, fontFamily:"'Oswald',sans-serif",
+          color:playoffsStarted ? C.gold : C.text, fontFamily:"var(--font-sans)",
           fontSize:26, letterSpacing:1, marginBottom:4, margin:0,
           textShadow:playoffsStarted ? `0 0 16px ${C.gold}55` : "none",
         }}>
@@ -282,7 +282,7 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
             background:view===v.id ? theme : "transparent",
             color:view===v.id ? "#000" : C.dim,
             fontSize:11, fontWeight:700, cursor:"pointer",
-            fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+            fontFamily:"var(--font-sans)", letterSpacing:1,
           }}>{v.label}</button>
         ))}
       </div>
@@ -350,13 +350,13 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
                     width:44, height:44, borderRadius:"50%", flexShrink:0,
                     background:PClr[p.id].fg, color:PClr[p.id].bg,
                     display:"flex", alignItems:"center", justifyContent:"center",
-                    fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:900,
+                    fontFamily:"var(--font-sans)", fontSize:20, fontWeight:900,
                   }}>
                     {i + 1}
                   </div>
                   <div>
                     <div style={{
-                      color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif",
+                      color:PClr[p.id].fg, fontFamily:"var(--font-sans)",
                       fontSize:22, fontWeight:900, letterSpacing:1, lineHeight:1,
                       display:"flex", alignItems:"center", gap:8,
                     }}>
@@ -387,7 +387,7 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
                 {/* Chase total */}
                 <div style={{ textAlign:"right", flexShrink:0 }}>
                   <div style={{
-                    fontFamily:"'Oswald',sans-serif", fontSize:40, fontWeight:900, lineHeight:1,
+                    fontFamily:"var(--font-sans)", fontSize:40, fontWeight:900, lineHeight:1,
                     color:PClr[p.id].fg,
                   }}>
                     {p.total.toLocaleString()}
@@ -425,7 +425,7 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
                   }}>
                     <div style={{ color:col, fontSize:9, textTransform:"uppercase", letterSpacing:1, marginBottom:2 }}>{label}</div>
                     <div style={{
-                      color:col, fontFamily:"'Oswald',sans-serif",
+                      color:col, fontFamily:"var(--font-sans)",
                       fontSize:16, fontWeight:700,
                     }}>{value}</div>
                   </div>

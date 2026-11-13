@@ -38,6 +38,12 @@ export function useLivePolling(data) {
           note: result.note || null,
           isLive: result.isLive !== false,
           isOver: !!result.isOver,
+          lapsToGo: result.lapsToGo ?? null,
+          // car number → { finish (current position), start, dnf } for the driver cards
+          positions: Object.fromEntries((result.drivers || []).map(d => [
+            (String(d.name).match(/^#(\S+)/) || [])[1] || d.name,
+            { finish: d.finish, start: d.qualPos, dnf: !!d.dnf },
+          ])),
         });
         const now = new Date();
         setLiveStatus(`Live · ${now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`);

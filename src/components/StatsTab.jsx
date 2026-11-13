@@ -65,7 +65,7 @@ function DriverLeaderboard({ driverStats }) {
             background:sortBy === o.key ? C.accent : "transparent",
             color:sortBy === o.key ? "#000" : C.dim,
             fontSize:11, fontWeight:700, cursor:"pointer",
-            fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+            fontFamily:"var(--font-sans)", letterSpacing:1,
             transition:"all 0.12s ease",
           }}>{o.label}</button>
         ))}
@@ -98,7 +98,7 @@ function DriverLeaderboard({ driverStats }) {
             borderBottom:`1px solid ${C.border}22`,
             alignItems:"center",
           }}>
-            <span style={{ color:C.muted, fontSize:11, fontFamily:"'Oswald',sans-serif", fontWeight:700 }}>
+            <span style={{ color:C.muted, fontSize:11, fontFamily:"var(--font-sans)", fontWeight:700 }}>
               {i + 1}
             </span>
             <div>
@@ -126,16 +126,16 @@ function DriverLeaderboard({ driverStats }) {
               </div>
             </div>
             <span style={{
-              textAlign:"right", fontFamily:"'Oswald',sans-serif",
+              textAlign:"right", fontFamily:"var(--font-sans)",
               fontSize:15, fontWeight:700,
               color:i === 0 ? C.accent : C.text,
             }}>{s.totalFerdaPts}</span>
             <span style={{
-              textAlign:"right", fontFamily:"'Oswald',sans-serif",
+              textAlign:"right", fontFamily:"var(--font-sans)",
               fontSize:13, color:C.textDim,
             }}>{s.avgScore}</span>
             <span style={{
-              textAlign:"right", fontFamily:"'Oswald',sans-serif",
+              textAlign:"right", fontFamily:"var(--font-sans)",
               fontSize:13,
               color:s.bestScore >= 80 ? C.accent : C.textDim,
             }}>{s.bestScore}</span>
@@ -203,7 +203,7 @@ function WeeklyTopPerformers({ data }) {
             background:week === w ? C.accent : "transparent",
             color:week === w ? "#000" : C.dim,
             fontSize:11, fontWeight:700, cursor:"pointer",
-            fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+            fontFamily:"var(--font-sans)", letterSpacing:1,
             transition:"all 0.12s ease",
           }}>W{w}</button>
         ))}
@@ -243,7 +243,7 @@ function WeeklyTopPerformers({ data }) {
                 width:28, height:28, borderRadius:"50%", flexShrink:0,
                 background: isMvp ? C.accent : "rgba(255,255,255,0.06)",
                 display:"flex", alignItems:"center", justifyContent:"center",
-                fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:900,
+                fontFamily:"var(--font-sans)", fontSize:13, fontWeight:900,
                 color: isMvp ? "#000" : C.dim,
               }}>{i + 1}</div>
 
@@ -253,7 +253,7 @@ function WeeklyTopPerformers({ data }) {
                   <span style={{
                     color:isMvp ? C.accent : C.text,
                     fontWeight:700, fontSize:13,
-                    fontFamily:"'Barlow Condensed',sans-serif",
+                    fontFamily:"var(--font-sans)",
                   }}>
                     {d.name}
                     {isMvp && <span style={{ marginLeft:6, fontSize:11 }}>👑 MVP</span>}
@@ -272,7 +272,7 @@ function WeeklyTopPerformers({ data }) {
 
               {/* Score */}
               <div style={{
-                fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900,
+                fontFamily:"var(--font-sans)", fontSize:22, fontWeight:900,
                 color: isMvp ? C.accent : C.text, flexShrink:0,
               }}>
                 {d.total > 0 ? "+" : ""}{d.total}
@@ -370,7 +370,7 @@ function HotStreaks({ data }) {
                 </div>
               </div>
               <div style={{
-                fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900,
+                fontFamily:"var(--font-sans)", fontSize:24, fontWeight:900,
                 color, flexShrink:0,
               }}>
                 {label}
@@ -419,7 +419,7 @@ function SeasonAwards({ data }) {
         <AwardCard emoji="🎯" title="Consistency King" accent="#3b82f6">
           <div style={{
             color:PClr[consistencyKing.pid]?.fg || C.text,
-            fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900,
+            fontFamily:"var(--font-sans)", fontSize:24, fontWeight:900,
           }}>
             {PNAME[consistencyKing.pid]}
           </div>
@@ -433,7 +433,7 @@ function SeasonAwards({ data }) {
 
       {sleeperHit && (
         <AwardCard emoji="😴" title="Sleeper Hit" accent="#8b5cf6">
-          <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900 }}>
+          <div style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:22, fontWeight:900 }}>
             {sleeperHit.name}
           </div>
           <div style={{ color:C.dim, fontSize:12 }}>
@@ -448,7 +448,7 @@ function SeasonAwards({ data }) {
         <AwardCard emoji="👁️" title="Eye of the Tiger" accent="#f59e0b">
           <div style={{
             color:PClr[eyeOfTiger.pid]?.fg || C.text,
-            fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900,
+            fontFamily:"var(--font-sans)", fontSize:24, fontWeight:900,
           }}>
             {PNAME[eyeOfTiger.pid]}
           </div>
@@ -463,7 +463,7 @@ function SeasonAwards({ data }) {
 
       {comebackKing && (
         <AwardCard emoji="⬆️" title="Comeback King" accent="#10b981">
-          <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:22, fontWeight:900 }}>
+          <div style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:22, fontWeight:900 }}>
             {comebackKing.name}
           </div>
           <div style={{ color:C.dim, fontSize:12 }}>
@@ -478,7 +478,7 @@ function SeasonAwards({ data }) {
         <AwardCard emoji="🔀" title="Best Mulligan" accent="#ec4899">
           <div style={{
             color:PClr[bestMulligan.pid]?.fg || C.text,
-            fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900,
+            fontFamily:"var(--font-sans)", fontSize:24, fontWeight:900,
           }}>
             {PNAME[bestMulligan.pid]}
           </div>
@@ -498,7 +498,7 @@ function SeasonAwards({ data }) {
         <AwardCard emoji="💩" title="Biggest Bust" accent="#ef4444">
           <div style={{
             color:PClr[biggestBust.pid]?.fg || C.text,
-            fontFamily:"'Oswald',sans-serif", fontSize:24, fontWeight:900,
+            fontFamily:"var(--font-sans)", fontSize:24, fontWeight:900,
           }}>
             {PNAME[biggestBust.pid]}
           </div>
@@ -537,7 +537,7 @@ function SeasonRecords({ data, records }) {
             🏆 Best Player Week
           </div>
           <div style={{
-            color:PClr[bestPlayerWeek.pid].fg, fontFamily:"'Oswald',sans-serif",
+            color:PClr[bestPlayerWeek.pid].fg, fontFamily:"var(--font-sans)",
             fontSize:28, fontWeight:900, lineHeight:1,
           }}>
             {bestPlayerWeek.score}
@@ -563,7 +563,7 @@ function SeasonRecords({ data, records }) {
             🚗 Best Driver Perf.
           </div>
           <div style={{
-            color:C.text, fontFamily:"'Oswald',sans-serif",
+            color:C.text, fontFamily:"var(--font-sans)",
             fontSize:24, fontWeight:900, lineHeight:1,
           }}>
             {bestDriverPerf.score}
@@ -599,7 +599,7 @@ function SeasonRecords({ data, records }) {
             {PNAME[p.id]}
           </div>
           <div style={{
-            color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif",
+            color:PClr[p.id].fg, fontFamily:"var(--font-sans)",
             fontSize:32, fontWeight:900, lineHeight:1,
           }}>
             {wins[p.id]}
@@ -652,10 +652,10 @@ function PowerRankings({ data }) {
                 width:36, height:36, borderRadius:"50%", flexShrink:0,
                 background:PClr[p.id].fg, color:PClr[p.id].bg,
                 display:"flex", alignItems:"center", justifyContent:"center",
-                fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:900,
+                fontFamily:"var(--font-sans)", fontSize:16, fontWeight:900,
               }}>{p.rank}</div>
               <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ color:PClr[p.id].fg, fontWeight:700, fontSize:15, fontFamily:"'Barlow Condensed',sans-serif" }}>
+                <div style={{ color:PClr[p.id].fg, fontWeight:700, fontSize:15, fontFamily:"var(--font-sans)" }}>
                   {PNAME[p.id]}
                 </div>
                 <div style={{ color:PClr[p.id].fg+"77", fontSize:10 }}>
@@ -669,7 +669,7 @@ function PowerRankings({ data }) {
                   </span>
                 )}
                 <div style={{ textAlign:"right" }}>
-                  <div style={{ color:PClr[p.id].fg, fontFamily:"'Oswald',sans-serif", fontSize:20, fontWeight:900, lineHeight:1 }}>
+                  <div style={{ color:PClr[p.id].fg, fontFamily:"var(--font-sans)", fontSize:20, fontWeight:900, lineHeight:1 }}>
                     {p.powerScore}
                   </div>
                   <div style={{ color:PClr[p.id].fg+"55", fontSize:8, textTransform:"uppercase", letterSpacing:0.5 }}>power score</div>
@@ -705,7 +705,7 @@ export function StatsTab({ data }) {
 
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <div style={{ marginBottom:20 }}>
-        <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:0 }}>
+        <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:0 }}>
           Stats
         </h2>
         <div style={{ color:C.dim, fontSize:13, marginTop:4 }}>
@@ -722,7 +722,7 @@ export function StatsTab({ data }) {
             background:section === s.id ? C.accent : "transparent",
             color:section === s.id ? "#000" : C.dim,
             fontSize:12, fontWeight:700, cursor:"pointer",
-            fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+            fontFamily:"var(--font-sans)", letterSpacing:1,
             transition:"all 0.12s ease",
           }}>{s.label}</button>
         ))}
