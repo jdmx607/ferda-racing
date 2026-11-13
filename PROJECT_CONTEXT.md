@@ -48,7 +48,7 @@ ferda-v3/
 │   ├── manifest.json    # PWA manifest
 │   ├── sw.js            # Service worker (cache-first static, network-first API)
 │   ├── favicon.png/ico
-│   └── icons/           # App icons 72px–512px (FERDA eagle logo)
+│   └── icons/           # App icons 72px–512px (FERDA car-and-swoosh logo) + padded maskable 192/512
 ├── index.html           # PWA meta tags, SW registration, Google Fonts
 ├── vite.config.js
 ├── package.json         # "type":"module" required for Vercel ESM functions
@@ -352,7 +352,7 @@ public_key: "x5gm09HoetYBepHgk"
 ## 14. PWA (Progressive Web App)
 
 - **Manifest:** `public/manifest.json` — FERDA Racing, black theme, all icon sizes
-- **Icons:** FERDA eagle logo, 9 sizes from 72px to 512px
+- **Icons:** FERDA car-and-swoosh logo, 9 sizes from 72px to 512px plus maskable 192/512; favicon uses the emblem only. Source art: `design/app-icon-source.jpg`
 - **Service worker:** `public/sw.js` — cache-first for assets, network-first for Firebase/API
 - **Install prompt:** Gold/red install banner captured via `beforeinstallprompt` event
 - **iOS:** `apple-mobile-web-app-capable` + `apple-touch-icon` for home screen install via Share → Add to Home Screen

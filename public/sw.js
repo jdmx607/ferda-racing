@@ -1,13 +1,14 @@
 // FERDA Racing League — Service Worker
 // Cache strategy: static assets cached, Firebase/API always network-first
 
-const CACHE_NAME = 'ferda-racing-v1';
+const CACHE_NAME = 'ferda-racing-v2';   // bumped: new app icon (cache-first icons would otherwise stay stale)
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
+  '/icons/icon-maskable-512x512.png',
 ];
 
 // Install — pre-cache core static assets
