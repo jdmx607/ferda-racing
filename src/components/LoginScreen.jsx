@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { C, PClr } from "../theme";
-import { PLAYERS, SCHEDULE, MEMORIAL_DRIVERS } from "../constants";
-import { FerdaLogo, KYLE_QUOTES } from "./FerdaLogo";
+import { PLAYERS, SCHEDULE, ACTIVE_SEASON } from "../constants";
+import { getCurrentWeek } from "../engine/events";
+import { FerdaLogo } from "./FerdaLogo";
 
 export function getLastWeekResults(data) {
   const weeks=Object.keys(data.results||{}).map(k=>parseInt(k.replace("w",""))).sort((a,b)=>b-a);
@@ -40,31 +41,126 @@ export function WinnerModal({player, data, onDismiss}) {
   </div>);
 }
 
-export function LoginScreen({onLogin}) {
-  const [sel,setSel]=useState(null); const [pw,setPw]=useState(""); const [err,setErr]=useState("");
-  const [quote] = useState(() => KYLE_QUOTES[Math.floor(Math.random() * KYLE_QUOTES.length)]);
-  const go=()=>{const p=PLAYERS.find(x=>x.id===sel);if(p&&pw===p.password)onLogin(p);else setErr("Wrong password");};
-  return (<div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:C.bg}}>
-    <div style={{background:C.card,borderRadius:16,padding:"40px 32px",width:340,maxWidth:"90vw",border:"1px solid "+C.border,boxShadow:"none"}}>
-      <div style={{textAlign:"center",marginBottom:28}}><FerdaLogo size="large"/><div style={{color:C.dim,fontSize:13,letterSpacing:4,marginTop:8,textTransform:"uppercase"}}>Racing League</div></div>
-      <div style={{color:C.dim,fontSize:12,marginBottom:8,textTransform:"uppercase",letterSpacing:2}}>Select Player</div>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:16}}>{PLAYERS.map(p=>(<button key={p.id} onClick={()=>{setSel(p.id);setErr("");}} style={{padding:"10px 0",borderRadius:8,border:"1px solid "+(sel===p.id?PClr[p.id].accent:C.border),background:sel===p.id?PClr[p.id].bg:C.input,color:sel===p.id?PClr[p.id].fg:C.dim,fontFamily:"inherit",fontSize:14,fontWeight:600,cursor:"pointer"}}>{p.name}</button>))}</div>
-      {sel&&<><div style={{color:C.dim,fontSize:12,marginBottom:8,textTransform:"uppercase",letterSpacing:2}}>Password</div><input type="password" value={pw} onChange={e=>{setPw(e.target.value);setErr("");}} onKeyDown={e=>e.key==="Enter"&&go()} placeholder="Enter password" style={{width:"100%",padding:"10px 14px",borderRadius:8,border:"1px solid "+C.border,background:C.input,color:C.text,fontSize:15,fontFamily:"inherit",outline:"none",boxSizing:"border-box",marginBottom:16}}/></>}
-      {err&&<div style={{color:C.red,fontSize:13,marginBottom:12,textAlign:"center"}}>{err}</div>}
-      <button onClick={go} disabled={!sel||!pw} style={{width:"100%",padding:"12px 0",borderRadius:8,border:"none",background:sel&&pw?C.accent:C.border,color:sel&&pw?"#000":C.dim,fontFamily:"var(--font-sans)",fontSize:16,fontWeight:700,letterSpacing:2,textTransform:"uppercase",cursor:sel&&pw?"pointer":"default"}}>Enter Garage</button>
-      <div style={{marginTop:24,paddingTop:16,borderTop:"1px solid "+C.border,textAlign:"center"}}>
-        <div style={{color:C.dim,fontSize:11,letterSpacing:1}}>🕊️ In loving memory of</div>
-        <div style={{color:C.text,fontSize:14,fontWeight:700,marginTop:2}}>Kyle Busch · #8</div>
-        <div style={{color:C.dim,fontSize:11,marginTop:1}}>{MEMORIAL_DRIVERS["#8 Kyle Busch"].years}</div>
-        <div style={{
-          marginTop:14,paddingTop:14,borderTop:"1px solid "+C.border+"66",
-          color:C.muted,fontSize:11,fontStyle:"italic",lineHeight:1.6,
-        }}>
-          "{quote}"
-          <div style={{color:C.border,fontSize:9,fontStyle:"normal",letterSpacing:1.5,marginTop:4}}>
-            — KYLE BUSCH, 1985–2026
+// ── Login / "Pit Pass" screen ─────────────────────────────────────────────────
+const LAST_PLAYER_KEY = "ferda:lastPlayer";
+const MONTHS = { Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11 };
+
+function readLastPlayer() {
+  try {
+    const id = localStorage.getItem(LAST_PLAYER_KEY);
+    return PLAYERS.some(p => p.id === id) ? id : null;
+  } catch { return null; }
+}
+function saveLastPlayer(id) {
+  try { localStorage.setItem(LAST_PLAYER_KEY, id); } catch { /* private mode etc. */ }
+}
+
+// Live stage/lap if a race is running, otherwise the next event ("NEXT: CHARLOTTE • SUN 2:30 PM").
+// Start time is the same ~2:30 PM assumption the Home countdown uses.
+function raceStatus(data, timing) {
+  if (!data) return null;
+  if (data.liveRace?.active) {
+    const wk = SCHEDULE.find(s => s.w === data.liveRace.week);
+    const parts = [
+      "LIVE",
+      wk?.t?.toUpperCase(),
+      timing?.stage?.stage_num != null && `STAGE ${timing.stage.stage_num}`,
+      timing?.lapsInRace > 0 && `LAP ${timing.lapNumber}/${timing.lapsInRace}`,
+    ].filter(Boolean);
+    return { live: true, text: parts.join(" • ") };
+  }
+  const next = SCHEDULE.find(s => s.w === getCurrentWeek(data));
+  if (!next) return { text: `${ACTIVE_SEASON} SEASON COMPLETE` };
+  const [mon, day] = (next.d || "").split(" ");
+  let when = "";
+  if (mon in MONTHS) {
+    const dt = new Date(ACTIVE_SEASON, MONTHS[mon], parseInt(day), 14, 30);
+    const dow = dt.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
+    const time = dt.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    when = ` • ${dow} ${time}`;
+  }
+  return { text: `NEXT: ${next.t.toUpperCase()}${when}` };
+}
+
+const initialsOf = name => name.split(/\s+/).map(w => w[0]).join("").toUpperCase();
+
+export function LoginScreen({ onLogin, data, timing }) {
+  const [sel, setSel] = useState(readLastPlayer);   // remembered profile is pre-selected
+  const [pw, setPw]   = useState("");
+  const [err, setErr] = useState("");
+
+  const status = raceStatus(data, timing);
+  const standings = data?.meta?.standings || {};
+  const rankOf = id => 1 + PLAYERS.filter(p => (standings[p.id] || 0) > (standings[id] || 0)).length;
+
+  const pick = id => { setSel(id); setErr(""); saveLastPlayer(id); };
+  const go = () => {
+    const p = PLAYERS.find(x => x.id === sel);
+    if (!p) return;
+    if (!pw) { setErr("Enter your password"); return; }
+    if (pw === p.password) onLogin(p); else setErr("Wrong password");
+  };
+
+  return (
+    <div className="login">
+      {/* ── Top zone: branding + race status ─────────────────────────────── */}
+      <header className="login-top">
+        <FerdaLogo size="large" />
+        <div className="login-sub">Racing League</div>
+        {status && (
+          <div className="login-pill num">
+            {status.live && <span className="live-dot" />}
+            {status.text}
           </div>
+        )}
+      </header>
+
+      {/* ── Middle zone: pit pass player grid ────────────────────────────── */}
+      <main className="login-mid">
+        <div className="label" style={{ marginBottom: 10 }}>Select player</div>
+        <div className="pp-grid" role="radiogroup" aria-label="Select player">
+          {PLAYERS.map(p => {
+            const active = sel === p.id;
+            const pts = standings[p.id];
+            return (
+              <button
+                key={p.id} type="button" role="radio" aria-checked={active}
+                className={`pp-card${active ? " is-active" : ""}`}
+                onClick={() => pick(p.id)}
+              >
+                <span className="pp-badge num">{initialsOf(p.name)}</span>
+                <span className="pp-text">
+                  <span className="pp-name">{p.name}</span>
+                  <span className="pp-meta num">
+                    {pts != null ? `P${rankOf(p.id)} • ${Math.round(pts).toLocaleString()} PTS` : "—"}
+                  </span>
+                </span>
+                {active && <span className="pp-dot" style={{ background: PClr[p.id].accent }} />}
+              </button>
+            );
+          })}
         </div>
-      </div>
-    </div></div>);
+
+        <input
+          className="login-input" type="password" value={pw}
+          disabled={!sel}
+          autoComplete="current-password"
+          placeholder={sel ? "Password" : "Select a player first"}
+          onChange={e => { setPw(e.target.value); setErr(""); }}
+          onKeyDown={e => e.key === "Enter" && go()}
+        />
+        <div className="login-err" role="alert">{err}</div>
+
+        <button type="button" className={`login-cta${sel ? " is-ready" : ""}`} disabled={!sel} onClick={go}>
+          Enter garage
+        </button>
+      </main>
+
+      {/* ── Bottom zone: tribute ─────────────────────────────────────────── */}
+      <footer className="login-foot">
+        <div className="login-quote">Do It For Dale, Be Like Biff, Race Like Rowdy</div>
+        <div className="login-attrib num">3:16:8</div>
+      </footer>
+    </div>
+  );
 }

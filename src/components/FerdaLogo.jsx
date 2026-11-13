@@ -29,7 +29,7 @@ export function FerdaLogo({ size = "large" }) {
   const sh = lg ? 40 : 16;
   const sw = lg ? 4 : 2;
   const gap = lg ? 3 : 1.5;
-  const stripeColors = ["#ffcf00", "#ff0000", "#ff0000", "#0077c8", "#0077c8"];
+  const stripeColors = ["#FFCF00", "#EF2B2D", "#FF7A1A", "#0077C8"];   // yellow, red, orange, blue
   return (
     <div style={{ display:"inline-flex", alignItems:"center", gap: lg ? 4 : 2 }}>
       <div style={{ display:"flex", gap, transform:"skewX(-12deg)" }}>

@@ -336,10 +336,10 @@ export default function App() {
       <div style={{color:C.dim,fontSize:13}}>Connecting to database…</div>
     </div>
   );
-  if(!user)return <LoginScreen onLogin={handleLogin}/>;
+  if(!user)return <LoginScreen onLogin={handleLogin} data={data} timing={timingData}/>;
 
   return (
-    <div style={{minHeight:"100vh",background:C.bg,fontFamily:"var(--font-sans)",color:C.text}}>
+    <div style={{minHeight:"100vh",background:C.bg,fontFamily:"var(--font-sans)",color:C.text,paddingTop:"var(--safe-top)"}}>
       {showRichRoast&&<RichRoastModal onDismiss={()=>setShowRichRoast(false)}/>}
       {!showRichRoast&&showWinnerModal&&<WinnerModal player={user} data={data} onDismiss={()=>setShowWinnerModal(false)}/>}
       <Nav player={user} tab={tab} setTab={setTab} onLogout={()=>setUser(null)} data={data}/>

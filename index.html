@@ -43,11 +43,7 @@
         -webkit-tap-highlight-color: transparent;
         -webkit-touch-callout: none;
       }
-      /* Safe area insets for iPhone notch/dynamic island */
-      #root {
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
-      }
+      /* Safe-area insets are handled per screen (see src/styles.css + App shell) */
     </style>
   </head>
   <body>
