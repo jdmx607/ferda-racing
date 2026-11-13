@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from "react";
 import { C, PClr, PC, TTC, TTL, r, shadow } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, DRIVERS, DRIVER_INFO, MAKE_COLORS, ACTIVE_PICKS, TRACK_MULTS, DRAFT_TIMER_MS, isMemorial, isFreeAgent } from "../constants";
 import { getDraftOrder, buildSnakeOrder } from "../engine/draft";
+import { storeFor } from "../engine/events";
+import { weekName, weekLabel } from "../exhibitions";
 import { analyzeLineups } from "../engine/draftAnalysis";
 
 const MAKE_BADGE = { Chevy:"#b8b8b8", Ford:"#4a90e2", Toyota:"#eb0a1e", Dodge:"#a855f7" };
@@ -30,7 +32,7 @@ function DraftGate({ opensAt, now, weekInfo }) {
       </div>
       {weekInfo && (
         <div style={{ color:C.dim, fontSize:13, marginBottom:16 }}>
-          Week {weekInfo.w} — {weekInfo.r}
+          {weekName(weekInfo.w)} — {weekInfo.r}
         </div>
       )}
       <div style={{ display:"flex", gap:8, justifyContent:"center", marginBottom:16 }}>
@@ -107,7 +109,8 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
   const draftKey      = "w" + currentWeek;
   const draftOrder    = useMemo(() => getDraftOrder(data, currentWeek),  [data, currentWeek]);
   const snakeSequence = useMemo(() => buildSnakeOrder(draftOrder), [draftOrder]);
-  const draftState    = data.drafts?.[draftKey] || [];
+  const src           = storeFor(data, currentWeek); // exhibitions keep drafts/picks separately
+  const draftState    = src.drafts?.[draftKey] || [];
   const currentPickNum = draftState.length;
   const draftComplete  = currentPickNum >= snakeSequence.length;
   const currentTurn    = !draftComplete ? snakeSequence[currentPickNum] : null;
@@ -125,7 +128,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
   draftState.forEach(d => { if (playerPicks[d.pid]) playerPicks[d.pid].push(d.driver); });
 
   // Post-draft analysis — computed once draft is locked
-  const savedPicks = data.picks?.[draftKey] || {};
+  const savedPicks = src.picks?.[draftKey] || {};
   const picksForAnalysis = draftComplete ? playerPicks : savedPicks;
   const analysis = useMemo(() => {
     if (!draftComplete) return null;
@@ -157,7 +160,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
     return () => clearInterval(t);
   }, []);
 
-  const timerMeta   = data.draftTimers?.[draftKey];
+  const timerMeta   = src.draftTimers?.[draftKey];
   const msElapsed   = timerMeta?.startedAt ? now - new Date(timerMeta.startedAt).getTime() : null;
   const msRemaining = msElapsed !== null ? Math.max(0, DRAFT_TIMER_MS - msElapsed) : null;
   const timerExpired = msElapsed !== null && msElapsed >= DRAFT_TIMER_MS;
@@ -165,7 +168,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
   // Gate the draft to its scheduled Monday-5pm open time. Only applies before
   // anyone has picked — weeks with no schedule entry (pre-dating this
   // feature) just skip the gate and behave as before.
-  const opensAt = data.draftSchedule?.[draftKey]?.opensAt;
+  const opensAt = src.draftSchedule?.[draftKey]?.opensAt;
   const isGated = !!opensAt && draftState.length === 0 && now < new Date(opensAt).getTime();
 
   if (!weekInfo) {
@@ -191,7 +194,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div style={{ marginBottom:16 }}>
         <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:0 }}>
-          Week {currentWeek} Draft
+          {weekName(currentWeek)} Draft
         </h2>
         {weekInfo && (
           <div style={{ color:C.dim, fontSize:13, marginTop:4 }}>
@@ -214,7 +217,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
           border:`1px solid ${C.accent}44`, textAlign:"center",
         }}>
           <div style={{ color:C.accent, fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:700 }}>
-            🏁 Draft Complete — All picks locked for W{currentWeek}
+            🏁 Draft Complete — All picks locked for {weekLabel(currentWeek)}
           </div>
         </div>
       ) : (
@@ -462,7 +465,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
             boxShadow:shadow.glow(TTC[analysis.trackType]),
           }}>
             <div style={{ color:TTC[analysis.trackType], fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
-              📊 Lineup Analysis — W{analysis.week}
+              📊 Lineup Analysis — {weekLabel(analysis.week)}
             </div>
             <div style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:18, fontWeight:900, letterSpacing:1 }}>
               {analysis.raceName}

@@ -2,6 +2,8 @@ import { useState, useMemo } from "react";
 import { C, PClr, TTC, TTL, r, shadow } from "../theme";
 import { PNAME, SCHEDULE, TRACK_MULTS, ACTIVE_PICKS, isMemorial } from "../constants";
 import { getWeekTopDrivers, generateWeekRecap } from "../engine/stats";
+import { storeFor, isScored } from "../engine/events";
+import { CLASH_WEEK, weekLabel } from "../exhibitions";
 
 const BONUS_CHIP = {
   "Top 5":    "#10b981", "Top 10":   "#10b981",
@@ -76,12 +78,14 @@ function getGrade(pct) {
 }
 
 export function ResultsTab({ data }) {
-  const weeks = Object.keys(data.results || {})
-    .map(k => parseInt(k.replace("w","")))
-    .sort((a, b) => b - a);
+  // Scored events, newest first, in schedule order (so the Clash / All-Star
+  // sit where they actually ran). Exhibitions keep their results separately.
+  const weeks = SCHEDULE.map(s => s.w).filter(w => isScored(data, w)).reverse();
   const [week, setWeek] = useState(weeks[0] || 1);
 
-  const wr       = data.results?.["w" + week];
+  const src       = storeFor(data, week);
+  const isClash   = week === CLASH_WEEK;
+  const wr       = src.results?.["w" + week];
   const weekInfo = SCHEDULE.find(s => s.w === week);
   const sorted   = wr?.scored ? Object.entries(wr.scored).sort((a, b) => b[1].total - a[1].total) : [];
   const winner   = sorted[0]?.[0];
@@ -99,7 +103,7 @@ export function ResultsTab({ data }) {
   );
 
   // Who picked each driver this week
-  const weekPicks = data.picks?.["w" + week] || {};
+  const weekPicks = src.picks?.["w" + week] || {};
   const pickerMap = useMemo(() => {
     const m = {};
     Object.entries(weekPicks).forEach(([pid, picks]) => {
@@ -139,7 +143,7 @@ export function ResultsTab({ data }) {
               fontFamily:"'Oswald',sans-serif", letterSpacing:1,
               transition:"all 0.15s ease",
             }}>
-              W{w}
+              {weekLabel(w)}
             </button>
           ))}
         </div>
@@ -157,6 +161,15 @@ export function ResultsTab({ data }) {
             <div style={{ color:C.dim, fontSize:12, marginTop:2 }}>@ {weekInfo.t}</div>
           </div>
           <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
+            {weekInfo.ex && (
+              <span style={{
+                fontSize:10, fontWeight:700, color:C.gold,
+                background:C.gold+"18", padding:"3px 8px", borderRadius:r.pill,
+                border:`1px solid ${C.gold}55`, letterSpacing:1,
+              }}>
+                EXHIBITION · NOT IN STANDINGS
+              </span>
+            )}
             {wr?.raw?.threeStages && (
               <span style={{
                 fontSize:10, fontWeight:700, color:C.purple,
@@ -218,10 +231,19 @@ export function ResultsTab({ data }) {
                               background:C.accent+"22", padding:"2px 8px", borderRadius:r.pill,
                               border:`1px solid ${C.accent}44`, letterSpacing:1,
                             }}>
-                              WEEKLY WIN +25 PO
+                              {isClash ? "CLASH WINNER" : "WEEKLY WIN +25 PO"}
                             </span>
                           )}
-                          {ps.bonusPoints > 0 && (
+                          {isClash && idx === sorted.length - 1 && sorted.length === 4 && (
+                            <span style={{
+                              fontSize:9, fontWeight:700, color:C.green,
+                              background:C.green+"22", padding:"2px 8px", borderRadius:r.pill,
+                              border:`1px solid ${C.green}44`, letterSpacing:1,
+                            }}>
+                              PICKS 1ST IN W1
+                            </span>
+                          )}
+                          {!isClash && ps.bonusPoints > 0 && (
                             <span style={{
                               fontSize:9, color:C.dim,
                               padding:"2px 6px", borderRadius:r.pill,
@@ -289,7 +311,7 @@ export function ResultsTab({ data }) {
           border:`1px solid ${C.border}`,
           color:C.dim, fontSize:13, lineHeight:1.6,
         }}>
-          <span style={{ color:C.accent, fontWeight:700 }}>W{week} recap —</span>{" "}
+          <span style={{ color:C.accent, fontWeight:700 }}>{weekLabel(week)} recap —</span>{" "}
           <span style={{ color:C.text, fontWeight:700 }}>{PNAME[recap.winnerPid]}</span>{" "}
           wins with <span style={{ color:C.text, fontWeight:700 }}>{recap.winnerScore} pts</span>
           {recap.hadWinner && <span> (had race winner {recap.raceWinner})</span>}.{" "}

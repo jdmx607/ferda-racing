@@ -59,3 +59,25 @@ committing to any of it.
 
 - [ ] **Better design for regular-season championship vs. playoff (Chase)
       championship** — clearer UI distinguishing the two.
+
+## Start the 2027 season (the 2027 schedule is built but NOT active)
+
+The 2027 schedule (`src/schedule2027.js`) incl. the Clash and All-Star Race
+exhibitions is staged. `ACTIVE_SEASON` in `constants.js` is still 2026 so the
+2026 archive stays intact. Previewable in the Schedule tab. To go live:
+
+- [ ] Flip `ACTIVE_SEASON` to 2027 in `src/constants.js`.
+- [ ] New Firestore doc for 2027 (today: `leagues/ferda-season-2026`) with
+      empty results/picks/drafts; keep the 2026 doc as the archive.
+- [ ] Per-season localStorage backup key.
+- [ ] 2027 NASCAR race IDs (`CACHER_RACE_IDS`) and year-parametrize the
+      `/2026/1/` paths in `src/nascar.js`.
+- [ ] Text that still says 2026 / Darlington (PlayoffsTab, RulesTab) —
+      Chase now opens at Richmond (W27).
+- [ ] Name the drivers for #6 (RFK) and #33 (RCR); confirm #10/#16 Dodge
+      moves; Brad Keselowski stays under Free Agents until he signs.
+- [ ] Confirm exhibition rules: All-Star bonus = its own bonus points + 25 for
+      the winner, added to playoff points; Clash awards no points, just sets
+      the Week 1 draft order. Confirm Dover is a short track.
+- [ ] Exhibitions: mulligans aren't available, and their winners don't show in
+      the activity feed / stats.

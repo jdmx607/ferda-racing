@@ -1,6 +1,8 @@
 import { useMemo, useState, useEffect } from "react";
 import { C, PClr, TTC, TTL, r, shadow, sp } from "../theme";
-import { PLAYERS, PNAME, SCHEDULE, MAX_MULLIGANS, TRACK_MULTS } from "../constants";
+import { PLAYERS, PNAME, SCHEDULE, MAX_MULLIGANS, TRACK_MULTS, ACTIVE_SEASON } from "../constants";
+import { getCurrentWeek } from "../engine/events";
+import { weekLabel } from "../exhibitions";
 import { getPowerRankings } from "../engine/history";
 import { getSeasonChampion } from "../engine/chase";
 import { TrophyCaseModal } from "./TrophyCase";
@@ -51,7 +53,7 @@ function getRaceMs(dateStr) {
   const [mon, day] = dateStr.split(" ");
   if (!MONTH_IDX.hasOwnProperty(mon)) return null;
   // Races typically start ~2:30 PM ET
-  return new Date(2026, MONTH_IDX[mon], parseInt(day), 14, 30, 0).getTime();
+  return new Date(ACTIVE_SEASON, MONTH_IDX[mon], parseInt(day), 14, 30, 0).getTime();
 }
 
 function Countdown({ raceDate, trackType }) {
@@ -141,7 +143,8 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
   const lastWeekKey  = Object.keys(data.results || {}).map(k => parseInt(k.replace("w",""))).sort((a,b) => b-a)[0];
   const lastWeek     = lastWeekKey ? data.results["w"+lastWeekKey] : null;
   const lastRaceInfo = SCHEDULE.find(s => s.w === lastWeekKey);
-  const nextRace     = SCHEDULE.find(s => !data.results?.["w"+s.w]);
+  // Next event in schedule order — includes the Clash / All-Star in 2027
+  const nextRace     = SCHEDULE.find(s => s.w === getCurrentWeek(data));
 
   const isLive = data?.liveRace?.active && liveScores;
   const liveRanked = isLive
@@ -261,7 +264,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
           }}>
             <div>
               <div style={{ color:TTC[nextRace.ty], fontSize:10, textTransform:"uppercase", letterSpacing:2, fontWeight:700, marginBottom:2 }}>
-                Next Race — W{nextRace.w}
+                Next Race — {weekLabel(nextRace.w)}{nextRace.ex ? " · Exhibition" : ""}
               </div>
               <div style={{ color:C.text, fontWeight:700, fontSize:16 }}>{nextRace.r}</div>
               <div style={{ color:C.dim, fontSize:12, marginTop:2 }}>

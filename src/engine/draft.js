@@ -1,6 +1,8 @@
 import { PLAYERS, ACTIVE_PICKS, PICKS_PER_WEEK, GARAGE_PICK_ENABLED, SCHEDULE, DRIVERS, PLAYOFF_START_WEEK, isMemorial, isPartTime, isFreeAgent } from "../constants.js";
 import { calcDriverScore } from "./scoring.js";
 import { getChaseEntryTotals } from "./chase.js";
+import { getPrevPointsWeek } from "./events.js";
+import { CLASH_WEEK, isExhibition } from "../exhibitions.js";
 
 export function getDraftOrder(data, currentWeek) {
   // W27 only: draft order is the INVERSE of the Chase-entering standings —
@@ -13,7 +15,18 @@ export function getDraftOrder(data, currentWeek) {
       .sort((a, b) => a.total - b.total)
       .map(s => s.id);
   }
-  const prev = data.results?.["w" + (currentWeek - 1)];
+  // Normal rule: the previous race's loser picks first. Exhibition wrinkles:
+  //  • Week 1 follows the Clash (an exhibition) — its result sets Week 1's order.
+  //  • The All-Star Race follows the last *points* race, not itself.
+  //  • Week 13 etc. look at the previous points week as usual (the All-Star
+  //    doesn't set anyone's draft order).
+  let prev;
+  if (currentWeek === 1) {
+    prev = data.exhibitions?.results?.["w" + CLASH_WEEK];
+  } else {
+    const prevWeek = isExhibition(currentWeek) ? getPrevPointsWeek(currentWeek) : currentWeek - 1;
+    prev = prevWeek == null ? null : data.results?.["w" + prevWeek];
+  }
   if (!prev?.scored) return PLAYERS.map(p => p.id);
   return PLAYERS.map(p => ({ id: p.id, score: prev.scored[p.id]?.total || 0 }))
     .sort((a, b) => a.score - b.score)

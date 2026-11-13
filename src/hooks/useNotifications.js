@@ -3,6 +3,7 @@
 // Both channels are optional and gracefully no-op when not set up.
 
 import { PNAME, SCHEDULE, DEFAULT_PHONES } from "../constants";
+import { weekLabel } from "../exhibitions";
 
 // ── SMS ───────────────────────────────────────────────────────────────────────
 export async function sendSms(phone, message) {
@@ -60,7 +61,7 @@ export async function notifyPlayer(pid, playerSettings, { title, message, url = 
 export async function notifyDraftTurn(pid, playerSettings, { week, pickNumber, totalPicks, raceName }) {
   const appUrl = typeof window !== "undefined" ? window.location.origin : "https://ferda-racing.vercel.app";
   const title   = "FERDA Racing — Your Pick! 🏁";
-  const message = `Pick ${pickNumber} of ${totalPicks} · W${week} ${raceName}. Open the app: ${appUrl}`;
+  const message = `Pick ${pickNumber} of ${totalPicks} · ${weekLabel(week)} ${raceName}. Open the app: ${appUrl}`;
   return notifyPlayer(pid, playerSettings, { title, message, url: "/" });
 }
 
@@ -75,7 +76,7 @@ export async function notifyRaceScored(week, scored, playerSettings, players) {
     `${medals[i]} ${PNAME[pid]}: ${s.total} pts${s.weeklyWin ? " 👑" : ""}`
   ).join("\n");
 
-  const title   = `🏁 W${week} Scores Are In!`;
+  const title   = `🏁 ${weekLabel(week)} Scores Are In!`;
   const message = `${lines}`;
 
   const promises = players.map(p =>
@@ -86,7 +87,7 @@ export async function notifyRaceScored(week, scored, playerSettings, players) {
 
 // ── Draft opened notification (to first picker) ───────────────────────────────
 export async function notifyDraftOpened(pid, playerSettings, { week, raceName, trackName }) {
-  const title   = `📋 W${week} Draft Is Open!`;
+  const title   = `📋 ${weekLabel(week)} Draft Is Open!`;
   const message = `${raceName} @ ${trackName || "TBD"} — You pick first! Open the app to get started.`;
   return notifyPlayer(pid, playerSettings, { title, message, url: "/" });
 }

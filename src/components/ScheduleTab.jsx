@@ -1,10 +1,23 @@
-import { C, TTC, TTL, r, shadow } from "../theme";
-import { SCHEDULE, PLAYOFF_START_WEEK, TRACK_MULTS } from "../constants";
+import { useState } from "react";
+import { C, TTC, TTL, r } from "../theme";
+import { SCHEDULES, ACTIVE_SEASON, PLAYOFF_START_WEEK, TRACK_MULTS } from "../constants";
+import { isScored, getCurrentWeek } from "../engine/events";
+import { weekLabel, weekName } from "../exhibitions";
+
+const EXHIBITION_NOTE = {
+  clash:   "Exhibition — not in the standings. Its result sets the Week 1 draft order.",
+  allstar: "Exhibition — not in the standings. Bonus points count toward the playoffs.",
+};
 
 export function ScheduleTab({ data }) {
-  const scored     = new Set(Object.keys(data.results || {}).map(k => parseInt(k.replace("w",""))));
-  const lastScored = Math.max(0, ...scored);
-  const nextWeek   = lastScored + 1;
+  const [season, setSeason] = useState(ACTIVE_SEASON);
+  const schedule  = SCHEDULES[season];
+  const isActive  = season === ACTIVE_SEASON;          // other seasons are a read-only preview
+  const raceCount = schedule.filter(s => !s.ex).length; // exhibitions aren't part of the 36
+
+  const scored      = new Set(isActive ? schedule.filter(s => isScored(data, s.w)).map(s => s.w) : []);
+  const pointsDone  = schedule.filter(s => !s.ex && scored.has(s.w)).length;
+  const nextWeek    = isActive ? getCurrentWeek(data) : null;
 
   return (
     <div style={{ padding:20, maxWidth:760, margin:"0 auto", position:"relative", zIndex:1 }}>
@@ -12,7 +25,7 @@ export function ScheduleTab({ data }) {
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16, flexWrap:"wrap", gap:8 }}>
         <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:0 }}>
-          2026 Schedule
+          {season} Schedule
         </h2>
         <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
           {Object.entries(TTC).map(([ty, col]) => (
@@ -28,28 +41,52 @@ export function ScheduleTab({ data }) {
         </div>
       </div>
 
-      {/* ── Progress bar ────────────────────────────────────────────────────── */}
-      <div style={{ marginBottom:20 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-          <span style={{ color:C.dim, fontSize:11 }}>{scored.size} races complete</span>
-          <span style={{ color:C.dim, fontSize:11 }}>{36 - scored.size} remaining</span>
-        </div>
-        <div style={{ height:6, background:C.border, borderRadius:r.pill, overflow:"hidden" }}>
-          <div style={{
-            height:"100%", width:`${(scored.size/36)*100}%`,
-            background:`linear-gradient(90deg,${C.green},${C.accent})`,
-            borderRadius:r.pill, transition:"width 0.8s ease",
-          }}/>
-        </div>
+      {/* ── Season switch ───────────────────────────────────────────────────── */}
+      <div style={{ display:"flex", gap:6, marginBottom:16 }}>
+        {Object.keys(SCHEDULES).map(y => (
+          <button key={y} onClick={() => setSeason(Number(y))} style={{
+            padding:"6px 14px", borderRadius:r.pill,
+            border:`1px solid ${season === Number(y) ? C.accent : C.border}`,
+            background:season === Number(y) ? C.accent : "transparent",
+            color:season === Number(y) ? "#000" : C.dim,
+            fontSize:11, fontWeight:700, cursor:"pointer",
+            fontFamily:"'Oswald',sans-serif", letterSpacing:1,
+          }}>{y}{Number(y) === ACTIVE_SEASON ? " · current" : " · preview"}</button>
+        ))}
       </div>
+
+      {/* ── Progress bar ────────────────────────────────────────────────────── */}
+      {isActive ? (
+        <div style={{ marginBottom:20 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
+            <span style={{ color:C.dim, fontSize:11 }}>{pointsDone} races complete</span>
+            <span style={{ color:C.dim, fontSize:11 }}>{raceCount - pointsDone} remaining</span>
+          </div>
+          <div style={{ height:6, background:C.border, borderRadius:r.pill, overflow:"hidden" }}>
+            <div style={{
+              height:"100%", width:`${(pointsDone / raceCount) * 100}%`,
+              background:`linear-gradient(90deg,${C.green},${C.accent})`,
+              borderRadius:r.pill, transition:"width 0.8s ease",
+            }}/>
+          </div>
+        </div>
+      ) : (
+        <div style={{
+          marginBottom:20, padding:"10px 14px", borderRadius:r.md,
+          background:C.card, border:`1px solid ${C.border}`, color:C.dim, fontSize:12, lineHeight:1.6,
+        }}>
+          Preview of the {season} season — {raceCount} points races plus the Clash and All-Star Race
+          (exhibitions, marked ★). The app switches to this schedule when the {season} season starts.
+        </div>
+      )}
 
       {/* ── Race list ───────────────────────────────────────────────────────── */}
       <div style={{ display:"grid", gap:3 }}>
-        {/* Playoff divider */}
-        {SCHEDULE.map(s => {
+        {schedule.map(s => {
           const isDone    = scored.has(s.w);
           const isNext    = s.w === nextWeek;
           const isPlayoff = s.w === PLAYOFF_START_WEEK;
+          const isEx      = !!s.ex;
           const col       = TTC[s.ty];
 
           return (
@@ -74,19 +111,19 @@ export function ScheduleTab({ data }) {
               <div style={{
                 display:"flex", alignItems:"center", justifyContent:"space-between",
                 padding:"9px 14px", borderRadius:r.sm,
-                background: isNext ? C.accent+"0f" : isDone ? "transparent" : C.card,
-                border:`1px solid ${isNext ? C.accent+"44" : isDone ? C.border+"55" : C.border}`,
+                background: isNext ? C.accent+"0f" : isEx ? C.gold+"0a" : isDone ? "transparent" : C.card,
+                border:`1px solid ${isNext ? C.accent+"44" : isEx ? C.gold+"44" : isDone ? C.border+"55" : C.border}`,
                 opacity: isDone ? 0.6 : 1,
                 transition:"all 0.12s ease",
               }}>
                 <div style={{ display:"flex", alignItems:"center", gap:10, flex:1, minWidth:0 }}>
                   {/* Status indicator */}
                   <div style={{
-                    width:28, flexShrink:0, textAlign:"center",
+                    width:44, flexShrink:0, textAlign:"center",
                     fontFamily:"'Oswald',sans-serif", fontSize:11, fontWeight:700,
-                    color: isDone ? C.green : isNext ? C.accent : C.muted,
+                    color: isDone ? C.green : isNext ? C.accent : isEx ? C.gold : C.muted,
                   }}>
-                    {isDone ? "✓" : `W${s.w}`}
+                    {isDone ? "✓" : isEx ? `★ ${weekLabel(s.w)}` : `W${s.w}`}
                   </div>
 
                   {/* Race name */}
@@ -96,10 +133,12 @@ export function ScheduleTab({ data }) {
                       fontSize:13, fontWeight:700,
                       overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
                     }}>
-                      {!isDone && <span style={{ color:C.muted, fontWeight:400 }}>W{s.w} — </span>}
+                      {!isDone && <span style={{ color:C.muted, fontWeight:400 }}>{weekName(s.w)} — </span>}
                       {s.r}
                     </div>
-                    <div style={{ color:C.muted, fontSize:11, marginTop:1 }}>@ {s.t}</div>
+                    <div style={{ color:C.muted, fontSize:11, marginTop:1 }}>
+                      @ {s.t}{isEx && <span style={{ color:C.gold }}> · {EXHIBITION_NOTE[s.ex]}</span>}
+                    </div>
                   </div>
                 </div>
 

@@ -2,6 +2,9 @@
 // Single source of truth for all scoring tables, player config, and schedule.
 // Scoring logic lives in engine/scoring.js; UI themes live in App.jsx.
 
+import { SCHEDULE_2027 } from "./schedule2027.js";
+export { CLASH_WEEK, ALL_STAR_WEEK, EXHIBITION_WEEKS, isExhibition, weekLabel, weekName } from "./exhibitions.js";
+
 export const PLAYERS = [
   { id: "justin", name: "Justin", password: "ferda1" },
   { id: "bigmonroe", name: "Big Monroe", password: "ferda2" },
@@ -52,7 +55,7 @@ export const MEMORIAL_DRIVERS = {
   "#8 Kyle Busch": { years: "1985 – 2026" },
 };
 
-export const SCHEDULE = [
+export const SCHEDULE_2026 = [
   {w:1, t:"Daytona",        ty:"superspeedway", d:"Feb 15", r:"Daytona 500"},
   {w:2, t:"Atlanta",        ty:"superspeedway", d:"Feb 22", r:"Autotrader 400"},
   {w:3, t:"COTA",           ty:"road_course",   d:"Mar 1",  r:"DuraMAX Grand Prix"},
@@ -90,6 +93,14 @@ export const SCHEDULE = [
   {w:35,t:"Martinsville",   ty:"short_track",   d:"Nov 1",  r:"Xfinity 500"},
   {w:36,t:"Homestead",      ty:"intermediate",  d:"Nov 8",  r:"Straight Talk Wireless 400"},
 ];
+
+// Which season the app is running. The 2026 archive keeps using the 2026
+// schedule (race names + track types drive display and re-scoring), so the
+// 2027 schedule stays staged until the new season actually starts — see
+// "Start the 2027 season" in OFFSEASON_TODO.md for what flipping this needs.
+export const SCHEDULES = { 2026: SCHEDULE_2026, 2027: SCHEDULE_2027 };
+export const ACTIVE_SEASON = 2026;
+export const SCHEDULE = SCHEDULES[ACTIVE_SEASON];
 
 // 2027 draftable pool, from the 2027 Cup team lineup graphic (grouped by team).
 // Names come from each car number's 2026 driver — see the note by

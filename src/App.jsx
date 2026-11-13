@@ -9,6 +9,9 @@ import {
 } from "./constants";
 import { scoreWeekFull } from "./engine/scoring";
 import { getDraftOrder, buildSnakeOrder, getBestAvailableDriver, getNextDraftOpenTime } from "./engine/draft";
+import { recalcMeta } from "./engine/meta";
+import { storeFor, ensureStore, getCurrentWeek, getNextEventWeek } from "./engine/events";
+import { weekLabel } from "./exhibitions";
 import { useLeagueData } from "./hooks/useLeagueData";
 import { useLivePolling } from "./hooks/useLivePolling";
 import { useLiveTiming } from "./hooks/useLiveTiming";
@@ -98,11 +101,13 @@ export default function App() {
     if(outcome === 'accepted') setShowInstall(false);
   };
 
-  const currentWeek=useMemo(()=>data?(data.meta.lastScoredWeek||13)+1:14,[data]);
+  // The event after the latest-scored one in schedule order — includes the
+  // Clash (before W1) and All-Star (between W12 and W13) in 2027.
+  const currentWeek=useMemo(()=>data?getCurrentWeek(data):1,[data]);
 
   const notifyNextPicker=async(week,dataAfterPick)=>{
     const draftKey="w"+week;
-    const draftState=dataAfterPick.drafts?.[draftKey]||[];
+    const draftState=storeFor(dataAfterPick,week).drafts?.[draftKey]||[];
     const snakeSequence=buildSnakeOrder(getDraftOrder(dataAfterPick,week));
     const nextPickIdx=draftState.length;
     if(nextPickIdx>=snakeSequence.length)return;
@@ -148,59 +153,28 @@ export default function App() {
     return {applied:true};
   };
 
+  // Exhibitions (Clash / All-Star) keep their drafts/picks/results in
+  // d.exhibitions; ensureStore() hands back the right object for the event.
   const handleUndoDraft=async(week)=>{
-    const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
-    if(!d.drafts?.[key]?.length)return;
-    const removed=d.drafts[key].pop();
-    if(d.picks?.[key]?.[removed.pid]){const idx=d.picks[key][removed.pid].findIndex(pk=>pk.driver===removed.driver);if(idx>=0)d.picks[key][removed.pid].splice(idx,1);}
+    const d=JSON.parse(JSON.stringify(data)); const key="w"+week; const s=ensureStore(d,week);
+    if(!s.drafts?.[key]?.length)return;
+    const removed=s.drafts[key].pop();
+    if(s.picks?.[key]?.[removed.pid]){const idx=s.picks[key][removed.pid].findIndex(pk=>pk.driver===removed.driver);if(idx>=0)s.picks[key][removed.pid].splice(idx,1);}
     setData(d); await saveLeagueData(d); return removed;
   };
 
-  const recalcMeta=(d)=>{
-    // Regular season (weeks 1-26): full total -> standings, bonus/win pts -> playoffPts.
-    // Both freeze once the Chase starts — Chase weeks accumulate separately below,
-    // so a player's "Chase entering total" (1000+playoffPts+champBonus) stays a
-    // fixed anchor instead of drifting as more Chase weeks get scored.
-    const fs={justin:0,bigmonroe:0,monroe:0,rich:0},fp2={justin:0,bigmonroe:0,monroe:0,rich:0};
-    // Chase weeks (27+): FULL score counts (not just bonus points), plus weekly win bonus.
-    const cp={justin:0,bigmonroe:0,monroe:0,rich:0};
-    let last=0;
-    Object.entries(d.results||{}).forEach(([key,wr])=>{
-      const w=parseInt(key.replace("w",""));
-      if(w>last)last=w;
-      if(!wr.scored)return;
-      const isChaseWeek=w>=PLAYOFF_START_WEEK;
-      Object.entries(wr.scored).forEach(([pid,s])=>{
-        if(isChaseWeek){
-          cp[pid]=Math.round((cp[pid]+s.total+(s.weeklyWin?25:0))*100)/100;
-        } else {
-          fs[pid]=Math.round((fs[pid]+s.total)*100)/100;
-          fp2[pid]=Math.round((fp2[pid]+(s.bonusPoints||0))*100)/100;
-          if(s.weeklyWin)fp2[pid]=Math.round((fp2[pid]+25)*100)/100;
-        }
-      });
-    });
-    const mc={justin:0,bigmonroe:0,monroe:0,rich:0};
-    Object.entries(d.picks||{}).forEach(([,wp])=>{Object.entries(wp).forEach(([pid,pks])=>{(pks||[]).forEach(pk=>{if(pk.mulligan)mc[pid]++;});});});
-    // ISC champion bonus: +25 regular-season pts for every player who correctly picked the champion
-    const iscChamp = d.iscBracket?.results?.CHAMP;
-    if (iscChamp) {
-      PLAYERS.forEach(p => {
-        if (d.iscBracket?.picks?.[p.id]?.CHAMP === iscChamp) fs[p.id] = Math.round((fs[p.id] + 25) * 100) / 100;
-      });
-    }
-    d.meta.standings=fs; d.meta.playoffPts=fp2; d.meta.chasePts=cp; d.meta.lastScoredWeek=last; d.meta.mulligansUsed=mc;
-  };
-
   const handlePostResults=async(week,scored,rr,wp)=>{
-    const d=JSON.parse(JSON.stringify(data)); if(!d.results)d.results={}; if(!d.picks)d.picks={};
-    d.results["w"+week]={scored,raw:rr}; d.picks["w"+week]=wp; recalcMeta(d);
-    // Next week's draft no longer opens the instant results post — gate it
+    const d=JSON.parse(JSON.stringify(data)); const s=ensureStore(d,week);
+    if(!s.results)s.results={}; if(!s.picks)s.picks={};
+    s.results["w"+week]={scored,raw:rr}; s.picks["w"+week]=wp; recalcMeta(d);
+    // The next event's draft no longer opens the instant results post — gate it
     // to the following Monday at 5pm so picks stay organized/easier to track.
-    // (skip after the final race of the season — there's no next draft)
-    if(SCHEDULE.some(s=>s.w===week+1)){
-      if(!d.draftSchedule)d.draftSchedule={};
-      d.draftSchedule["w"+(week+1)]={opensAt:getNextDraftOpenTime(new Date()).toISOString()};
+    // (no next event after the final race of the season)
+    const next=getNextEventWeek(week);
+    if(next!==null){
+      const ns=ensureStore(d,next);
+      if(!ns.draftSchedule)ns.draftSchedule={};
+      ns.draftSchedule["w"+next]={opensAt:getNextDraftOpenTime(new Date()).toISOString()};
     }
     setData(d); await saveLeagueData(d);
     // Notify all players with the final scores (push + SMS)
@@ -208,15 +182,16 @@ export default function App() {
   };
 
   const handleSavePicksOnly=async(week,wp)=>{
-    const d=JSON.parse(JSON.stringify(data)); if(!d.picks)d.picks={}; if(!d.drafts)d.drafts={};
-    d.picks["w"+week]=wp;
+    const d=JSON.parse(JSON.stringify(data)); const s=ensureStore(d,week);
+    if(!s.picks)s.picks={}; if(!s.drafts)s.drafts={};
+    s.picks["w"+week]=wp;
     const draftEntries=[];
     PLAYERS.forEach(pid=>{
       (wp[pid]||[]).forEach((pk)=>{
         if(pk.driver) draftEntries.push({pid,driver:pk.driver,pickNum:draftEntries.length});
       });
     });
-    d.drafts["w"+week]=draftEntries;
+    s.drafts["w"+week]=draftEntries;
     setData(d); await saveLeagueData(d);
   };
 
@@ -247,8 +222,8 @@ export default function App() {
   };
 
   const handleResetWeek=async(week)=>{
-    const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
-    delete d.results[key]; delete d.picks[key]; if(d.drafts)delete d.drafts[key];
+    const d=JSON.parse(JSON.stringify(data)); const key="w"+week; const s=ensureStore(d,week);
+    if(s.results)delete s.results[key]; if(s.picks)delete s.picks[key]; if(s.drafts)delete s.drafts[key];
     recalcMeta(d); setData(d); await saveLeagueData(d);
   };
 
@@ -259,9 +234,9 @@ export default function App() {
   };
 
   const handleApplyMulligan=async(week,pid,oldDriver,newDriver)=>{
-    const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
-    if(!d.picks?.[key]?.[pid])return;
-    d.picks[key][pid]=d.picks[key][pid].map(pk=>pk.driver===oldDriver?{driver:newDriver,mulligan:true}:pk);
+    const d=JSON.parse(JSON.stringify(data)); const key="w"+week; const s=ensureStore(d,week);
+    if(!s.picks?.[key]?.[pid])return;
+    s.picks[key][pid]=s.picks[key][pid].map(pk=>pk.driver===oldDriver?{driver:newDriver,mulligan:true}:pk);
     if(!d.mulligans)d.mulligans={justin:[],bigmonroe:[],monroe:[],rich:[]}; if(!d.mulligans[pid])d.mulligans[pid]=[];
     d.mulligans[pid].push({week,driver:oldDriver,replacement:newDriver});
     const mc={justin:0,bigmonroe:0,monroe:0,rich:0};
@@ -270,17 +245,17 @@ export default function App() {
   };
 
   const handleStartDraftNotify=async(week)=>{
-    const d=JSON.parse(JSON.stringify(data));
-    if(!d.draftTimers)d.draftTimers={};
-    d.draftTimers["w"+week]={startedAt:new Date().toISOString(),reminderSent:false};
+    const d=JSON.parse(JSON.stringify(data)); const s=ensureStore(d,week);
+    if(!s.draftTimers)s.draftTimers={};
+    s.draftTimers["w"+week]={startedAt:new Date().toISOString(),reminderSent:false};
     setData(d); await saveLeagueData(d);
     await notifyNextPicker(week,d);
   };
 
   const handleMarkReminderSent=async(week)=>{
-    const d=JSON.parse(JSON.stringify(data)); const key="w"+week;
-    if(!d.draftTimers)d.draftTimers={}; if(!d.draftTimers[key])d.draftTimers[key]={};
-    d.draftTimers[key].reminderSent=true;
+    const d=JSON.parse(JSON.stringify(data)); const key="w"+week; const s=ensureStore(d,week);
+    if(!s.draftTimers)s.draftTimers={}; if(!s.draftTimers[key])s.draftTimers[key]={};
+    s.draftTimers[key].reminderSent=true;
     setData(d); await saveLeagueData(d);
   };
 
@@ -304,11 +279,12 @@ export default function App() {
     if(!data||!user)return;
     const week=currentWeek,key="w"+week;
     if(!SCHEDULE.some(s=>s.w===week))return; // season over — no draft to run
-    const draftState=data.drafts?.[key]||[];
+    const st=storeFor(data,week); // exhibitions keep their draft state separately
+    const draftState=st.drafts?.[key]||[];
     const snake=buildSnakeOrder(getDraftOrder(data,week));
     if(draftState.length>=snake.length)return; // draft complete
 
-    const timerMeta=data.draftTimers?.[key];
+    const timerMeta=st.draftTimers?.[key];
 
     // Auto-open the draft once its scheduled Monday-5pm time passes (only if
     // nobody has picked yet and the timer hasn't already been started). Weeks
@@ -316,7 +292,7 @@ export default function App() {
     // gate entirely and behave as before.
     if(!timerMeta?.startedAt&&draftState.length===0){
       if(draftOpenGuard.current.week!==week)draftOpenGuard.current={week,opened:false};
-      const opensAt=data.draftSchedule?.[key]?.opensAt;
+      const opensAt=st.draftSchedule?.[key]?.opensAt;
       if(opensAt&&Date.now()>=new Date(opensAt).getTime()&&!draftOpenGuard.current.opened){
         draftOpenGuard.current.opened=true;
         handleStartDraftNotify(week);
@@ -339,7 +315,7 @@ export default function App() {
         handleDraftPick(week,turn.pid,best,draftState.length);
         notifyPlayer(turn.pid,data.playerSettings,{
           title:"⏰ FERDA — Auto-Pick Made",
-          message:`Your 12-hour draft clock expired. ${best} was auto-drafted for you for W${week}.`,
+          message:`Your 12-hour draft clock expired. ${best} was auto-drafted for you for ${weekLabel(week)}.`,
         }).catch(()=>{});
       }
     } else if(elapsed>=DRAFT_REMINDER_MS&&elapsed<DRAFT_TIMER_MS&&!timerMeta.reminderSent&&!draftTimerGuard.current.reminded){

@@ -6,6 +6,8 @@ function isChaseLive(data) {
   return Object.keys(data?.results || {}).length >= PLAYOFF_START_WEEK;
 }
 import { getDraftOrder, buildSnakeOrder } from "../engine/draft";
+import { storeFor } from "../engine/events";
+import { weekName } from "../exhibitions";
 import { FerdaLogo } from "./FerdaLogo";
 
 // ── Responsive hook ───────────────────────────────────────────────────────────
@@ -169,27 +171,28 @@ export function FlagBanner({ user, data, currentWeek, onGoTo }) {
   if (!user || !data) return null;
   if (!SCHEDULE.some(s => s.w === currentWeek)) return null; // season over
   const draftKey      = "w" + currentWeek;
-  const draftState    = data.drafts?.[draftKey] || [];
+  const src           = storeFor(data, currentWeek);
+  const draftState    = src.drafts?.[draftKey] || [];
   const draftOrder    = getDraftOrder(data, currentWeek);
   const snakeSequence = buildSnakeOrder(draftOrder);
   const currentPickNum = draftState.length;
   const draftComplete  = currentPickNum >= snakeSequence.length;
-  const savedPicks     = data.picks?.[draftKey] || {};
+  const savedPicks     = src.picks?.[draftKey] || {};
   const hasSavedPicks  = Object.values(savedPicks).some(p => p && p.length > 0);
-  const hasScored      = !!(data.results?.[draftKey]?.scored);
+  const hasScored      = !!(src.results?.[draftKey]?.scored);
 
   if (draftState.length === 0 && !hasSavedPicks && !hasScored) {
-    const opensAt = data.draftSchedule?.[draftKey]?.opensAt;
+    const opensAt = src.draftSchedule?.[draftKey]?.opensAt;
     if (opensAt && Date.now() < new Date(opensAt).getTime()) return null; // draft not open yet
     const firstUp = snakeSequence[0]?.pid;
     if (firstUp === user.id)
-      return <Banner flag="green" text={`Your turn to pick first for Week ${currentWeek}!`} onClick={() => onGoTo("draft")} />;
+      return <Banner flag="green" text={`Your turn to pick first for ${weekName(currentWeek)}!`} onClick={() => onGoTo("draft")} />;
     return null;
   }
   if (hasScored)
-    return <Banner flag="checkered" text={`Week ${currentWeek} is complete. Results posted.`} onClick={() => onGoTo("results")} />;
+    return <Banner flag="checkered" text={`${weekName(currentWeek)} is complete. Results posted.`} onClick={() => onGoTo("results")} />;
   if (draftComplete || (hasSavedPicks && draftState.length === 0))
-    return <Banner flag="checkered" text={`All picks locked for Week ${currentWeek}. Race day!`} onClick={() => onGoTo("lineups")} />;
+    return <Banner flag="checkered" text={`All picks locked for ${weekName(currentWeek)}. Race day!`} onClick={() => onGoTo("lineups")} />;
 
   const currentTurn = snakeSequence[currentPickNum];
   const nextTurn    = snakeSequence[currentPickNum + 1];

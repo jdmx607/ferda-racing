@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { fetchLiveRaceData } from "../nascar";
 import { scoreWeekFull } from "../engine/scoring";
+import { storeFor } from "../engine/events";
 import { PLAYERS } from "../constants";
 
 const LIVE_POLL_INTERVAL = 30000;
@@ -24,7 +25,7 @@ export function useLivePolling(data) {
       try {
         const result = await fetchLiveRaceData(week);
         if (!result.ok) return;
-        const wp = data.picks?.["w" + week] || {};
+        const wp = storeFor(data, week).picks?.["w" + week] || {};
         const mo = {};
         PLAYERS.forEach(p => {
           mo[p.id] = (wp[p.id] || []).filter(pk => pk.mulligan).map(pk => ({ week, driver: pk.driver }));

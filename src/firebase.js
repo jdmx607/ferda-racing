@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, runTransaction } from "firebase/firestore";
+import { ensureStore } from "./engine/events.js";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // PASTE YOUR FIREBASE CONFIG HERE (from Firebase Console)
@@ -73,20 +74,22 @@ export async function saveDraftPick(week, pid, driver, pickNum) {
       if (!snap.exists()) throw new Error("League document not found");
       const d = snap.data();
       const key = "w" + week;
-      if (!d.drafts) d.drafts = {};
-      if (!d.drafts[key]) d.drafts[key] = [];
+      // Exhibitions (Clash / All-Star) keep their picks in d.exhibitions
+      const s = ensureStore(d, week);
+      if (!s.drafts) s.drafts = {};
+      if (!s.drafts[key]) s.drafts[key] = [];
       // Guard: only accept if this is genuinely the next pick in the slot.
       // Rejects stale clicks (someone already picked) without losing data.
-      if (d.drafts[key].length !== pickNum) {
-        return { applied:false, currentLength:d.drafts[key].length };
+      if (s.drafts[key].length !== pickNum) {
+        return { applied:false, currentLength:s.drafts[key].length };
       }
-      d.drafts[key].push({ pid, driver, pickNum });
-      if (!d.picks) d.picks = {};
-      if (!d.picks[key]) d.picks[key] = {};
-      if (!d.picks[key][pid]) d.picks[key][pid] = [];
-      d.picks[key][pid].push({ driver, mulligan:false });
-      if (!d.draftTimers) d.draftTimers = {};
-      d.draftTimers[key] = { startedAt:new Date().toISOString(), reminderSent:false };
+      s.drafts[key].push({ pid, driver, pickNum });
+      if (!s.picks) s.picks = {};
+      if (!s.picks[key]) s.picks[key] = {};
+      if (!s.picks[key][pid]) s.picks[key][pid] = [];
+      s.picks[key][pid].push({ driver, mulligan:false });
+      if (!s.draftTimers) s.draftTimers = {};
+      s.draftTimers[key] = { startedAt:new Date().toISOString(), reminderSent:false };
       tx.set(ref, d);
       return { applied:true, data:d };
     }));

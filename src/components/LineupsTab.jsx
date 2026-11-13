@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { C, PClr, TTC, TTL, r, shadow } from "../theme";
+import { storeFor } from "../engine/events";
+import { weekLabel, weekName } from "../exhibitions";
 import { PLAYERS, PNAME, SCHEDULE, ACTIVE_PICKS, MAX_MULLIGANS, TRACK_MULTS, isMemorial } from "../constants";
 
 export function LineupsTab({ data, currentWeek }) {
   const [week, setWeek] = useState(currentWeek);
   const weekInfo    = SCHEDULE.find(s => s.w === week);
-  const draftState  = data.drafts?.["w" + week] || [];
-  const savedPicks  = data.picks?.["w" + week] || {};
-  const hasScored   = !!(data.results?.["w" + week]?.scored);
-  const scored      = data.results?.["w" + week]?.scored;
+  const src         = storeFor(data, week); // exhibitions keep their data separately
+  const draftState  = src.drafts?.["w" + week] || [];
+  const savedPicks  = src.picks?.["w" + week] || {};
+  const hasScored   = !!(src.results?.["w" + week]?.scored);
+  const scored      = src.results?.["w" + week]?.scored;
 
   const lineups = {};
   PLAYERS.forEach(p => { lineups[p.id] = []; });
@@ -28,11 +31,12 @@ export function LineupsTab({ data, currentWeek }) {
 
   // Build week list — only weeks with data or current
   const allWeeks = [];
-  for (let w = 1; w <= 36; w++) {
-    const hd = data.drafts?.["w"+w]?.length > 0;
-    const hp = data.picks?.["w"+w] && Object.values(data.picks["w"+w]).some(pk => pk && pk.length > 0);
+  SCHEDULE.forEach(({ w }) => { // schedule order puts the Clash / All-Star where they actually run
+    const ws = storeFor(data, w);
+    const hd = ws.drafts?.["w"+w]?.length > 0;
+    const hp = ws.picks?.["w"+w] && Object.values(ws.picks["w"+w]).some(pk => pk && pk.length > 0);
     if (hd || hp || w === currentWeek) allWeeks.push(w);
-  }
+  });
 
   return (
     <div style={{ padding:20, maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>
@@ -52,7 +56,7 @@ export function LineupsTab({ data, currentWeek }) {
               fontSize:11, fontWeight:700, cursor:"pointer",
               fontFamily:"'Oswald',sans-serif", letterSpacing:1,
               transition:"all 0.12s ease",
-            }}>W{w}</button>
+            }}>{weekLabel(w)}</button>
           ))}
         </div>
       </div>
@@ -108,7 +112,7 @@ export function LineupsTab({ data, currentWeek }) {
             background:C.card, borderRadius:r.xl, padding:"48px 32px",
             border:`1px solid ${C.border}`, textAlign:"center",
           }}>
-            <div style={{ color:C.dim, fontSize:14 }}>No picks yet for Week {week}</div>
+            <div style={{ color:C.dim, fontSize:14 }}>No picks yet for {weekName(week)}</div>
           </div>
         )
         : (

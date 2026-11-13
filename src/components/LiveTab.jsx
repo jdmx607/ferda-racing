@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { C, PClr, TTC, TTL, rankColor, shadow, r } from "../theme";
 import { PLAYERS, SCHEDULE, DRIVER_INFO, MAKE_COLORS, TRACK_MULTS } from "../constants";
 import { fetchLapTimes } from "../nascar";
+import { storeFor } from "../engine/events";
 
 const CHIP_MAP = {
   "Top 5":    { short:"T5",   col:"#10b981" },
@@ -427,7 +428,7 @@ export function LiveTab({ data, liveScores, liveStatus, raceInfo, currentWeek, t
   const isActive = !!(data?.liveRace?.active && liveScores);
   const week = data?.liveRace?.week || currentWeek;
   const weekInfo = SCHEDULE.find(s => s.w === week);
-  const weekPicks = data?.picks?.["w" + week] || {};
+  const weekPicks = storeFor(data, week).picks?.["w" + week] || {};
 
   // ── Inactive state ─────────────────────────────────────────────────────────
   if (!isActive) return (

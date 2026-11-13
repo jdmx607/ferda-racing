@@ -4,6 +4,8 @@ import { PLAYERS, PNAME, SCHEDULE, DRIVERS, ACTIVE_PICKS, TRACK_MULTS, isMemoria
 import { scoreWeekFull } from "../engine/scoring";
 import { getDraftOrder, buildSnakeOrder } from "../engine/draft";
 import { fetchNASCARResults, fetchPostRaceFromLive } from "../nascar";
+import { storeFor } from "../engine/events";
+import { weekLabel, weekName } from "../exhibitions";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const iS = {
@@ -45,7 +47,7 @@ function QuickScoreCard({ fetchResult, week, race, playerPicks, onConfirm, onAdv
       }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
           <div style={{ color: TTC[trackType] || C.accent, fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>
-            ✅ {drivers.length} drivers loaded · W{week} · {TTL[trackType] || ""} ×{TRACK_MULTS[trackType] || 1}
+            ✅ {drivers.length} drivers loaded · {weekLabel(week)} · {TTL[trackType] || ""} ×{TRACK_MULTS[trackType] || 1}
           </div>
           {(() => {
             const src = fetchResult.source;
@@ -189,7 +191,7 @@ function QuickScoreCard({ fetchResult, week, race, playerPicks, onConfirm, onAdv
             opacity: saving ? 0.6 : 1,
           }}
         >
-          {saving ? "Scoring…" : `🏁 Score & Post W${week}`}
+          {saving ? "Scoring…" : `🏁 Score & Post ${weekLabel(week)}`}
         </button>
       </div>
       <div style={{ textAlign:"center", marginTop:10 }}>
@@ -222,13 +224,14 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
   const [fetchError, setFetchError] = useState("");
 
   const race = SCHEDULE.find(s => s.w === week);
-  const done = !!(data.results?.["w" + week]);
-  const hasPicks = !!(data.picks?.["w"+week] && Object.values(data.picks["w"+week]).some(p => p?.length > 0));
-  const hasDraft  = !!(data.drafts?.["w"+week]?.length);
+  const src  = storeFor(data, week); // Clash / All-Star keep their data in data.exhibitions
+  const done = !!(src.results?.["w" + week]);
+  const hasPicks = !!(src.picks?.["w"+week] && Object.values(src.picks["w"+week]).some(p => p?.length > 0));
+  const hasDraft  = !!(src.drafts?.["w"+week]?.length);
 
   // ── Load picks from Firestore into local state ───────────────────────────
   function loadPicksFromStore() {
-    const wp = data.picks?.["w" + week] || {};
+    const wp = src.picks?.["w" + week] || {};
     const pp = {};
     PLAYERS.forEach(p => {
       pp[p.id] = (wp[p.id] || []).map(pk => ({ driver: pk.driver, mulligan: pk.mulligan || false }));
@@ -276,7 +279,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
     PLAYERS.forEach(p => { mo[p.id] = (pp[p.id] || []).filter(pk => pk.mulligan).map(pk => ({ week, driver:pk.driver })); });
     const scored = scoreWeekFull(wp, rr, week, mo, data.chaseField?.drivers);
     await onPostResults(week, scored, rr, wp);
-    setMsg(`✅ Week ${week} scored!`);
+    setMsg(`✅ ${weekName(week)} scored!`);
     setSaving(false);
     setQuickScore(null);
   };
@@ -300,7 +303,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
   };
 
   const startEdit = () => {
-    const wr = data.results?.["w" + week];
+    const wr = src.results?.["w" + week];
     if (wr?.raw?.drivers) {
       setThreeStages(!!wr.raw.threeStages);
       setDrivers(wr.raw.drivers.map(d => ({
@@ -348,19 +351,19 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
     const mo = {}; PLAYERS.forEach(p => { mo[p.id]=(playerPicks[p.id]||[]).filter(pk=>pk.mulligan).map(pk=>({week,driver:pk.driver})); });
     const scored = scoreWeekFull(wp, rr, week, mo, data.chaseField?.drivers);
     await onPostResults(week, scored, rr, wp);
-    setMsg(`Week ${week} ${done?"updated":"scored"}!`);
+    setMsg(`${weekName(week)} ${done?"updated":"scored"}!`);
     setSaving(false); setEditing(false);
   };
   const handleSavePicksOnly = async () => {
     setSaving(true); setMsg("");
     await onSavePicks(week, buildWP());
-    setMsg(`Week ${week} picks saved (not scored).`);
+    setMsg(`${weekName(week)} picks saved (not scored).`);
     setSaving(false); setEditing(false);
   };
   const handleReset = async () => {
-    if (!window.confirm(`Reset Week ${week}? Deletes all scores, picks, and draft data. Cannot be undone.`)) return;
+    if (!window.confirm(`Reset ${weekName(week)}? Deletes all scores, picks, and draft data. Cannot be undone.`)) return;
     await onResetWeek(week);
-    setMsg(`Week ${week} reset.`); setEditing(false); setQuickScore(null);
+    setMsg(`${weekName(week)} reset.`); setEditing(false); setQuickScore(null);
   };
 
   const resetWeekPicker = (newWeek) => {
@@ -377,8 +380,8 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
       {/* ── Week selector ──────────────────────────────────────────────────── */}
       <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:16, flexWrap:"wrap" }}>
         <span style={{ color:C.muted, fontSize:13 }}>Week:</span>
-        <select value={week} onChange={e => resetWeekPicker(e.target.value)} style={{ ...iS, width:80 }}>
-          {SCHEDULE.map(s => <option key={s.w} value={s.w}>{s.w}</option>)}
+        <select value={week} onChange={e => resetWeekPicker(e.target.value)} style={{ ...iS, width:100 }}>
+          {SCHEDULE.map(s => <option key={s.w} value={s.w}>{s.ex ? `${weekLabel(s.w)} ★` : s.w}</option>)}
         </select>
         {race && <span style={{ color:C.muted, fontSize:13 }}>{race.r} · {TTL[race.ty]} ×{TRACK_MULTS[race.ty]}</span>}
         {done && !editing && !quickScore && <span style={{ color:C.green, fontSize:13, fontWeight:700 }}>✓ Scored</span>}
@@ -400,7 +403,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
           </div>
           {data.liveRace?.active
             ? <button onClick={() => onToggleLive(data.liveRace.week, false)} style={{ padding:"8px 16px", borderRadius:8, border:"1px solid #ef4444", background:"#ef444422", color:"#ef4444", fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:1 }}>END RACE</button>
-            : <button onClick={() => onToggleLive(week, true)}              style={{ padding:"8px 16px", borderRadius:8, border:"1px solid #10b981", background:"#10b98122", color:"#10b981", fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:1 }}>🟢 START LIVE — W{week}</button>
+            : <button onClick={() => onToggleLive(week, true)}              style={{ padding:"8px 16px", borderRadius:8, border:"1px solid #10b981", background:"#10b98122", color:"#10b981", fontFamily:"'Oswald',sans-serif", fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:1 }}>🟢 START LIVE — {weekLabel(week)}</button>
           }
         </div>
       </div>
@@ -461,7 +464,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
           </button>
           {done && (
             <button onClick={startEdit} style={{ padding:"10px 16px", borderRadius:8, border:`1px solid ${C.accent}`, background:C.accent+"22", color:C.accent, fontSize:13, fontFamily:"inherit", fontWeight:600, cursor:"pointer" }}>
-              Re-Score / Edit W{week}
+              Re-Score / Edit {weekLabel(week)}
             </button>
           )}
           {!done && (
@@ -471,7 +474,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
           )}
           {(done || hasPicks || hasDraft) && (
             <button onClick={handleReset} style={{ padding:"10px 16px", borderRadius:8, border:`1px solid ${C.red}`, background:C.red+"22", color:C.red, fontSize:13, fontFamily:"inherit", fontWeight:600, cursor:"pointer" }}>
-              Reset W{week}
+              Reset {weekLabel(week)}
             </button>
           )}
           {!done && !hasDraft && (
@@ -482,7 +485,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
           )}
           {!done && hasDraft && (() => {
             const totalPicks = ACTIVE_PICKS * PLAYERS.length;
-            const draftEntries = data.drafts?.["w"+week] || [];
+            const draftEntries = src.drafts?.["w"+week] || [];
             if (draftEntries.length >= totalPicks) return null;
             const snakeOrder = buildSnakeOrder(getDraftOrder(data, week));
             const currentPid = snakeOrder[draftEntries.length]?.pid;
@@ -604,7 +607,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
           {/* Save buttons */}
           <div style={{ display:"flex", gap:8, marginTop:12, flexWrap:"wrap" }}>
             <button onClick={handleScore} disabled={saving} style={{ flex:1, padding:"14px 0", borderRadius:8, border:"none", background:C.accent, color:"#000", fontFamily:"'Oswald',sans-serif", fontSize:16, fontWeight:700, letterSpacing:2, textTransform:"uppercase", cursor:"pointer" }}>
-              {saving ? "Saving…" : (done ? `Re-Score W${week}` : `Score W${week}`)}
+              {saving ? "Saving…" : (done ? `Re-Score ${weekLabel(week)}` : `Score ${weekLabel(week)}`)}
             </button>
             <button onClick={handleSavePicksOnly} disabled={saving} style={{ padding:"14px 16px", borderRadius:8, border:`1px solid ${C.blue}`, background:C.blue+"22", color:C.blue, fontFamily:"'Oswald',sans-serif", fontSize:13, fontWeight:700, cursor:"pointer", letterSpacing:1, textTransform:"uppercase" }}>
               Save Picks Only
@@ -619,12 +622,12 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
 
       {/* ── Scored summary (read-only) ─────────────────────────────────────── */}
       {done && !editing && !quickScore && (() => {
-        const wr = data.results["w" + week];
+        const wr = src.results["w" + week];
         const s  = Object.entries(wr.scored || {}).sort((a, b) => b[1].total - a[1].total);
         return (
           <div style={{ marginTop:8 }}>
             <div style={{ color:C.muted, fontSize:11, textTransform:"uppercase", letterSpacing:2, marginBottom:8 }}>
-              Week {week} Scores
+              {weekName(week)} Scores
             </div>
             {s.map(([pid, ps]) => (
               <div key={pid} style={{
