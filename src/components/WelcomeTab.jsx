@@ -3,7 +3,7 @@ import { PClr, TTL } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, TRACK_MULTS, ACTIVE_SEASON, ACTIVE_PICKS } from "../constants";
 import { getCurrentWeek, storeFor } from "../engine/events";
 import { getMulliganAllowance } from "../engine/mulligans";
-import { getPowerRankings, getWeeklyFinishes } from "../engine/history";
+import { getPowerRankings } from "../engine/power";
 import { getSeasonChampion } from "../engine/chase";
 import {
   getLineupStatus, getPlayerLineup, getHomeLineupWeek, getSeasonWrapUp,
@@ -16,6 +16,7 @@ import { weekLabel } from "../exhibitions";
 import { paintFor, carNumber } from "../driverPaint";
 import { TrophyCaseModal } from "./TrophyCase";
 import { BottomSheet } from "./BottomSheet";
+import { PowerBoard, RankDelta } from "./PowerBoard";
 
 const ARCHETYPE = {
   superspeedway: "SUPERSPEEDWAY", short_track: "SHORT TRACK",
@@ -209,7 +210,6 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
 
   const seasonChampion = useMemo(() => getSeasonChampion(data), [data]);
   const powerRankings  = useMemo(() => getPowerRankings(data), [data]);
-  const finishes       = useMemo(() => getWeeklyFinishes(data), [data]);
   const powerLeader    = powerRankings[0];
 
   const myStats = standings.find(s => s.id === pid);
@@ -245,8 +245,6 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
     }));
     return m;
   }, [data, heroWeek]);
-
-  const trend = d => (d > 0 ? { cls: "trend-up", txt: `▲${d}` } : d < 0 ? { cls: "trend-down", txt: `▼${-d}` } : { cls: "trend-flat", txt: "–" });
 
   return (
     <div className="home">
@@ -401,23 +399,28 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
             <span className="label">Power rankings</span>
             <button className="link-btn" onClick={() => setShowRankings(true)}>Full Rankings →</button>
           </div>
-          <div style={{ fontSize: 13, marginBottom: 10 }}>
-            <strong>#1 {PNAME[powerLeader.id]}</strong>
-            <span className="num" style={{ color: "var(--text-2)" }}> • {powerLeader.powerScore} pts (last 3 races)</span>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+            <strong style={{ fontSize: 15 }}>#1 {PNAME[powerLeader.id]}</strong>
+            <span className="num" style={{ fontSize: 13 }}>
+              <span style={{ fontSize: 9, letterSpacing: "0.1em", color: "var(--text-2)", marginRight: 4 }}>PWR</span>
+              <strong>{powerLeader.pwr.toFixed(1)}</strong>
+            </span>
+            <RankDelta delta={powerLeader.delta} />
           </div>
+          <div style={{ fontSize: 12, color: "var(--text-2)", margin: "4px 0 10px" }}>{powerLeader.insight}</div>
           <div className="pr-strip">
-            {powerRankings.map(p => {
-              const t = trend(p.delta);
-              return (
-                <div key={p.id} className="pr-chip">
-                  <div className="top num">
-                    <span style={{ color: "var(--text-2)", fontWeight: 600 }}>{p.rank}</span>
-                    <span className={t.cls} style={{ fontWeight: 700 }}>{t.txt}</span>
-                  </div>
-                  <div className="nm">{PNAME[p.id]}</div>
+            {powerRankings.map(p => (
+              <div key={p.id} className="pr-chip">
+                <div className="top num">
+                  <span style={{ color: "var(--text-2)", fontWeight: 600 }}>{p.rank}</span>
+                  <span className={p.delta > 0 ? "trend-up" : p.delta < 0 ? "trend-down" : "trend-flat"} style={{ fontWeight: 700 }}>
+                    {p.delta > 0 ? `▲${p.delta}` : p.delta < 0 ? `▼${-p.delta}` : "–"}
+                  </span>
                 </div>
-              );
-            })}
+                <div className="nm">{PNAME[p.id]}</div>
+                <div className="sub num">{p.pwr.toFixed(1)}</div>
+              </div>
+            ))}
           </div>
         </section>
       )}
@@ -459,33 +462,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
 
       {/* ── Full power rankings sheet ──────────────────────────────────────── */}
       <BottomSheet open={showRankings} onClose={() => setShowRankings(false)} title="Power Rankings">
-        <div style={{ fontSize: 12, color: "var(--text-2)", marginBottom: 12, lineHeight: 1.5 }}>
-          Recent form, not season totals: a weighted average of each player's last 3 races, newest counting most.
-        </div>
-        <div style={{ display: "grid", gap: 6 }}>
-          {powerRankings.map(p => {
-            const t = trend(p.delta);
-            const form = (finishes[p.id] || []).slice(-3);
-            return (
-              <div key={p.id} className="lr-row" style={{ padding: "10px 12px" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                  <span className="num label" style={{ width: 14 }}>{p.rank}</span>
-                  <span className="dot" style={{ background: PClr[p.id].accent }} />
-                  <span style={{ fontSize: 14, fontWeight: 600 }}>{PNAME[p.id]}</span>
-                  <span className={`num ${t.cls}`} style={{ fontSize: 11, fontWeight: 700 }}>{t.txt}</span>
-                </span>
-                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ display: "flex", gap: 4 }}>
-                    {form.map((f, k) => (
-                      <span key={k} className="chip num" title={`W${f.week}: ${f.score} pts`}>P{f.position}</span>
-                    ))}
-                  </span>
-                  <span className="num" style={{ fontSize: 15, fontWeight: 700, minWidth: 44, textAlign: "right" }}>{p.powerScore}</span>
-                </span>
-              </div>
-            );
-          })}
-        </div>
+        <PowerBoard rankings={powerRankings} />
         <div style={{ marginTop: 14 }}>
           <button className="link-btn" onClick={() => { setShowRankings(false); setTab("stats"); }}>More in Stats →</button>
         </div>

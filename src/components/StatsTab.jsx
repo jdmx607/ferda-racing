@@ -2,7 +2,8 @@ import { useState, useMemo } from "react";
 import { C, PClr, TTC, TTL, r, shadow } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, DRIVER_INFO, MAKE_COLORS } from "../constants";
 import { getWeekTopDrivers, getDriverSeasonStats, getSeasonRecords, getDriverStreaks, getSeasonAwards } from "../engine/stats";
-import { getPowerRankings } from "../engine/history";
+import { getPowerRankings } from "../engine/power";
+import { PowerBoard } from "./PowerBoard";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -625,62 +626,7 @@ function SeasonRecords({ data, records }) {
 
 function PowerRankings({ data }) {
   const rankings = useMemo(() => getPowerRankings(data), [data]);
-  if (!rankings.length) {
-    return (
-      <div style={{ color:C.muted, textAlign:"center", padding:40, fontSize:13 }}>
-        No scored weeks yet.
-      </div>
-    );
-  }
-  return (
-    <div>
-      <div style={{ color:C.dim, fontSize:12, marginBottom:14, lineHeight:1.6 }}>
-        Who's hot right now — weighted toward the last 3 races, not season-long cumulative points.
-      </div>
-      <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-        {rankings.map(p => {
-          const isUp = p.delta > 0, isDown = p.delta < 0;
-          const recentN = Math.min(p.weeksPlayed, 3);
-          return (
-            <div key={p.id} style={{
-              display:"flex", alignItems:"center", gap:12, padding:"12px 14px",
-              background:PClr[p.id].bg, borderRadius:r.md,
-              border:`2px solid ${p.rank===1 ? C.accent : PClr[p.id].bg==="#000000" ? C.border : PClr[p.id].bg+"55"}`,
-              boxShadow: p.rank===1 ? shadow.glow(C.accent) : "none",
-            }}>
-              <div style={{
-                width:36, height:36, borderRadius:"50%", flexShrink:0,
-                background:PClr[p.id].fg, color:PClr[p.id].bg,
-                display:"flex", alignItems:"center", justifyContent:"center",
-                fontFamily:"var(--font-sans)", fontSize:16, fontWeight:900,
-              }}>{p.rank}</div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <div style={{ color:PClr[p.id].fg, fontWeight:700, fontSize:15, fontFamily:"var(--font-sans)" }}>
-                  {PNAME[p.id]}
-                </div>
-                <div style={{ color:PClr[p.id].fg+"77", fontSize:10 }}>
-                  Last {recentN} race{recentN !== 1 ? "s" : ""} weighted
-                </div>
-              </div>
-              <div style={{ display:"flex", alignItems:"center", gap:10, flexShrink:0 }}>
-                {p.delta !== 0 && (
-                  <span style={{ fontSize:12, fontWeight:700, color: isUp ? "#10b981" : "#ef4444" }}>
-                    {isUp ? "▲" : "▼"}{Math.abs(p.delta)}
-                  </span>
-                )}
-                <div style={{ textAlign:"right" }}>
-                  <div style={{ color:PClr[p.id].fg, fontFamily:"var(--font-sans)", fontSize:20, fontWeight:900, lineHeight:1 }}>
-                    {p.powerScore}
-                  </div>
-                  <div style={{ color:PClr[p.id].fg+"55", fontSize:8, textTransform:"uppercase", letterSpacing:0.5 }}>power score</div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+  return <PowerBoard rankings={rankings} />;
 }
 
 const SECTIONS = [
