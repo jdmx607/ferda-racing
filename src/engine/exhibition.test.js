@@ -4,7 +4,7 @@ import { describe, test, expect, vi } from "vitest";
 // regardless of which season the app is currently set to.
 vi.mock("../constants.js", async (orig) => {
   const m = await orig();
-  return { ...m, SCHEDULE: m.SCHEDULES[2027] };
+  return { ...m, SCHEDULE: m.SCHEDULES[2027], PLAYOFF_MULLIGAN_BONUS: 2 };
 });
 
 import { PLAYOFF_START_WEEK } from "../constants.js";
@@ -12,7 +12,9 @@ import { SCHEDULE_2027 } from "../schedule2027.js";
 import { CLASH_WEEK, ALL_STAR_WEEK, isExhibition, weekLabel } from "../exhibitions.js";
 import { getCurrentWeek, getNextEventWeek, getPrevPointsWeek, storeFor, ensureStore } from "./events.js";
 import { getDraftOrder } from "./draft.js";
-import { recalcMeta } from "./meta.js";
+import { recalcMeta, allStarPayouts } from "./meta.js";
+import { getMulliganAllowance } from "./mulligans.js";
+import { DRIVERS, DRIVER_INFO, isFreeAgent } from "../constants.js";
 
 // ── helpers ─────────────────────────────────────────────────────────────────
 const scored = (totals, extra = {}) =>
@@ -159,18 +161,27 @@ describe("points: exhibitions stay out of the standings", () => {
     expect(d.meta.lastScoredWeek).toBe(1);
   });
 
-  test("the All-Star leaves standings alone but adds bonus pts + win bonus to playoff pts", () => {
+  test("the All-Star leaves standings alone but pays 125/50/10/0 into playoff pts", () => {
     const base = build(); recalcMeta(base);
     const d = build();
-    withResult(d, ALL_STAR_WEEK, { justin: 20, bigmonroe: 300, monroe: 20, rich: 20 },
-      { bigmonroe: { weeklyWin: true, bonusPoints: 7.5 }, rich: { bonusPoints: 2.5 } });
+    // order: bigmonroe 300, rich 60, monroe 40, justin 20
+    withResult(d, ALL_STAR_WEEK, { justin: 20, bigmonroe: 300, monroe: 40, rich: 60 },
+      { bigmonroe: { weeklyWin: true, bonusPoints: 7.5 } });   // old per-race bonuses must be ignored
     recalcMeta(d);
     expect(d.meta.standings).toEqual(base.meta.standings);          // not in the standings
-    expect(d.meta.playoffPts.bigmonroe).toBe(base.meta.playoffPts.bigmonroe + 7.5 + 25);
-    expect(d.meta.playoffPts.rich).toBe(base.meta.playoffPts.rich + 2.5);
-    expect(d.meta.playoffPts.justin).toBe(base.meta.playoffPts.justin);
+    expect(d.meta.playoffPts.bigmonroe).toBe(base.meta.playoffPts.bigmonroe + 125);
+    expect(d.meta.playoffPts.rich).toBe(base.meta.playoffPts.rich + 50);
+    expect(d.meta.playoffPts.monroe).toBe(base.meta.playoffPts.monroe + 10);
+    expect(d.meta.playoffPts.justin).toBe(base.meta.playoffPts.justin + 0);
     expect(d.meta.lastScoredWeek).toBe(1);                          // not a points week
     expect(d.meta.chasePts).toEqual(base.meta.chasePts);
+  });
+
+  test("All-Star ties split the payouts for the places they share", () => {
+    expect(allStarPayouts(scored({ justin: 50, bigmonroe: 50, monroe: 10, rich: 5 })))
+      .toEqual({ justin: 87.5, bigmonroe: 87.5, monroe: 10, rich: 0 });
+    expect(allStarPayouts(scored({ justin: 9, bigmonroe: 9, monroe: 9, rich: 9 })))
+      .toEqual({ justin: 46.25, bigmonroe: 46.25, monroe: 46.25, rich: 46.25 });
   });
 
   test("the All-Star is never treated as a Chase week", () => {
@@ -178,5 +189,53 @@ describe("points: exhibitions stay out of the standings", () => {
     withResult(d, ALL_STAR_WEEK, { justin: 20, bigmonroe: 300, monroe: 20, rich: 20 });
     recalcMeta(d);
     expect(Object.values(d.meta.chasePts).every(v => v === 0)).toBe(true);
+  });
+});
+
+describe("mulligans", () => {
+  const withMull = (d, week, pid, n) => {
+    d.picks[`w${week}`] = { ...(d.picks[`w${week}`] || {}),
+      [pid]: Array.from({ length: n }, (_, i) => ({ driver: `d${i}`, mulligan: true })) };
+    return d;
+  };
+
+  test("10 per season; no bonus during the regular season", () => {
+    const d = blank();
+    expect(getMulliganAllowance(d, "justin", 5)).toMatchObject({ max: 10, remaining: 10, bonus: 0, bonusAtStake: 2 });
+    withMull(d, 3, "justin", 2);
+    expect(getMulliganAllowance(d, "justin", 5)).toMatchObject({ max: 10, remaining: 8, bonusAtStake: 0 });
+  });
+
+  test("a clean regular season earns +2 in the playoffs", () => {
+    const d = blank();
+    expect(getMulliganAllowance(d, "justin", PLAYOFF_START_WEEK)).toMatchObject({ max: 12, remaining: 12, bonus: 2 });
+    withMull(d, 30, "justin", 3);   // playoff mulligans don't forfeit the bonus
+    expect(getMulliganAllowance(d, "justin", 31)).toMatchObject({ max: 12, used: 3, remaining: 9 });
+  });
+
+  test("using even one in the regular season forfeits the bonus", () => {
+    const d = withMull(blank(), 10, "justin", 1);
+    expect(getMulliganAllowance(d, "justin", PLAYOFF_START_WEEK)).toMatchObject({ max: 10, remaining: 9, bonus: 0 });
+  });
+
+  test("exhibition picks never count toward mulligans", () => {
+    const d = blank();
+    ensureStore(d, ALL_STAR_WEEK).picks = { "w-1": { justin: [{ driver: "x", mulligan: true }] } };
+    expect(getMulliganAllowance(d, "justin", 5).used).toBe(0);
+  });
+});
+
+describe("2027 driver pool", () => {
+  test("#6 Ryan Preece (RFK) and #33 Austin Hill (RCR) are in, full-time", () => {
+    expect(DRIVERS).toContain("#6 Ryan Preece");
+    expect(DRIVERS).toContain("#33 Austin Hill");
+    expect(DRIVER_INFO["#6 Ryan Preece"]).toMatchObject({ team: "RFK Racing", make: "Ford" });
+    expect(DRIVER_INFO["#33 Austin Hill"]).toMatchObject({ team: "Richard Childress Racing", make: "Chevy" });
+    expect(DRIVER_INFO["#33 Austin Hill"].partTime).toBeFalsy();
+  });
+  test("every driver has team info; Brad Keselowski is the free agent", () => {
+    DRIVERS.forEach(d => expect(DRIVER_INFO[d]?.team, d).toBeTruthy());
+    expect(DRIVERS.filter(isFreeAgent)).toEqual(["#6 Brad Keselowski"]);
+    expect(new Set(DRIVERS).size).toBe(DRIVERS.length);
   });
 });

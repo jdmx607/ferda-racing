@@ -1,6 +1,8 @@
 import { useMemo } from "react";
 import { C, PClr, r } from "../theme";
-import { PNAME, MAX_MULLIGANS } from "../constants";
+import { PNAME } from "../constants";
+import { getCurrentWeek } from "../engine/events";
+import { getMulliganAllowance } from "../engine/mulligans";
 import { getAchievements } from "../engine/history";
 import { getSeasonAwards, getSeasonRecords } from "../engine/stats";
 
@@ -19,7 +21,7 @@ export function TrophyCaseModal({ pid, data, onClose }) {
   if (awards?.bestMulligan?.pid === pid)    wonAwards.push({ icon: "🔀", label: "Best Mulligan" });
   if (awards?.biggestBust?.pid === pid)     wonAwards.push({ icon: "💩", label: "Biggest Bust" });
 
-  const mullLeft     = MAX_MULLIGANS - (data.meta.mulligansUsed?.[pid] || 0);
+  const mullLeft     = getMulliganAllowance(data, pid, getCurrentWeek(data)).remaining;
   const standingsPts = data.meta.standings?.[pid] || 0;
   const wins          = achv.stats.wins || 0;
   const bestWeek       = achv.stats.bestWeekScore || 0;

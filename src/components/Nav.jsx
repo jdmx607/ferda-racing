@@ -100,6 +100,13 @@ const Icon = {
       <path d="M4 9.5h16M8 3v3M16 3v3" strokeLinecap="round"/>
     </svg>
   ),
+  Drivers: () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <circle cx="12" cy="12" r="8.5"/>
+      <circle cx="12" cy="12" r="2"/>
+      <path d="M12 14v6.5M10.2 11L3.7 9.5M13.8 11l6.5-1.5" strokeLinecap="round"/>
+    </svg>
+  ),
   Mulligans: () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M19 8a7.5 7.5 0 1 0 1.5 4.5" strokeLinecap="round"/>
@@ -222,6 +229,7 @@ function DesktopNav({ player, tab, setTab, onLogout, data }) {
     { id:"playoffs",     l:"THE CHASE", gold:chaseLive },
     { id:"isc",          l:"ISC"         },
     { id:"schedule",     l:"Schedule"    },
+    { id:"drivers",      l:"Drivers"     },
     { id:"mulligans",    l:"Mulligans"   },
     { id:"rules",        l:"Rules"       },
     { id:"settings",     l:"Settings"    },
@@ -305,6 +313,7 @@ const MORE_TABS = [
   { id:"isc",          label:"ISC",        Icon:Icon.ISC        },
   { id:"lineups",      label:"Lineups",    Icon:Icon.Lineups    },
   { id:"schedule",     label:"Schedule",   Icon:Icon.Schedule   },
+  { id:"drivers",      label:"Drivers",    Icon:Icon.Drivers    },
   { id:"mulligans",    label:"Mulligans",  Icon:Icon.Mulligans  },
   { id:"rules",        label:"Rules",      Icon:Icon.Rules      },
   { id:"settings",     label:"Settings",   Icon:Icon.Settings   },

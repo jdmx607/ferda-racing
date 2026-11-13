@@ -11,7 +11,7 @@ import { scoreWeekFull } from "./engine/scoring";
 import { getDraftOrder, buildSnakeOrder, getBestAvailableDriver, getNextDraftOpenTime } from "./engine/draft";
 import { recalcMeta } from "./engine/meta";
 import { storeFor, ensureStore, getCurrentWeek, getNextEventWeek } from "./engine/events";
-import { weekLabel } from "./exhibitions";
+import { weekLabel, isExhibition } from "./exhibitions";
 import { useLeagueData } from "./hooks/useLeagueData";
 import { useLivePolling } from "./hooks/useLivePolling";
 import { useLiveTiming } from "./hooks/useLiveTiming";
@@ -44,6 +44,7 @@ const HistoryTab   = lazy(() => import("./components/HistoryTab").then(m  => ({ 
 // "info" chunk: reference/settings screens
 const PlayoffsTab   = lazy(() => import("./components/PlayoffsTab").then(m   => ({ default: m.PlayoffsTab   })));
 const ScheduleTab   = lazy(() => import("./components/ScheduleTab").then(m   => ({ default: m.ScheduleTab   })));
+const DriversTab    = lazy(() => import("./components/DriversTab").then(m    => ({ default: m.DriversTab    })));
 const RulesTab      = lazy(() => import("./components/RulesTab").then(m      => ({ default: m.RulesTab      })));
 const SettingsTab   = lazy(() => import("./components/SettingsTab").then(m   => ({ default: m.SettingsTab   })));
 const CommissionerTab=lazy(() => import("./components/CommissionerTab").then(m=>({ default: m.CommissionerTab})));
@@ -234,6 +235,7 @@ export default function App() {
   };
 
   const handleApplyMulligan=async(week,pid,oldDriver,newDriver)=>{
+    if(isExhibition(week))return; // no mulligans in the Clash / All-Star
     const d=JSON.parse(JSON.stringify(data)); const key="w"+week; const s=ensureStore(d,week);
     if(!s.picks?.[key]?.[pid])return;
     s.picks[key][pid]=s.picks[key][pid].map(pk=>pk.driver===oldDriver?{driver:newDriver,mulligan:true}:pk);
@@ -386,6 +388,7 @@ export default function App() {
         {tab==="history"&&<HistoryTab data={data}/>}
         {tab==="playoffs"&&<PlayoffsTab data={data} user={user} currentWeek={currentWeek} onSaveChaseField={handleSaveChaseField}/>}
         {tab==="schedule"&&<ScheduleTab data={data}/>}
+        {tab==="drivers"&&<DriversTab/>}
         {tab==="rules"&&<RulesTab/>}
         {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}
         {tab==="isc"&&<ISCTab data={data} user={user} onSave={handleIscSave}/>}

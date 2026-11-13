@@ -1,10 +1,29 @@
 // ─── League meta (standings / playoff pts / Chase pts) ───────────────────────
 // Re-derives d.meta from d.results (+ the All-Star exhibition). Mutates `d`.
 
-import { PLAYERS, PLAYOFF_START_WEEK } from "../constants.js";
+import { PLAYERS, PLAYOFF_START_WEEK, ALL_STAR_PAYOUT } from "../constants.js";
 import { ALL_STAR_WEEK } from "../exhibitions.js";
 
 const round2 = x => Math.round(x * 100) / 100;
+
+// Playoff points each player earns from the All-Star Race, by rank on score.
+// Players tied on score split the payouts for the places they share.
+export function allStarPayouts(scored) {
+  const rows = Object.entries(scored)
+    .map(([pid, s]) => ({ pid, total: s.total || 0 }))
+    .sort((a, b) => b.total - a.total);
+  const out = {};
+  let i = 0;
+  while (i < rows.length) {
+    let j = i;
+    while (j + 1 < rows.length && rows[j + 1].total === rows[i].total) j++;
+    const slots = ALL_STAR_PAYOUT.slice(i, j + 1);
+    const share = slots.reduce((a, b) => a + b, 0) / (j - i + 1);
+    for (let k = i; k <= j; k++) out[rows[k].pid] = share;
+    i = j + 1;
+  }
+  return out;
+}
 
 export function recalcMeta(d) {
   // Regular season (weeks 1-26): full total -> standings, bonus/win pts -> playoffPts.
@@ -35,14 +54,13 @@ export function recalcMeta(d) {
     });
   });
 
-  // All-Star Race: NOT part of the standings, but its bonus points (and the
-  // weekly-win bonus for taking the race) count toward the playoffs.
+  // All-Star Race: NOT part of the standings. Players are ranked by their
+  // All-Star score and paid into playoff points: 125 / 50 / 10 / 0.
   const allStar = d.exhibitions?.results?.["w" + ALL_STAR_WEEK]?.scored;
   if (allStar) {
-    Object.entries(allStar).forEach(([pid, s]) => {
-      if (!(pid in fp2)) return;
-      fp2[pid] = round2(fp2[pid] + (s.bonusPoints || 0));
-      if (s.weeklyWin) fp2[pid] = round2(fp2[pid] + 25);
+    const payouts = allStarPayouts(allStar);
+    Object.entries(payouts).forEach(([pid, pts]) => {
+      if (pid in fp2) fp2[pid] = round2(fp2[pid] + pts);
     });
   }
 

@@ -3,7 +3,8 @@ import { C, PClr, TTC, TTL, r, shadow } from "../theme";
 import { PNAME, SCHEDULE, TRACK_MULTS, ACTIVE_PICKS, isMemorial } from "../constants";
 import { getWeekTopDrivers, generateWeekRecap } from "../engine/stats";
 import { storeFor, isScored } from "../engine/events";
-import { CLASH_WEEK, weekLabel } from "../exhibitions";
+import { CLASH_WEEK, ALL_STAR_WEEK, weekLabel } from "../exhibitions";
+import { allStarPayouts } from "../engine/meta";
 
 const BONUS_CHIP = {
   "Top 5":    "#10b981", "Top 10":   "#10b981",
@@ -85,9 +86,11 @@ export function ResultsTab({ data }) {
 
   const src       = storeFor(data, week);
   const isClash   = week === CLASH_WEEK;
+  const isAllStar = week === ALL_STAR_WEEK;
   const wr       = src.results?.["w" + week];
   const weekInfo = SCHEDULE.find(s => s.w === week);
   const sorted   = wr?.scored ? Object.entries(wr.scored).sort((a, b) => b[1].total - a[1].total) : [];
+  const allStarPay = isAllStar && wr?.scored ? allStarPayouts(wr.scored) : {};
   const winner   = sorted[0]?.[0];
   const loser    = sorted[sorted.length - 1]?.[0];
 
@@ -225,7 +228,16 @@ export function ResultsTab({ data }) {
                           {PNAME[pid].toUpperCase()}
                         </div>
                         <div style={{ display:"flex", gap:6, marginTop:4, flexWrap:"wrap" }}>
-                          {ps.weeklyWin && (
+                          {isAllStar && (
+                            <span style={{
+                              fontSize:9, fontWeight:700, color:C.gold,
+                              background:C.gold+"22", padding:"2px 8px", borderRadius:r.pill,
+                              border:`1px solid ${C.gold}55`, letterSpacing:1,
+                            }}>
+                              +{allStarPay[pid] ?? 0} PLAYOFF PTS
+                            </span>
+                          )}
+                          {!isAllStar && ps.weeklyWin && (
                             <span style={{
                               fontSize:9, fontWeight:700, color:C.accent,
                               background:C.accent+"22", padding:"2px 8px", borderRadius:r.pill,
@@ -243,7 +255,7 @@ export function ResultsTab({ data }) {
                               PICKS 1ST IN W1
                             </span>
                           )}
-                          {!isClash && ps.bonusPoints > 0 && (
+                          {!isClash && !isAllStar && ps.bonusPoints > 0 && (
                             <span style={{
                               fontSize:9, color:C.dim,
                               padding:"2px 6px", borderRadius:r.pill,

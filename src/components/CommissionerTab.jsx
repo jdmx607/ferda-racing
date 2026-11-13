@@ -5,7 +5,7 @@ import { scoreWeekFull } from "../engine/scoring";
 import { getDraftOrder, buildSnakeOrder } from "../engine/draft";
 import { fetchNASCARResults, fetchPostRaceFromLive } from "../nascar";
 import { storeFor } from "../engine/events";
-import { weekLabel, weekName } from "../exhibitions";
+import { weekLabel, weekName, isExhibition } from "../exhibitions";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 const iS = {
@@ -555,9 +555,9 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
                         <option value="">Select driver</option>
                         {DRIVERS.map(dr => <option key={dr} value={dr}>{dr}{isMemorial(dr) ? " 🕊️" : ""}</option>)}
                       </select>
-                      <label style={{ display:"flex", alignItems:"center", gap:3, cursor:"pointer", fontSize:11, color:pk.mulligan?C.accent:C.muted, flexShrink:0 }}>
+                      {!isExhibition(week) && <label style={{ display:"flex", alignItems:"center", gap:3, cursor:"pointer", fontSize:11, color:pk.mulligan?C.accent:C.muted, flexShrink:0 }}>
                         <input type="checkbox" checked={!!pk.mulligan} onChange={e => updatePick(p.id,i,"mulligan",e.target.checked)}/>M
-                      </label>
+                      </label>}
                       <button onClick={() => removePick(p.id,i)} style={{ background:C.red+"22", border:`1px solid ${C.red}44`, borderRadius:6, color:C.red, padding:"4px 8px", fontSize:10, cursor:"pointer", fontFamily:"inherit", flexShrink:0 }}>✕</button>
                     </div>
                   ))}

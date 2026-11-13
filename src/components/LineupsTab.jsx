@@ -2,7 +2,8 @@ import { useState } from "react";
 import { C, PClr, TTC, TTL, r, shadow } from "../theme";
 import { storeFor } from "../engine/events";
 import { weekLabel, weekName } from "../exhibitions";
-import { PLAYERS, PNAME, SCHEDULE, ACTIVE_PICKS, MAX_MULLIGANS, TRACK_MULTS, isMemorial } from "../constants";
+import { PLAYERS, PNAME, SCHEDULE, ACTIVE_PICKS, TRACK_MULTS, isMemorial } from "../constants";
+import { getMulliganAllowance } from "../engine/mulligans";
 
 export function LineupsTab({ data, currentWeek }) {
   const [week, setWeek] = useState(currentWeek);
@@ -120,7 +121,7 @@ export function LineupsTab({ data, currentWeek }) {
             {PLAYERS.map(p => {
               const picks    = lineups[p.id] || [];
               const mulls    = mullPicks[p.id] || [];
-              const mulLeft  = MAX_MULLIGANS - (data.meta.mulligansUsed[p.id] || 0);
+              const mulLeft  = getMulliganAllowance(data, p.id, currentWeek).remaining;
               const mullCol  = mulLeft <= 1 ? "#ef4444" : mulLeft <= 5 ? "#f59e0b" : "#10b981";
               // If scored, get per-driver scores
               const driverScores = scored?.[p.id]?.drivers || [];

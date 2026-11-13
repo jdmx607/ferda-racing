@@ -74,10 +74,13 @@ exhibitions is staged. `ACTIVE_SEASON` in `constants.js` is still 2026 so the
       `/2026/1/` paths in `src/nascar.js`.
 - [ ] Text that still says 2026 / Darlington (PlayoffsTab, RulesTab) —
       Chase now opens at Richmond (W27).
-- [ ] Name the drivers for #6 (RFK) and #33 (RCR); confirm #10/#16 Dodge
-      moves; Brad Keselowski stays under Free Agents until he signs.
-- [ ] Confirm exhibition rules: All-Star bonus = its own bonus points + 25 for
-      the winner, added to playoff points; Clash awards no points, just sets
-      the Week 1 draft order. Confirm Dover is a short track.
-- [ ] Exhibitions: mulligans aren't available, and their winners don't show in
-      the activity feed / stats.
+- [x] #6 = Ryan Preece (RFK), #33 = Austin Hill (RCR) added. Still verify the
+      #10/#16 Dodge moves and #51 team; Brad Keselowski stays under Free Agents
+      until he signs (his old #6 entry stays so 2026 history still matches).
+- [x] Exhibition rules confirmed: Clash = draft order only, no points. All-Star
+      pays playoff pts 125 / 50 / 10 / 0 by finish (ties split). Dover = short
+      track. Mulligans: 10/season, regular season + playoffs only (never in
+      exhibitions), +2 playoff bonus for a mulligan-free regular season.
+- [ ] Exhibition winners do not show in the activity feed / stats yet.
+- [ ] Drivers tab is a first pass (active / free agents / part-time lists) —
+      user plans further changes to it.

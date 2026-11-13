@@ -5,8 +5,8 @@ import { isScored, getCurrentWeek } from "../engine/events";
 import { weekLabel, weekName } from "../exhibitions";
 
 const EXHIBITION_NOTE = {
-  clash:   "Exhibition — not in the standings. Its result sets the Week 1 draft order.",
-  allstar: "Exhibition — not in the standings. Bonus points count toward the playoffs.",
+  clash:   "Exhibition — not in the standings. Its result sets the Week 1 draft order. No mulligans.",
+  allstar: "Exhibition — not in the standings. Playoff bonus: 125 / 50 / 10 / 0 pts for 1st–4th. No mulligans.",
 };
 
 export function ScheduleTab({ data }) {

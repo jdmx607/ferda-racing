@@ -102,6 +102,14 @@ export const SCHEDULES = { 2026: SCHEDULE_2026, 2027: SCHEDULE_2027 };
 export const ACTIVE_SEASON = 2026;
 export const SCHEDULE = SCHEDULES[ACTIVE_SEASON];
 
+// 2027 mulligan rule: 10 for the year (regular season + playoffs only — never
+// in the exhibitions), plus 2 bonus mulligans in the playoffs for anyone who
+// used none during the regular season. 2026 played without the bonus.
+export const PLAYOFF_MULLIGAN_BONUS = ACTIVE_SEASON >= 2027 ? 2 : 0;
+
+// All-Star Race payout into playoff points, by finishing place among the 4 players.
+export const ALL_STAR_PAYOUT = [125, 50, 10, 0];
+
 // 2027 draftable pool, from the 2027 Cup team lineup graphic (grouped by team).
 // Names come from each car number's 2026 driver — see the note by
 // DRIVER_INFO_2027 for the slots that still need confirming. Drivers that
@@ -115,7 +123,7 @@ export const DRIVERS = [
   // Trackhouse
   "#1 Ross Chastain","#88 Connor Zilisch","#97 Shane Van Gisbergen",
   // RCR, Haas, HYAK, Rick Ware
-  "#3 Austin Dillon","#41 Cole Custer","#47 Ricky Stenhouse Jr","#51 Cody Ware",
+  "#3 Austin Dillon","#33 Austin Hill","#41 Cole Custer","#47 Ricky Stenhouse Jr","#51 Cody Ware",
   // Joe Gibbs
   "#11 Denny Hamlin","#19 Chase Briscoe","#20 Christopher Bell","#54 Ty Gibbs",
   // 23XI
@@ -127,7 +135,7 @@ export const DRIVERS = [
   // Front Row
   "#4 Noah Gragson","#34 Todd Gilliland","#38 Zane Smith",
   // RFK
-  "#17 Chris Buescher",
+  "#6 Ryan Preece","#17 Chris Buescher",
   // Kaulig (Dodge)
   "#10 Ty Dillon","#16 AJ Allmendinger",
   // Free agent (no ride yet — shown under the Free Agents tab)
@@ -190,11 +198,11 @@ const DRIVER_INFO_2026 = {
 };
 
 // 2027 changes layered over the 2026 info. Still to confirm/add by hand:
-//  • #6 (RFK) and #33 (RCR) are in the lineup graphic but the drivers aren't
-//    named there, so they're not in DRIVERS yet.
 //  • #10 / #16 at Kaulig (now Dodge) and #51's team are carried over from the
 //    2026 numbers — verify them.
 const DRIVER_INFO_2027 = {
+  "#6 Ryan Preece":        { team:"RFK Racing",               make:"Ford"  },   // was #60 in 2026
+  "#33 Austin Hill":       { team:"Richard Childress Racing", make:"Chevy" },   // full-time in 2027
   "#10 Ty Dillon":         { team:"Kaulig Racing",  make:"Dodge" },
   "#16 AJ Allmendinger":   { team:"Kaulig Racing",  make:"Dodge" },
   // No ride for 2027 yet — `freeAgent` keeps him out of autopick.

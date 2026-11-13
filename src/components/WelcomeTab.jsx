@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { C, PClr, TTC, TTL, r, shadow, sp } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, MAX_MULLIGANS, TRACK_MULTS, ACTIVE_SEASON } from "../constants";
 import { getCurrentWeek } from "../engine/events";
+import { getMulliganAllowance } from "../engine/mulligans";
 import { weekLabel } from "../exhibitions";
 import { getPowerRankings } from "../engine/history";
 import { getSeasonChampion } from "../engine/chase";
@@ -128,7 +129,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
       pts:  data.meta.standings[p.id] || 0,
       pp:   data.meta.playoffPts[p.id] || 0,
       wins: Object.values(data.results || {}).filter(r => r.scored?.[p.id]?.weeklyWin).length,
-      mullsLeft: MAX_MULLIGANS - (data.meta.mulligansUsed[p.id] || 0),
+      mullsLeft: getMulliganAllowance(data, p.id, getCurrentWeek(data)).remaining,
     })).sort((a, b) => b.pts - a.pts),
   [data]);
 

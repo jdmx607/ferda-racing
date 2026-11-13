@@ -1,11 +1,13 @@
 import { useState, useMemo } from "react";
 import { C, PClr, r, shadow } from "../theme";
-import { DRIVERS, MAX_MULLIGANS, isMemorial } from "../constants";
+import { DRIVERS, isMemorial } from "../constants";
+import { getMulliganAllowance } from "../engine/mulligans";
+import { isExhibition, weekName } from "../exhibitions";
 import { getDriverSeasonStats } from "../engine/stats";
 
 export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
-  const used      = data.meta.mulligansUsed[player.id] || 0;
-  const remaining = MAX_MULLIGANS - used;
+  const { used, remaining, max, bonus, bonusAtStake } = getMulliganAllowance(data, player.id, currentWeek);
+  const isEx = isExhibition(currentWeek);
 
   const [selectedDriver, setSelectedDriver] = useState("");
   const [replacement,    setReplacement]    = useState("");
@@ -45,7 +47,7 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
   const apply = async () => {
     if (!selectedDriver || !replacement) return;
     if (!window.confirm(
-      `Use a mulligan to swap ${selectedDriver} for ${replacement}?\n\nCounts as 1 of your ${MAX_MULLIGANS} season mulligans. Replacement earns finish position points only.`
+      `Use a mulligan to swap ${selectedDriver} for ${replacement}?\n\nCounts as 1 of your ${max} season mulligans. Replacement earns finish position points only.`
     )) return;
     setSaving(true); setMsg("");
     await onApplyMulligan(currentWeek, player.id, selectedDriver, replacement);
@@ -55,6 +57,27 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
   };
 
   const clr = PClr[player.id];
+
+  // Exhibitions (Clash / All-Star) never allow mulligans.
+  if (isEx) {
+    return (
+      <div style={{ padding:20, maxWidth:700, margin:"0 auto", position:"relative", zIndex:1 }}>
+        <h2 style={{ color:C.text, fontFamily:"'Oswald',sans-serif", fontSize:26, letterSpacing:1, margin:"0 0 16px" }}>
+          Mulligans
+        </h2>
+        <div style={{
+          background:C.card, borderRadius:r.md, padding:"14px 18px", textAlign:"center",
+          border:`1px solid ${C.gold}44`, color:C.dim, fontSize:13, lineHeight:1.6,
+        }}>
+          <strong style={{ color:C.gold }}>{weekName(currentWeek)}</strong> is an exhibition — mulligans
+          can only be used in regular-season and playoff weeks.
+          <div style={{ marginTop:8, color:C.muted, fontSize:12 }}>
+            You have {remaining} of {max} remaining for the season.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding:20, maxWidth:700, margin:"0 auto", position:"relative", zIndex:1 }}>
@@ -76,7 +99,7 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
               fontSize:32, fontWeight:900, lineHeight:1,
             }}>
               {remaining}
-              <span style={{ fontSize:16, color:C.muted, fontWeight:400 }}> / {MAX_MULLIGANS}</span>
+              <span style={{ fontSize:16, color:C.muted, fontWeight:400 }}> / {max}</span>
             </div>
             <div style={{ color:C.dim, fontSize:11, marginTop:3, textTransform:"uppercase", letterSpacing:1 }}>
               Mulligans remaining this season
@@ -101,9 +124,20 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
           )}
         </div>
 
+        {bonus > 0 && (
+          <div style={{ color:C.gold, fontSize:11, fontWeight:700, marginBottom:10 }}>
+            ★ Includes +{bonus} playoff bonus — you went the regular season without a mulligan.
+          </div>
+        )}
+        {bonusAtStake > 0 && (
+          <div style={{ color:C.dim, fontSize:11, marginBottom:10 }}>
+            Don't use a mulligan in the regular season and you'll earn +{bonusAtStake} bonus mulligans for the playoffs.
+          </div>
+        )}
+
         {/* Pip track */}
         <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-          {Array.from({ length:MAX_MULLIGANS }).map((_, i) => {
+          {Array.from({ length:max }).map((_, i) => {
             const isUsed = i < used;
             return (
               <div key={i} style={{

@@ -15,7 +15,8 @@ export function RulesTab() {
     {t:"The Chase (W27+)",c:"Everyone resets to 1,000 base + their accumulated regular-season bonus/win pts + the champ bonus (leader only). That becomes the anchor — every Chase week's FULL score (not just bonus points) adds on top, same as a regular week."},
     {t:"W27 Draft Order",c:"One-time exception: Week 27's draft order is the INVERSE of the Chase-entering standings — whoever leads picks last, last place picks first. W28 onward reverts to the normal 'last week's loser picks first' rule."},
     {t:"GOLDEN Rule",c:"Chase weeks only: +5 bonus pts when your picked driver wins the race AND is in the real NASCAR playoff field (see THE CHASE → Playoff Field)."},
-    {t:"Mulligans",c:"10/season. Replacement driver earns finish position points ONLY."},
+    {t:"Mulligans",c:"10 per season, usable in regular-season and playoff weeks only (never in the Clash or All-Star Race). 2027: go the whole regular season without using one and you earn 2 bonus mulligans for the playoffs. Replacement driver earns finish position points ONLY."},
+    {t:"Exhibitions (2027)",c:"The Clash (season opener) and the All-Star Race are exhibitions: picks are made, but they never count in the standings. The Clash result sets the Week 1 draft order (last place picks first). The All-Star Race pays playoff points by finish: 1st = 125, 2nd = 50, 3rd = 10, 4th = 0."},
   ];
   return (<div style={{padding:20,maxWidth:700,margin:"0 auto",position:"relative",zIndex:1}}>
     <h2 style={{color:C.text,fontFamily:"'Oswald',sans-serif",fontSize:26,marginBottom:16}}>Scoring Rules</h2>
