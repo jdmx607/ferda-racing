@@ -1,127 +1,187 @@
 import { useMemo, useState, useEffect } from "react";
-import { C, PClr, TTC, TTL, r, shadow, sp } from "../theme";
-import { PLAYERS, PNAME, SCHEDULE, MAX_MULLIGANS, TRACK_MULTS, ACTIVE_SEASON } from "../constants";
-import { getCurrentWeek } from "../engine/events";
+import { PClr, TTL } from "../theme";
+import { PLAYERS, PNAME, SCHEDULE, TRACK_MULTS, ACTIVE_SEASON, ACTIVE_PICKS, CHASE_CUTLINE_AFTER } from "../constants";
+import { getCurrentWeek, storeFor } from "../engine/events";
 import { getMulliganAllowance } from "../engine/mulligans";
-import { weekLabel } from "../exhibitions";
-import { getPowerRankings } from "../engine/history";
+import { getPowerRankings, getWeeklyFinishes } from "../engine/history";
 import { getSeasonChampion } from "../engine/chase";
+import {
+  getLineupStatus, getPlayerLineup, getHomeLineupWeek, getSeasonWrapUp,
+  getRaceMvp, shortName, pointsBack, formatRaceWhen, raceStartMs,
+} from "../engine/home";
+import { weekLabel } from "../exhibitions";
+import { paintFor, carNumber } from "../driverPaint";
 import { TrophyCaseModal } from "./TrophyCase";
+import { BottomSheet } from "./BottomSheet";
 
-// Shown on Home once the final race (W36) is scored.
-function ChampionBanner({ champ, onOpenTrophy }) {
-  const { pids, pid, tied, total, margin, regSeasonChamp } = champ;
-  const clr = PClr[pid];
-  const names = pids.map(p => PNAME[p]).join(" & ");
+const ARCHETYPE = {
+  superspeedway: "SUPERSPEEDWAY", short_track: "SHORT TRACK",
+  intermediate: "INTERMEDIATE", road_course: "ROAD COURSE",
+};
+
+const signed = n => `${n > 0 ? "+" : ""}${n}`;
+const mullTone = n => (n <= 1 ? "down" : n <= 5 ? "caution" : "");
+const statusTone = state => (state === "open" ? "up" : state === "waiting" ? "caution" : "");
+
+// ── 1. Champion ribbon ──────────────────────────────────────────────────────
+// Shown once the final race (W36) is scored.
+function ChampionRibbon({ champ, onOpenTrophy }) {
+  const { pids, pid, tied, total } = champ;
+  const names = pids.map(p => PNAME[p]).join(" & ").toUpperCase();
   return (
-    <div
-      onClick={() => onOpenTrophy(pid)}
-      style={{
-        background:C.card,
-        border:`1px solid ${C.borderBright}`, borderRadius:r.xl,
-        padding:"22px 24px", marginBottom:20, textAlign:"center",
-        boxShadow:"none", cursor:"pointer",
-      }}
-    >
-      <div style={{ fontSize:42, lineHeight:1, marginBottom:6 }}>🏆</div>
-      <div style={{ color:C.gold, fontSize:11, fontWeight:700, letterSpacing:4, textTransform:"uppercase", marginBottom:4 }}>
-        {tied ? "2026 Co-Champions" : "2026 FERDA Champion"}
-      </div>
-      <div style={{
-        color:clr.bg === "#000000" ? clr.fg : C.text, fontFamily:"var(--font-sans)",
-        fontSize:38, fontWeight:900, letterSpacing:2, lineHeight:1.1,
-        
-      }}>
-        {names.toUpperCase()}
-      </div>
-      <div style={{ color:C.dim, fontSize:13, marginTop:8 }}>
-        {total.toLocaleString()} Chase pts
-        {!tied && margin > 0 && <> · won by {margin.toLocaleString()}</>}
-      </div>
-      {regSeasonChamp && (
-        <div style={{ color:C.muted, fontSize:11, marginTop:6 }}>
-          Regular season champion: {PNAME[regSeasonChamp]}
-        </div>
-      )}
+    <div className="ribbon" role="button" onClick={() => onOpenTrophy(pid)}>
+      <span>
+        🏆 {ACTIVE_SEASON} FERDA {tied ? "CO-CHAMPIONS" : "CHAMPION"} • {names} — <span className="num">{total.toLocaleString()}</span> Chase Pts
+      </span>
     </div>
   );
 }
 
-const MONTH_IDX = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
-
-function getRaceMs(dateStr) {
-  if (!dateStr) return null;
-  const [mon, day] = dateStr.split(" ");
-  if (!MONTH_IDX.hasOwnProperty(mon)) return null;
-  // Races typically start ~2:30 PM ET
-  return new Date(ACTIVE_SEASON, MONTH_IDX[mon], parseInt(day), 14, 30, 0).getTime();
-}
-
-function Countdown({ raceDate, trackType }) {
-  const [diff, setDiff] = useState(() => getRaceMs(raceDate) - Date.now());
-
+// ── Countdown (ticks every second, mono so it never jitters) ────────────────
+function Countdown({ dateStr }) {
+  const target = raceStartMs(dateStr);
+  const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
-    const id = setInterval(() => setDiff(getRaceMs(raceDate) - Date.now()), 1000);
+    const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
-  }, [raceDate]);
-
-  if (diff <= 0) return null;
-
+  }, []);
+  const diff = target - now;
+  if (!target || diff <= 0) return null;
   const d = Math.floor(diff / 86400000);
-  const h = Math.floor((diff % 86400000) / 3600000);
-  const m = Math.floor((diff % 3600000) / 60000);
-  const s = Math.floor((diff % 60000) / 1000);
-  const col = TTC[trackType] || C.accent;
-
+  const h = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, "0");
+  const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+  const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
   return (
-    <div style={{ display:"flex", gap:8, alignItems:"center", justifyContent:"center", marginTop:12 }}>
-      {[{v:d,l:"D"},{v:h,l:"H"},{v:m,l:"M"},{v:s,l:"S"}].map(({v,l}) => (
-        <div key={l} style={{ textAlign:"center" }}>
-          <div style={{
-            background:col+"18", border:`1px solid ${col}44`,
-            borderRadius:r.md, padding:"8px 10px", minWidth:44,
-          }}>
-            <div style={{
-              fontFamily:"var(--font-sans)", fontSize:22, fontWeight:900,
-              color:col, lineHeight:1,
-            }}>
-              {String(v).padStart(2,"0")}
-            </div>
+    <div className="hero-clock num">
+      {d > 0 && `${d}d `}{h}:{m}:{s}
+      <small>to green</small>
+    </div>
+  );
+}
+
+function TrackPlaceholder() {
+  return (
+    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2.2" opacity="0.5" aria-hidden="true">
+      <rect x="6" y="14" width="52" height="36" rx="18" />
+      <rect x="18" y="24" width="28" height="16" rx="8" />
+    </svg>
+  );
+}
+
+// ── 2. Race-week hero ───────────────────────────────────────────────────────
+function RaceHero({ data, player, setTab, isLive, liveScores, liveStatus, timingData, week, onTrophy }) {
+  const info = SCHEDULE.find(s => s.w === week);
+  const pid  = player.id;
+
+  // Off-season fallback: all races complete → season wrap-up
+  if (!info) {
+    const w = getSeasonWrapUp(data, pid);
+    return (
+      <section className="card hero">
+        <div className="hero-head" style={{ gridTemplateColumns: "minmax(0,1fr) auto" }}>
+          <div>
+            <div className="hero-eyebrow">{ACTIVE_SEASON} · final</div>
+            <div className="hero-title">Season Wrap-Up</div>
+            <div className="hero-meta">{player.name}</div>
           </div>
-          <div style={{ color:C.muted, fontSize:9, fontWeight:700, letterSpacing:1, marginTop:3 }}>{l}</div>
+          <button className="link-btn" onClick={() => setTab("schedule")}>Next season →</button>
         </div>
-      ))}
-    </div>
-  );
-}
+        <div className="hero-body">
+          <div className="wrap-bar">
+            <div className="wrap-stat"><div className="v num">{w.bestScore != null ? w.bestScore : "—"}</div><div className="l">Best race score</div></div>
+            <div className="wrap-stat"><div className="v num">{w.avgFinish != null ? w.avgFinish.toFixed(1) : "—"}</div><div className="l">Avg finish</div></div>
+            <div className="wrap-stat"><div className="v num">{w.races ? `+${w.playoffPts}` : "—"}</div><div className="l">Playoff pts</div></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
-function StatTile({ value, label, color, bg, small }) {
+  const lineup = getPlayerLineup(data, week, pid);
+  const slots  = Array.from({ length: ACTIVE_PICKS }, (_, i) => lineup[i] || null);
+  const stage  = timingData?.stage?.stage_num;
+
   return (
-    <div style={{
-      background:bg || "rgba(0,0,0,0.25)", borderRadius:r.md,
-      padding: small ? "8px 12px" : "10px 16px",
-      flex:1, minWidth:70, textAlign:"center",
-    }}>
-      <div style={{
-        color:color, fontFamily:"var(--font-sans)",
-        fontSize:small ? 20 : 26, fontWeight:700, lineHeight:1,
-      }}>
-        {value}
+    <section className="card hero">
+      <div className="hero-head">
+        <div className="track-slot sm"><TrackPlaceholder /></div>
+
+        <div style={{ minWidth: 0 }}>
+          <div className="hero-eyebrow">
+            {isLive ? "Live" : "Next race"} · {weekLabel(week)}{info.ex ? " · Exhibition" : ""}
+          </div>
+          <div className="hero-title">{info.t}</div>
+          <div className="hero-meta num">
+            {isLive
+              ? <><span className="live-dot" />LIVE{stage != null ? ` · STAGE ${stage}` : ""}</>
+              : formatRaceWhen(info.d)}
+          </div>
+        </div>
+
+        <div style={{ textAlign: "right" }}>
+          <span className="pill num" style={{ fontSize: 9.5 }}>{ARCHETYPE[info.ty]} ×{TRACK_MULTS[info.ty]}</span>
+          {isLive
+            ? <div className="hero-clock num">
+                {timingData?.lapsInRace > 0 ? `LAP ${timingData.lapNumber}/${timingData.lapsInRace}` : (liveStatus || "")}
+              </div>
+            : <div style={{ marginTop: 6 }}><Countdown dateStr={info.d} /></div>}
+        </div>
       </div>
-      <div style={{
-        color:"rgba(255,255,255,0.4)", fontSize:9,
-        textTransform:"uppercase", letterSpacing:1, marginTop:3,
-      }}>
-        {label}
+
+      <div className="hero-body">
+        {lineup.length === 0 ? (
+          <button className="cta-block" onClick={() => setTab("draft")}>+ Set lineup</button>
+        ) : (
+          <>
+            <div className="sec-head" style={{ margin: 0 }}>
+              <span className="label">Your lineup</span>
+              <button className="link-btn" onClick={() => setTab("draft")}>Draft →</button>
+            </div>
+            <div className="lineup-strip">
+              {slots.map((s, i) => s ? (
+                <div key={i} className={`dchip${s.mulligan ? " mull" : ""}`} style={{ "--paint": paintFor(s.driver) }}>
+                  <div className="dchip-num num">{carNumber(s.driver) || "—"}</div>
+                  <div className="dchip-name">{shortName(s.driver)}</div>
+                </div>
+              ) : (
+                <div key={i} className="dchip empty num">—</div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {isLive && liveScores && (
+          <div className="live-row" onClick={() => setTab("live")}>
+            {Object.entries(liveScores).sort((a, b) => b[1].total - a[1].total).map(([p2, s], i) => (
+              <div key={p2} className="live-chip">
+                <div className="n">{i === 0 ? "👑 " : ""}{PNAME[p2]}</div>
+                <div className="v num" style={{ color: s.total > 0 ? "var(--go)" : s.total < 0 ? "var(--stop)" : "var(--text)" }}>
+                  {signed(s.total)}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </section>
   );
 }
 
-export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
+const Chevron = () => (
+  <svg className="chev" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M2.5 4.5 6 8l3.5-3.5" />
+  </svg>
+);
+
+// ── Home ────────────────────────────────────────────────────────────────────
+export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timingData }) {
   const pid = player.id;
   const clr = PClr[pid];
-  const [trophyPid, setTrophyPid] = useState(null);
+  const [trophyPid, setTrophyPid]   = useState(null);
+  const [openRow, setOpenRow]       = useState(null);      // accordion: one standings row open at a time
+  const [showRankings, setShowRankings] = useState(false);
+
+  const currentWeek = getCurrentWeek(data);
 
   const standings = useMemo(() =>
     PLAYERS.map(p => ({
@@ -129,236 +189,140 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
       pts:  data.meta.standings[p.id] || 0,
       pp:   data.meta.playoffPts[p.id] || 0,
       wins: Object.values(data.results || {}).filter(r => r.scored?.[p.id]?.weeklyWin).length,
-      mullsLeft: getMulliganAllowance(data, p.id, getCurrentWeek(data)).remaining,
+      mullsLeft: getMulliganAllowance(data, p.id, currentWeek).remaining,
     })).sort((a, b) => b.pts - a.pts),
-  [data]);
+  [data, currentWeek]);
+  const back = pointsBack(standings);
 
   const seasonChampion = useMemo(() => getSeasonChampion(data), [data]);
-  const powerRankings = useMemo(() => getPowerRankings(data), [data]);
+  const powerRankings  = useMemo(() => getPowerRankings(data), [data]);
+  const finishes       = useMemo(() => getWeeklyFinishes(data), [data]);
   const powerLeader    = powerRankings[0];
 
-  const myStats  = standings.find(s => s.id === pid);
-  const myRank   = standings.findIndex(s => s.id === pid) + 1;
-  const maxPts   = standings[0]?.pts || 1;
+  const myStats = standings.find(s => s.id === pid);
 
-  const lastWeekKey  = Object.keys(data.results || {}).map(k => parseInt(k.replace("w",""))).sort((a,b) => b-a)[0];
-  const lastWeek     = lastWeekKey ? data.results["w"+lastWeekKey] : null;
-  const lastRaceInfo = SCHEDULE.find(s => s.w === lastWeekKey);
-  // Next event in schedule order — includes the Clash / All-Star in 2027
-  const nextRace     = SCHEDULE.find(s => s.w === getCurrentWeek(data));
-
-  const isLive = data?.liveRace?.active && liveScores;
+  const isLive = !!(data?.liveRace?.active && liveScores);
+  const heroWeek = isLive ? data.liveRace.week : currentWeek;
   const liveRanked = isLive
-    ? PLAYERS.map(p => ({ id:p.id, live: liveScores[p.id]?.total || 0 })).sort((a,b) => b.live-a.live)
+    ? PLAYERS.map(p => ({ id: p.id, live: liveScores[p.id]?.total || 0 })).sort((a, b) => b.live - a.live)
     : null;
-  const myLiveRank = liveRanked?.findIndex(x => x.id === pid) + 1;
+  const myLiveRank = liveRanked ? liveRanked.findIndex(x => x.id === pid) + 1 : 0;
 
-  const greetings = ["Welcome back","Good to see you","Ready to race","Eyes on the prize"];
-  const greeting  = greetings[Math.floor(Date.now()/86400000) % greetings.length];
+  const status = getLineupStatus(data, currentWeek);
 
-  const mullColor = myStats?.mullsLeft <= 1 ? C.red : myStats?.mullsLeft <= 5 ? "#f59e0b" : C.green;
+  // Latest scored race (for the Last Race card)
+  const lastWeekKey  = Object.keys(data.results || {}).map(k => parseInt(k.replace("w", ""))).sort((a, b) => b - a)[0];
+  const lastWeek     = lastWeekKey ? data.results["w" + lastWeekKey] : null;
+  const lastRaceInfo = SCHEDULE.find(s => s.w === lastWeekKey);
+  const lastSorted   = Object.entries(lastWeek?.scored || {}).sort((a, b) => b[1].total - a[1].total);
+  const lastMax      = Math.max(lastSorted[0]?.[1]?.total || 0, 1);
+  const lastMargin   = lastSorted.length > 1 ? Math.round((lastSorted[0][1].total - lastSorted[1][1].total) * 10) / 10 : 0;
+
+  // What the expandable standings rows show
+  const lw       = useMemo(() => getHomeLineupWeek(data), [data]);
+  const lwInfo   = SCHEDULE.find(s => s.w === lw.week);
+  const lwScored = storeFor(data, lw.week).results?.["w" + lw.week]?.scored;
+
+  const seasonOver = !SCHEDULE.some(s => s.w === currentWeek);
+  const showCutline = CHASE_CUTLINE_AFTER != null && !seasonOver;
+
+  const trend = d => (d > 0 ? { cls: "trend-up", txt: `▲${d}` } : d < 0 ? { cls: "trend-down", txt: `▼${-d}` } : { cls: "trend-flat", txt: "–" });
 
   return (
-    <div style={{ padding:20, maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>
+    <div className="home">
 
-      {seasonChampion && <ChampionBanner champ={seasonChampion} onOpenTrophy={setTrophyPid} />}
+      {seasonChampion && <ChampionRibbon champ={seasonChampion} onOpenTrophy={setTrophyPid} />}
 
-      {/* ── Hero banner ────────────────────────────────────────────────────── */}
-      <div style={{
-        background:clr.bg,
-        borderRadius:r.xl, padding:"24px 24px 20px", marginBottom:20,
-        border:`2px solid ${clr.bg === "#000000" ? C.border : clr.bg+"88"}`,
-        boxShadow:shadow.lg, overflow:"hidden", position:"relative",
-      }}>
-        {/* Subtle number watermark */}
-        <div style={{
-          position:"absolute", right:-20, top:-20,
-          fontFamily:"var(--font-sans)", fontSize:180, fontWeight:900,
-          color:clr.fg, opacity:0.04, lineHeight:1, pointerEvents:"none",
-          userSelect:"none",
-        }}>
-          {myRank}
+      {/* ── Driver hub ─────────────────────────────────────────────────────── */}
+      <section className="card hub">
+        <div className="hub-top">
+          <div className="hub-name">
+            <span className="dot" style={{ width: 10, height: 10, background: clr.accent }} />
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{player.name}</span>
+          </div>
+          <button className="btn-ghost" onClick={() => setTrophyPid(pid)}>🏆 Trophy Case</button>
         </div>
-
-        <div style={{ color:clr.fg+"88", fontSize:12, textTransform:"uppercase", letterSpacing:3, marginBottom:4 }}>
-          {greeting}
-        </div>
-        <div style={{ color:clr.fg, fontFamily:"var(--font-sans)", fontSize:36, fontWeight:900, letterSpacing:2, lineHeight:1, marginBottom:16 }}>
-          {player.name.toUpperCase()}
-          {isLive && myLiveRank && (
-            <span style={{
-              marginLeft:12, fontSize:13, fontWeight:700, letterSpacing:2,
-              color:C.red, background:C.red+"22",
-              padding:"3px 10px", borderRadius:r.pill, verticalAlign:"middle",
-              border:`1px solid ${C.red}44`,
-            }}>
-              🔴 P{myLiveRank} LIVE
-            </span>
+        <div className="hub-row">
+          <span className={`pill lg ${statusTone(status.state)}`}>{status.label}</span>
+          <span className={`pill lg num ${mullTone(myStats?.mullsLeft ?? 0)}`}>M:{myStats?.mullsLeft ?? 0}</span>
+          {isLive && myLiveRank > 0 && (
+            <span className="pill lg down num"><span className="live-dot" />P{myLiveRank} LIVE</span>
           )}
         </div>
+      </section>
 
-        <div style={{ display:"flex", gap:10, flexWrap:"wrap" }}>
-          <StatTile value={myStats?.pts?.toLocaleString() || 0} label="Points"       color={clr.fg} />
-          <StatTile value={`#${myRank}`}                        label="Rank"          color={clr.fg} />
-          <StatTile value={myStats?.wins || 0}                  label="Wins"          color={clr.fg} />
-          <StatTile value={`+${myStats?.pp || 0}`}              label="Playoff"       color={C.accent} />
-          <StatTile value={myStats?.mullsLeft ?? MAX_MULLIGANS} label="Mulligans"     color={mullColor} />
-        </div>
-
-        <button onClick={() => setTrophyPid(pid)} style={{
-          marginTop:14, padding:"7px 14px", borderRadius:r.pill,
-          border:`1px solid ${clr.fg}44`, background:"rgba(0,0,0,0.2)",
-          color:clr.fg, fontSize:11, fontWeight:700, cursor:"pointer",
-          fontFamily:"var(--font-sans)", letterSpacing:1,
-        }}>
-          🏆 View Trophy Case
-        </button>
-      </div>
-
-      {/* ── Live race widget ───────────────────────────────────────────────── */}
-      {isLive && (
-        <div style={{ marginBottom:20 }}>
-          <div style={{
-            background:C.card, border:`1px solid ${C.border}`, borderLeft:`3px solid ${C.red}`,
-            borderRadius:r.md, padding:"10px 16px", marginBottom:8,
-            display:"flex", justifyContent:"space-between", alignItems:"center",
-            cursor:"pointer", boxShadow:shadow.md,
-          }} onClick={() => setTab("live")}>
-            <div style={{ color:C.text, fontWeight:700, fontFamily:"var(--font-sans)", fontSize:14, letterSpacing:0.5 }}>
-              Race in progress
-            </div>
-            <div style={{ color:C.dim, fontSize:11, fontWeight:600 }}>{liveStatus} → View Live</div>
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:6 }}>
-            {Object.entries(liveScores).sort((a,b) => b[1].total - a[1].total).map(([p2,s],i) => (
-              <div key={p2} onClick={() => setTab("live")} style={{
-                background:PClr[p2].bg, borderRadius:r.md, padding:"10px 14px",
-                cursor:"pointer", border:`1px solid ${PClr[p2].bg==="#000000"?C.border:PClr[p2].bg+"66"}`,
-                display:"flex", justifyContent:"space-between", alignItems:"center",
-              }}>
-                <span style={{ color:PClr[p2].fg, fontWeight:700, fontSize:14 }}>
-                  {i===0 && "👑 "}{PNAME[p2]}
-                </span>
-                <span style={{
-                  color:s.total>0?"#10b981":s.total<0?"#ef4444":PClr[p2].fg,
-                  fontWeight:900, fontFamily:"var(--font-sans)", fontSize:18,
-                }}>
-                  {s.total>0?"+":""}{s.total}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── Next race + countdown ──────────────────────────────────────────── */}
-      {nextRace && (
-        <div style={{
-          background:C.card, borderRadius:r.lg, marginBottom:20,
-          border:`1px solid ${TTC[nextRace.ty]}44`,
-          boxShadow:shadow.card, overflow:"hidden",
-        }}>
-          <div style={{
-            background:TTC[nextRace.ty]+"18",
-            padding:"12px 16px",
-            display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:8,
-          }}>
-            <div>
-              <div style={{ color:TTC[nextRace.ty], fontSize:10, textTransform:"uppercase", letterSpacing:2, fontWeight:700, marginBottom:2 }}>
-                Next Race — {weekLabel(nextRace.w)}{nextRace.ex ? " · Exhibition" : ""}
-              </div>
-              <div style={{ color:C.text, fontWeight:700, fontSize:16 }}>{nextRace.r}</div>
-              <div style={{ color:C.dim, fontSize:12, marginTop:2 }}>
-                {nextRace.t} · {nextRace.d} ·{" "}
-                <span style={{ color:TTC[nextRace.ty], fontWeight:600 }}>
-                  {TTL[nextRace.ty]} ×{TRACK_MULTS[nextRace.ty]}
-                </span>
-              </div>
-            </div>
-            <button
-              onClick={() => setTab("draft")}
-              style={{
-                padding:"8px 18px", borderRadius:r.md,
-                border:`1px solid ${TTC[nextRace.ty]}`, background:TTC[nextRace.ty]+"22",
-                color:TTC[nextRace.ty], fontFamily:"var(--font-sans)",
-                fontSize:12, fontWeight:700, cursor:"pointer", letterSpacing:1, textTransform:"uppercase",
-              }}
-            >
-              Draft →
-            </button>
-          </div>
-          <div style={{ padding:"12px 16px" }}>
-            <Countdown raceDate={nextRace.d} trackType={nextRace.ty} />
-          </div>
-        </div>
-      )}
+      {/* ── Race week hero ─────────────────────────────────────────────────── */}
+      <RaceHero
+        data={data} player={player} setTab={setTab} isLive={isLive}
+        liveScores={liveScores} liveStatus={liveStatus} timingData={timingData}
+        week={heroWeek}
+      />
 
       {/* ── Season standings ───────────────────────────────────────────────── */}
-      <div style={{ marginBottom:20 }}>
-        <div style={{
-          display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:10,
-        }}>
-          <div style={{ color:C.textDim, fontSize:11, textTransform:"uppercase", letterSpacing:2, fontWeight:700 }}>
-            Season Standings
-          </div>
-          <div style={{ color:C.muted, fontSize:11 }}>
+      <div>
+        <div className="sec-head">
+          <span className="label">Season standings</span>
+          <span className="num" style={{ fontSize: 11, color: "var(--text-3)" }}>
             {Object.keys(data.results || {}).length} / 36 races
-          </div>
+          </span>
         </div>
 
-        <div style={{ display:"grid", gap:6 }}>
+        <div className="stand">
           {standings.map((p, i) => {
-            const barW = maxPts > 0 ? (p.pts / maxPts) * 100 : 0;
-            const isMe = p.id === pid;
+            const isMe    = p.id === pid;
+            const open    = openRow === p.id;
+            const lineup  = getPlayerLineup(data, lw.week, p.id);
+            const dScores = lwScored?.[p.id]?.drivers || [];
             return (
-              <div key={p.id} onClick={() => setTrophyPid(p.id)} style={{
-                background:PClr[p.id].bg, borderRadius:r.md,
-                border:`2px solid ${isMe ? C.accent : PClr[p.id].bg === "#000000" ? C.border : PClr[p.id].bg+"55"}`,
-                overflow:"hidden", cursor:"pointer",
-                boxShadow: isMe ? shadow.glow(C.accent) : "none",
-              }}>
-                <div style={{ padding:"10px 14px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                    <div style={{
-                      width:28, height:28, borderRadius:"50%",
-                      background:PClr[p.id].fg, color:PClr[p.id].bg,
-                      display:"flex", alignItems:"center", justifyContent:"center",
-                      fontWeight:900, fontSize:13, fontFamily:"var(--font-sans)",
-                      flexShrink:0,
-                    }}>
-                      {i + 1}
-                    </div>
+              <div key={p.id}>
+                {showCutline && i === CHASE_CUTLINE_AFTER && <div className="cutline">CHASE CUTLINE</div>}
+                <div className={`stand-item${open ? " open" : ""}`}>
+                  <button className="stand-row" aria-expanded={open} onClick={() => setOpenRow(open ? null : p.id)}>
+                    <span className="num label" style={{ textAlign: "center" }}>{i + 1}</span>
+                    <span style={{ minWidth: 0 }}>
+                      <span className="stand-name">
+                        <span className="dot" style={{ background: PClr[p.id].accent }} />
+                        {p.name}{isMe && <span className="you">YOU</span>}
+                      </span>
+                      <span className="stand-sub num" style={{ display: "block" }}>
+                        {p.wins}W · +{p.pp} PP ·{" "}
+                        <span style={{ color: p.mullsLeft <= 1 ? "var(--stop)" : p.mullsLeft <= 5 ? "var(--caution)" : "var(--text-2)" }}>M:{p.mullsLeft}</span>
+                      </span>
+                    </span>
+                    <span className="stand-pts">
+                      <div className="v num">{p.pts.toLocaleString()}</div>
+                      {i > 0 && <div className="back num">{back[i] === 0 ? "—" : back[i].toFixed(1)}</div>}
+                    </span>
+                    <Chevron />
+                  </button>
+
+                  <div className="acc" aria-hidden={!open}>
                     <div>
-                      <div style={{
-                        color:PClr[p.id].fg, fontWeight:700, fontSize:15,
-                        fontFamily:"var(--font-sans)",
-                      }}>
-                        {p.name}
-                        {isMe && <span style={{ color:C.accent, fontSize:10, marginLeft:6, fontWeight:700 }}>YOU</span>}
-                      </div>
-                      <div style={{ color:PClr[p.id].fg+"66", fontSize:10 }}>
-                        {p.wins}W · +{p.pp} playoff
-                        <span style={{ color:mullColor, marginLeft:6 }}>· M:{p.mullsLeft}</span>
+                      <div className="acc-body">
+                        {lineup.length === 0
+                          ? <div style={{ fontSize: 12, color: "var(--text-3)" }}>No picks yet for this race.</div>
+                          : lineup.map((l, k) => {
+                              const ds = dScores.find(d => d.driver === l.driver);
+                              return (
+                                <div key={k} className="acc-row" style={{ "--paint": paintFor(l.driver) }}>
+                                  <span className="bar" />
+                                  <span className="n num">{carNumber(l.driver)}</span>
+                                  <span className="nm">{l.driver.replace(/^#\S+\s*/, "")}{l.mulligan ? " · M" : ""}</span>
+                                  {ds && (
+                                    <span className="num" style={{ fontWeight: 700, color: ds.total > 0 ? "var(--go)" : ds.total < 0 ? "var(--stop)" : "var(--text-2)" }}>
+                                      {signed(ds.total)}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                        <div className="acc-foot">
+                          <span>{lwInfo ? `${weekLabel(lw.week)} · ${lwInfo.t}${lw.scored ? "" : " · upcoming"}` : ""}</span>
+                          <button className="link-btn" onClick={() => setTrophyPid(p.id)}>Trophy case →</button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div style={{ textAlign:"right" }}>
-                    <div style={{
-                      color:PClr[p.id].fg, fontFamily:"var(--font-sans)",
-                      fontSize:22, fontWeight:700, lineHeight:1,
-                    }}>
-                      {p.pts.toLocaleString()}
-                    </div>
-                    <div style={{ color:PClr[p.id].fg+"66", fontSize:9, textTransform:"uppercase" }}>pts</div>
-                  </div>
-                </div>
-                {/* Points bar */}
-                <div style={{ height:3, background:"rgba(0,0,0,0.3)" }}>
-                  <div style={{
-                    height:"100%", width:`${barW}%`,
-                    background: isMe ? C.accent : PClr[p.id].fg,
-                    opacity:0.6, transition:"width 0.8s ease",
-                  }}/>
                 </div>
               </div>
             );
@@ -366,80 +330,102 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus }) {
         </div>
       </div>
 
-      {/* ── Power rankings teaser ────────────────────────────────────────────── */}
+      {/* ── Power rankings ─────────────────────────────────────────────────── */}
       {powerLeader && (
-        <div onClick={() => setTab("stats")} style={{
-          background:C.card, borderRadius:r.lg, padding:"14px 16px", marginBottom:20,
-          border:`1px solid ${C.border}`, boxShadow:shadow.sm, cursor:"pointer",
-          display:"flex", alignItems:"center", justifyContent:"space-between", gap:10, flexWrap:"wrap",
-        }}>
-          <div>
-            <div style={{ color:C.muted, fontSize:10, textTransform:"uppercase", letterSpacing:2, marginBottom:4 }}>
-              🔥 Power Rankings — who's hot right now
-            </div>
-            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-              <span style={{ color:PClr[powerLeader.id].fg, background:PClr[powerLeader.id].bg, padding:"3px 10px", borderRadius:r.pill, fontFamily:"var(--font-sans)", fontWeight:900, fontSize:13, border:`1px solid ${PClr[powerLeader.id].fg}44` }}>
-                #1 {PNAME[powerLeader.id]}
-              </span>
-              <span style={{ color:C.dim, fontSize:12 }}>{powerLeader.powerScore} pts (weighted, last 3 races)</span>
-            </div>
+        <section className="card" style={{ padding: "12px 14px" }}>
+          <div className="sec-head" style={{ margin: "0 0 8px" }}>
+            <span className="label">Power rankings</span>
+            <button className="link-btn" onClick={() => setShowRankings(true)}>Full Rankings →</button>
           </div>
-          <span style={{ color:C.accent, fontSize:11, fontWeight:700, whiteSpace:"nowrap" }}>Full Rankings →</span>
-        </div>
+          <div style={{ fontSize: 13, marginBottom: 10 }}>
+            <strong>#1 {PNAME[powerLeader.id]}</strong>
+            <span className="num" style={{ color: "var(--text-2)" }}> • {powerLeader.powerScore} pts (last 3 races)</span>
+          </div>
+          <div className="pr-strip">
+            {powerRankings.map(p => {
+              const t = trend(p.delta);
+              return (
+                <div key={p.id} className="pr-chip">
+                  <div className="top num">
+                    <span style={{ color: "var(--text-2)", fontWeight: 600 }}>{p.rank}</span>
+                    <span className={t.cls} style={{ fontWeight: 700 }}>{t.txt}</span>
+                  </div>
+                  <div className="nm">{PNAME[p.id]}</div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
       )}
 
-      {/* ── Last race recap ────────────────────────────────────────────────── */}
+      {/* ── Last race ──────────────────────────────────────────────────────── */}
       {lastWeek && lastRaceInfo && (
-        <div style={{
-          background:C.card, borderRadius:r.lg, padding:16,
-          border:`1px solid ${C.border}`, boxShadow:shadow.sm,
-        }}>
-          <div style={{ color:C.muted, fontSize:10, textTransform:"uppercase", letterSpacing:2, marginBottom:10 }}>
-            Last Race — W{lastWeekKey}
+        <section className="card" style={{ padding: "12px 14px" }}>
+          <div className="sec-head" style={{ margin: "0 0 4px" }}>
+            <span className="label">Last race · W{lastWeekKey}</span>
+            {lastMargin > 0 && <span className="num" style={{ fontSize: 11, color: "var(--text-2)" }}>won by {lastMargin}</span>}
           </div>
-          <div style={{ color:C.text, fontWeight:700, fontSize:15, marginBottom:2 }}>{lastRaceInfo.r}</div>
-          <div style={{ color:C.dim, fontSize:12, marginBottom:10 }}>@ {lastRaceInfo.t}</div>
-          <div style={{ display:"grid", gap:4 }}>
-            {Object.entries(lastWeek.scored || {})
-              .sort((a,b) => b[1].total - a[1].total)
-              .map(([p2, s], i) => (
-                <div key={p2} style={{
-                  display:"flex", justifyContent:"space-between", alignItems:"center",
-                  padding:"6px 10px",
-                  background:PClr[p2].bg, borderRadius:r.sm,
-                  border:`1px solid ${PClr[p2].bg==="#000000"?C.border:PClr[p2].bg+"44"}`,
-                }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                    <span style={{ fontSize:13 }}>{i===0?"👑":i===3?"💩":"  "}</span>
-                    <span style={{
-                      color:PClr[p2].fg, fontWeight: s.weeklyWin ? 900 : 600, fontSize:14,
-                      fontFamily:"var(--font-sans)",
-                    }}>
-                      {PNAME[p2]}
-                      {p2 === pid && <span style={{ color:C.accent, fontSize:10, marginLeft:6 }}>YOU</span>}
+          <div style={{ fontSize: 14.5, fontWeight: 700 }}>{lastRaceInfo.r}</div>
+          <div style={{ fontSize: 12, color: "var(--text-2)", margin: "2px 0 10px" }}>@ {lastRaceInfo.t}</div>
+
+          <div style={{ display: "grid", gap: 5 }}>
+            {lastSorted.map(([p2, s], i) => {
+              const mvp = i === 0 ? getRaceMvp(s) : null;
+              const pct = Math.max(0, Math.min(100, (s.total / lastMax) * 100));
+              return (
+                <div key={p2} className="lr-row">
+                  <span className="lr-bar" style={{ width: `${pct}%` }} />
+                  <span style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                    <span style={{ width: 18, textAlign: "center", fontSize: 13 }}>{i === 0 ? "👑" : i === 3 ? "💩" : ""}</span>
+                    <span style={{ fontSize: 13.5, fontWeight: s.weeklyWin ? 800 : 600 }}>
+                      {PNAME[p2]}{p2 === pid && <span className="you" style={{ marginLeft: 6 }}>YOU</span>}
                     </span>
-                  </div>
-                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                    {s.weeklyWin && (
-                      <span style={{
-                        fontSize:9, fontWeight:700, color:C.accent,
-                        background:C.accent+"22", padding:"2px 6px",
-                        borderRadius:r.pill, letterSpacing:1,
-                      }}>+25 PP</span>
-                    )}
-                    <span style={{
-                      color:PClr[p2].fg, fontFamily:"var(--font-sans)",
-                      fontSize:18, fontWeight:700,
-                    }}>
-                      {s.total}
-                    </span>
-                  </div>
+                    {mvp && <span className="mvp-tag num">{shortName(mvp.driver)} {signed(mvp.total)}</span>}
+                  </span>
+                  <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    {s.weeklyWin && <span className="pill num" style={{ fontSize: 9.5 }}>+25 PP</span>}
+                    <span className="num" style={{ fontSize: 16, fontWeight: 700 }}>{s.total}</span>
+                  </span>
                 </div>
-              ))
-            }
+              );
+            })}
           </div>
-        </div>
+        </section>
       )}
+
+      {/* ── Full power rankings sheet ──────────────────────────────────────── */}
+      <BottomSheet open={showRankings} onClose={() => setShowRankings(false)} title="Power Rankings">
+        <div style={{ fontSize: 12, color: "var(--text-2)", marginBottom: 12, lineHeight: 1.5 }}>
+          Recent form, not season totals: a weighted average of each player's last 3 races, newest counting most.
+        </div>
+        <div style={{ display: "grid", gap: 6 }}>
+          {powerRankings.map(p => {
+            const t = trend(p.delta);
+            const form = (finishes[p.id] || []).slice(-3);
+            return (
+              <div key={p.id} className="lr-row" style={{ padding: "10px 12px" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                  <span className="num label" style={{ width: 14 }}>{p.rank}</span>
+                  <span className="dot" style={{ background: PClr[p.id].accent }} />
+                  <span style={{ fontSize: 14, fontWeight: 600 }}>{PNAME[p.id]}</span>
+                  <span className={`num ${t.cls}`} style={{ fontSize: 11, fontWeight: 700 }}>{t.txt}</span>
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ display: "flex", gap: 4 }}>
+                    {form.map((f, k) => (
+                      <span key={k} className="chip num" title={`W${f.week}: ${f.score} pts`}>P{f.position}</span>
+                    ))}
+                  </span>
+                  <span className="num" style={{ fontSize: 15, fontWeight: 700, minWidth: 44, textAlign: "right" }}>{p.powerScore}</span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ marginTop: 14 }}>
+          <button className="link-btn" onClick={() => { setShowRankings(false); setTab("stats"); }}>More in Stats →</button>
+        </div>
+      </BottomSheet>
 
       {trophyPid && <TrophyCaseModal pid={trophyPid} data={data} onClose={() => setTrophyPid(null)} />}
     </div>

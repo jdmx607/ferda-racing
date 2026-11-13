@@ -368,7 +368,7 @@ export default function App() {
       <FlagBanner user={user} data={data} currentWeek={currentWeek} onGoTo={setTab}/>
 
       {/* Eager tabs — no Suspense needed */}
-      {tab==="welcome"&&<WelcomeTab player={user} data={data} setTab={setTab} liveScores={liveScores} liveStatus={liveStatus}/>}
+      {tab==="welcome"&&<WelcomeTab player={user} data={data} setTab={setTab} liveScores={liveScores} liveStatus={liveStatus} timingData={timingData}/>}
       {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
       {tab==="live"&&<LiveTab data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo} currentWeek={currentWeek} timingData={timingData}/>}
 

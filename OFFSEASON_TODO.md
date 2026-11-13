@@ -75,6 +75,10 @@ committing to any of it.
 - [ ] **Points ahead/behind feature** — show how far ahead of / behind the other
       players each person is. (Live tab already shows the gap to the player above
       during a race; this is the broader version — scope TBD.)
+- [ ] **Chase cutline on Home standings** — the Home screen supports a dashed
+      "CHASE CUTLINE" divider (`CHASE_CUTLINE_AFTER` in `constants.js`, currently
+      `null` = off) but the league has no player eliminations. Decide the rule
+      (e.g. bottom N cut after week X) and set it.
 
 ## Start the 2027 season (the 2027 schedule is built but NOT active)
 
