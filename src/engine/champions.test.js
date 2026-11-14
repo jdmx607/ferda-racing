@@ -42,7 +42,8 @@ describe("the 2019–2026 dataset", () => {
     const s26 = CHAMPION_HISTORY.find(s => s.year === 2026);
     expect(s26.notes).toBe("3,552 Chase pts • Won by 378.2 • 12 Wins");
     expect(s26.margin).toBe(378.2);
-    expect(CHAMPION_HISTORY.find(s => s.year === 2025).notes).toBe("First split-crown season in league history");
+    expect(CHAMPION_HISTORY.find(s => s.year === 2023).notes).toBe("First split-crown season in league history");
+    expect(CHAMPION_HISTORY.find(s => s.year === 2025).notes).toBe("Second split-crown season in league history");
   });
 });
 
