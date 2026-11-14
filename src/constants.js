@@ -218,6 +218,12 @@ export const DRIVER_INFO = { ...DRIVER_INFO_2026, ...DRIVER_INFO_2027 };
 
 export const MAKE_COLORS = { Chevy: "#b8b8b8", Ford: "#0052cc", Toyota: "#eb0a1e", Dodge: "#a855f7" };
 
+// Rookie / bonus-eligible drivers — drives the ★ badge and the "Bonus / Rookie" filter
+// in the Draft Room. The NASCAR feeds mark rookies with a trailing "#"
+// (e.g. "Connor Zilisch #"). Edit this list each season.
+export const ROOKIE_DRIVERS = new Set(["#88 Connor Zilisch"]);
+export function isRookie(driver) { return ROOKIE_DRIVERS.has(driver); }
+
 export function isMemorial(driver) { return !!MEMORIAL_DRIVERS[driver]; }
 export function isPartTime(driver) { return !!DRIVER_INFO[driver]?.partTime; }
 export function isFreeAgent(driver) { return !!DRIVER_INFO[driver]?.freeAgent; }

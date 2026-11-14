@@ -2,6 +2,7 @@
 // ALL external calls route through /api/nascar (Vercel proxy)
 
 import { DRIVERS, DRIVER_INFO } from "./constants";
+import { nameKey } from "./driverKey";
 
 const PROXY = "/api/nascar";
 
@@ -118,6 +119,26 @@ export async function fetchDriverStandings() {
     })
     .sort((a, b) => a.pos - b.pos);
   return drivers.length ? { drivers, raceId: rows[0]?.race_id ?? null } : null;
+}
+
+/**
+ * Starting grid for a race week from NASCAR's live feed: { [nameKey]: startPos }, or
+ * null when the feed isn't showing that race yet (it serves stale data between
+ * weekends, so the race_id must match) or qualifying hasn't set the field.
+ */
+export async function fetchStartingGrid(week) {
+  const expectedId = CACHER_RACE_IDS[week];
+  if (!expectedId) return null;
+  const feed = await tryFetch(liveUrl("live-feed.json"));
+  if (!feed || feed.race_id !== expectedId) return null;
+  const grid = {};
+  (feed.vehicles || []).forEach(v => {
+    const pos = Number(v.starting_position);
+    const d = v.driver || {};
+    const k = nameKey([d.first_name, d.last_name].filter(Boolean).join(" "));
+    if (k && pos > 0 && pos < 99) grid[k] = pos;
+  });
+  return Object.keys(grid).length ? grid : null;
 }
 
 // ─── PROJECTIONS (SportsDataIO via proxy) ────────────────────────────────────

@@ -58,6 +58,15 @@ export const PC = {
   rich:      PClr.rich.accent,
 };
 
+// Draft Room manager colours (column accent bar + header text) — distinct from the
+// per-player identity accents above so the four columns read at a glance.
+export const DRAFT_CLR = {
+  rich:      "#EF4444",   // red
+  monroe:    "#10B981",   // emerald
+  bigmonroe: "#3B82F6",   // blue
+  justin:    "#F59E0B",   // gold
+};
+
 // Track types are shown in greys — the label (SS / ST / INT / RC) carries the meaning
 export const TTC = {
   superspeedway: "#D5D9E0",

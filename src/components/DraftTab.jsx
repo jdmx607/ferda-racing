@@ -1,10 +1,14 @@
 import { useState, useMemo, useEffect } from "react";
-import { C, PClr, PC, TTC, TTL, r, shadow } from "../theme";
-import { PLAYERS, PNAME, SCHEDULE, DRIVERS, DRIVER_INFO, MAKE_COLORS, ACTIVE_PICKS, TRACK_MULTS, DRAFT_TIMER_MS, isMemorial, isFreeAgent } from "../constants";
+import { C, PClr, TTC, TTL, DRAFT_CLR, r, shadow } from "../theme";
+import { PLAYERS, PNAME, SCHEDULE, DRIVERS, DRIVER_INFO, ACTIVE_PICKS, TRACK_MULTS, DRAFT_TIMER_MS, isMemorial, isFreeAgent, isRookie } from "../constants";
 import { getDraftOrder, buildSnakeOrder } from "../engine/draft";
 import { storeFor } from "../engine/events";
 import { weekName, weekLabel } from "../exhibitions";
 import { analyzeLineups } from "../engine/draftAnalysis";
+import { getUpNext, picksUntil, splitDriver, pillLabel, getScouting, buildPool, pruneQueue } from "../engine/draftBoard";
+import { useDraftQueue } from "../hooks/useDraftQueue";
+import { useStartingGrid } from "../hooks/useNascarFeeds";
+import { paintFor } from "../driverPaint";
 
 const MAKE_BADGE = { Chevy:"#b8b8b8", Ford:"#4a90e2", Toyota:"#eb0a1e", Dodge:"#a855f7" };
 
@@ -13,6 +17,19 @@ function fmtCountdown(msRemaining) {
   const h = Math.floor(msRemaining / 3600000);
   const m = Math.floor((msRemaining % 3600000) / 60000);
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
+// per-viewer UI preference (board collapsed) — never required, never shared
+const PREF_BOARD = "ferda-draft-board-collapsed";
+function readPref(key) { try { return window.localStorage.getItem(key) === "1"; } catch { return false; } }
+function writePref(key, on) { try { window.localStorage.setItem(key, on ? "1" : "0"); } catch { /* ignore */ } }
+
+function StarIcon({ filled }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 3.2l2.6 5.5 6 .8-4.4 4.2 1.1 6-5.3-2.9-5.3 2.9 1.1-6L3.4 9.5l6-.8L12 3.2z"/>
+    </svg>
+  );
 }
 
 function DraftGate({ opensAt, now, weekInfo }) {
@@ -42,7 +59,7 @@ function DraftGate({ opensAt, now, weekInfo }) {
               background:C.accent+"18", border:`1px solid ${C.accent}44`,
               borderRadius:r.md, padding:"8px 12px", minWidth:48,
             }}>
-              <div style={{ fontFamily:"var(--font-sans)", fontSize:22, fontWeight:900, color:C.accent, lineHeight:1 }}>
+              <div className="num" style={{ fontSize:22, fontWeight:900, color:C.accent, lineHeight:1 }}>
                 {String(v).padStart(2, "0")}
               </div>
             </div>
@@ -58,51 +75,151 @@ function DraftGate({ opensAt, now, weekInfo }) {
   );
 }
 
-function DriverButton({ d, onPick, disabled }) {
-  const mem  = isMemorial(d);
-  const info = DRIVER_INFO[d] || {};
-  const [hov, setHov] = useState(false);
+// ── Draft board ──────────────────────────────────────────────────────────────
+function BoardColumn({ pid, seed, picks, active }) {
+  const nextSlot = picks.length;
   return (
-    <button
-      onClick={() => !mem && onPick(d)}
-      disabled={mem || disabled}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      style={{
-        textAlign:"left", padding:"9px 11px", borderRadius:r.sm,
-        background: mem ? C.card+"66" : hov && !disabled ? C.cardAlt : C.card,
-        border:`1px solid ${mem ? C.border+"44" : hov && !disabled ? C.accent+"66" : C.border}`,
-        color: mem ? C.muted : C.text,
-        fontSize:12, cursor: mem || disabled ? "not-allowed" : "pointer",
-        fontFamily:"inherit", transition:"all 0.12s ease",
-        opacity: mem ? 0.55 : 1,
-      }}
-    >
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:4 }}>
-        <span style={{ fontWeight:700, fontSize:13, lineHeight:1.2 }}>{d}</span>
-        {mem && <span style={{ fontSize:11, color:C.accent, flexShrink:0 }}>🕊️</span>}
+    <div className={"dr-col" + (active ? " on" : "")} style={{ "--mc": DRAFT_CLR[pid] }} aria-current={active ? "step" : undefined}>
+      {active && <span className="dr-pulse dr-col-led" role="img" aria-label="On the clock" />}
+      <div className="dr-col-h">
+        <span className="dr-col-name">{PNAME[pid]}</span>
       </div>
-      {info.team && (
-        <div style={{ display:"flex", alignItems:"center", gap:4, marginTop:3 }}>
-          <span style={{ fontSize:9, color:C.dim }}>{info.team}</span>
-          {info.make && (
-            <span style={{
-              fontSize:8, fontWeight:700, letterSpacing:0.5,
-              color:MAKE_BADGE[info.make], background:MAKE_BADGE[info.make]+"22",
-              padding:"1px 5px", borderRadius:r.pill,
-            }}>{info.make}</span>
-          )}
-        </div>
-      )}
-    </button>
+      {Array.from({ length:ACTIVE_PICKS }).map((_, si) => {
+        const driver = picks[si];
+        const label = driver ? pillLabel(driver) : null;
+        const isActiveSlot = active && si === nextSlot;
+        return (
+          <div key={si} className={"dr-slot" + (driver ? " filled" : "") + (isActiveSlot ? " active" : "")}>
+            <span className="r num">R{si + 1}</span>
+            {driver ? (
+              <span className="d" title={driver}><span className="n num">{label.num}</span> {label.last}</span>
+            ) : isActiveSlot ? (
+              <span className="d now"><span className="long">On the clock</span><span className="short">NOW</span></span>
+            ) : (
+              <span className="d dim">—</span>
+            )}
+          </div>
+        );
+      })}
+      <div className="dr-col-seed num" title={`Picks ${seed}${["st","nd","rd"][seed - 1] || "th"} each round`}>#{seed} <i>•</i> {picks.length}/{ACTIVE_PICKS}</div>
+    </div>
   );
 }
+
+function BoardSummary({ order, playerPicks, currentPid }) {
+  return (
+    <div className="dr-sum">
+      {order.map(pid => {
+        const active = pid === currentPid;
+        return (
+          <div key={pid} className={"dr-sum-c" + (active ? " on" : "")} style={{ "--mc": DRAFT_CLR[pid] }}>
+            {active && <span className="dr-pulse dr-col-led" role="img" aria-label="On the clock" />}
+            <span className="nm">{PNAME[pid]}</span>
+            <span className="ct num">{(playerPicks[pid] || []).length}/{ACTIVE_PICKS}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Driver scouting row ──────────────────────────────────────────────────────
+function PoolRow({ row, myTurn, queued, spotlight, onDraft, onQueue }) {
+  const { driver, owner, memorial, rookie, start, avgFinish, trackAvg } = row;
+  const info = DRIVER_INFO[driver] || {};
+  const { num, name } = splitDriver(driver);
+  return (
+    <div
+      className={"dr-row" + (owner ? " owned" : "") + (memorial ? " mem" : "") + (rookie && spotlight ? " rk" : "")}
+      style={{ "--paint": paintFor(driver) }}
+    >
+      <div className="dr-num num" aria-hidden="true">{num || "–"}</div>
+      <div className="dr-main">
+        <div className="dr-l1">
+          <span className="dr-name">{name}</span>
+          {info.make && <span className="dr-make" style={{ color:MAKE_BADGE[info.make] }}>{info.make}</span>}
+          {rookie && <span className="dr-rk" title="Rookie / bonus eligible" aria-label="Rookie, bonus eligible">★</span>}
+          {memorial && <span aria-label="In memoriam">🕊️</span>}
+        </div>
+        <div className="dr-l2">
+          <span><i>Start</i><b className="num">{start != null ? `P${start}` : "—"}</b></span>
+          <span><i>Trk</i><b className="num">{trackAvg != null ? trackAvg.toFixed(1) : "—"}</b></span>
+          <span><i>Avg</i><b className="num">{avgFinish != null ? avgFinish.toFixed(1) : "—"}</b></span>
+        </div>
+      </div>
+      <div className="dr-act">
+        {owner ? (
+          <span className="dr-owned" style={{ "--mc": DRAFT_CLR[owner] }}>OWNED • {PNAME[owner].toUpperCase()}</span>
+        ) : memorial ? null : myTurn ? (
+          <button className="dr-draft" onClick={() => onDraft(driver)} aria-label={`Draft ${name}`}>DRAFT</button>
+        ) : (
+          <button className="dr-q" aria-pressed={queued} onClick={() => onQueue(driver)}
+                  aria-label={queued ? `Remove ${name} from queue` : `Queue ${name}`}>
+            <StarIcon filled={queued} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── My Queue bar (pinned above the bottom nav) ───────────────────────────────
+function QueueBar({ queue, myTurn, open, setOpen, onDraft, onTop, onRemove }) {
+  if (!queue.length) return null;
+  const top = splitDriver(queue[0]);
+  return (
+    <div className="dr-queue" role="region" aria-label="My queue">
+      <div className={"dr-queue-in" + (myTurn ? " go" : "")}>
+        {open && (
+          <div className="dr-q-list">
+            {queue.map((d, i) => {
+              const { num, name } = splitDriver(d);
+              return (
+                <div key={d} className="dr-q-item" style={{ "--paint": paintFor(d) }}>
+                  <span className="rk num">{i + 1}</span>
+                  <span className="nm"><span className="num">#{num}</span> {name}</span>
+                  {i > 0 && <button className="ic" onClick={() => onTop(d)} aria-label={`Move ${name} to top`}>↑</button>}
+                  <button className="ic" onClick={() => onRemove(d)} aria-label={`Remove ${name}`}>✕</button>
+                  {myTurn && <button className="dr-draft sm" onClick={() => onDraft(d)}>DRAFT</button>}
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <div className="dr-q-bar">
+          <button className="tog" onClick={() => setOpen(!open)} aria-expanded={open}>
+            <span className="st"><StarIcon filled /></span>
+            <span className="t">My Queue</span>
+            <span className="c num">{queue.length}</span>
+            {!open && <span className="nx"><span className="num">#{top.num}</span> {top.name}</span>}
+            <span className="chev" aria-hidden="true">{open ? "▼" : "▲"}</span>
+          </button>
+          {myTurn && !open && (
+            <button className="dr-draft sm" onClick={() => onDraft(queue[0])} aria-label={`Draft ${top.name}`}>
+              DRAFT #{top.num}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const POOL_PILLS = [
+  { id:"bonus", label:"★ Bonus / Rookie", hint:"Rookie / bonus-eligible drivers first" },
+  { id:"track", label:"Track Rating",     hint:"Best average FERDA points at this track type first" },
+  { id:"top10", label:"Starting Top 10",  hint:"Drivers starting P1–P10, in grid order" },
+];
 
 export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }) {
   const [search,  setSearch]  = useState("");
   const [undoMsg, setUndoMsg] = useState("");
   const [pickMsg, setPickMsg] = useState("");
   const [pool,    setPool   ] = useState("drivers");
+  const [availableOnly, setAvailableOnly] = useState(true);
+  const [mode,    setMode   ] = useState(null);
+  const [boardCollapsed, setBoardCollapsed] = useState(() => readPref(PREF_BOARD));
+  const [queueOpen, setQueueOpen] = useState(false);
   const [now,     setNow    ] = useState(() => Date.now());
 
   const weekInfo      = SCHEDULE.find(s => s.w === currentWeek);
@@ -116,16 +233,35 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
   const currentTurn    = !draftComplete ? snakeSequence[currentPickNum] : null;
   const isMyTurn       = currentTurn?.pid === player.id;
 
-  const takenDrivers = new Set(draftState.map(d => d.driver));
-  const availableAll = DRIVERS.filter(d =>
-    !takenDrivers.has(d) && d.toLowerCase().includes(search.toLowerCase())
-  );
-  // "Drivers" tab = anyone with a ride; "Free Agents" tab = drivers with no ride yet
-  const available    = availableAll.filter(d => (pool === "free") === isFreeAgent(d));
+  const takenDrivers = useMemo(() => new Set(draftState.map(d => d.driver)), [draftState]);
+  const owners = useMemo(() => {
+    const m = {};
+    draftState.forEach(d => { m[d.driver] = d.pid; });
+    return m;
+  }, [draftState]);
 
   const playerPicks = {};
   PLAYERS.forEach(p => { playerPicks[p.id] = []; });
   draftState.forEach(d => { if (playerPicks[d.pid]) playerPicks[d.pid].push(d.driver); });
+
+  // ── Scouting data + driver pool ───────────────────────────────────────────
+  const scouting = useMemo(() => getScouting(data, weekInfo?.ty), [data, weekInfo?.ty]);
+  const grid = useStartingGrid(currentWeek, !!weekInfo && !draftComplete);
+  const rows = useMemo(() => buildPool({
+    drivers: DRIVERS, owners, search, availableOnly, mode, pool, scouting, grid,
+    isRookie, isFreeAgent, isMemorial,
+  }), [owners, search, availableOnly, mode, pool, scouting, grid]);
+  // tab counts: drivers still on the board (matching the search), split by free agency
+  const poolCount = free => DRIVERS.filter(d =>
+    !takenDrivers.has(d) && d.toLowerCase().includes(search.trim().toLowerCase()) && isFreeAgent(d) === free
+  ).length;
+
+  // ── My Queue (device-local watchlist; drafted drivers fall off automatically) ──
+  const q = useDraftQueue(player.id, currentWeek);
+  const liveQueue = useMemo(() => pruneQueue(q.queue, takenDrivers, isMemorial), [q.queue, takenDrivers]);
+  useEffect(() => {
+    if (liveQueue.length !== q.queue.length) q.replace(liveQueue);
+  }, [liveQueue, q.queue.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Post-draft analysis — computed once draft is locked
   const savedPicks = src.picks?.[draftKey] || {};
@@ -171,6 +307,8 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
   const opensAt = src.draftSchedule?.[draftKey]?.opensAt;
   const isGated = !!opensAt && draftState.length === 0 && now < new Date(opensAt).getTime();
 
+  const toggleBoard = () => setBoardCollapsed(c => { writePref(PREF_BOARD, !c); return !c; });
+
   if (!weekInfo) {
     return (
       <div style={{ padding:20, maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>
@@ -188,222 +326,150 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
     );
   }
 
-  return (
-    <div style={{ padding:20, maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>
+  const upNext   = !draftComplete ? getUpNext(snakeSequence, currentPickNum, draftOrder) : [];
+  const until    = !draftComplete ? picksUntil(snakeSequence, currentPickNum, player.id) : null;
+  const clockClr = msRemaining === null ? null : msRemaining < 2*3600000 ? "var(--stop)" : msRemaining < 6*3600000 ? "var(--caution)" : null;
+  const showPool = !draftComplete && !isGated;
+  const hasQueue = showPool && liveQueue.length > 0;
+  const activeHint = POOL_PILLS.find(p => p.id === mode)?.hint;
 
-      {/* ── Header ──────────────────────────────────────────────────────────── */}
-      <div style={{ marginBottom:16 }}>
-        <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:0 }}>
-          {weekName(currentWeek)} Draft
-        </h2>
-        {weekInfo && (
-          <div style={{ color:C.dim, fontSize:13, marginTop:4 }}>
-            {weekInfo.r} — {weekInfo.t} —{" "}
-            <span style={{ color:TTC[weekInfo.ty], fontWeight:700 }}>
+  return (
+    <div className={"dr-root" + (hasQueue ? " has-queue" : "")}>
+
+      {/* ── Sticky "On The Clock" header ────────────────────────────────────── */}
+      <header className="dr-head" data-tone={isGated || draftComplete ? "done" : isMyTurn ? "go" : "wait"}
+              style={currentTurn ? { "--mc": DRAFT_CLR[currentTurn.pid] } : undefined}>
+        <div className="dr-race">
+          <span className="ttl">
+            {weekName(currentWeek)} Draft <i>•</i> {weekInfo.r} — {weekInfo.t}
+          </span>
+          {TTL[weekInfo.ty] && (
+            <span className="dr-mult num" style={{ color:TTC[weekInfo.ty] }} title={`${weekInfo.ty.replace("_"," ")} track multiplier`}>
               {TTL[weekInfo.ty]} ×{TRACK_MULTS[weekInfo.ty]}
             </span>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+
+        {!isGated && (draftComplete ? (
+          <div className="dr-turn done">🏁 Draft Complete <i>•</i> All picks locked for {weekLabel(currentWeek)}</div>
+        ) : (
+          <>
+            <div className="dr-turn" role="status" aria-live="polite">
+              <div className="dr-turn-a">
+                <span className="dr-pulse" aria-hidden="true" />
+                <b className="who">{isMyTurn ? "Your Pick!" : `${PNAME[currentTurn.pid]}'s Turn`}</b>
+                <i>•</i><span className="num">Pick {currentPickNum + 1} of {snakeSequence.length}</span>
+                <i>•</i><span className="num">Round {currentTurn.round}</span>
+                {currentTurn.round === ACTIVE_PICKS && <span className="dr-final">FINAL ROUND</span>}
+              </div>
+              <div className="dr-turn-b">
+                {timerExpired ? (
+                  <span className="dr-clock" style={{ color:"var(--caution)" }}>⏳ Auto-picking…</span>
+                ) : msRemaining !== null && (
+                  <span className="dr-clock num" style={clockClr ? { color:clockClr } : undefined}>
+                    ⏱ {fmtCountdown(msRemaining)} {isMyTurn ? "to auto-pick" : "left"}
+                  </span>
+                )}
+                {!isMyTurn && until > 0 && <span className="dr-you num">You pick in {until}</span>}
+              </div>
+            </div>
+
+            <div className="dr-next" aria-label="Up next">
+              <span className="dr-next-l">Up next</span>
+              {upNext.map((n, i) => (
+                <span key={n.pickNo} className="dr-nx-wrap">
+                  {i > 0 && (n.turn
+                    ? <span className="dr-wrap" title={`Round ${n.round}`}>↻<small className="num">R{n.round}</small></span>
+                    : <span className="dr-arr">→</span>)}
+                  <span className={"dr-nx" + (n.now ? " now" : "") + (n.pid === player.id ? " me" : "")} style={{ "--mc": DRAFT_CLR[n.pid] }}>
+                    <b className="num">{n.seed}.</b> {PNAME[n.pid]}
+                  </span>
+                </span>
+              ))}
+            </div>
+          </>
+        ))}
+      </header>
 
       {isGated ? (
         <DraftGate opensAt={opensAt} now={now} weekInfo={weekInfo} />
       ) : (
       <>
-      {/* ── Status banner ───────────────────────────────────────────────────── */}
-      {draftComplete ? (
-        <div style={{
-          background:C.accent+"18", borderRadius:r.md, padding:"14px 18px", marginBottom:16,
-          border:`1px solid ${C.accent}44`, textAlign:"center",
-        }}>
-          <div style={{ color:C.accent, fontFamily:"var(--font-sans)", fontSize:18, fontWeight:700 }}>
-            🏁 Draft Complete — All picks locked for {weekLabel(currentWeek)}
-          </div>
+      {pickMsg && <div className="dr-alert" role="alert">{pickMsg}</div>}
+
+      {/* ── Telemetry draft board ───────────────────────────────────────────── */}
+      <section className="dr-board-wrap" aria-label="Draft board">
+        <div className="dr-sec">
+          <span className="label">Draft Board</span>
+          <button className="dr-toggle" onClick={toggleBoard} aria-expanded={!boardCollapsed}>
+            Board {boardCollapsed ? "▼" : "▲"}
+          </button>
         </div>
-      ) : (
-        <div style={{
-          background: isMyTurn ? "#10b98122" : C.card,
-          borderRadius:r.md, padding:"14px 18px", marginBottom:16,
-          border:`2px solid ${isMyTurn ? "#10b981" : C.border}`,
-          display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10,
-          boxShadow: isMyTurn ? shadow.glow("#10b981") : "none",
-        }}>
-          <div>
-            <div style={{
-              fontFamily:"var(--font-sans)", fontSize:20, fontWeight:900,
-              color: isMyTurn ? "#10b981" : PC[currentTurn?.pid],
-              letterSpacing:1,
-            }}>
-              {isMyTurn ? "⬆ YOUR PICK!" : `${PNAME[currentTurn?.pid]}'s Turn`}
-            </div>
-            <div style={{ color:C.dim, fontSize:12, marginTop:3 }}>
-              Pick {currentPickNum + 1} of {snakeSequence.length} · Round {currentTurn?.round}
-              {currentTurn?.round === ACTIVE_PICKS && (
-                <span style={{ color:C.accent, fontWeight:700, marginLeft:6 }}>FINAL ROUND</span>
-              )}
-            </div>
-          </div>
-          {!isMyTurn && (
-            <div style={{ textAlign:"right" }}>
-              <div style={{ color:C.dim, fontSize:12 }}>
-                Waiting for <span style={{ color:PC[currentTurn?.pid], fontWeight:700 }}>{PNAME[currentTurn?.pid]}</span>…
-              </div>
-              {timerExpired ? (
-                <div style={{ color:C.accent, fontSize:11, fontWeight:700, marginTop:4 }}>
-                  ⏳ Auto-picking…
-                </div>
-              ) : msRemaining !== null && (
-                <div style={{
-                  fontSize:10, marginTop:4, fontFamily:"var(--font-sans)", letterSpacing:1,
-                  color: msRemaining < 2*3600000 ? C.red : msRemaining < 6*3600000 ? C.accent : C.muted,
-                }}>
-                  ⏱ {fmtCountdown(msRemaining)} left
-                </div>
-              )}
-            </div>
-          )}
-          {isMyTurn && msRemaining !== null && !timerExpired && (
-            <div style={{
-              fontSize:10, fontFamily:"var(--font-sans)", letterSpacing:1,
-              color: msRemaining < 2*3600000 ? C.red : msRemaining < 6*3600000 ? C.accent : C.muted,
-              padding:"4px 10px", borderRadius:r.pill,
-              background: msRemaining < 2*3600000 ? C.red+"15" : "transparent",
-              border:`1px solid ${msRemaining < 2*3600000 ? C.red+"44" : "transparent"}`,
-            }}>
-              ⏱ {fmtCountdown(msRemaining)} to auto-pick
-            </div>
-          )}
-        </div>
-      )}
-
-      {pickMsg && (
-        <div style={{
-          background:C.red+"15", border:`1px solid ${C.red}44`, borderRadius:r.md,
-          padding:"10px 16px", marginBottom:16, color:C.red, fontSize:12, textAlign:"center",
-        }}>
-          {pickMsg}
-        </div>
-      )}
-
-      {/* ── Draft order + pick boards ────────────────────────────────────────── */}
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8, marginBottom:20 }}>
-        {draftOrder.map((pid, i) => {
-          const picks  = playerPicks[pid] || [];
-          const isCur  = currentTurn?.pid === pid;
-          return (
-            <div key={pid} style={{
-              background:PClr[pid].bg, borderRadius:r.md,
-              border:`2px solid ${isCur ? PClr[pid].fg : PClr[pid].bg==="#000000" ? C.border : PClr[pid].bg+"55"}`,
-              overflow:"hidden",
-              boxShadow: isCur ? shadow.glow(PClr[pid].fg) : "none",
-              transition:"all 0.2s ease",
-            }}>
-              {/* Player header */}
-              <div style={{
-                padding:"8px 10px",
-                background: isCur ? PClr[pid].fg+"18" : "transparent",
-                borderBottom:`1px solid ${PClr[pid].bg==="#000000" ? C.border : "rgba(0,0,0,0.2)"}`,
-                display:"flex", alignItems:"center", justifyContent:"space-between",
-              }}>
-                <div>
-                  <div style={{ color:PClr[pid].fg, fontWeight:700, fontSize:13, fontFamily:"var(--font-sans)", letterSpacing:0.5 }}>
-                    {PNAME[pid]}
-                  </div>
-                  <div style={{ color:PClr[pid].fg+"66", fontSize:9 }}>#{i+1} · {picks.length}/{ACTIVE_PICKS}</div>
-                </div>
-                {isCur && (
-                  <div style={{
-                    width:8, height:8, borderRadius:"50%",
-                    background:PClr[pid].fg,
-                    animation:"pulse 1.5s ease-in-out infinite",
-                  }}/>
-                )}
-              </div>
-
-              {/* Pick slots */}
-              <div style={{ padding:"6px 8px", display:"flex", flexDirection:"column", gap:3 }}>
-                {Array.from({ length:ACTIVE_PICKS }).map((_, si) => {
-                  const driver = picks[si];
-                  return (
-                    <div key={si} style={{
-                      padding:"5px 8px", borderRadius:r.sm,
-                      background: driver
-                        ? (PClr[pid].bg==="#000000" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.2)")
-                        : "rgba(0,0,0,0.12)",
-                      minHeight:26, display:"flex", alignItems:"center", gap:6,
-                    }}>
-                      <span style={{ fontSize:9, color:PClr[pid].fg+"55", fontWeight:700, width:20, flexShrink:0 }}>
-                        R{si+1}
-                      </span>
-                      <span style={{ fontSize:11, color:driver ? PClr[pid].fg : PClr[pid].fg+"33", lineHeight:1.2 }}>
-                        {driver || "—"}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ── Driver picker (only on your turn) ────────────────────────────────── */}
-      {isMyTurn && !draftComplete && (
-        <div style={{ marginBottom:20 }}>
-          <div style={{ color:C.textDim, fontSize:11, textTransform:"uppercase", letterSpacing:2, fontWeight:700, marginBottom:8 }}>
-            Select a Driver
-          </div>
-          <div style={{ display:"flex", gap:6, marginBottom:10 }}>
-            {[
-              { id:"drivers", label:"Drivers",      n:availableAll.filter(d => !isFreeAgent(d)).length },
-              { id:"free",    label:"Free Agents",  n:availableAll.filter(d =>  isFreeAgent(d)).length },
-            ].map(t => (
-              <button key={t.id} onClick={() => setPool(t.id)} style={{
-                padding:"6px 14px", borderRadius:r.pill,
-                border:`1px solid ${pool === t.id ? C.accent : C.border}`,
-                background:pool === t.id ? C.accent : "transparent",
-                color:pool === t.id ? "#000" : C.dim,
-                fontSize:11, fontWeight:700, cursor:"pointer",
-                fontFamily:"var(--font-sans)", letterSpacing:1,
-              }}>{t.label} ({t.n})</button>
+        {boardCollapsed ? (
+          <BoardSummary order={draftOrder} playerPicks={playerPicks} currentPid={currentTurn?.pid} />
+        ) : (
+          <div className="dr-board">
+            {draftOrder.map((pid, i) => (
+              <BoardColumn key={pid} pid={pid} seed={i + 1} picks={playerPicks[pid] || []} active={currentTurn?.pid === pid} />
             ))}
           </div>
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search by name or number…"
-            autoFocus
-            style={{
-              width:"100%", padding:"12px 16px", borderRadius:r.md,
-              border:`1px solid ${C.accent}55`,
-              background:C.input, color:C.text,
-              fontSize:14, fontFamily:"inherit", outline:"none",
-              boxSizing:"border-box", marginBottom:10,
-              boxShadow:shadow.glow(C.accent),
-            }}
-          />
-          <div style={{
-            maxHeight:340, overflowY:"auto",
-            display:"grid", gridTemplateColumns:"1fr 1fr",
-            gap:4,
-          }}>
-            {available.length === 0
-              ? <div style={{ gridColumn:"1/-1", color:C.dim, textAlign:"center", padding:20 }}>No drivers match</div>
-              : available.map(d => (
-                  <DriverButton key={d} d={d} onPick={handlePick} disabled={false} />
-                ))
-            }
+        )}
+      </section>
+
+      {/* ── Driver scouting pool (browse any time; DRAFT on your turn, QUEUE otherwise) ── */}
+      {showPool && (
+        <section className="dr-pool" aria-label="Driver pool">
+          <div className="dr-sec">
+            <span className="label">{isMyTurn ? "Select a Driver" : "Scouting Pool"}</span>
+            <div className="seg dr-poolseg" role="group" aria-label="Pool">
+              {[{ id:"drivers", label:"Drivers", n:poolCount(false) }, { id:"free", label:"Free Agents", n:poolCount(true) }].map(t => (
+                <button key={t.id} aria-pressed={pool === t.id} onClick={() => setPool(t.id)}>
+                  {t.label} <span className="num">{t.n}</span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+
+          <input
+            className="dr-search" type="search" value={search} onChange={e => setSearch(e.target.value)}
+            placeholder="Search driver or #…" aria-label="Search driver or car number"
+          />
+          <div className="dr-pills" role="group" aria-label="Quick filters">
+            <button className="dr-pill" aria-pressed={availableOnly} onClick={() => setAvailableOnly(a => !a)}>Available</button>
+            {POOL_PILLS.map(p => (
+              <button key={p.id} className="dr-pill" aria-pressed={mode === p.id} onClick={() => setMode(m => (m === p.id ? null : p.id))}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+          {(activeHint || !availableOnly) && (
+            <div className="dr-note">
+              {[activeHint, !availableOnly && "Drafted drivers are shown dimmed with their owner"].filter(Boolean).join(" · ")}
+            </div>
+          )}
+
+          <div className="dr-list">
+            {rows.length === 0 ? (
+              <div className="dr-empty">
+                {mode === "top10" && !grid
+                  ? "Starting grid isn't set yet — NASCAR posts it after qualifying."
+                  : "No drivers match."}
+              </div>
+            ) : rows.map(row => (
+              <PoolRow
+                key={row.driver} row={row} myTurn={isMyTurn} queued={liveQueue.includes(row.driver)}
+                spotlight={mode === "bonus"} onDraft={handlePick} onQueue={q.toggle}
+              />
+            ))}
+          </div>
+        </section>
       )}
 
       {/* ── Pick log ────────────────────────────────────────────────────────── */}
       {draftState.length > 0 && (
-        <div>
+        <div style={{ marginTop:20 }}>
           <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
-            <div style={{ color:C.textDim, fontSize:11, textTransform:"uppercase", letterSpacing:2, fontWeight:700 }}>
-              Pick Log
-            </div>
+            <div className="label">Pick Log</div>
             {player.id === "justin" && !draftComplete && (
               <button
                 onClick={async () => {
@@ -433,16 +499,12 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
                 display:"flex", alignItems:"center", gap:10, padding:"8px 12px",
                 background:C.card, borderRadius:r.sm,
                 border:`1px solid ${C.border}`,
-                borderLeft:`3px solid ${PClr[d.pid].fg}55`,
+                borderLeft:`3px solid ${DRAFT_CLR[d.pid]}`,
               }}>
-                <span style={{ fontSize:10, color:C.muted, width:26, flexShrink:0, fontFamily:"var(--font-sans)" }}>
+                <span className="num" style={{ fontSize:10, color:C.muted, width:26, flexShrink:0 }}>
                   #{draftState.length - i}
                 </span>
-                <div style={{
-                  width:6, height:6, borderRadius:"50%",
-                  background:PClr[d.pid].fg, flexShrink:0,
-                }}/>
-                <span style={{ fontSize:12, color:PClr[d.pid].fg, fontWeight:700, width:90, flexShrink:0 }}>
+                <span style={{ fontSize:12, color:DRAFT_CLR[d.pid], fontWeight:700, width:90, flexShrink:0 }}>
                   {PNAME[d.pid]}
                 </span>
                 <span style={{ fontSize:12, color:C.text, flex:1 }}>{d.driver}</span>
@@ -450,6 +512,14 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
             ))}
           </div>
         </div>
+      )}
+
+      {/* ── My Queue — pinned above the bottom nav ─────────────────────────── */}
+      {hasQueue && (
+        <QueueBar
+          queue={liveQueue} myTurn={isMyTurn} open={queueOpen} setOpen={setQueueOpen}
+          onDraft={handlePick} onTop={q.toTop} onRemove={q.remove}
+        />
       )}
 
       {/* ── Post-draft lineup analysis ────────────────────────────────────────── */}

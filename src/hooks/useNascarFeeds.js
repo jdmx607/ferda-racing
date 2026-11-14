@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchRaceStartTimes, fetchDriverStandings } from "../nascar";
+import { fetchRaceStartTimes, fetchDriverStandings, fetchStartingGrid } from "../nascar";
 import { ACTIVE_SEASON } from "../constants";
 
 // Shared, cached lookups — every component that asks gets the same single request.
@@ -46,4 +46,22 @@ export function useDriverStandings(enabled = true) {
     return () => { alive = false; };
   }, [enabled]);
   return standings;
+}
+
+/**
+ * Qualifying grid for `week` — { [nameKey]: startPos } or null until NASCAR publishes it.
+ * Re-checked every few minutes while mounted (qualifying lands after the draft opens).
+ */
+export function useStartingGrid(week, enabled = true) {
+  const [grid, setGrid] = useState(null);
+  useEffect(() => {
+    if (!enabled) return;
+    let alive = true;
+    const load = () => fetchStartingGrid(week).then(g => { if (alive) setGrid(g); }).catch(() => {});
+    setGrid(null);
+    load();
+    const t = setInterval(load, 5 * 60 * 1000);
+    return () => { alive = false; clearInterval(t); };
+  }, [week, enabled]);
+  return grid;
 }
