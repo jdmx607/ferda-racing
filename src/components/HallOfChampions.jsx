@@ -6,31 +6,32 @@ import {
   newestFirst, wonTitle, wonAnyTitle, getTitleTally, seasonBadges,
   getOverallRuns, runLabel, getReigning,
 } from "../engine/champions";
+import { TrophyIcon, FlagIcon } from "./hofIcons";
+import { CareerStats } from "./CareerStats";
 
-const TrophyIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M7 4h10v4.2a5 5 0 0 1-10 0V4z" />
-    <path d="M7 5.5H4.2v1.2A3.3 3.3 0 0 0 7 10M17 5.5h2.8v1.2A3.3 3.3 0 0 1 17 10" />
-    <path d="M12 13.2V17M9.5 17h5M8 20.5h8M10.2 17v3.5M13.8 17v3.5" />
-  </svg>
-);
-
-const FlagIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
-    <path d="M5 3v18" />
-    <rect x="5.8" y="4" width="13.2" height="9" rx="0.8" strokeWidth="1.2" />
-    <g fill="currentColor" stroke="none">
-      <rect x="5.8" y="4" width="3.3" height="4.5" /><rect x="12.4" y="4" width="3.3" height="4.5" />
-      <rect x="9.1" y="8.5" width="3.3" height="4.5" /><rect x="15.7" y="8.5" width="3.3" height="4.5" />
-    </g>
-  </svg>
-);
+/** Hall of Champions screen: segmented toggle between the plaques and the career telemetry. */
+export function HallOfChampions({ setTab }) {
+  const [view, setView] = useState("hall");                    // "hall" | "career"
+  return (
+    <div className="hof">
+      <div className="hof-top">
+        <button className="link-btn" onClick={() => setTab("welcome")}>← Home</button>
+        <span className="label">{view === "hall" ? "Hall of Champions" : "All-Time League History"}</span>
+      </div>
+      <div className="seg hof-seg" role="group" aria-label="Hall of Champions view">
+        <button aria-pressed={view === "hall"} onClick={() => setView("hall")}>Hall of Champions</button>
+        <button aria-pressed={view === "career"} onClick={() => setView("career")}>All-Time Career Stats</button>
+      </div>
+      {view === "hall" ? <ChampionsTimeline /> : <CareerStats />}
+    </div>
+  );
+}
 
 /**
- * Hall of Champions: reigning-champion plaque, all-time hardware strip (tap a player to
- * filter), and the 2026→2019 heritage timeline with sweep / split / streak callouts.
+ * Reigning-champion plaque, all-time hardware strip (tap a player to filter), and the
+ * 2026→2019 heritage timeline with sweep / split / streak callouts.
  */
-export function HallOfChampions({ setTab }) {
+function ChampionsTimeline() {
   const [filter, setFilter] = useState(null);                 // player id or null
 
   const history  = CHAMPION_HISTORY;
@@ -43,12 +44,7 @@ export function HallOfChampions({ setTab }) {
   const visible = filter ? seasons.filter(s => wonAnyTitle(s, filter)) : seasons;
 
   return (
-    <div className="hof">
-      <div className="hof-top">
-        <button className="link-btn" onClick={() => setTab("welcome")}>← Home</button>
-        <span className="label">Hall of Champions</span>
-      </div>
-
+    <>
       {/* ── 1. Reigning champion plaque ─────────────────────────────────── */}
       {reigning && (
         <section className="hof-hero">
@@ -137,6 +133,6 @@ export function HallOfChampions({ setTab }) {
           })}
         </div>
       </section>
-    </div>
+    </>
   );
 }
