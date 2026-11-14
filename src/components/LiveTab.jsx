@@ -1,12 +1,15 @@
-import { useState, useEffect } from "react";
-import { PClr, TTL } from "../theme";
-import { PLAYERS, SCHEDULE, TRACK_MULTS } from "../constants";
+import { useState, useEffect, Fragment } from "react";
+import { SCHEDULE, PLAYERS } from "../constants";
 import { fetchLapTimes } from "../nascar";
 import { storeFor } from "../engine/events";
-import { carNumber } from "../driverPaint";
-import { DriverCard } from "./DriverCard";
+import { buildDriverRows, buildStandings, filterRows, getStageStatus, showStageCutoff, FILTERS } from "../engine/liveBoard";
+import { useRaceTimes, useStartingGrid } from "../hooks/useNascarFeeds";
 import { FlagStrip, raceFlagState } from "./FlagStrip";
 import { RaceHeader } from "./RaceHeader";
+import { PreRaceCard } from "./LivePreRace";
+import {
+  accentOf, StatusRow, StandingsCard, FilterToggle, DriverRow, StageCutoff, ControlFeed, Disclosure,
+} from "./LiveBoard";
 
 function fmtLap(secs) {
   if (!secs || secs <= 0) return "—";
@@ -32,7 +35,6 @@ function buildPickMap(weekPicks) {
   return map;
 }
 
-const accentOf = pid => PClr[pid]?.accent || "var(--text-2)";
 
 // ── Timing Tower ───────────────────────────────────────────────────────────────
 function TimingTower({ timingData, weekPicks }) {
@@ -234,75 +236,70 @@ function LapHistory({ week, weekPicks }) {
 }
 
 // ── Main export ────────────────────────────────────────────────────────────────
-export function LiveTab({ data, liveScores, liveStatus, raceInfo, currentWeek, timingData }) {
-  const [activeView, setActiveView] = useState("scoring");
+export function LiveTab({ data, player, setTab, liveScores, liveStatus, raceInfo, currentWeek, timingData }) {
+  const [filter, setFilter] = useState("mine");
+  const raceTimes = useRaceTimes();
 
   const isActive = !!(data?.liveRace?.active && liveScores);
   const week = data?.liveRace?.week || currentWeek;
   const weekInfo = SCHEDULE.find(s => s.w === week);
-  const weekPicks = storeFor(data, week).picks?.["w" + week] || {};
+  const store = storeFor(data, week);
+  const weekPicks = store.picks?.["w" + week] || {};
+  const grid = useStartingGrid(week, !!weekInfo && !isActive);
 
-  // ── Inactive state ─────────────────────────────────────────────────────────
+  // ── Pre-race / idle ────────────────────────────────────────────────────────
   if (!isActive) return (
-    <div style={{ maxWidth:700, margin:"0 auto", position:"relative", zIndex:1 }}>
+    <div className="lv">
       {weekInfo && (
         <>
-          <RaceHeader
-            title={weekInfo.r} track={weekInfo.t} trackType={weekInfo.ty}
-            right={<div className="label">{weekInfo.d}</div>}
-          />
+          <RaceHeader title={weekInfo.r} track={weekInfo.t} trackType={weekInfo.ty} />
           <FlagStrip state="none" />
         </>
       )}
-      <div style={{ padding:"20px 16px" }}>
-        <div className="card" style={{ padding:"36px 24px", textAlign:"center" }}>
-          <div style={{ fontSize:18, fontWeight:700, marginBottom:6 }}>No race in progress</div>
-          <div style={{ color:"var(--text-2)", fontSize:13.5, lineHeight:1.55 }}>
-            Live scoring starts when the commissioner starts a race. Check back on race day.
+      <div className="lv-body">
+        {weekInfo && (
+          <PreRaceCard
+            weekInfo={weekInfo} times={raceTimes} weekPicks={weekPicks}
+            draftState={store.drafts?.["w" + week] || []} grid={grid}
+            me={player?.id} onGoDraft={() => setTab?.("draft")}
+          />
+        )}
+        {!weekInfo && (
+          <div className="card lv-idle">
+            <div style={{ fontSize:16, fontWeight:700 }}>No race in progress</div>
+            <div style={{ color:"var(--text-2)", fontSize:13, marginTop:4 }}>Live scoring starts when the commissioner starts a race.</div>
           </div>
-          {weekInfo && (
-            <div style={{ marginTop:18, paddingTop:16, borderTop:"1px solid var(--border)" }}>
-              <div className="label" style={{ marginBottom:4 }}>Next up</div>
-              <div style={{ fontWeight:600, fontSize:15 }}>{weekInfo.r}</div>
-              <div className="num" style={{ color:"var(--text-2)", fontSize:12.5, marginTop:2 }}>
-                {weekInfo.t} · {weekInfo.d} · {TTL[weekInfo.ty]} ×{TRACK_MULTS[weekInfo.ty]}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Lap history for current/last week */}
+        )}
         {currentWeek >= 1 && (
-          <div style={{ marginTop:20 }}>
+          <Disclosure title="Race Control & Lap History" hint="Logs start when the green flag drops">
             <LapHistory week={currentWeek} weekPicks={weekPicks} />
-          </div>
+          </Disclosure>
         )}
       </div>
     </div>
   );
 
   // ── Active race ─────────────────────────────────────────────────────────────
-  const ranked = PLAYERS.map(p => ({
-    ...p,
-    seasonPts: data.meta.standings[p.id] || 0,
-    livePts:   liveScores[p.id]?.total   || 0,
-    drivers:   liveScores[p.id]?.drivers || [],
-    picks:     weekPicks[p.id]           || [],
-  })).sort((a, b) => b.livePts - a.livePts);
-
-  const positions = raceInfo?.positions || {};
+  const rows = buildDriverRows({ timing: timingData, raceInfo, liveScores, week });
+  const standings = buildStandings(PLAYERS, liveScores);
+  const stage = getStageStatus(timingData);
+  const visible = filterRows(rows, filter, player?.id);
+  const counts = {
+    mine: filterRows(rows, "mine", player?.id).length,
+    drafted: filterRows(rows, "drafted", player?.id).length,
+    field: rows.length,
+  };
+  const cutoffAfter = filter === "field" && showStageCutoff(stage)
+    ? visible.reduce((idx, r, i) => (r.pos && r.pos <= 10 ? i : idx), -1)
+    : -1;
 
   return (
-    <div style={{ maxWidth:900, margin:"0 auto", position:"relative", zIndex:1 }}>
-
+    <div className="lv">
       <RaceHeader
         live
         title={raceInfo?.raceName || weekInfo?.r || `Week ${week}`}
         track={weekInfo?.t}
         trackType={weekInfo?.ty}
-        stage={timingData?.stage?.stage_num}
-        lap={timingData?.lapNumber}
-        laps={timingData?.lapsInRace}
         right={
           <>
             <div className="label">{liveStatus || "Live"}</div>
@@ -311,87 +308,33 @@ export function LiveTab({ data, liveScores, liveStatus, raceInfo, currentWeek, t
         }
       />
       <FlagStrip state={raceFlagState(timingData, raceInfo)} />
+      <StatusRow timing={timingData} stage={stage} rows={rows} liveStatus={liveStatus} />
 
-      <div style={{ padding:"12px 16px 0" }}>
-        <div className="seg" role="tablist">
-          {[
-            { id:"scoring", label:"Scoring" },
-            { id:"timing",  label:"Timing tower" },
-          ].map(v => (
-            <button key={v.id} aria-pressed={activeView === v.id} onClick={() => setActiveView(v.id)}>
-              {v.label}
-            </button>
+      <div className="lv-body">
+        <StandingsCard standings={standings} rows={rows} me={player?.id} />
+
+        <FilterToggle filters={FILTERS} value={filter} onChange={setFilter} counts={counts} />
+
+        <div className="lv-list">
+          {visible.length === 0 ? (
+            <div className="card lv-idle">
+              {filter === "field" ? "Waiting for timing data…"
+                : filter === "mine" ? "You have no drivers this week — try All 20 Drafted." : "No drafted drivers found."}
+            </div>
+          ) : visible.map((r, i) => (
+            <Fragment key={r.key}>
+              <DriverRow row={r} />
+              {i === cutoffAfter && <StageCutoff />}
+            </Fragment>
           ))}
         </div>
-      </div>
 
-      {/* Scoring view */}
-      {activeView === "scoring" && (
-        <div style={{ padding:"0 16px 24px" }}>
-          {ranked.map((p, i) => {
-            const mullPicks = (p.picks || []).filter(pk => pk.mulligan).map(pk => pk.driver);
-            const gap = i > 0 ? ranked[i - 1].livePts - p.livePts : 0;
-            const total = p.livePts;
+        <ControlFeed events={timingData?.events || []} hasTiming={!!timingData} />
 
-            return (
-              <section key={p.id}>
-                <div className="group-head">
-                  <div className="who">
-                    <span className="num label" style={{ width:14 }}>{i + 1}</span>
-                    <span className="dot" style={{ background:accentOf(p.id) }} />
-                    <div style={{ minWidth:0 }}>
-                      <div style={{ fontSize:16, fontWeight:700, lineHeight:1.1 }}>{p.name}</div>
-                      <div className="num" style={{ fontSize:11, color:"var(--text-2)", marginTop:2 }}>
-                        Season {p.seasonPts.toLocaleString()} pts
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ textAlign:"right" }}>
-                    <div className="num" style={{
-                      fontSize:26, fontWeight:700, lineHeight:1,
-                      color: total > 0 ? "var(--go)" : total < 0 ? "var(--stop)" : "var(--text)",
-                    }}>
-                      {total > 0 ? "+" : ""}{total}
-                    </div>
-                    <div className="num" style={{ fontSize:11, color:"var(--text-2)", marginTop:3 }}>
-                      {i === 0 ? "leading" : `−${gap.toFixed(1)} behind`}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="stack">
-                  {p.drivers.length === 0
-                    ? <div className="card" style={{ color:"var(--text-3)", fontSize:12, textAlign:"center", padding:14 }}>No picks found</div>
-                    : p.drivers.slice().sort((a, b) => b.total - a.total).map(d => {
-                        const pos = positions[carNumber(d.driver)];
-                        return (
-                          <DriverCard
-                            key={d.driver}
-                            driver={d.driver}
-                            points={d.total}
-                            currentPos={pos?.finish}
-                            startPos={pos?.start}
-                            dnf={pos?.dnf}
-                            dnr={d.dnr}
-                            mulligan={mullPicks.includes(d.driver)}
-                            breakdown={d.breakdown}
-                          />
-                        );
-                      })
-                  }
-                </div>
-              </section>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Timing Tower view */}
-      {activeView === "timing" && (
-        <div style={{ padding:"12px 16px 24px" }}>
+        <Disclosure title="Timing tower" hint="Last / best lap · MPH · laps led">
           <TimingTower timingData={timingData} weekPicks={weekPicks} />
-        </div>
-      )}
+        </Disclosure>
+      </div>
     </div>
   );
 }

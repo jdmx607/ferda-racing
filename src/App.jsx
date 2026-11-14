@@ -371,7 +371,7 @@ export default function App() {
       {/* Eager tabs — no Suspense needed */}
       {tab==="welcome"&&<WelcomeTab player={user} data={data} setTab={setTab} liveScores={liveScores} liveStatus={liveStatus} timingData={timingData}/>}
       {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
-      {tab==="live"&&<LiveTab data={data} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo} currentWeek={currentWeek} timingData={timingData}/>}
+      {tab==="live"&&<LiveTab data={data} player={user} setTab={setTab} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo} currentWeek={currentWeek} timingData={timingData}/>}
 
       {/* Lazy tabs — wrapped in Suspense */}
       <Suspense fallback={<TabLoader/>}>

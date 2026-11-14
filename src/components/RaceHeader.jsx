@@ -1,4 +1,4 @@
-import { TTL } from "../theme";
+import { TTL, TTC } from "../theme";
 import { TRACK_MULTS } from "../constants";
 
 // Faint placeholder until real monochrome track outlines / logos are supplied.
@@ -12,17 +12,13 @@ function TrackPlaceholder() {
 }
 
 /**
- * Compact race header. The 64×64 left slot is reserved for a monochrome track
+ * Compact race header. The 48×48 left slot is reserved for a monochrome track
  * outline / logo: pass `trackArt` (an <img>, <svg> or any node) to fill it.
+ * The track multiplier shows as a badge ("INT ×0.5") next to the track name.
  */
 export function RaceHeader({
-  title, track, trackType, stage, lap, laps, live = false, trackArt, right,
+  title, track, trackType, stage, live = false, trackArt, right,
 }) {
-  const meta = [
-    track,
-    trackType && `${TTL[trackType]} ×${TRACK_MULTS[trackType]}`,
-  ].filter(Boolean).join(" · ");
-
   return (
     <header className="race-header">
       <div className="track-slot">{trackArt || <TrackPlaceholder />}</div>
@@ -32,18 +28,18 @@ export function RaceHeader({
           {live && <span className="live-dot" aria-label="Live" />}
           <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
         </div>
-        <div className="race-meta">{meta}</div>
+        <div className="race-meta rh-meta">
+          {track && <span className="rh-track">{track}</span>}
+          {trackType && TTL[trackType] && (
+            <span className="rh-badge num" style={{ color: TTC[trackType] }} title={`${trackType.replace("_", " ")} track multiplier`}>
+              {TTL[trackType]} ×{TRACK_MULTS[trackType]}
+            </span>
+          )}
+        </div>
         {stage != null && <div className="race-meta num" style={{ marginTop: 2 }}>Stage {stage}</div>}
       </div>
 
-      <div className="race-stats">
-        {laps > 0 ? (
-          <>
-            <div className="label" style={{ marginBottom: 3 }}>Lap</div>
-            <div className="lap num">{lap}<small> / {laps}</small></div>
-          </>
-        ) : right}
-      </div>
+      {right && <div className="race-stats">{right}</div>}
     </header>
   );
 }

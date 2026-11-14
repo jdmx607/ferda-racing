@@ -39,6 +39,8 @@ export function useLivePolling(data) {
           isLive: result.isLive !== false,
           isOver: !!result.isOver,
           lapsToGo: result.lapsToGo ?? null,
+          // full driver lines, so the Live tab can score the un-drafted field with calcDriverScore
+          raw: { drivers: result.drivers || [], threeStages: !!result.threeStages },
           // car number → { finish (current position), start, dnf } for the driver cards
           positions: Object.fromEntries((result.drivers || []).map(d => [
             (String(d.name).match(/^#(\S+)/) || [])[1] || d.name,

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { diffTimingEvents } from "../engine/liveBoard";
 
 const PROXY    = "/api/nascar";
 const POLL_MS  = 30_000;
+const MAX_EVENTS = 80;
 
 const FLAG_NAME  = { 0:"No Race", 1:"Green", 2:"Caution", 3:"Red Flag", 4:"White", 5:"Checkered" };
 const FLAG_COLOR = { 0:"#64748b", 1:"#10b981", 2:"#f59e0b", 3:"#ef4444", 4:"#e2e8f0", 5:"#F4F6F9" };
@@ -11,6 +13,13 @@ export function useLiveTiming(data) {
 
   useEffect(() => {
     if (!data?.liveRace?.active) { setTiming(null); return; }
+
+    // Race-control log: built by diffing each poll against the last one. It lives
+    // here (App-level, always mounted) so events keep logging while you're on
+    // another tab; it resets with the page or a new race.
+    let prev = null;
+    let events = [];
+    let seq = 0;
 
     async function poll() {
       try {
@@ -24,6 +33,7 @@ export function useLiveTiming(data) {
           .sort((a, b) => (a.running_position || 99) - (b.running_position || 99))
           .map(v => ({
             position:  v.running_position || 0,
+            startPos:  v.starting_position || 0,
             carNumber: String(v.vehicle_number || ""),
             driver:    v.driver
               ? [v.driver.first_name, v.driver.last_name].filter(Boolean).join(" ")
@@ -39,7 +49,7 @@ export function useLiveTiming(data) {
           }));
 
         const fs = parseInt(feed.flag_state) || 0;
-        setTiming({
+        const next = {
           vehicles,
           lapNumber:   parseInt(feed.lap_number)             || 0,
           lapsInRace:  parseInt(feed.laps_in_race)           || 0,
@@ -51,7 +61,12 @@ export function useLiveTiming(data) {
           cautions:    feed.number_of_caution_segments || 0,
           leadChanges: feed.number_of_lead_changes     || 0,
           updatedAt:   Date.now(),
-        });
+        };
+
+        const fresh = diffTimingEvents(prev, next).map(e => ({ ...e, id: `${next.updatedAt}-${seq++}`, at: next.updatedAt }));
+        if (fresh.length) events = [...fresh.reverse(), ...events].slice(0, MAX_EVENTS);   // newest first
+        prev = next;
+        setTiming({ ...next, events });
       } catch (_) { /* silent — scoring still works */ }
     }
 
