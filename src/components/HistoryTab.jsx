@@ -77,7 +77,7 @@ function SeasonTimeline({ timeline }) {
                         color:TTC[row.trackType], background:TTC[row.trackType]+"18",
                         padding:"1px 4px", borderRadius:r.pill,
                       }}>
-                        {TTL[row.trackType]}×{TRACK_MULTS[row.trackType]}
+                        {TTL[row.trackType]}×{TRACK_MULTS[row.trackType]?.toFixed(1)}
                       </span>
                     </div>
                   </div>

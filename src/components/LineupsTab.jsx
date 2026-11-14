@@ -81,7 +81,7 @@ export function LineupsTab({ data, currentWeek }) {
               color:TTC[weekInfo.ty], background:TTC[weekInfo.ty]+"18",
               padding:"3px 10px", borderRadius:r.pill, border:`1px solid ${TTC[weekInfo.ty]}44`,
             }}>
-              {TTL[weekInfo.ty]} ×{TRACK_MULTS[weekInfo.ty]}
+              {TTL[weekInfo.ty]} ×{TRACK_MULTS[weekInfo.ty]?.toFixed(1)}
             </span>
             {hasScored && (
               <span style={{

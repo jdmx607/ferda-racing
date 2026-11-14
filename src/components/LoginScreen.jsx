@@ -121,6 +121,7 @@ export function LoginScreen({ onLogin, data, timing }) {
               <button
                 key={p.id} type="button" role="radio" aria-checked={active}
                 className={`pp-card${active ? " is-active" : ""}`}
+                style={{ "--c": PClr[p.id].accent }}
                 onClick={() => pick(p.id)}
               >
                 <span className="pp-badge num">{initialsOf(p.name)}</span>

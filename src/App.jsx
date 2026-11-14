@@ -223,6 +223,17 @@ export default function App() {
     setData(d); await saveLeagueData(d);
   };
 
+  // Commissioner flag: driver starts from the rear this week (failed inspection /
+  // backup car). Display-only scouting info — no scoring impact, no recalcMeta.
+  const handleToggleToRear=async(week,driver)=>{
+    if(user?.id!=="justin")return;
+    const d=JSON.parse(JSON.stringify(data)); const key="w"+week; const s=ensureStore(d,week);
+    if(!s.toRear)s.toRear={};
+    const cur=s.toRear[key]||[];
+    s.toRear[key]=cur.includes(driver)?cur.filter(x=>x!==driver):[...cur,driver];
+    setData(d); await saveLeagueData(d);
+  };
+
   const handleResetWeek=async(week)=>{
     const d=JSON.parse(JSON.stringify(data)); const key="w"+week; const s=ensureStore(d,week);
     if(s.results)delete s.results[key]; if(s.picks)delete s.picks[key]; if(s.drafts)delete s.drafts[key];
@@ -370,7 +381,7 @@ export default function App() {
 
       {/* Eager tabs — no Suspense needed */}
       {tab==="welcome"&&<WelcomeTab player={user} data={data} setTab={setTab} liveScores={liveScores} liveStatus={liveStatus} timingData={timingData}/>}
-      {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} currentWeek={currentWeek}/>}
+      {tab==="draft"&&<DraftTab player={user} data={data} onDraftPick={handleDraftPick} onUndoDraft={handleUndoDraft} onToggleToRear={handleToggleToRear} currentWeek={currentWeek}/>}
       {tab==="live"&&<LiveTab data={data} player={user} setTab={setTab} liveScores={liveScores} liveStatus={liveStatus} raceInfo={raceInfo} currentWeek={currentWeek} timingData={timingData}/>}
 
       {/* Lazy tabs — wrapped in Suspense */}
@@ -384,7 +395,7 @@ export default function App() {
         {tab==="history"&&<HistoryTab data={data}/>}
         {tab==="playoffs"&&<PlayoffsTab data={data} user={user} currentWeek={currentWeek} onSaveChaseField={handleSaveChaseField}/>}
         {tab==="schedule"&&<ScheduleTab data={data}/>}
-        {tab==="drivers"&&<DriversTab/>}
+        {tab==="drivers"&&<DriversTab data={data} currentWeek={currentWeek} player={user} onToggleToRear={handleToggleToRear}/>}
         {tab==="hall"&&<HallOfChampions setTab={setTab}/>}
         {tab==="rules"&&<RulesTab/>}
         {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}

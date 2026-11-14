@@ -5,9 +5,11 @@ import { getDraftOrder, buildSnakeOrder } from "../engine/draft";
 import { storeFor } from "../engine/events";
 import { weekName, weekLabel } from "../exhibitions";
 import { analyzeLineups } from "../engine/draftAnalysis";
-import { getUpNext, picksUntil, splitDriver, pillLabel, getScouting, buildPool, pruneQueue } from "../engine/draftBoard";
+import { getUpNext, picksUntil, splitDriver, pillLabel, buildPool, pruneQueue } from "../engine/draftBoard";
 import { useDraftQueue } from "../hooks/useDraftQueue";
-import { useStartingGrid } from "../hooks/useNascarFeeds";
+import { useScouting } from "../hooks/useScouting";
+import { ARCHETYPE } from "../engine/scouting";
+import { DriverDrawer, ScoutTags } from "./DriverTelemetry";
 import { paintFor } from "../driverPaint";
 
 const MAKE_BADGE = { Chevy:"#b8b8b8", Ford:"#4a90e2", Toyota:"#eb0a1e", Dodge:"#a855f7" };
@@ -124,7 +126,7 @@ function BoardSummary({ order, playerPicks, currentPid }) {
 }
 
 // ── Driver scouting row ──────────────────────────────────────────────────────
-function PoolRow({ row, myTurn, queued, spotlight, onDraft, onQueue }) {
+function PoolRow({ row, myTurn, queued, spotlight, onDraft, onQueue, tags, form, ty, onOpen }) {
   const { driver, owner, memorial, rookie, start, avgFinish, trackAvg } = row;
   const info = DRIVER_INFO[driver] || {};
   const { num, name } = splitDriver(driver);
@@ -134,7 +136,9 @@ function PoolRow({ row, myTurn, queued, spotlight, onDraft, onQueue }) {
       style={{ "--paint": paintFor(driver) }}
     >
       <div className="dr-num num" aria-hidden="true">{num || "–"}</div>
-      <div className="dr-main">
+      <div className="dr-main" role="button" tabIndex={0} onClick={() => onOpen(driver)}
+           onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(driver); } }}
+           aria-label={`${name} telemetry`}>
         <div className="dr-l1">
           <span className="dr-name">{name}</span>
           {info.make && <span className="dr-make" style={{ color:MAKE_BADGE[info.make] }}>{info.make}</span>}
@@ -145,7 +149,13 @@ function PoolRow({ row, myTurn, queued, spotlight, onDraft, onQueue }) {
           <span><i>Start</i><b className="num">{start != null ? `P${start}` : "—"}</b></span>
           <span><i>Trk</i><b className="num">{trackAvg != null ? trackAvg.toFixed(1) : "—"}</b></span>
           <span><i>Avg</i><b className="num">{avgFinish != null ? avgFinish.toFixed(1) : "—"}</b></span>
+          {ty && (
+            <span title={`Average finish, last ${form?.races || 5} races at ${ARCHETYPE[ty]} tracks`}>
+              <i>L5</i><b className="num">{form ? form.avgFinish.toFixed(1) : "—"}</b>
+            </span>
+          )}
         </div>
+        {tags?.length > 0 && <div className="dr-tags"><ScoutTags tags={tags} /></div>}
       </div>
       <div className="dr-act">
         {owner ? (
@@ -211,7 +221,8 @@ const POOL_PILLS = [
   { id:"top10", label:"Starting Top 10",  hint:"Drivers starting P1–P10, in grid order" },
 ];
 
-export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }) {
+export function DraftTab({ player, data, onDraftPick, onUndoDraft, onToggleToRear, currentWeek }) {
+  const [sheet, setSheet] = useState(null);
   const [search,  setSearch]  = useState("");
   const [undoMsg, setUndoMsg] = useState("");
   const [pickMsg, setPickMsg] = useState("");
@@ -245,8 +256,11 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
   draftState.forEach(d => { if (playerPicks[d.pid]) playerPicks[d.pid].push(d.driver); });
 
   // ── Scouting data + driver pool ───────────────────────────────────────────
-  const scouting = useMemo(() => getScouting(data, weekInfo?.ty), [data, weekInfo?.ty]);
-  const grid = useStartingGrid(currentWeek, !!weekInfo && !draftComplete);
+  // scouting context: season stats, qualifying grid, track form, rear / playoff flags
+  const sc = useScouting(data, currentWeek, { enabled: !draftComplete });
+  const scouting = sc.season;
+  const grid = sc.grid;
+  const isCommish = player.id === "justin";
   const rows = useMemo(() => buildPool({
     drivers: DRIVERS, owners, search, availableOnly, mode, pool, scouting, grid,
     isRookie, isFreeAgent, isMemorial,
@@ -345,7 +359,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
           </span>
           {TTL[weekInfo.ty] && (
             <span className="dr-mult num" style={{ color:TTC[weekInfo.ty] }} title={`${weekInfo.ty.replace("_"," ")} track multiplier`}>
-              {TTL[weekInfo.ty]} ×{TRACK_MULTS[weekInfo.ty]}
+              {TTL[weekInfo.ty]} ×{TRACK_MULTS[weekInfo.ty]?.toFixed(1)}
             </span>
           )}
         </div>
@@ -396,6 +410,13 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
       ) : (
       <>
       {pickMsg && <div className="dr-alert" role="alert">{pickMsg}</div>}
+
+      {sc.strategy && !draftComplete && (
+        <div className="dr-strat" data-kind={sc.strategy.id} role="note">
+          <span className="hd"><b>{sc.strategy.title}</b><span className="num">{sc.strategy.mult}</span></span>
+          <span className="tx">{sc.strategy.text}</span>
+        </div>
+      )}
 
       {/* ── Telemetry draft board ───────────────────────────────────────────── */}
       <section className="dr-board-wrap" aria-label="Draft board">
@@ -459,6 +480,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
               <PoolRow
                 key={row.driver} row={row} myTurn={isMyTurn} queued={liveQueue.includes(row.driver)}
                 spotlight={mode === "bonus"} onDraft={handlePick} onQueue={q.toggle}
+                tags={sc.tagsFor(row.driver)} form={sc.formFor(row.driver)} ty={sc.ty} onOpen={setSheet}
               />
             ))}
           </div>
@@ -513,6 +535,15 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, currentWeek }
           </div>
         </div>
       )}
+
+      {/* ── Driver telemetry drawer ───────────────────────────────────────── */}
+      <DriverDrawer
+        data={data} name={sheet} onClose={() => setSheet(null)}
+        scout={sheet ? {
+          ty: sc.ty, form: sc.formFor(sheet), tags: sc.tagsFor(sheet), toRear: sc.rear.has(sheet),
+          canToggleRear: isCommish && !!onToggleToRear, onToggleRear: () => onToggleToRear(currentWeek, sheet),
+        } : null}
+      />
 
       {/* ── My Queue — pinned above the bottom nav ─────────────────────────── */}
       {hasQueue && (

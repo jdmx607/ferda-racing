@@ -1,6 +1,15 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, createContext, useContext } from "react";
 import { C, r } from "../theme";
 import { DRIVERS, DRIVER_INFO, MAKE_COLORS, MEMORIAL_DRIVERS, isMemorial, isPartTime, isFreeAgent } from "../constants";
+import { paintFor } from "../driverPaint";
+import { nameKey } from "../driverKey";
+import { useScouting } from "../hooks/useScouting";
+import { ARCHETYPE } from "../engine/scouting";
+import { weekName } from "../exhibitions";
+import { DriverDrawer, ScoutTags } from "./DriverTelemetry";
+
+// Scouting context for this week's race, shared by every row without prop-drilling.
+const ScoutCtx = createContext(null);
 
 // "#24 William Byron" -> { num:"24", name:"William Byron" }
 function parseDriver(d) {
@@ -22,26 +31,29 @@ function MakeBadge({ make }) {
 }
 
 function DriverRow({ driver, note, hideTeam }) {
+  const sc = useContext(ScoutCtx);
   const { num, name } = parseDriver(driver);
   const info = DRIVER_INFO[driver] || {};
   const sub  = [hideTeam ? null : (info.team || "—"), note].filter(Boolean).join(" · ");
+  const tags = sc && !isMemorial(driver) ? sc.tagsFor(driver) : [];
+  const form = sc?.ty ? sc.formFor(driver) : null;
+  const start = sc?.grid?.[sc.key(driver)];
   return (
-    <div style={{
-      display:"flex", alignItems:"center", gap:10, padding:"9px 12px",
-      background:C.card, border:`1px solid ${C.border}`, borderRadius:r.sm,
-    }}>
-      <div style={{
-        width:38, flexShrink:0, textAlign:"center", color:C.accent,
-        fontFamily:"var(--font-sans)", fontSize:18, fontWeight:700, lineHeight:1,
-      }}>{num || "—"}</div>
-      <div style={{ flex:1, minWidth:0 }}>
-        <div style={{ color:C.text, fontSize:14, fontWeight:700, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
-          {name}
-        </div>
-        {sub && <div style={{ color:C.muted, fontSize:11, marginTop:1 }}>{sub}</div>}
-      </div>
+    <button className="dv-row" style={{ "--paint": paintFor(driver) }} onClick={() => sc?.open(driver)} aria-label={`${name} telemetry`}>
+      <span className="dv-num num">{num || "—"}</span>
+      <span className="dv-mid">
+        <span className="dv-name">{name}</span>
+        {sub && <span className="dv-sub">{sub}</span>}
+        {sc?.ty && !isMemorial(driver) && (
+          <span className="dv-stats num">
+            {start != null && <span><i>Start</i>P{start}</span>}
+            <span title={`Average finish, last ${form?.races || 5} races at ${ARCHETYPE[sc.ty]} tracks`}><i>L5 {sc.ttl}</i>{form ? `P${form.avgFinish.toFixed(1)}` : "—"}</span>
+          </span>
+        )}
+        {tags.length > 0 && <span className="dv-tags"><ScoutTags tags={tags} /></span>}
+      </span>
       <MakeBadge make={info.make} />
-    </div>
+    </button>
   );
 }
 
@@ -62,8 +74,15 @@ function Section({ title, count, accent = C.accent, children, empty }) {
   );
 }
 
-export function DriversTab() {
+export function DriversTab({ data, currentWeek, player, onToggleToRear }) {
   const [search, setSearch] = useState("");
+  const [sheet,  setSheet]  = useState(null);
+  const sc = useScouting(data || {}, currentWeek);
+  const isCommish = player?.id === "justin";
+  const ctx = useMemo(() => ({
+    ...sc, open: setSheet, ttl: sc.ty ? { superspeedway:"SS", short_track:"ST", intermediate:"INT", road_course:"RC" }[sc.ty] : "",
+    key: nameKey,
+  }), [sc]);
   const [view,   setView]   = useState("team");   // "team" | "number"
 
   const groups = useMemo(() => {
@@ -103,7 +122,8 @@ export function DriversTab() {
   );
 
   return (
-    <div style={{ padding:20, maxWidth:760, margin:"0 auto", position:"relative", zIndex:1 }}>
+    <ScoutCtx.Provider value={data ? ctx : null}>
+    <div style={{ padding:"20px 14px", maxWidth:760, margin:"0 auto", position:"relative", zIndex:1, overflowX:"hidden" }}>
       <div style={{ display:"flex", alignItems:"baseline", justifyContent:"space-between", flexWrap:"wrap", gap:8, marginBottom:4 }}>
         <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:0 }}>
           Drivers
@@ -114,7 +134,14 @@ export function DriversTab() {
       </div>
       <div style={{ color:C.dim, fontSize:12, marginBottom:14 }}>
         The 2027 Cup Series driver pool.
+        {sc.weekInfo && <> Scouting for <b style={{ color:C.text }}>{weekName(currentWeek)} · {sc.weekInfo.t}</b> ({ARCHETYPE[sc.ty]}). Tap a driver for telemetry.</>}
       </div>
+      {sc.strategy && (
+        <div className="dr-strat" data-kind={sc.strategy.id} role="note" style={{ marginBottom:14 }}>
+          <span className="hd"><b>{sc.strategy.title}</b><span className="num">{sc.strategy.mult}</span></span>
+          <span className="tx">{sc.strategy.text}</span>
+        </div>
+      )}
 
       <div style={{ display:"flex", gap:8, marginBottom:20, flexWrap:"wrap", alignItems:"center" }}>
         <input
@@ -177,5 +204,15 @@ export function DriversTab() {
         </Section>
       )}
     </div>
+    {data && (
+      <DriverDrawer
+        data={data} name={sheet} onClose={() => setSheet(null)}
+        scout={sheet ? {
+          ty: sc.ty, form: sc.formFor(sheet), tags: sc.tagsFor(sheet), toRear: sc.rear.has(sheet),
+          canToggleRear: isCommish && !!onToggleToRear && !!sc.weekInfo, onToggleRear: () => onToggleToRear(currentWeek, sheet),
+        } : null}
+      />
+    )}
+    </ScoutCtx.Provider>
   );
 }

@@ -41,31 +41,31 @@ export const C = {
   amber:   "#F59E0B",   // caution / cutoff warning
 };
 
-// Per-player identity. Cards are flat dark surfaces; `accent` is the one small
-// splash of identity colour (dots, bars). `fg` is neutral so names stay readable.
+// ── Player signature colours ─────────────────────────────────────────────────
+// The ONE place each manager's permanent colour is defined. Every screen reads it
+// from here (login pit passes, More drawer, Draft board, Results dots, Live
+// standings, Stats ownership dots…). CSS mirrors these as --p-<id> in styles.css.
+export const SIGNATURE = {
+  justin:    "#F59E0B",   // Championship Gold
+  monroe:    "#10B981",   // Emerald Green
+  bigmonroe: "#3B82F6",   // Electric Blue
+  rich:      "#EF4444",   // Crimson Red
+};
+
+// Per-player identity. Cards are flat dark surfaces; `accent` is the signature
+// colour (dots, bars, headers). `fg` is neutral so names stay readable.
 export const PClr = {
-  justin:   { bg:"#181B22", fg:"#F4F6F9", accent:"#FF1F8F" },
-  bigmonroe:{ bg:"#181B22", fg:"#F4F6F9", accent:"#65FE08" },
-  monroe:   { bg:"#181B22", fg:"#F4F6F9", accent:"#91999F" },
-  rich:     { bg:"#181B22", fg:"#F4F6F9", accent:"#B3995D" },
+  justin:   { bg:"#181B22", fg:"#F4F6F9", accent:SIGNATURE.justin },
+  bigmonroe:{ bg:"#181B22", fg:"#F4F6F9", accent:SIGNATURE.bigmonroe },
+  monroe:   { bg:"#181B22", fg:"#F4F6F9", accent:SIGNATURE.monroe },
+  rich:     { bg:"#181B22", fg:"#F4F6F9", accent:SIGNATURE.rich },
 };
 
 // Per-player accent (chart lines, highlights)
-export const PC = {
-  justin:    PClr.justin.accent,
-  bigmonroe: PClr.bigmonroe.accent,
-  monroe:    PClr.monroe.accent,
-  rich:      PClr.rich.accent,
-};
+export const PC = { ...SIGNATURE };
 
-// Draft Room manager colours (column accent bar + header text) — distinct from the
-// per-player identity accents above so the four columns read at a glance.
-export const DRAFT_CLR = {
-  rich:      "#EF4444",   // red
-  monroe:    "#10B981",   // emerald
-  bigmonroe: "#3B82F6",   // blue
-  justin:    "#F59E0B",   // gold
-};
+// Draft Room manager colours — the same signature colours.
+export const DRAFT_CLR = SIGNATURE;
 
 // Track types are shown in greys — the label (SS / ST / INT / RC) carries the meaning
 export const TTC = {

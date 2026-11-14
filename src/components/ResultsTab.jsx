@@ -151,7 +151,7 @@ function RaceInfoCard({ week, weekInfo, wr, facts, ownerMap, avg }) {
           <div className="rs-trackline">
             {weekInfo?.t && <span className="rs-track">{weekInfo.t}</span>}
             {weekInfo?.ty && (
-              <span className="rs-arch">{TRACK_ARCHETYPE[weekInfo.ty] || weekInfo.ty} <span className="num">×{TRACK_MULTS[weekInfo.ty]}</span></span>
+              <span className="rs-arch">{TRACK_ARCHETYPE[weekInfo.ty] || weekInfo.ty} <span className="num">×{TRACK_MULTS[weekInfo.ty]?.toFixed(1)}</span></span>
             )}
             {wr?.raw?.threeStages && <span className="rs-arch">3 stages</span>}
             {exhibition && <span className="rs-arch gold">Exhibition · not in standings</span>}

@@ -6,6 +6,7 @@
 
 import { calcDriverScore } from "./scoring.js";
 import { SCHEDULE, PLAYERS } from "../constants.js";
+import { nameKey } from "../driverKey.js";
 
 const round1 = n => Math.round(n * 10) / 10;
 const tyOf = w => SCHEDULE.find(s => s.w === w)?.ty || "intermediate";
@@ -39,15 +40,17 @@ function findRaw(drivers, name) {
  *   races, total, avg, best
  */
 export function getDriverProfile(data, name) {
+  // match by name (not "#num Name") so a renumbered driver keeps his history
+  const key = nameKey(name);
   const log = [];
   const split = {};
   const drafted = {};
-  scoredWeekList(data).forEach(({ w, key, wr }) => {
-    const d = wr.raw.drivers.find(x => x.name === name);
+  scoredWeekList(data).forEach(({ w, key: wk, wr }) => {
+    const d = wr.raw.drivers.find(x => nameKey(x.name) === key);
     if (!d) return;
     const ty = tyOf(w);
     const pts = calcDriverScore(d, ty, false, !!wr.raw.threeStages).total;
-    const pickedBy = PLAYERS.filter(p => (data.picks?.[key]?.[p.id] || []).some(pk => pk.driver === name)).map(p => p.id);
+    const pickedBy = PLAYERS.filter(p => (data.picks?.[wk]?.[p.id] || []).some(pk => nameKey(pk.driver) === key)).map(p => p.id);
     pickedBy.forEach(pid => { drafted[pid] = (drafted[pid] || 0) + 1; });
     const ri = raceOf(w);
     log.push({ week: w, race: ri?.r || `Week ${w}`, track: ri?.t || "", ty, finish: d.finish, qualPos: d.qualPos, dnf: !!d.dnf, pts, pickedBy });

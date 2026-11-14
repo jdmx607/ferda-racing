@@ -47,7 +47,7 @@ function QuickScoreCard({ fetchResult, week, race, playerPicks, onConfirm, onAdv
       }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:4 }}>
           <div style={{ color: TTC[trackType] || C.accent, fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:2 }}>
-            ✅ {drivers.length} drivers loaded · {weekLabel(week)} · {TTL[trackType] || ""} ×{TRACK_MULTS[trackType] || 1}
+            ✅ {drivers.length} drivers loaded · {weekLabel(week)} · {TTL[trackType] || ""} ×{(TRACK_MULTS[trackType] || 1).toFixed(1)}
           </div>
           {(() => {
             const src = fetchResult.source;
@@ -383,7 +383,7 @@ export function CommissionerTab({ data, onPostResults, onSavePicks, onResetWeek,
         <select value={week} onChange={e => resetWeekPicker(e.target.value)} style={{ ...iS, width:100 }}>
           {SCHEDULE.map(s => <option key={s.w} value={s.w}>{s.ex ? `${weekLabel(s.w)} ★` : s.w}</option>)}
         </select>
-        {race && <span style={{ color:C.muted, fontSize:13 }}>{race.r} · {TTL[race.ty]} ×{TRACK_MULTS[race.ty]}</span>}
+        {race && <span style={{ color:C.muted, fontSize:13 }}>{race.r} · {TTL[race.ty]} ×{TRACK_MULTS[race.ty]?.toFixed(1)}</span>}
         {done && !editing && !quickScore && <span style={{ color:C.green, fontSize:13, fontWeight:700 }}>✓ Scored</span>}
       </div>
 

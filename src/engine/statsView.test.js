@@ -67,6 +67,9 @@ describe("driver profile", () => {
     expect(p.best).toBe(Math.max(...p.log.map(r => r.pts)));
     expect(p.avg).toBeCloseTo(p.total / 3, 0);
   });
+  test("matches by name, so a renumbered driver keeps his history", () => {
+    expect(getDriverProfile(data, "#99 Ryan Blaney").races).toBe(3);
+  });
   test("unknown driver → empty profile", () => {
     expect(getDriverProfile(data, "#0 Ghost")).toMatchObject({ races: 0, total: 0, avg: 0, best: 0, top: null });
   });

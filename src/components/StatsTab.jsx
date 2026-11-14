@@ -1,16 +1,15 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { PClr, TTC, TTL } from "../theme";
-import { PLAYERS, PNAME, SCHEDULE, DRIVER_INFO, MAKE_COLORS } from "../constants";
+import { PLAYERS, PNAME, SCHEDULE } from "../constants";
 import { getWeekTopDrivers, getDriverSeasonStats, getSeasonRecords, getDriverStreaks, getSeasonAwards } from "../engine/stats";
 import { getPowerRankings } from "../engine/power";
 import {
-  SORTS, TRACK_TYPES, leaderboardMetrics, getDriverProfile, getManagerEfficiency, getHeadToHead,
+  SORTS, TRACK_TYPES, leaderboardMetrics, getManagerEfficiency, getHeadToHead,
   getTrackSpecialists, getDraftTrends,
 } from "../engine/statsView";
 import { splitDriver, lastNameOf } from "../engine/draftBoard";
-import { paintFor } from "../driverPaint";
 import { PowerBoard } from "./PowerBoard";
-import { BottomSheet } from "./BottomSheet";
+import { DriverDrawer, NumBadge, MakeTeam } from "./DriverTelemetry";
 
 const accentOf = pid => PClr[pid]?.accent || "var(--text-2)";
 const f1 = v => (Math.round((v || 0) * 10) / 10).toFixed(1);
@@ -18,25 +17,6 @@ const signed = v => (v > 0 ? "+" : "") + (Math.round(v * 10) / 10);
 const abbr = pid => PNAME[pid].split(" ")[0].slice(0, 3).toUpperCase();
 
 // ─── Shared bits ──────────────────────────────────────────────────────────────
-
-/** 36×36 number badge with a 3px paint-scheme bar. */
-function NumBadge({ driver }) {
-  const { num } = splitDriver(driver);
-  return <span className="st-badge num" style={{ "--paint": paintFor(driver) }}>{num || "—"}</span>;
-}
-
-function MakeTeam({ driver }) {
-  const info = DRIVER_INFO[driver] || {};
-  const parts = [info.make, info.team].filter(Boolean);
-  if (!parts.length) return null;
-  return (
-    <span className="st-mt">
-      {info.make && <b style={{ color: MAKE_COLORS[info.make] || "var(--text-2)" }}>{info.make}</b>}
-      {info.make && info.team && " • "}
-      {info.team}
-    </span>
-  );
-}
 
 function PickDots({ pickedBy }) {
   const pids = Object.keys(pickedBy || {}).sort((a, b) => pickedBy[b] - pickedBy[a]);
@@ -79,70 +59,6 @@ function MiniRow({ rank, driver, sub, value, unit, onClick, highlight }) {
 }
 
 // ─── Drivers · Leaderboard ────────────────────────────────────────────────────
-
-function DriverSheet({ data, name }) {
-  const p = useMemo(() => (name ? getDriverProfile(data, name) : null), [data, name]);
-  if (!p) return null;
-  return (
-    <div className="st-sheet">
-      <div className="st-sheet-top">
-        <NumBadge driver={name} />
-        <div className="mid">
-          <div className="nm">{splitDriver(name).name}</div>
-          <div className="sub"><MakeTeam driver={name} /></div>
-        </div>
-      </div>
-
-      <div className="st-kpis">
-        <div><span className="num">{f1(p.total)}</span><small>Total</small></div>
-        <div><span className="num">{f1(p.avg)}</span><small>Avg</small></div>
-        <div><span className="num">{f1(p.best)}</span><small>Best</small></div>
-        <div><span className="num">{p.races}</span><small>Races</small></div>
-      </div>
-
-      <SecHead title="Track-type splits" note="avg FERDA pts" />
-      <div className="st-splits">
-        {TRACK_TYPES.map(ty => (
-          <div key={ty} className="st-split">
-            <span className="ty num" style={{ color: TTC[ty] }}>{TTL[ty]}</span>
-            <span className="v num">{p.splits[ty].avg == null ? "—" : f1(p.splits[ty].avg)}</span>
-            <span className="r num">{p.splits[ty].races} race{p.splits[ty].races === 1 ? "" : "s"}</span>
-          </div>
-        ))}
-      </div>
-
-      <SecHead title="Drafted most by" />
-      {p.drafters.length === 0 ? (
-        <div className="st-note">Never drafted this season.</div>
-      ) : (
-        <div className="st-drafters">
-          {p.drafters.map((d, i) => (
-            <div key={d.pid} className={"st-drafter" + (i === 0 ? " top" : "")} style={{ "--c": accentOf(d.pid) }}>
-              <span className="dot" />
-              <span className="nm">{PNAME[d.pid]}</span>
-              <span className="num">{d.count}×</span>
-              <span className="num sh">{d.share}%</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <SecHead title="Season race log" note={`${p.log.length} races`} />
-      <div className="st-log">
-        {p.log.map(r => (
-          <div key={r.week} className="st-log-row">
-            <span className="w num">W{r.week}</span>
-            <span className="ty num" style={{ color: TTC[r.ty] }}>{TTL[r.ty]}</span>
-            <span className="rc">{r.track}</span>
-            <span className="fin num">{r.dnf ? <em>DNF</em> : `P${r.finish}`}</span>
-            <span className="by">{r.pickedBy.map(pid => <i key={pid} style={{ background: accentOf(pid) }} title={PNAME[pid]} />)}</span>
-            <span className="pt num">{signed(r.pts)}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function DriverLeaderboard({ data, driverStats }) {
   const [sortBy, setSortBy] = useState("totalFerdaPts");
@@ -189,9 +105,7 @@ function DriverLeaderboard({ data, driverStats }) {
         <button className="st-more" onClick={() => setShowAll(true)}>Show all {sorted.length} drivers ↓</button>
       )}
 
-      <BottomSheet open={!!open} onClose={() => setOpen(null)} title="Driver season">
-        {open && <DriverSheet data={data} name={open} />}
-      </BottomSheet>
+      <DriverDrawer data={data} name={open} onClose={() => setOpen(null)} />
     </div>
   );
 }
@@ -221,9 +135,7 @@ function TrackSpecialists({ data }) {
           ))}
         </div>
       )}
-      <BottomSheet open={!!open} onClose={() => setOpen(null)} title="Driver season">
-        {open && <DriverSheet data={data} name={open} />}
-      </BottomSheet>
+      <DriverDrawer data={data} name={open} onClose={() => setOpen(null)} />
     </div>
   );
 }

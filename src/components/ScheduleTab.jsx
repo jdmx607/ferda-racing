@@ -35,7 +35,7 @@ export function ScheduleTab({ data }) {
               padding:"3px 10px", borderRadius:r.pill,
               border:`1px solid ${col}44`, letterSpacing:1,
             }}>
-              {TTL[ty]} ×{TRACK_MULTS[ty]}
+              {TTL[ty]} ×{TRACK_MULTS[ty]?.toFixed(1)}
             </span>
           ))}
         </div>

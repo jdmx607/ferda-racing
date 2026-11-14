@@ -267,28 +267,36 @@ const PRIMARY_TABS = [
   { id:"results", label:"Results", Icon:Icon.Results },
 ];
 
-const MORE_TABS = [
-  { id:"feed",         label:"Feed",       Icon:Icon.Feed       },
-  { id:"news",         label:"News",       Icon:Icon.News       },
-  { id:"stats",        label:"Stats",      Icon:Icon.Stats      },
-  { id:"history",      label:"History",    Icon:Icon.History    },
-  { id:"hall",         label:"Champions",  Icon:Icon.Hall       },
-  { id:"playoffs",     label:"The Chase",  Icon:Icon.Chase      },
-  { id:"isc",          label:"ISC",        Icon:Icon.ISC        },
-  { id:"lineups",      label:"Lineups",    Icon:Icon.Lineups    },
-  { id:"schedule",     label:"Schedule",   Icon:Icon.Schedule   },
-  { id:"drivers",      label:"Drivers",    Icon:Icon.Drivers    },
-  { id:"mulligans",    label:"Mulligans",  Icon:Icon.Mulligans  },
-  { id:"rules",        label:"Rules",      Icon:Icon.Rules      },
-  { id:"settings",     label:"Settings",   Icon:Icon.Settings   },
+// More drawer, grouped for faster thumb navigation
+const MORE_GROUPS = [
+  { title:"Racing", tabs:[
+    { id:"lineups",      label:"Lineups",    Icon:Icon.Lineups    },
+    { id:"schedule",     label:"Schedule",   Icon:Icon.Schedule   },
+    { id:"drivers",      label:"Drivers",    Icon:Icon.Drivers    },
+    { id:"mulligans",    label:"Mulligans",  Icon:Icon.Mulligans  },
+    { id:"feed",         label:"Feed",       Icon:Icon.Feed       },
+    { id:"news",         label:"News",       Icon:Icon.News       },
+  ] },
+  { title:"League & Lore", tabs:[
+    { id:"stats",        label:"Stats",      Icon:Icon.Stats      },
+    { id:"playoffs",     label:"The Chase",  Icon:Icon.Chase      },
+    { id:"isc",          label:"ISC",        Icon:Icon.ISC        },
+    { id:"history",      label:"History",    Icon:Icon.History    },
+    { id:"hall",         label:"Champions",  Icon:Icon.Hall       },
+  ] },
+  { title:"System", tabs:[
+    { id:"rules",        label:"Rules",      Icon:Icon.Rules      },
+    { id:"settings",     label:"Settings",   Icon:Icon.Settings   },
+  ] },
 ];
+const MORE_TABS = MORE_GROUPS.flatMap(g => g.tabs);
 
 function MobileNav({ player, tab, setTab, onLogout }) {
   const [showMore, setShowMore] = useState(false);
   const isInMore = [...MORE_TABS, { id:"commissioner" }].some(t => t.id === tab);
-  const moreTabs = player.id === "justin"
-    ? [...MORE_TABS, { id:"commissioner", label:"Commish", Icon:Icon.Commissioner }]
-    : MORE_TABS;
+  const groups = MORE_GROUPS.map(g => g.title === "System" && player.id === "justin"
+    ? { ...g, tabs:[...g.tabs, { id:"commissioner", label:"Commish", Icon:Icon.Commissioner }] }
+    : g);
 
   const goTo = (id) => { setTab(id); setShowMore(false); };
 
@@ -310,17 +318,22 @@ function MobileNav({ player, tab, setTab, onLogout }) {
           }}>Sign out</button>
         </div>
 
-        <div className="sheet-grid">
-          {moreTabs.map(t => {
-            const TabIcon = t.Icon;
-            return (
-              <button key={t.id} onClick={() => goTo(t.id)} aria-current={tab === t.id ? "page" : undefined}>
-                {TabIcon && <TabIcon/>}
-                {t.label}
-              </button>
-            );
-          })}
-        </div>
+        {groups.map(g => (
+          <section key={g.title} className="sheet-group" aria-label={g.title}>
+            <div className="sheet-group-h">{g.title}</div>
+            <div className="sheet-grid">
+              {g.tabs.map(t => {
+                const TabIcon = t.Icon;
+                return (
+                  <button key={t.id} onClick={() => goTo(t.id)} aria-current={tab === t.id ? "page" : undefined}>
+                    {TabIcon && <TabIcon/>}
+                    {t.label}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ))}
       </div>
 
       <nav className="bnav" aria-label="Primary">

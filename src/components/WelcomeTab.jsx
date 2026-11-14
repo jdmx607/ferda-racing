@@ -127,7 +127,7 @@ function RaceHero({ data, player, setTab, isLive, liveScores, liveStatus, timing
         </div>
 
         <div style={{ textAlign: "right" }}>
-          <span className="pill num" style={{ fontSize: 9.5 }}>{ARCHETYPE[info.ty]} ×{TRACK_MULTS[info.ty]}</span>
+          <span className="pill num" style={{ fontSize: 9.5 }}>{ARCHETYPE[info.ty]} ×{TRACK_MULTS[info.ty]?.toFixed(1)}</span>
           {isLive
             ? <div className="hero-clock num">
                 {timingData?.lapsInRace > 0 ? `LAP ${timingData.lapNumber}/${timingData.lapsInRace}` : (liveStatus || "")}

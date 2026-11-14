@@ -32,7 +32,7 @@ export function RaceHeader({
           {track && <span className="rh-track">{track}</span>}
           {trackType && TTL[trackType] && (
             <span className="rh-badge num" style={{ color: TTC[trackType] }} title={`${trackType.replace("_", " ")} track multiplier`}>
-              {TTL[trackType]} ×{TRACK_MULTS[trackType]}
+              {TTL[trackType]} ×{TRACK_MULTS[trackType]?.toFixed(1)}
             </span>
           )}
         </div>

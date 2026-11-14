@@ -55,7 +55,7 @@ function RecapCard({ recap }) {
         </div>
         <div style={{ color:C.dim, fontSize:13, marginTop:3 }}>
           @ {recap.track} · {recap.date} ·{" "}
-          <span style={{ color:TTC[recap.trackType], fontWeight:700 }}>{TTL[recap.trackType]} ×{TRACK_MULTS[recap.trackType]}</span>
+          <span style={{ color:TTC[recap.trackType], fontWeight:700 }}>{TTL[recap.trackType]} ×{TRACK_MULTS[recap.trackType]?.toFixed(1)}</span>
           {recap.threeStages && <span style={{ color:C.purple, marginLeft:8, fontWeight:700 }}>3 STAGES</span>}
         </div>
       </div>
@@ -287,7 +287,7 @@ function PreviewCard({ preview }) {
         </div>
         <div style={{ color:C.dim, fontSize:13, marginTop:3 }}>
           @ {track} · {date} ·{" "}
-          <span style={{ color:TTC[trackType], fontWeight:700 }}>{TTL[trackType]} ×{TRACK_MULTS[trackType]}</span>
+          <span style={{ color:TTC[trackType], fontWeight:700 }}>{TTL[trackType]} ×{TRACK_MULTS[trackType]?.toFixed(1)}</span>
         </div>
         {racesOfType > 0 && (
           <div style={{ color:C.muted, fontSize:11, marginTop:4 }}>
