@@ -17,6 +17,8 @@ import { useLivePolling } from "./hooks/useLivePolling";
 import { useLiveTiming } from "./hooks/useLiveTiming";
 import { useSweatAlerts } from "./hooks/useSweatAlerts";
 import { ToastCenter } from "./components/ToastCenter";
+import { SimpleApp } from "./components/SimpleApp";
+import { isSimplified } from "./engine/simple";
 import { notifyDraftTurn, notifyRaceScored, notifyPlayer } from "./hooks/useNotifications";
 
 // ── Eagerly-loaded shell + high-traffic tabs ───────────────────────────────────
@@ -361,6 +363,22 @@ export default function App() {
     </div>
   );
   if(!user)return <LoginScreen onLogin={handleLogin} data={data} timing={timingData}/>;
+
+  // Simplified Pit-Crew Mode: Big Monroe by default (Settings can switch it for anyone).
+  // Same draft / mulligan handlers as the full app, so everything syncs instantly.
+  if(isSimplified(user.id,data.playerSettings))return(
+    <div style={{minHeight:"100vh",background:C.bg,fontFamily:"var(--font-sans)",color:C.text,paddingTop:"var(--safe-top)"}}>
+      {showRichRoast&&<RichRoastModal onDismiss={()=>setShowRichRoast(false)}/>}
+      {!showRichRoast&&showWinnerModal&&<WinnerModal player={user} data={data} onDismiss={()=>setShowWinnerModal(false)}/>}
+      <ToastCenter/>
+      <SimpleApp
+        user={user} data={data} currentWeek={currentWeek} liveScores={liveScores}
+        onDraftPick={handleDraftPick} onApplyMulligan={handleApplyMulligan}
+        onExitSimple={()=>{ setTab("welcome"); handleSaveSettings(user.id,{simplifiedMode:false}); }}
+        onLogout={()=>setUser(null)}
+      />
+    </div>
+  );
 
   return (
     <div style={{minHeight:"100vh",background:C.bg,fontFamily:"var(--font-sans)",color:C.text,paddingTop:"var(--safe-top)"}}>

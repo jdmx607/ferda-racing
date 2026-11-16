@@ -5,6 +5,7 @@ import { DEFAULT_PHONES } from "../constants";
 import { usePushNotifications } from "../hooks/usePushNotifications";
 import { sendSms, sendPush } from "../hooks/useNotifications";
 import { AlertSettings } from "./AlertSettings";
+import { isSimplified } from "../engine/simple";
 
 export function SettingsTab({ player, data, onSaveSettings }) {
   const settings      = data.playerSettings?.[player.id] || {};
@@ -80,6 +81,21 @@ export function SettingsTab({ player, data, onSaveSettings }) {
       <h2 style={{ color:C.text, fontFamily:"var(--font-sans)", fontSize:26, letterSpacing:1, margin:"0 0 20px" }}>
         Settings
       </h2>
+
+      {/* ── Simplified Easy-Read Mode (saved to your profile, follows you across devices) ── */}
+      <div style={{ ...sectionStyle, borderColor: isSimplified(player.id, data.playerSettings) ? `${C.blue}66` : C.border }}>
+        <label style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:12, cursor:"pointer" }}>
+          <span>
+            <span style={{ ...labelStyle, marginBottom:4 }}>Simplified Easy-Read Mode</span>
+            <span style={{ display:"block", color:C.dim, fontSize:12, lineHeight:1.5 }}>
+              Two big tabs — Make Picks and Scoreboard — with large text and buttons. Turns on automatically for Big Monroe.
+            </span>
+          </span>
+          <input type="checkbox" style={{ width:22, height:22, flex:"none", accentColor:"#3B82F6" }}
+            checked={isSimplified(player.id, data.playerSettings)}
+            onChange={e => onSaveSettings(player.id, { simplifiedMode: e.target.checked })} />
+        </label>
+      </div>
 
       {/* ── Email notifications ───────────────────────────────────────────── */}
       <div style={sectionStyle}>
