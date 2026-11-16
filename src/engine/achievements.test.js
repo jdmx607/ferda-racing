@@ -1,5 +1,7 @@
 import { describe, test, expect } from "vitest";
-import { getAchievements, getRecords, progress, mulliganSwaps } from "./achievements.js";
+import { getAchievements, getRecords, progress, mulliganSwaps, billTribute } from "./achievements.js";
+import { CAREER_STATS } from "../careerStats.js";
+import { CHAMPION_HISTORY } from "../championsHistory.js";
 
 const drv = (name, finish, extra = {}) => ({
   name, finish, qualPos: finish, lapsLed: 0, dnf: false, dq: false, pole: false,
@@ -116,6 +118,12 @@ describe("career milestones (derived from career + history)", () => {
   test("3-peat dynasty from consecutive overall titles", () => {
     expect(by(all, "dynasty").holders).toEqual([{ pid: "justin", count: 1, lines: ["3-Peat · 2022–2024"] }]);
   });
+  test("dynasty badge is titled after the longest run", () => {
+    expect(by(all, "dynasty").title).toBe("3-Peat Dynasty");
+    const real = getAchievements(data);                       // live history: Justin 2023–2026
+    expect(by(real, "dynasty").title).toBe("4-Peat Dynasty");
+    expect(by(real, "dynasty").holders[0]).toMatchObject({ pid: "justin", lines: ["4-Peat · 2023–2026"] });
+  });
   test("undisputed = same manager won both titles that year", () => {
     expect(by(all, "undisputed").holders.map(h => [h.pid, h.count])).toEqual([["justin", 3], ["bigmonroe", 1]]);
   });
@@ -151,4 +159,9 @@ describe("records", () => {
   test("driver and streak records note where tracking starts", () => {
     expect(r.allTime.find(x => x.id === "driver").note).toMatch(/archived from/);
   });
+});
+
+test("Bill tribute is Justin's career line (Bill = Justin's old nickname)", () => {
+  expect(billTribute(CAREER_STATS, CHAMPION_HISTORY)).toBe("Legacy File Found: ‘Bill’ (2019–2026) • 106 Career Wins • 6x FRL Champion");
+  expect(billTribute({}, [])).toBeNull();
 });

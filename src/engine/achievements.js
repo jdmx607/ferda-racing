@@ -279,8 +279,10 @@ function careerBadges(career = CAREER_STATS, history = CHAMPION_HISTORY) {
   return [
     badge({ id: "century", cat: "career", emoji: "💯", title: "Century Club",
       condition: "100+ career weekly wins.", holders: century }),
-    badge({ id: "dynasty", cat: "career", emoji: "👑", title: "3-Peat Dynasty",
-      condition: "Win 3 consecutive Overall Championships.", holders: dynasty }),
+    badge({ id: "dynasty", cat: "career", emoji: "👑",
+      // titled after the longest run on record (Justin's 2023–2026 → "4-Peat Dynasty")
+      title: `${Math.max(3, ...runs.map(r => r.length))}-Peat Dynasty`,
+      condition: "Win 3+ consecutive Overall Championships.", holders: dynasty }),
     badge({ id: "undisputed", cat: "career", emoji: "🧹", title: "Undisputed Champion",
       condition: "Win the Regular Season and the Overall title in the same year.", holders: undisputed }),
     badge({ id: "mr-podium", cat: "career", emoji: "🥉", title: "Mr. Podium",
@@ -289,6 +291,17 @@ function careerBadges(career = CAREER_STATS, history = CHAMPION_HISTORY) {
       condition: "Win the Overall Championship in your debut season.", holders: rookies,
       archive: rookies.filter(r => cs(r.pid).firstYear > firstSeason).map(r => ({ pid: r.pid, text: `${cs(r.pid).firstYear} Expansion` })) }),
   ];
+}
+
+/**
+ * The 'Bill' legacy-file tribute. Bill was Justin's nickname in the original
+ * spreadsheet era, so the numbers come from Justin's career record + title list.
+ */
+export function billTribute(career = CAREER_STATS, history = CHAMPION_HISTORY, pid = "justin") {
+  const c = career[pid];
+  if (!c) return null;
+  const titles = history.filter(s => s.overall === pid).length;
+  return `Legacy File Found: ‘Bill’ (${c.firstYear}–${c.lastYear}) • ${c.finishes[0]} Career Wins • ${titles}x FRL Champion`;
 }
 
 /** All badges, in category order. */

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { PClr } from "../theme";
 import { PLAYERS, PNAME, ACTIVE_SEASON } from "../constants";
-import { CATEGORIES, getAchievements, getRecords, progress } from "../engine/achievements";
+import { CATEGORIES, getAchievements, getRecords, progress, billTribute } from "../engine/achievements";
 import { BottomSheet } from "./BottomSheet";
 
 const accentOf = pid => PClr[pid]?.accent || "var(--text-2)";
@@ -9,7 +9,8 @@ const APP_VERSION = `${ACTIVE_SEASON}.11`;
 const FIRST_SEASON = 2019;
 
 // League-lore easter eggs
-const BILL_TRIBUTE = "Legacy File Found: ‘Bill’ (2019–2026) • 106 Career Wins • 5x FRL Champion";
+// 'Bill' = Justin's old spreadsheet-era nickname; figures derived from his career record
+const BILL_TRIBUTE = billTribute();
 const ROWDY_TRIBUTE = "Everything Great — #8 Kyle Busch (1985–2026)";
 const isRowdy = q => /rowdy/i.test(q) || /^#?8$/.test(q.trim());
 
