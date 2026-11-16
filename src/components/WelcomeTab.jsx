@@ -3,7 +3,7 @@ import { PClr, TTL } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE, TRACK_MULTS, ACTIVE_SEASON, ACTIVE_PICKS } from "../constants";
 import { getCurrentWeek, storeFor } from "../engine/events";
 import { getMulliganAllowance } from "../engine/mulligans";
-import { getPowerRankings } from "../engine/power";
+import { getGmRatings } from "../utils/gmRating";
 import { getSeasonChampion } from "../engine/chase";
 import {
   getLineupStatus, getPlayerLineup, getHomeLineupWeek, getSeasonWrapUp,
@@ -16,7 +16,7 @@ import { weekLabel } from "../exhibitions";
 import { paintFor, carNumber } from "../driverPaint";
 import { TrophyCaseModal } from "./TrophyCase";
 import { BottomSheet } from "./BottomSheet";
-import { PowerBoard, RankDelta } from "./PowerBoard";
+import { GmBoard, GmDelta, TierBadge, BestValueLine } from "./GmBoard";
 
 const ARCHETYPE = {
   superspeedway: "SUPERSPEEDWAY", short_track: "SHORT TRACK",
@@ -209,8 +209,10 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
   const bubble = !seasonOver && driverStandings ? buildBubble(driverStandings.drivers, currentWeek) : null;
 
   const seasonChampion = useMemo(() => getSeasonChampion(data), [data]);
-  const powerRankings  = useMemo(() => getPowerRankings(data), [data]);
+  const gmRatings      = useMemo(() => getGmRatings(data), [data]);
+  const powerRankings  = gmRatings.managers;           // ranked by Rolling GM Rating
   const powerLeader    = powerRankings[0];
+  const [gmMode, setGmMode] = useState("rolling");
 
   const myStats = standings.find(s => s.id === pid);
 
@@ -396,18 +398,20 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
       {powerLeader && (
         <section className="card" style={{ padding: "12px 14px" }}>
           <div className="sec-head" style={{ margin: "0 0 8px" }}>
-            <span className="label">Power rankings</span>
+            <span className="label">Power rankings · GM rating</span>
             <button className="link-btn" onClick={() => setShowRankings(true)}>Full Rankings →</button>
           </div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-            <strong style={{ fontSize: 15 }}>#1 {PNAME[powerLeader.id]}</strong>
-            <span className="num" style={{ fontSize: 13 }}>
-              <span style={{ fontSize: 9, letterSpacing: "0.1em", color: "var(--text-2)", marginRight: 4 }}>PWR</span>
-              <strong>{powerLeader.pwr.toFixed(1)}</strong>
-            </span>
-            <RankDelta delta={powerLeader.delta} />
+          <div className="gm-lead" style={{ "--c": PClr[powerLeader.id].accent }}>
+            <strong className="nm">#1 {PNAME[powerLeader.id]}</strong>
+            <span className="num v"><small>GM</small>{powerLeader.rolling.toFixed(1)}</span>
+            <TierBadge tier={powerLeader.tier} />
+            <GmDelta delta={powerLeader.delta} />
           </div>
-          <div style={{ fontSize: 12, color: "var(--text-2)", margin: "4px 0 10px" }}>{powerLeader.insight}</div>
+          <div style={{ margin: "6px 0 10px" }}>
+            {powerLeader.last?.bestValue
+              ? <BestValueLine bv={powerLeader.last.bestValue} prefix={`W${powerLeader.last.week} best value`} />
+              : <span style={{ fontSize: 12, color: "var(--text-2)" }}>Rolling 4-race GM form.</span>}
+          </div>
           <div className="pr-strip">
             {powerRankings.map(p => (
               <div key={p.id} className="pr-chip">
@@ -417,8 +421,8 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
                     {p.delta > 0 ? `▲${p.delta}` : p.delta < 0 ? `▼${-p.delta}` : "–"}
                   </span>
                 </div>
-                <div className="nm">{PNAME[p.id]}</div>
-                <div className="sub num">{p.pwr.toFixed(1)}</div>
+                <div className="nm"><i className="dot" style={{ background: PClr[p.id].accent, width: 6, height: 6, display: "inline-block", marginRight: 4 }} />{PNAME[p.id]}</div>
+                <div className="sub num">{p.rolling.toFixed(1)}</div>
               </div>
             ))}
           </div>
@@ -462,7 +466,7 @@ export function WelcomeTab({ player, data, setTab, liveScores, liveStatus, timin
 
       {/* ── Full power rankings sheet ──────────────────────────────────────── */}
       <BottomSheet open={showRankings} onClose={() => setShowRankings(false)} title="Power Rankings">
-        <PowerBoard rankings={powerRankings} />
+        <GmBoard gm={gmRatings} mode={gmMode} onMode={setGmMode} />
         <div style={{ marginTop: 14 }}>
           <button className="link-btn" onClick={() => { setShowRankings(false); setTab("stats"); }}>More in Stats →</button>
         </div>

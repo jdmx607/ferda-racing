@@ -5,6 +5,8 @@ import { getWeekTopDrivers, generateWeekRecap } from "../engine/stats";
 import { storeFor } from "../engine/events";
 import { CLASH_WEEK, ALL_STAR_WEEK, weekLabel, weekName } from "../exhibitions";
 import { allStarPayouts } from "../engine/meta";
+import { getGmRatings } from "../utils/gmRating";
+import { BestValueLine } from "./GmBoard";
 import {
   scoredWeeks, weekWinners, stepWeek, buildOwnerMap, carKey, parseDriver,
   getRaceFacts, leagueAverage, getSuperlatives, fmtPts, TRACK_ARCHETYPE,
@@ -30,7 +32,7 @@ function ScoreChip({ label, pts }) {
   );
 }
 
-function DriverResultRow({ d }) {
+function DriverResultRow({ d, tag }) {
   const { num, name } = parseDriver(d.driver);
   const tone = d.total >= 40 ? " big" : d.total < 0 ? " neg" : d.total > 0 ? " pos" : "";
   return (
@@ -42,6 +44,8 @@ function DriverResultRow({ d }) {
           {isMemorial(d.driver) && " 🕊️"}
           {d.isMulligan && <span className="rs-tag amber">MULL</span>}
           {d.dnr && <span className="rs-tag">DNR</span>}
+          {tag === "steal" && <span className="rs-tag gm-steal" title="Out-scored its pick-slot expectation by a wide margin">💎 STEAL</span>}
+          {tag === "bust" && <span className="rs-tag gm-bust" title="Round 1–2 pick that fell well short of its slot">📉 BUST</span>}
         </div>
         <div className="rs-chips">
           {(d.breakdown || []).map((b, i) => <ScoreChip key={i} label={b.label} pts={b.pts} />)}
@@ -265,14 +269,19 @@ function PlayerBadges({ pid, ps, idx, count, isAllStar, isClash, allStarPay }) {
   return bits.length ? <div className="rs-badges">{bits}</div> : null;
 }
 
-function DriverList({ ps }) {
+function DriverList({ ps, tags }) {
   if (!ps.drivers?.length) return null;
   return (
     <div className="rs-drvs">
-      {ps.drivers.slice().sort((a, b) => b.total - a.total).map(d => <DriverResultRow key={d.driver} d={d} />)}
+      {ps.drivers.slice().sort((a, b) => b.total - a.total).map(d => <DriverResultRow key={d.driver} d={d} tag={tags?.[d.driver]} />)}
     </div>
   );
 }
+
+/** Weekly GM chip shown beside the inspection grade. */
+const GmChip = ({ gmw }) => gmw
+  ? <span className="rs-gm num" title={`Pit-Box GM score: VOPE ${gmw.vopeScore} · Scouting ${gmw.scouting} · Floor ${gmw.execution} · Finish ${gmw.finish}`}>{gmw.gm.toFixed(1)} <small>GM</small></span>
+  : null;
 
 function MiniChips({ ps }) {
   return (
@@ -286,7 +295,7 @@ function MiniChips({ ps }) {
   );
 }
 
-function PlayerCard({ pid, ps, idx, count, isOpen, onToggle, perfectScore, ctx }) {
+function PlayerCard({ pid, ps, idx, count, isOpen, onToggle, perfectScore, ctx, gmw, tags }) {
   const isWinner = idx === 0 && count > 1;
   const isLoser  = idx === count - 1 && count === 4;
   const g = perfectScore > 0 ? getGrade(ps.total / perfectScore) : { grade: "—", color: "#6B7280" };
@@ -304,9 +313,11 @@ function PlayerCard({ pid, ps, idx, count, isOpen, onToggle, perfectScore, ctx }
           <div className="rs-score">
             <span className="num rs-total">{ps.total}</span>
             {perfectScore > 0 && <GradeStamp grade={g.grade} color={g.color} title={gradeTitle} />}
+            <GmChip gmw={gmw} />
           </div>
         </div>
-        <DriverList ps={ps} />
+        {gmw?.bestValue && <BestValueLine bv={gmw.bestValue} />}
+        <DriverList ps={ps} tags={tags} />
       </article>
     );
   }
@@ -320,15 +331,17 @@ function PlayerCard({ pid, ps, idx, count, isOpen, onToggle, perfectScore, ctx }
           <span className="rs-score">
             <span className="num rs-total">{ps.total}</span>
             {perfectScore > 0 && <GradeStamp grade={g.grade} color={g.color} title={gradeTitle} />}
+            <GmChip gmw={gmw} />
             <Chevron />
           </span>
         </div>
         <MiniChips ps={ps} />
+        {gmw?.bestValue && <BestValueLine bv={gmw.bestValue} />}
       </button>
       <div className="rs-acc"><div>
         <div className="rs-detail">
           <PlayerBadges pid={pid} ps={ps} idx={idx} count={count} {...ctx} />
-          <DriverList ps={ps} />
+          <DriverList ps={ps} tags={tags} />
         </div>
       </div></div>
     </article>
@@ -391,6 +404,16 @@ export function ResultsTab({ data }) {
   const perfectScore = useMemo(() => topDrivers.reduce((sum, d) => sum + d.total, 0), [topDrivers]);
 
   const weekPicks = src.picks?.["w" + week];
+  const gm       = useMemo(() => getGmRatings(data), [data]);
+  const gmWeek   = gm.byWeek[week] || null;          // points weeks only (not exhibitions)
+  const gmTags   = useMemo(() => {
+    const out = {};
+    (gmWeek?.picks || []).forEach(p => {
+      const t = p.steal ? "steal" : p.bust ? "bust" : null;
+      if (t) (out[p.pid] = out[p.pid] || {})[p.driver] = t;
+    });
+    return out;
+  }, [gmWeek]);
   const ownerMap = useMemo(() => buildOwnerMap(wr?.scored, weekPicks), [wr, weekPicks]);
   const facts    = useMemo(() => getRaceFacts(wr?.raw), [wr]);
   const avg      = useMemo(() => leagueAverage(wr?.scored), [wr]);
@@ -438,6 +461,7 @@ export function ResultsTab({ data }) {
                     key={pid} pid={pid} ps={ps} idx={idx} count={sorted.length}
                     isOpen={!!open[pid]} onToggle={() => setOpen(o => ({ ...o, [pid]: !o[pid] }))}
                     perfectScore={perfectScore} ctx={ctx}
+                    gmw={gmWeek?.managers?.[pid]} tags={gmTags[pid]}
                   />
                 ))}
               </div>

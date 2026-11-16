@@ -2,13 +2,13 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { PClr, TTC, TTL } from "../theme";
 import { PLAYERS, PNAME, SCHEDULE } from "../constants";
 import { getWeekTopDrivers, getDriverSeasonStats, getSeasonRecords, getDriverStreaks, getSeasonAwards } from "../engine/stats";
-import { getPowerRankings } from "../engine/power";
+import { getGmRatings } from "../utils/gmRating";
 import {
   SORTS, TRACK_TYPES, leaderboardMetrics, getManagerEfficiency, getHeadToHead,
   getTrackSpecialists, getDraftTrends,
 } from "../engine/statsView";
 import { splitDriver, lastNameOf } from "../engine/draftBoard";
-import { PowerBoard } from "./PowerBoard";
+import { GmBoard } from "./GmBoard";
 import { DriverDrawer, NumBadge, MakeTeam } from "./DriverTelemetry";
 
 const accentOf = pid => PClr[pid]?.accent || "var(--text-2)";
@@ -248,8 +248,9 @@ function DraftTrends({ data, driverStats }) {
 // ─── Managers · Power Rankings ────────────────────────────────────────────────
 
 function PowerRankings({ data }) {
-  const rankings = useMemo(() => getPowerRankings(data), [data]);
-  return <PowerBoard rankings={rankings} />;
+  const gm = useMemo(() => getGmRatings(data), [data]);
+  const [mode, setMode] = useState("rolling");
+  return <GmBoard gm={gm} mode={mode} onMode={setMode} />;
 }
 
 // ─── Managers · Efficiency & Loyalty ──────────────────────────────────────────
