@@ -107,6 +107,13 @@ const Icon = {
       <path d="M12 13.2V17M8 20.5h8M10.2 17v3.5M13.8 17v3.5"/>
     </svg>
   ),
+  Achievements: () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="14.5" r="5.5"/>
+      <path d="M8.5 10 6 3h4l2 4 2-4h4l-2.5 7"/>
+      <path d="m12 12.2.9 1.6 1.8.3-1.3 1.2.3 1.8-1.7-.9-1.7.9.3-1.8-1.3-1.2 1.8-.3z" fill="currentColor" stroke="none"/>
+    </svg>
+  ),
   Drivers: () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <circle cx="12" cy="12" r="8.5"/>
@@ -210,6 +217,7 @@ function DesktopNav({ player, tab, setTab, onLogout, data }) {
     { id:"stats",        l:"Stats"       },
     { id:"history",      l:"History"     },
     { id:"hall",         l:"Champions"   },
+    { id:"achievements", l:"Achievements" },
     { id:"playoffs",     l:"The Chase", strong:chaseLive },
     { id:"isc",          l:"ISC"         },
     { id:"schedule",     l:"Schedule"    },
@@ -273,7 +281,6 @@ const MORE_GROUPS = [
     { id:"lineups",      label:"Lineups",    Icon:Icon.Lineups    },
     { id:"schedule",     label:"Schedule",   Icon:Icon.Schedule   },
     { id:"drivers",      label:"Drivers",    Icon:Icon.Drivers    },
-    { id:"mulligans",    label:"Mulligans",  Icon:Icon.Mulligans  },
     { id:"feed",         label:"Feed",       Icon:Icon.Feed       },
     { id:"news",         label:"News",       Icon:Icon.News       },
   ] },
@@ -283,6 +290,8 @@ const MORE_GROUPS = [
     { id:"isc",          label:"ISC",        Icon:Icon.ISC        },
     { id:"history",      label:"History",    Icon:Icon.History    },
     { id:"hall",         label:"Champions",  Icon:Icon.Hall       },
+    { id:"mulligans",    label:"Mulligans",  Icon:Icon.Mulligans  },
+    { id:"achievements", label:"Achievements", Icon:Icon.Achievements },
   ] },
   { title:"System", tabs:[
     { id:"rules",        label:"Rules",      Icon:Icon.Rules      },
