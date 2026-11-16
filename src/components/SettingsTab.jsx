@@ -4,6 +4,7 @@ import { DEFAULT_EMAILS } from "../email";
 import { DEFAULT_PHONES } from "../constants";
 import { usePushNotifications } from "../hooks/usePushNotifications";
 import { sendSms, sendPush } from "../hooks/useNotifications";
+import { AlertSettings } from "./AlertSettings";
 
 export function SettingsTab({ player, data, onSaveSettings }) {
   const settings      = data.playerSettings?.[player.id] || {};
@@ -263,6 +264,9 @@ export function SettingsTab({ player, data, onSaveSettings }) {
           </>
         )}
       </div>
+
+      {/* ── Sweat alerts (device-only, saved instantly) ─────────────────────── */}
+      <AlertSettings />
 
       {/* ── Save button ───────────────────────────────────────────────────── */}
       <button onClick={save} disabled={saving}

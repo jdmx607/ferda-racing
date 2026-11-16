@@ -3,6 +3,7 @@ import { C, PClr, r, shadow } from "../theme";
 import { PLAYERS, PNAME, DRIVERS, PLAYOFF_START_WEEK, isMemorial } from "../constants";
 import { getDriverSeasonStats } from "../engine/stats";
 import { getChaseTotals } from "../engine/chase";
+import { getChaseWarRoom } from "../engine/warRoom";
 
 function ProgressBar({ value, max, color }) {
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
@@ -223,6 +224,36 @@ function PlayoffField({ data, user, currentWeek, onSaveChaseField }) {
   );
 }
 
+// ── War room: title-line math (FRL Chase = one cumulative race, no eliminations) ──
+const STATUS_TONE = { "LOCKED IN": "go", "SAFE": "go", "CHAMPION": "gold", "IN THE HUNT": "caution", "MUST-WIN": "stop", "ELIMINATED": "mute", "FINAL": "mute" };
+function WarRoom({ data, currentWeek }) {
+  const wr = useMemo(() => getChaseWarRoom(data, { nextWeek: currentWeek >= PLAYOFF_START_WEEK && currentWeek <= 36 ? currentWeek : undefined }), [data, currentWeek]);
+  const f1 = n => (Math.round(Math.abs(n) * 10) / 10).toFixed(1);
+  return (
+    <section className="wr" aria-label="Chase war room">
+      <div className="wr-head">
+        <span className="label">Chase War Room</span>
+        <span className="wr-round num">{wr.remaining === 0 ? "Season complete" : `${wr.round?.label || "The Chase"} · ${wr.remaining} race${wr.remaining === 1 ? "" : "s"} left`}</span>
+      </div>
+      <div className="wr-list">
+        {wr.rows.map((r, i) => (
+          <div key={r.pid} className="wr-row" style={{ "--c": PClr[r.pid]?.accent }}>
+            <span className="rk num">{i + 1}</span>
+            <span className="nm">{PNAME[r.pid]}</span>
+            <span className="tot num">{r.total.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
+            <span className={"cut num " + (r.cut >= 0 ? "up" : "dn")}>{r.cut >= 0 ? "+" : "−"}{f1(r.cut)}</span>
+            <span className="st" data-tone={STATUS_TONE[r.status]}>{r.status === "SAFE" ? `SAFE (+${f1(r.cut)})` : r.status}</span>
+          </div>
+        ))}
+      </div>
+      <div className="wr-foot num">
+        Cutline = gap to the title line. Biggest weekly swing this season {wr.swings.maxSwing.toFixed(1)} · avg winning margin {wr.swings.avgMargin.toFixed(1)}.
+        {wr.remaining > 0 && " MUST-WIN = needs more per race than an average weekly win."}
+      </div>
+    </section>
+  );
+}
+
 export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
   const [view, setView] = useState("standings");
   const scored        = Object.keys(data.results || {}).length;
@@ -293,6 +324,7 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
 
       {view === "standings" && (
       <>
+      {(playoffsStarted || currentWeek >= PLAYOFF_START_WEEK) && <WarRoom data={data} currentWeek={currentWeek} />}
       {/* ── Rules callout ───────────────────────────────────────────────────── */}
       <div style={{
         background:C.card, borderRadius:r.md, padding:"14px 16px", marginBottom:20,

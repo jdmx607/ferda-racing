@@ -201,28 +201,37 @@ const DRIVER_INFO_2026 = {
 // 2027 changes layered over the 2026 info. Still to confirm/add by hand:
 //  • #10 / #16 at Kaulig (now Dodge) and #51's team are carried over from the
 //    2026 numbers — verify them.
+// `change` = the off-season move, shown by the Drivers tab's "2027 Silly Season" filter.
 const DRIVER_INFO_2027 = {
-  "#6 Ryan Preece":        { team:"RFK Racing",               make:"Ford"  },   // was #60 in 2026
-  "#33 Austin Hill":       { team:"Richard Childress Racing", make:"Chevy" },   // full-time in 2027
-  "#42 Josh Berry":        { team:"Legacy Motor Club",        make:"Toyota"},   // moves from Wood Brothers #21
-  "#84 Riley Herbst":      { team:"Legacy Motor Club",        make:"Toyota"},   // moves from 23XI #35
-  "#35 Corey Heim":        { team:"23XI Racing",              make:"Toyota"},   // replaces Herbst; was part-time #67
-  "#21 Jesse Love":        { team:"Wood Brothers Racing",     make:"Ford"  },   // replaces Berry
-  "#10 Ty Dillon":         { team:"Kaulig Racing",  make:"Dodge" },
-  "#16 AJ Allmendinger":   { team:"Kaulig Racing",  make:"Dodge" },
+  "#6 Ryan Preece":        { team:"RFK Racing",               make:"Ford",   change:"Renumbered: #60 → #6" },
+  "#33 Austin Hill":       { team:"Richard Childress Racing", make:"Chevy",  change:"Full-time in the #33 (was shared)" },
+  "#42 Josh Berry":        { team:"Legacy Motor Club",        make:"Toyota", change:"Moves from Wood Brothers #21" },
+  "#84 Riley Herbst":      { team:"Legacy Motor Club",        make:"Toyota", change:"Moves from 23XI #35" },
+  "#35 Corey Heim":        { team:"23XI Racing",              make:"Toyota", change:"Replaces Herbst (was part-time #67)" },
+  "#21 Jesse Love":        { team:"Wood Brothers Racing",     make:"Ford",   change:"Replaces Berry at Wood Brothers" },
+  "#10 Ty Dillon":         { team:"Kaulig Racing",  make:"Dodge", change:"Kaulig switches to Dodge" },
+  "#16 AJ Allmendinger":   { team:"Kaulig Racing",  make:"Dodge", change:"Kaulig switches to Dodge" },
   // No ride for 2027 yet — `freeAgent` keeps him out of autopick.
-  "#6 Brad Keselowski":    { team:"Free Agent",     freeAgent:true },
+  "#6 Brad Keselowski":    { team:"Free Agent",     freeAgent:true, change:"Free agent — no 2027 ride yet" },
 };
+
+/** Drivers with a 2027 off-season move (team / number / make change). */
+export const SILLY_SEASON_2027 = Object.keys(DRIVER_INFO_2027);
 
 export const DRIVER_INFO = { ...DRIVER_INFO_2026, ...DRIVER_INFO_2027 };
 
 export const MAKE_COLORS = { Chevy: "#b8b8b8", Ford: "#0052cc", Toyota: "#eb0a1e", Dodge: "#a855f7" };
 
-// Rookie / bonus-eligible drivers — drives the ★ badge and the "Bonus / Rookie" filter
-// in the Draft Room. The NASCAR feeds mark rookies with a trailing "#"
-// (e.g. "Connor Zilisch #"). Edit this list each season.
-export const ROOKIE_DRIVERS = new Set(["#88 Connor Zilisch"]);
+// Rookie / bonus-eligible drivers by season — drives the ★ badge and the
+// "Bonus / Rookie" filter in the Draft Room and the Drivers tab's Silly Season view.
+// The NASCAR feeds mark rookies with a trailing "#". Add each season's class here.
+export const ROOKIES_BY_SEASON = {
+  2026: ["#88 Connor Zilisch"],
+  2027: ["#21 Jesse Love"],          // Heim and Hill don't get a rookie year; Zilisch had his in 2026
+};
+export const ROOKIE_DRIVERS = new Set(ROOKIES_BY_SEASON[ACTIVE_SEASON] || []);
 export function isRookie(driver) { return ROOKIE_DRIVERS.has(driver); }
+export function isRookieIn(driver, season) { return (ROOKIES_BY_SEASON[season] || []).includes(driver); }
 
 export function isMemorial(driver) { return !!MEMORIAL_DRIVERS[driver]; }
 export function isPartTime(driver) { return !!DRIVER_INFO[driver]?.partTime; }

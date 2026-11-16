@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { TTC } from "../theme";
+import { ACTIVE_SEASON } from "../constants";
+import { RuleBallot } from "./RuleBallot";
 
 // Each rule: title, category, plain-language text and (optionally) a badge grid
 // so the numbers can be scanned in two seconds mid-race. `note` sits under a grid.
@@ -67,12 +69,21 @@ function BadgeGrid({ rule }) {
   );
 }
 
-export function RulesTab() {
+export function RulesTab({ data, player, onBallotChange }) {
   const [cat, setCat] = useState("race");
+  const [view, setView] = useState("rules");
   const rules = RULES.filter(r => r.cat === cat);
+  const open = (data?.ballot?.season === ACTIVE_SEASON + 1 ? data.ballot.proposals : []).length;
   return (
     <div className="rl">
       <h2 className="rl-h">Scoring Rules</h2>
+      <div className="seg rl-view" role="tablist" aria-label="Rules view">
+        <button role="tab" aria-selected={view === "rules"} aria-pressed={view === "rules"} onClick={() => setView("rules")}>Rulebook</button>
+        <button role="tab" aria-selected={view === "ballot"} aria-pressed={view === "ballot"} onClick={() => setView("ballot")}>
+          {ACTIVE_SEASON + 1} Ballot{open > 0 && <span className="num"> {open}</span>}
+        </button>
+      </div>
+      {view === "ballot" ? <RuleBallot data={data} player={player} onBallotChange={onBallotChange} /> : <>
       <div className="seg rl-seg" role="tablist" aria-label="Rule category">
         {CATS.map(c => (
           <button key={c.id} role="tab" aria-selected={cat === c.id} aria-pressed={cat === c.id} onClick={() => setCat(c.id)}>
@@ -90,6 +101,7 @@ export function RulesTab() {
           </section>
         ))}
       </div>
+      </>}
     </div>
   );
 }

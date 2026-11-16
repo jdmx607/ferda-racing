@@ -15,6 +15,8 @@ import { weekLabel, isExhibition } from "./exhibitions";
 import { useLeagueData } from "./hooks/useLeagueData";
 import { useLivePolling } from "./hooks/useLivePolling";
 import { useLiveTiming } from "./hooks/useLiveTiming";
+import { useSweatAlerts } from "./hooks/useSweatAlerts";
+import { ToastCenter } from "./components/ToastCenter";
 import { notifyDraftTurn, notifyRaceScored, notifyPlayer } from "./hooks/useNotifications";
 
 // ── Eagerly-loaded shell + high-traffic tabs ───────────────────────────────────
@@ -73,7 +75,7 @@ function TabLoader() {
 }
 
 export default function App() {
-  const [user,setUser]=useState(null); const [tab,setTab]=useState("welcome");
+  const [user,setUser]=useState(null); const [tab,setTab]=useState(()=>{ try{ const t=new URLSearchParams(window.location.search).get("tab"); return ["welcome","live","draft","results","lineups","stats","rules","achievements"].includes(t)?t:"welcome"; }catch{ return "welcome"; } });
   const [installPrompt,setInstallPrompt]=useState(null);
   const [showInstall,setShowInstall]=useState(false);
   const [showWinnerModal,setShowWinnerModal]=useState(false);
@@ -107,6 +109,8 @@ export default function App() {
   // The event after the latest-scored one in schedule order — includes the
   // Clash (before W1) and All-Star (between W12 and W13) in 2027.
   const currentWeek=useMemo(()=>data?getCurrentWeek(data):1,[data]);
+  // In-app sweat alerts (on the clock, owned stage winners / DNFs, 10 to go) — read-only
+  useSweatAlerts({user,data,currentWeek,raceInfo,liveScores,timing:timingData});
 
   const notifyNextPicker=async(week,dataAfterPick)=>{
     const draftKey="w"+week;
@@ -232,6 +236,13 @@ export default function App() {
     if(!s.toRear)s.toRear={};
     const cur=s.toRear[key]||[];
     s.toRear[key]=cur.includes(driver)?cur.filter(x=>x!==driver):[...cur,driver];
+    setData(d); await saveLeagueData(d);
+  };
+
+  // Offseason rulebook ballot (proposals + votes). Informational — no scoring impact.
+  const handleBallotChange=async(fn)=>{
+    const d=JSON.parse(JSON.stringify(data));
+    d.ballot=fn(d.ballot||null);
     setData(d); await saveLeagueData(d);
   };
 
@@ -378,6 +389,7 @@ export default function App() {
           </div>
         </div>
       )}
+      <ToastCenter/>
       <FlagBanner user={user} data={data} currentWeek={currentWeek} onGoTo={setTab}/>
 
       {/* Eager tabs — no Suspense needed */}
@@ -387,7 +399,7 @@ export default function App() {
 
       {/* Lazy tabs — wrapped in Suspense */}
       <Suspense fallback={<TabLoader/>}>
-        {tab==="lineups"&&<LineupsTab data={data} currentWeek={currentWeek}/>}
+        {tab==="lineups"&&<LineupsTab data={data} currentWeek={currentWeek} player={user} raceInfo={raceInfo} onApplyMulligan={handleApplyMulligan}/>}
         {tab==="mulligans"&&<MulligansTab player={user} data={data} currentWeek={currentWeek} onApplyMulligan={handleApplyMulligan}/>}
         {tab==="results"&&<ResultsTab data={data}/>}
         {tab==="feed"&&<FeedTab data={data}/>}
@@ -399,7 +411,7 @@ export default function App() {
         {tab==="drivers"&&<DriversTab data={data} currentWeek={currentWeek} player={user} onToggleToRear={handleToggleToRear}/>}
         {tab==="hall"&&<HallOfChampions setTab={setTab}/>}
         {tab==="achievements"&&<AchievementsTab data={data}/>}
-        {tab==="rules"&&<RulesTab/>}
+        {tab==="rules"&&<RulesTab data={data} player={user} onBallotChange={handleBallotChange}/>}
         {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}
         {tab==="isc"&&<ISCTab data={data} user={user} onSave={handleIscSave}/>}
         {tab==="commissioner"&&user.id==="justin"&&

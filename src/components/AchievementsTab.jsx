@@ -3,6 +3,7 @@ import { PClr } from "../theme";
 import { PLAYERS, PNAME, ACTIVE_SEASON } from "../constants";
 import { CATEGORIES, getAchievements, getRecords, progress, billTribute } from "../engine/achievements";
 import { BottomSheet } from "./BottomSheet";
+import { haptic } from "../utils/haptics";
 
 const accentOf = pid => PClr[pid]?.accent || "var(--text-2)";
 const APP_VERSION = `${ACTIVE_SEASON}.11`;
@@ -151,6 +152,8 @@ export function AchievementsTab({ data }) {
     ? badges.filter(b => `${b.title} ${b.condition}`.toLowerCase().includes(q))
     : badges.filter(b => b.cat === cat);
 
+  useEffect(() => { if (toast) haptic([10, 40, 10]); }, [toast]);
+  useEffect(() => { if (rowdy) haptic(15); }, [rowdy]);
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 6500);

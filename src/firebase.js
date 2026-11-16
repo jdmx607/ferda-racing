@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, runTransaction } from "firebase/firestore";
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, getDoc, setDoc, onSnapshot, runTransaction } from "firebase/firestore";
 import { ensureStore } from "./engine/events.js";
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -20,7 +20,15 @@ let firebaseReady = false;
 
 try {
   const app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
+  // Persistent IndexedDB cache so the installed PWA opens with the last league
+  // snapshot (historical stats, standings, rules data) when offline. Falls back to
+  // the default memory cache where IndexedDB isn't available (e.g. private mode).
+  try {
+    db = initializeFirestore(app, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+  } catch (cacheErr) {
+    console.warn("Firestore offline cache unavailable:", cacheErr?.message);
+    db = getFirestore(app);
+  }
   firebaseReady = true;
   console.log("Firebase initialized OK");
 } catch (e) {

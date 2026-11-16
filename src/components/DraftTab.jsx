@@ -11,6 +11,7 @@ import { useScouting } from "../hooks/useScouting";
 import { ARCHETYPE } from "../engine/scouting";
 import { DriverDrawer, ScoutTags } from "./DriverTelemetry";
 import { paintFor } from "../driverPaint";
+import { haptic } from "../utils/haptics";
 
 const MAKE_BADGE = { Chevy:"#b8b8b8", Ford:"#4a90e2", Toyota:"#eb0a1e", Dodge:"#a855f7" };
 
@@ -301,6 +302,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, onToggleToRea
       setTimeout(() => setPickMsg(""), 5000);
       return;
     }
+    haptic(15);
     setSearch("");
   };
 

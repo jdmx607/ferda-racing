@@ -1,6 +1,6 @@
 import { useState, useMemo, createContext, useContext } from "react";
 import { C, r } from "../theme";
-import { DRIVERS, DRIVER_INFO, MAKE_COLORS, MEMORIAL_DRIVERS, isMemorial, isPartTime, isFreeAgent } from "../constants";
+import { DRIVERS, DRIVER_INFO, MAKE_COLORS, MEMORIAL_DRIVERS, SILLY_SEASON_2027, isMemorial, isPartTime, isFreeAgent, isRookieIn } from "../constants";
 import { paintFor } from "../driverPaint";
 import { nameKey } from "../driverKey";
 import { useScouting } from "../hooks/useScouting";
@@ -83,7 +83,7 @@ export function DriversTab({ data, currentWeek, player, onToggleToRear }) {
     ...sc, open: setSheet, ttl: sc.ty ? { superspeedway:"SS", short_track:"ST", intermediate:"INT", road_course:"RC" }[sc.ty] : "",
     key: nameKey,
   }), [sc]);
-  const [view,   setView]   = useState("team");   // "team" | "number"
+  const [view,   setView]   = useState("team");   // "team" | "number" | "silly"
 
   const groups = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -117,7 +117,7 @@ export function DriversTab({ data, currentWeek, player, onToggleToRear }) {
       border:`1px solid ${view === id ? C.accent : C.border}`,
       background:view === id ? C.accent : "transparent",
       color:view === id ? "#000" : C.dim,
-      fontSize:11, fontWeight:700, fontFamily:"var(--font-sans)", letterSpacing:1,
+      fontSize:11, fontWeight:700, fontFamily:"var(--font-sans)", letterSpacing:1, whiteSpace:"nowrap",
     }}>{label}</button>
   );
 
@@ -155,11 +155,30 @@ export function DriversTab({ data, currentWeek, player, onToggleToRear }) {
           }}
         />
         <div style={{ display:"flex", gap:6 }}>
-          {toggle("team", "BY TEAM")}
-          {toggle("number", "BY NUMBER")}
+          {toggle("team", "TEAM")}
+          {toggle("number", "NUMBER")}
+          {toggle("silly", "2027 SILLY SEASON")}
         </div>
       </div>
 
+      {view === "silly" ? (() => {
+        const q = search.trim().toLowerCase();
+        const list = SILLY_SEASON_2027.filter(d => !q || d.toLowerCase().includes(q) || (DRIVER_INFO[d]?.team || "").toLowerCase().includes(q))
+          .sort((x, y) => Number(isRookieIn(y, 2027)) - Number(isRookieIn(x, 2027)));
+        return (
+          <Section title="2027 Silly Season" count={list.length} accent={C.gold} empty="No off-season moves match.">
+            <div style={{ color:C.dim, fontSize:12, margin:"-2px 2px 10px", lineHeight:1.5 }}>
+              Off-season team, number and make changes. ★ marks 2027 Cup rookies (bonus-driver eligible).
+            </div>
+            <div style={{ display:"grid", gap:4 }}>
+              {list.map(d => (
+                <DriverRow key={d} driver={d}
+                  note={[isRookieIn(d, 2027) && "★ 2027 ROOKIE", DRIVER_INFO[d]?.change].filter(Boolean).join(" · ")} />
+              ))}
+            </div>
+          </Section>
+        );
+      })() : <>
       <Section title="Active Drivers" count={groups.active.length} empty="No drivers match.">
         {view === "team" ? (
           <div style={{ display:"grid", gap:16 }}>
@@ -203,6 +222,7 @@ export function DriversTab({ data, currentWeek, player, onToggleToRear }) {
           </div>
         </Section>
       )}
+      </>}
     </div>
     {data && (
       <DriverDrawer

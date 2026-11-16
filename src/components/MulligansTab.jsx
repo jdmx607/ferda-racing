@@ -4,6 +4,7 @@ import { DRIVERS, isMemorial } from "../constants";
 import { getMulliganAllowance } from "../engine/mulligans";
 import { isExhibition, weekName } from "../exhibitions";
 import { getDriverSeasonStats } from "../engine/stats";
+import { haptic } from "../utils/haptics";
 
 export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
   const { used, remaining, max, bonus, bonusAtStake } = getMulliganAllowance(data, player.id, currentWeek);
@@ -51,6 +52,7 @@ export function MulligansTab({ player, data, currentWeek, onApplyMulligan }) {
     )) return;
     setSaving(true); setMsg("");
     await onApplyMulligan(currentWeek, player.id, selectedDriver, replacement);
+    haptic(15);
     setMsg(`✓ Mulligan applied: ${selectedDriver} → ${replacement}`);
     setSelectedDriver(""); setReplacement(""); setSearch(""); setSaving(false);
     setTimeout(() => setMsg(""), 5000);

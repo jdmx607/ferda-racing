@@ -7,6 +7,11 @@ import { CLASH_WEEK, ALL_STAR_WEEK, weekLabel, weekName } from "../exhibitions";
 import { allStarPayouts } from "../engine/meta";
 import { getGmRatings } from "../utils/gmRating";
 import { BestValueLine } from "./GmBoard";
+import { wireRecap } from "../engine/wire";
+import { optimalLineup } from "../engine/whatIf";
+import { renderRecapCard, shareBlob } from "../utils/shareCard";
+import { haptic } from "../utils/haptics";
+import { pushToast } from "../utils/toast";
 import {
   scoredWeeks, weekWinners, stepWeek, buildOwnerMap, carKey, parseDriver,
   getRaceFacts, leagueAverage, getSuperlatives, fmtPts, TRACK_ARCHETYPE,
@@ -278,6 +283,35 @@ function DriverList({ ps, tags }) {
   );
 }
 
+/** "Optimal 5" hindsight ghost: best lineup available at this manager's real draft slots. */
+function OptimalGhost({ ghost }) {
+  const [show, setShow] = useState(false);
+  if (!ghost) return null;
+  return (
+    <div className="rs-ghost">
+      <button className="rs-ghost-tog" aria-pressed={show} onClick={e => { e.stopPropagation(); setShow(v => !v); }}>
+        {show ? "Hide Optimal 5" : "Show Optimal 5"}
+        <span className="num">{ghost.left > 0 ? `+${ghost.left.toFixed(1)} left on the pit box` : "Perfect pit box"}</span>
+      </button>
+      {show && (
+        <div className="rs-ghost-list">
+          {ghost.picks.map(g => {
+            const hit = g.driver === g.actualDriver || (g.driver && g.actualDriver && g.driver.split(" ")[0] === g.actualDriver.split(" ")[0]);
+            return (
+              <div key={g.k} className={"rs-ghost-row" + (hit ? " hit" : "")}>
+                <span className="slot num">#{g.k} · R{g.round}</span>
+                <span className="nm">{g.driver ? <DriverText name={g.driver} /> : "—"}{!hit && g.actualDriver && <small>you: {g.actualDriver.replace(/^#S+s+/, "")} {g.actualPts.toFixed(1)}</small>}</span>
+                <span className="pt num">{g.pts.toFixed(1)}</span>
+              </div>
+            );
+          })}
+          <div className="rs-ghost-foot num">Optimal {ghost.total.toFixed(1)} vs your picks {ghost.actual.toFixed(1)} (full scoring, before mulligans)</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** Weekly GM chip shown beside the inspection grade. */
 const GmChip = ({ gmw }) => gmw
   ? <span className="rs-gm num" title={`Pit-Box GM score: VOPE ${gmw.vopeScore} · Scouting ${gmw.scouting} · Floor ${gmw.execution} · Finish ${gmw.finish}`}>{gmw.gm.toFixed(1)} <small>GM</small></span>
@@ -295,7 +329,7 @@ function MiniChips({ ps }) {
   );
 }
 
-function PlayerCard({ pid, ps, idx, count, isOpen, onToggle, perfectScore, ctx, gmw, tags }) {
+function PlayerCard({ pid, ps, idx, count, isOpen, onToggle, perfectScore, ctx, gmw, tags, ghost }) {
   const isWinner = idx === 0 && count > 1;
   const isLoser  = idx === count - 1 && count === 4;
   const g = perfectScore > 0 ? getGrade(ps.total / perfectScore) : { grade: "—", color: "#6B7280" };
@@ -318,6 +352,7 @@ function PlayerCard({ pid, ps, idx, count, isOpen, onToggle, perfectScore, ctx, 
         </div>
         {gmw?.bestValue && <BestValueLine bv={gmw.bestValue} />}
         <DriverList ps={ps} tags={tags} />
+        <div style={{ padding: "0 10px 10px" }}><OptimalGhost ghost={ghost} /></div>
       </article>
     );
   }
@@ -342,6 +377,7 @@ function PlayerCard({ pid, ps, idx, count, isOpen, onToggle, perfectScore, ctx, 
         <div className="rs-detail">
           <PlayerBadges pid={pid} ps={ps} idx={idx} count={count} {...ctx} />
           <DriverList ps={ps} tags={tags} />
+          <OptimalGhost ghost={ghost} />
         </div>
       </div></div>
     </article>
@@ -423,6 +459,30 @@ export function ResultsTab({ data }) {
     [wr, week]
   );
 
+  const wire   = useMemo(() => (wr?.scored && wr?.raw ? wireRecap(week, wr.scored, wr.raw) : []), [wr, week]);
+  const ghosts = useMemo(() => Object.fromEntries(sorted.map(([pid]) => [pid, optimalLineup(data, week, pid)])), [data, week, wr]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [sharing, setSharing] = useState(false);
+  const shareRecap = async () => {
+    if (!sorted.length || sharing) return;
+    setSharing(true);
+    try {
+      const mvp = topDrivers[0];
+      const blob = await renderRecapCard({
+        weekLabel: weekName(week), raceName: weekInfo?.r || weekName(week), track: weekInfo?.t,
+        archetype: weekInfo ? `${TRACK_ARCHETYPE[weekInfo.ty] || weekInfo.ty} ×${TRACK_MULTS[weekInfo.ty]?.toFixed(1)}` : "",
+        standings: sorted.map(([pid, ps]) => ({ pid, total: ps.total })),
+        mvp: mvp ? { name: mvp.name, total: mvp.total, owners: ownerMap[carKey(mvp.name)] || [] } : null,
+        roast: recap?.roastLine, wire,
+      });
+      const how = await shareBlob(blob, { filename: `ferda-${weekLabel(week).toLowerCase()}-recap.png`, title: `FERDA ${weekName(week)} recap`, text: wire.join(" ") });
+      if (how !== "cancelled") { haptic(15); pushToast({ title: how === "shared" ? "Recap shared" : "Recap card saved", body: weekInfo?.r || weekName(week), tone: "go", ttl: 3500 }); }
+    } catch (e) {
+      pushToast({ title: "Couldn't build the recap card", body: e.message, tone: "stop" });
+    } finally {
+      setSharing(false);
+    }
+  };
+
   const foldable = sorted.slice(1).map(([pid]) => pid);
   const allOpen  = foldable.length > 0 && foldable.every(pid => open[pid]);
   const toggleAll = () => setOpen(allOpen ? {} : Object.fromEntries(foldable.map(pid => [pid, true])));
@@ -436,7 +496,12 @@ export function ResultsTab({ data }) {
     <div className="rs">
       <div className="rs-top-bar">
         <span className="label">Results</span>
-        <span className="num rs-count">{weeks.indexOf(week) + 1} / {weeks.length}</span>
+        <span className="rs-top-right">
+          {sorted.length > 0 && (
+            <button className="rs-share" onClick={shareRecap} disabled={sharing}>{sharing ? "Rendering…" : "Share Recap"}</button>
+          )}
+          <span className="num rs-count">{weeks.indexOf(week) + 1} / {weeks.length}</span>
+        </span>
       </div>
       <WeekScrubber weeks={weeks} week={week} onSelect={setWeek} winners={winners} />
 
@@ -444,6 +509,12 @@ export function ResultsTab({ data }) {
         ? <div className="rs-empty">No results for this week</div>
         : <>
             <RaceInfoCard week={week} weekInfo={weekInfo} wr={wr} facts={facts} ownerMap={ownerMap} avg={avg} />
+            {wire.length > 0 && (
+              <section className="rs-wire" aria-label="Wire recap">
+                <span className="rs-wire-tag">FRL WIRE</span>
+                <p>{wire.join(" ")}</p>
+              </section>
+            )}
             <TakeawaysCard week={week} recap={recap} sup={sup} />
 
             <section>
@@ -461,7 +532,7 @@ export function ResultsTab({ data }) {
                     key={pid} pid={pid} ps={ps} idx={idx} count={sorted.length}
                     isOpen={!!open[pid]} onToggle={() => setOpen(o => ({ ...o, [pid]: !o[pid] }))}
                     perfectScore={perfectScore} ctx={ctx}
-                    gmw={gmWeek?.managers?.[pid]} tags={gmTags[pid]}
+                    gmw={gmWeek?.managers?.[pid]} tags={gmTags[pid]} ghost={ghosts[pid]}
                   />
                 ))}
               </div>

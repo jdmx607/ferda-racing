@@ -5,9 +5,15 @@ import { weekLabel, weekName } from "../exhibitions";
 import { PLAYERS, PNAME, SCHEDULE, ACTIVE_PICKS, TRACK_MULTS } from "../constants";
 import { getMulliganAllowance } from "../engine/mulligans";
 import { DriverCard } from "./DriverCard";
+import { BottomSheet } from "./BottomSheet";
+import { MulliganSim } from "./MulliganSim";
+import { useStartingGrid } from "../hooks/useNascarFeeds";
+import { isExhibition } from "../exhibitions";
 
-export function LineupsTab({ data, currentWeek }) {
+export function LineupsTab({ data, currentWeek, player, raceInfo, onApplyMulligan }) {
   const [week, setWeek] = useState(currentWeek);
+  const [simFor, setSimFor] = useState(null);           // pid whose "Test Mulligan Swap" sheet is open
+  const grid = useStartingGrid(week, week === currentWeek);
   const weekInfo    = SCHEDULE.find(s => s.w === week);
   const src         = storeFor(data, week); // exhibitions keep their data separately
   const draftState  = src.drafts?.["w" + week] || [];
@@ -139,6 +145,10 @@ export function LineupsTab({ data, currentWeek }) {
                         </div>
                       </div>
                     </div>
+                    {/* What-if mulligan calculator (current, unscored week only) */}
+                    {!hasScored && week === currentWeek && !isExhibition(week) && mulLeft > 0 && (savedPicks[p.id] || []).length > 0 && (
+                      <button className="ms-open" onClick={() => setSimFor(p.id)}>Test Mulligan Swap</button>
+                    )}
                     {/* Week total if scored */}
                     {hasScored && scored?.[p.id] && (
                       <div style={{ textAlign:"right" }}>
@@ -187,6 +197,16 @@ export function LineupsTab({ data, currentWeek }) {
           </div>
         )
       }
+
+      <BottomSheet open={!!simFor} onClose={() => setSimFor(null)} title="Mulligan what-if">
+        {simFor && (
+          <MulliganSim
+            data={data} week={week} pid={simFor} player={player} raceInfo={raceInfo} grid={grid}
+            remaining={getMulliganAllowance(data, simFor, currentWeek).remaining}
+            onApplyMulligan={onApplyMulligan} onDone={() => setSimFor(null)}
+          />
+        )}
+      </BottomSheet>
     </div>
   );
 }

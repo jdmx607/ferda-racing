@@ -1,13 +1,18 @@
 {
+  "id": "/",
   "name": "FERDA Racing League",
   "short_name": "FERDA Racing",
-  "description": "Fantasy NASCAR scoring app — FERDA Racing League 2026",
-  "start_url": "/",
+  "description": "FERDA Racing League — fantasy NASCAR drafts, live pit-wall scoring, results and league history.",
+  "lang": "en-US",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait",
   "theme_color": "#0F1115",
   "background_color": "#0F1115",
   "categories": ["sports", "games"],
+  "prefer_related_applications": false,
   "icons": [
     { "src": "/icons/icon-72x72.png",   "sizes": "72x72",   "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon-96x96.png",   "sizes": "96x96",   "type": "image/png", "purpose": "any" },
@@ -19,6 +24,11 @@
     { "src": "/icons/icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon-maskable-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
     { "src": "/icons/icon-maskable-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Draft Room", "short_name": "Draft", "url": "/?tab=draft",   "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }] },
+    { "name": "Live",       "short_name": "Live",  "url": "/?tab=live",    "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }] },
+    { "name": "Results",    "short_name": "Results", "url": "/?tab=results", "icons": [{ "src": "/icons/icon-96x96.png", "sizes": "96x96" }] }
   ],
   "screenshots": [
     {
