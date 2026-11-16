@@ -8,6 +8,7 @@ import { allStarPayouts } from "../engine/meta";
 import { getGmRatings } from "../utils/gmRating";
 import { BestValueLine } from "./GmBoard";
 import { wireRecap } from "../engine/wire";
+import { TrackGlyph, TrackSpecLine, auraProps } from "./TrackIdentity";
 import { optimalLineup } from "../engine/whatIf";
 import { renderRecapCard, shareBlob } from "../utils/shareCard";
 import { haptic } from "../utils/haptics";
@@ -151,22 +152,21 @@ function RaceInfoCard({ week, weekInfo, wr, facts, ownerMap, avg }) {
       : { label: "Pole winner" };
 
   return (
-    <section className="rs-info" aria-label="Race information">
+    <section className="rs-info" aria-label="Race information" {...auraProps(weekInfo?.ty)}>
       <div className="rs-checker" aria-hidden="true" />
       <div className="rs-info-top">
         <div className="rs-info-id">
           <div className="rs-eyebrow">{weekName(week)} · Official results</div>
           <h2 className="rs-race">{weekInfo?.r || weekName(week)}</h2>
-          <div className="rs-trackline">
-            {weekInfo?.t && <span className="rs-track">{weekInfo.t}</span>}
-            {weekInfo?.ty && (
-              <span className="rs-arch">{TRACK_ARCHETYPE[weekInfo.ty] || weekInfo.ty} <span className="num">×{TRACK_MULTS[weekInfo.ty]?.toFixed(1)}</span></span>
-            )}
-            {wr?.raw?.threeStages && <span className="rs-arch">3 stages</span>}
-            {exhibition && <span className="rs-arch gold">Exhibition · not in standings</span>}
-          </div>
+          <TrackSpecLine ty={weekInfo?.ty} track={weekInfo?.t} className="rs-specline" />
+          {(wr?.raw?.threeStages || exhibition) && (
+            <div className="rs-trackline">
+              {wr?.raw?.threeStages && <span className="rs-arch">3 stages</span>}
+              {exhibition && <span className="rs-arch gold">Exhibition · not in standings</span>}
+            </div>
+          )}
         </div>
-        <div className="rs-logo" data-slot="track-logo" aria-hidden="true" />
+        <div className="rs-logo td-slot" data-slot="track-logo"><TrackGlyph ty={weekInfo?.ty} /></div>
       </div>
 
       <div className="rs-facts">

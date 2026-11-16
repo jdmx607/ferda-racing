@@ -16,6 +16,7 @@ import { weekLabel } from "../exhibitions";
 import { paintFor, carNumber } from "../driverPaint";
 import { TrophyCaseModal } from "./TrophyCase";
 import { BottomSheet } from "./BottomSheet";
+import { TrackGlyph, TrackSpecLine, auraProps } from "./TrackIdentity";
 import { GmBoard, GmDelta, TierBadge, BestValueLine } from "./GmBoard";
 
 const ARCHETYPE = {
@@ -63,14 +64,6 @@ function Countdown({ entry, times }) {
   );
 }
 
-function TrackPlaceholder() {
-  return (
-    <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="2.2" opacity="0.5" aria-hidden="true">
-      <rect x="6" y="14" width="52" height="36" rx="18" />
-      <rect x="18" y="24" width="28" height="16" rx="8" />
-    </svg>
-  );
-}
 
 // ── 2. Race-week hero ───────────────────────────────────────────────────────
 function RaceHero({ data, player, setTab, isLive, liveScores, liveStatus, timingData, week, raceTimes }) {
@@ -107,14 +100,15 @@ function RaceHero({ data, player, setTab, isLive, liveScores, liveStatus, timing
 
   return (
     <section className="card hero">
-      <div className="hero-head">
-        <div className="track-slot sm"><TrackPlaceholder /></div>
+      <div className="hero-head" {...auraProps(info.ty)}>
+        <div className="track-slot sm td-slot"><TrackGlyph ty={info.ty} /></div>
 
         <div style={{ minWidth: 0 }}>
           <div className="hero-eyebrow">
             {isLive ? "Live" : "Next race"} · {weekLabel(week)}{info.ex ? " · Exhibition" : ""}
           </div>
-          <div className="hero-title">{info.t}</div>
+          <div className="hero-title">{info.r || info.t}</div>
+          <TrackSpecLine ty={info.ty} track={info.t} className="hero-spec" />
           <div className="hero-meta num">
             {isLive
               ? <><span className="live-dot" />LIVE{stage != null ? ` · STAGE ${stage}` : ""}</>
@@ -127,7 +121,6 @@ function RaceHero({ data, player, setTab, isLive, liveScores, liveStatus, timing
         </div>
 
         <div style={{ textAlign: "right" }}>
-          <span className="pill num" style={{ fontSize: 9.5 }}>{ARCHETYPE[info.ty]} ×{TRACK_MULTS[info.ty]?.toFixed(1)}</span>
           {isLive
             ? <div className="hero-clock num">
                 {timingData?.lapsInRace > 0 ? `LAP ${timingData.lapNumber}/${timingData.lapsInRace}` : (liveStatus || "")}

@@ -12,6 +12,7 @@ import { ARCHETYPE } from "../engine/scouting";
 import { DriverDrawer, ScoutTags } from "./DriverTelemetry";
 import { paintFor } from "../driverPaint";
 import { haptic } from "../utils/haptics";
+import { TrackGlyph, TrackSpecLine, auraProps } from "./TrackIdentity";
 
 const MAKE_BADGE = { Chevy:"#b8b8b8", Ford:"#4a90e2", Toyota:"#eb0a1e", Dodge:"#a855f7" };
 
@@ -354,16 +355,16 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, onToggleToRea
 
       {/* ── Sticky "On The Clock" header ────────────────────────────────────── */}
       <header className="dr-head" data-tone={isGated || draftComplete ? "done" : isMyTurn ? "go" : "wait"}
-              style={currentTurn ? { "--mc": DRAFT_CLR[currentTurn.pid] } : undefined}>
-        <div className="dr-race">
-          <span className="ttl">
-            {weekName(currentWeek)} Draft <i>•</i> {weekInfo.r} — {weekInfo.t}
-          </span>
-          {TTL[weekInfo.ty] && (
-            <span className="dr-mult num" style={{ color:TTC[weekInfo.ty] }} title={`${weekInfo.ty.replace("_"," ")} track multiplier`}>
-              {TTL[weekInfo.ty]} ×{TRACK_MULTS[weekInfo.ty]?.toFixed(1)}
-            </span>
-          )}
+              data-td={auraProps(weekInfo.ty)["data-td"]}
+              style={{ ...(auraProps(weekInfo.ty).style || {}), ...(currentTurn ? { "--mc": DRAFT_CLR[currentTurn.pid] } : {}) }}>
+        <div className="dr-id">
+          <div className="td-slot dr-glyph"><TrackGlyph ty={weekInfo.ty} /></div>
+          <div className="dr-id-txt">
+            <div className="dr-race">
+              <span className="ttl">{weekName(currentWeek)} Draft <i>•</i> {weekInfo.r}</span>
+            </div>
+            <TrackSpecLine ty={weekInfo.ty} track={weekInfo.t} className="dr-spec" />
+          </div>
         </div>
 
         {!isGated && (draftComplete ? (

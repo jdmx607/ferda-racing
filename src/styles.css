@@ -1558,7 +1558,8 @@ button.st-mrow { cursor: pointer; }
   border-radius: 10px; background: color-mix(in srgb, var(--t) 8%, var(--surface)); border: 1px solid color-mix(in srgb, var(--t) 35%, transparent);
   border-left: 3px solid var(--t);
 }
-.dr-strat[data-kind="track-strategy"] { --t: #60A5FA; }
+.dr-strat[data-kind="track-strategy"] { --t: #22C55E; }   /* SS discipline accent */
+.dr-strat[data-kind="stage-flip"] { --t: #8B5CF6; }       /* RC discipline accent */
 .dr-strat .hd { display: flex; align-items: center; gap: 8px; }
 .dr-strat .hd b { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--t); }
 .dr-strat .hd .num { font-size: 10.5px; font-weight: 700; padding: 0 6px; border-radius: 999px; color: var(--text); background: var(--surface-2); border: 1px solid var(--border-strong); }
@@ -2052,4 +2053,63 @@ button.st-mrow { cursor: pointer; }
 .as-test {
   margin-top: 6px; min-height: 36px; padding: 0 14px; border-radius: 999px; cursor: pointer;
   background: transparent; color: var(--text); border: 1px solid var(--border-strong); font-size: 12px; font-weight: 700;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Track discipline identity (ST bullring · RC road course · INT · SS)
+   Accent arrives as --td on the header (see TrackIdentity.jsx).
+   ───────────────────────────────────────────────────────────────────────────── */
+/* 8% radial aura behind any header wearing a discipline */
+[data-td] {
+  background-image: radial-gradient(130% 160% at 0% 0%, color-mix(in srgb, var(--td) 8%, transparent) 0%, transparent 62%);
+}
+
+/* 48×48 track badge: discipline-tinted border + faint wash */
+.td-slot {
+  box-sizing: border-box; width: 48px; height: 48px; flex: none;
+  display: flex; align-items: center; justify-content: center; padding: 3px;
+  border-radius: 12px; color: var(--td, var(--text-3));
+  border: 1px solid color-mix(in srgb, var(--td, var(--text-3)) 45%, transparent);
+  background-color: color-mix(in srgb, var(--td, var(--text-3)) 6%, transparent);
+}
+.td-slot .td-glyph { width: 100%; height: 100%; display: block; }
+
+/* coloured discipline + multiplier pill */
+.td-badge {
+  --td: var(--text-2);
+  flex: none; display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 999px; white-space: nowrap;
+  font-size: 10.5px; font-weight: 800; letter-spacing: 0.02em; line-height: 1.6;
+  color: var(--td); background: color-mix(in srgb, var(--td) 14%, transparent); border: 1px solid color-mix(in srgb, var(--td) 45%, transparent);
+}
+
+/* Track · [INT ×0.5] · 1.5 MI OVAL • TIRE WEAR */
+.td-line { display: flex; align-items: center; gap: 4px 8px; min-width: 0; white-space: nowrap; margin-top: 4px; }
+.td-track { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 12.5px; color: var(--text-2); }
+.td-spec {
+  flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: color-mix(in srgb, var(--td, var(--text-2)) 65%, var(--text-2));
+}
+/* narrow phones: the spec tag drops to its own row instead of squeezing */
+@media (max-width: 480px) {
+  .td-line { flex-wrap: wrap; }
+  .td-spec { flex-basis: 100%; }
+}
+
+/* placements */
+.race-header .td-line { margin-top: 3px; }
+.hero-spec { margin-top: 3px; }
+.hero-spec .td-track { font-size: 12px; }
+.rs-specline { margin-top: 7px; }
+.rs-info .rs-trackline { margin-top: 6px; }
+.rs-logo.td-slot { width: 48px; height: 48px; }
+
+/* draft sticky header: 40px badge beside title + spec (keeps the header compact) */
+.dr-id { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; align-items: center; }
+.dr-glyph.td-slot { width: 40px; height: 40px; border-radius: 10px; padding: 2px; }
+.dr-id-txt { min-width: 0; }
+.dr-spec { margin-top: 2px; }
+.dr-spec .td-track { font-size: 11.5px; }
+@media (max-width: 480px) {
+  .dr-spec { flex-wrap: nowrap; }
+  .dr-spec .td-spec { flex-basis: auto; }
 }
