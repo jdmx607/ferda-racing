@@ -5,13 +5,14 @@ import { lastNameOf, splitDriver } from "../engine/draftBoard";
 import { getLineups } from "../engine/liveBoard";
 import { formatRaceWhen, hasRealRaceTime } from "../engine/racetime";
 import { accentOf } from "./LiveBoard";
+import { tapProps } from "../hooks/useDriverCard";
 
 /**
  * Pre-Race Pit Box — shown when no race is live. Green-flag date, each manager's
  * roster with qualifying start positions, and a Draft Room CTA while lineups are
  * still being set.
  */
-export function PreRaceCard({ weekInfo, times, weekPicks, draftState, grid, me, onGoDraft }) {
+export function PreRaceCard({ weekInfo, times, weekPicks, draftState, grid, me, onGoDraft, onOpen }) {
   const lineups = getLineups(PLAYERS, weekPicks, draftState, ACTIVE_PICKS);
   const allSet = lineups.every(l => l.complete);
   const when = formatRaceWhen(weekInfo, times);
@@ -45,7 +46,7 @@ export function PreRaceCard({ weekInfo, times, weekPicks, draftState, grid, me, 
               const { num, name } = splitDriver(d);
               const start = grid?.[nameKey(d)];
               return (
-                <div key={i} className="lv-pit-d" style={{ "--paint": paintFor(d) }}>
+                <div key={i} className="lv-pit-d" style={{ "--paint": paintFor(d) }} {...tapProps(onOpen, d)}>
                   <span className="n num">{num}</span>
                   <span className="nm">{lastNameOf(name)}</span>
                   <span className="st num">{start ? `Start P${start}` : "—"}</span>

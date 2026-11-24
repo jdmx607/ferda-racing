@@ -5,6 +5,8 @@ import { storeFor } from "../engine/events";
 import { buildDriverRows, buildStandings, filterRows, getStageStatus, showStageCutoff, FILTERS } from "../engine/liveBoard";
 import { useRaceTimes, useStartingGrid } from "../hooks/useNascarFeeds";
 import { FlagStrip, raceFlagState } from "./FlagStrip";
+import { DriverTelemetryCard } from "./DriverTelemetryCard";
+import { useDriverCard } from "../hooks/useDriverCard";
 import { RaceHeader } from "./RaceHeader";
 import { PreRaceCard } from "./LivePreRace";
 import {
@@ -239,6 +241,7 @@ function LapHistory({ week, weekPicks }) {
 export function LiveTab({ data, player, setTab, liveScores, liveStatus, raceInfo, currentWeek, timingData }) {
   const [filter, setFilter] = useState("mine");
   const raceTimes = useRaceTimes();
+  const card = useDriverCard(player, data);
 
   const isActive = !!(data?.liveRace?.active && liveScores);
   const week = data?.liveRace?.week || currentWeek;
@@ -246,6 +249,7 @@ export function LiveTab({ data, player, setTab, liveScores, liveStatus, raceInfo
   const store = storeFor(data, week);
   const weekPicks = store.picks?.["w" + week] || {};
   const grid = useStartingGrid(week, !!weekInfo && !isActive);
+  const cardEl = <DriverTelemetryCard data={data} name={card.name} week={week} player={player} mode="live" onClose={card.close} />;
 
   // ── Pre-race / idle ────────────────────────────────────────────────────────
   if (!isActive) return (
@@ -261,7 +265,7 @@ export function LiveTab({ data, player, setTab, liveScores, liveStatus, raceInfo
           <PreRaceCard
             weekInfo={weekInfo} times={raceTimes} weekPicks={weekPicks}
             draftState={store.drafts?.["w" + week] || []} grid={grid}
-            me={player?.id} onGoDraft={() => setTab?.("draft")}
+            me={player?.id} onGoDraft={() => setTab?.("draft")} onOpen={card.open}
           />
         )}
         {!weekInfo && (
@@ -276,6 +280,7 @@ export function LiveTab({ data, player, setTab, liveScores, liveStatus, raceInfo
           </Disclosure>
         )}
       </div>
+      {cardEl}
     </div>
   );
 
@@ -311,7 +316,7 @@ export function LiveTab({ data, player, setTab, liveScores, liveStatus, raceInfo
       <StatusRow timing={timingData} stage={stage} rows={rows} liveStatus={liveStatus} />
 
       <div className="lv-body">
-        <StandingsCard standings={standings} rows={rows} me={player?.id} />
+        <StandingsCard standings={standings} rows={rows} me={player?.id} onOpen={card.open} />
 
         <FilterToggle filters={FILTERS} value={filter} onChange={setFilter} counts={counts} />
 
@@ -323,7 +328,7 @@ export function LiveTab({ data, player, setTab, liveScores, liveStatus, raceInfo
             </div>
           ) : visible.map((r, i) => (
             <Fragment key={r.key}>
-              <DriverRow row={r} />
+              <DriverRow row={r} onOpen={card.open} />
               {i === cutoffAfter && <StageCutoff />}
             </Fragment>
           ))}
@@ -335,6 +340,7 @@ export function LiveTab({ data, player, setTab, liveScores, liveStatus, raceInfo
           <TimingTower timingData={timingData} weekPicks={weekPicks} />
         </Disclosure>
       </div>
+      {cardEl}
     </div>
   );
 }

@@ -9,7 +9,9 @@ import {
 } from "../engine/statsView";
 import { splitDriver, lastNameOf } from "../engine/draftBoard";
 import { GmBoard } from "./GmBoard";
-import { DriverDrawer, NumBadge, MakeTeam } from "./DriverTelemetry";
+import { NumBadge, MakeTeam } from "./DriverTelemetry";
+import { DriverTelemetryCard } from "./DriverTelemetryCard";
+import { useDriverCard } from "../hooks/useDriverCard";
 
 const accentOf = pid => PClr[pid]?.accent || "var(--text-2)";
 const f1 = v => (Math.round((v || 0) * 10) / 10).toFixed(1);
@@ -60,10 +62,9 @@ function MiniRow({ rank, driver, sub, value, unit, onClick, highlight }) {
 
 // ─── Drivers · Leaderboard ────────────────────────────────────────────────────
 
-function DriverLeaderboard({ data, driverStats }) {
+function DriverLeaderboard({ driverStats, onOpen }) {
   const [sortBy, setSortBy] = useState("totalFerdaPts");
   const [showAll, setShowAll] = useState(false);
-  const [open, setOpen] = useState(null);
 
   const sorted = useMemo(() => [...driverStats].sort((a, b) => b[sortBy] - a[sortBy]), [driverStats, sortBy]);
   const visible = showAll ? sorted : sorted.slice(0, 15);
@@ -80,7 +81,7 @@ function DriverLeaderboard({ data, driverStats }) {
         {visible.map((s, i) => {
           const m = leaderboardMetrics(s, sortBy);
           return (
-            <button key={s.name} className={"st-card" + (i === 0 ? " lead" : "")} onClick={() => setOpen(s.name)}>
+            <button key={s.name} className={"st-card" + (i === 0 ? " lead" : "")} onClick={() => onOpen?.(s.name)}>
               <span className="rk num">{i + 1}</span>
               <NumBadge driver={s.name} />
               <span className="mid">
@@ -104,17 +105,14 @@ function DriverLeaderboard({ data, driverStats }) {
       {!showAll && sorted.length > 15 && (
         <button className="st-more" onClick={() => setShowAll(true)}>Show all {sorted.length} drivers ↓</button>
       )}
-
-      <DriverDrawer data={data} name={open} onClose={() => setOpen(null)} />
     </div>
   );
 }
 
 // ─── Drivers · Track Specialists ──────────────────────────────────────────────
 
-function TrackSpecialists({ data }) {
+function TrackSpecialists({ data, onOpen }) {
   const [ty, setTy] = useState("superspeedway");
-  const [open, setOpen] = useState(null);
   const list = useMemo(() => getTrackSpecialists(data, ty, { min: 2, n: 10 }), [data, ty]);
   return (
     <div>
@@ -128,14 +126,13 @@ function TrackSpecialists({ data }) {
         <div className="st-list">
           {list.map((d, i) => (
             <MiniRow
-              key={d.name} rank={i + 1} driver={d.name} highlight={i === 0} onClick={() => setOpen(d.name)}
+              key={d.name} rank={i + 1} driver={d.name} highlight={i === 0} onClick={onOpen ? () => onOpen(d.name) : undefined}
               sub={`${d.races} races • ${d.wins}W • ${d.top5} T5 • best ${f1(d.best)}`}
               value={f1(d.avg)} unit=" AVG"
             />
           ))}
         </div>
       )}
-      <DriverDrawer data={data} name={open} onClose={() => setOpen(null)} />
     </div>
   );
 }
@@ -476,7 +473,8 @@ const TIERS = [
   ] },
 ];
 
-export function StatsTab({ data }) {
+export function StatsTab({ data, player, currentWeek }) {
+  const card = useDriverCard(player, data);
   const [tier, setTier] = useState("drivers");
   const [sub, setSub] = useState({ managers: "power", drivers: "leaderboard" });
   const stripRef = useRef(null);
@@ -516,8 +514,8 @@ export function StatsTab({ data }) {
       </div>
 
       <div className="st-body">
-        {tier === "drivers" && active === "leaderboard" && <DriverLeaderboard data={data} driverStats={driverStats} />}
-        {tier === "drivers" && active === "tracks"      && <TrackSpecialists data={data} />}
+        {tier === "drivers" && active === "leaderboard" && <DriverLeaderboard driverStats={driverStats} onOpen={card.open} />}
+        {tier === "drivers" && active === "tracks"      && <TrackSpecialists data={data} onOpen={card.open} />}
         {tier === "drivers" && active === "trends"      && <DraftTrends data={data} driverStats={driverStats} />}
         {tier === "managers" && active === "power"      && <PowerRankings data={data} />}
         {tier === "managers" && active === "efficiency" && <ManagerEfficiency data={data} />}
@@ -527,6 +525,8 @@ export function StatsTab({ data }) {
       <div className="st-foot">
         All scores use FERDA rules (full scoring, not mulligan). "Times Picked" counts each pick across all 4 players. Tap a driver for their season.
       </div>
+
+      <DriverTelemetryCard data={data} name={card.name} week={currentWeek} player={player} mode="stats" onClose={card.close} />
     </div>
   );
 }

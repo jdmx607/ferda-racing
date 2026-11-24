@@ -9,9 +9,12 @@ import { BottomSheet } from "./BottomSheet";
 import { MulliganSim } from "./MulliganSim";
 import { useStartingGrid } from "../hooks/useNascarFeeds";
 import { isExhibition } from "../exhibitions";
+import { DriverTelemetryCard } from "./DriverTelemetryCard";
+import { useDriverCard } from "../hooks/useDriverCard";
 
 export function LineupsTab({ data, currentWeek, player, raceInfo, onApplyMulligan }) {
   const [week, setWeek] = useState(currentWeek);
+  const card = useDriverCard(player, data);
   const [simFor, setSimFor] = useState(null);           // pid whose "Test Mulligan Swap" sheet is open
   const grid = useStartingGrid(week, week === currentWeek);
   const weekInfo    = SCHEDULE.find(s => s.w === week);
@@ -186,6 +189,7 @@ export function LineupsTab({ data, currentWeek, player, raceInfo, onApplyMulliga
                               dnf={!!raw?.dnf}
                               dnr={!!dScore?.dnr}
                               mulligan={mulls.includes(driver)}
+                              onOpen={card.open}
                             />
                           );
                         })
@@ -207,6 +211,8 @@ export function LineupsTab({ data, currentWeek, player, raceInfo, onApplyMulliga
           />
         )}
       </BottomSheet>
+
+      <DriverTelemetryCard data={data} name={card.name} week={week} player={player} mode="lineup" onClose={card.close} />
     </div>
   );
 }

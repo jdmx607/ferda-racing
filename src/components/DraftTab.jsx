@@ -9,7 +9,9 @@ import { getUpNext, picksUntil, splitDriver, pillLabel, buildPool, pruneQueue } 
 import { useDraftQueue } from "../hooks/useDraftQueue";
 import { useScouting } from "../hooks/useScouting";
 import { ARCHETYPE } from "../engine/scouting";
-import { DriverDrawer, ScoutTags } from "./DriverTelemetry";
+import { ScoutTags } from "./DriverTelemetry";
+import { DriverTelemetryCard } from "./DriverTelemetryCard";
+import { useDriverCard, tapProps } from "../hooks/useDriverCard";
 import { paintFor } from "../driverPaint";
 import { haptic } from "../utils/haptics";
 import { TrackGlyph, TrackSpecLine, auraProps } from "./TrackIdentity";
@@ -138,9 +140,7 @@ function PoolRow({ row, myTurn, queued, spotlight, onDraft, onQueue, tags, form,
       style={{ "--paint": paintFor(driver) }}
     >
       <div className="dr-num num" aria-hidden="true">{num || "–"}</div>
-      <div className="dr-main" role="button" tabIndex={0} onClick={() => onOpen(driver)}
-           onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpen(driver); } }}
-           aria-label={`${name} telemetry`}>
+      <div className="dr-main" {...tapProps(onOpen, driver, `${name} telemetry`)}>
         <div className="dr-l1">
           <span className="dr-name">{name}</span>
           {info.make && <span className="dr-make" style={{ color:MAKE_BADGE[info.make] }}>{info.make}</span>}
@@ -224,7 +224,7 @@ const POOL_PILLS = [
 ];
 
 export function DraftTab({ player, data, onDraftPick, onUndoDraft, onToggleToRear, currentWeek }) {
-  const [sheet, setSheet] = useState(null);
+  const card = useDriverCard(player, data);
   const [search,  setSearch]  = useState("");
   const [undoMsg, setUndoMsg] = useState("");
   const [pickMsg, setPickMsg] = useState("");
@@ -290,9 +290,10 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, onToggleToRea
     return analyzeLineups(wp, currentWeek, data);
   }, [draftComplete, currentWeek, data]);
 
+  // Resolves true once the pick is saved (false if cancelled / refused) so the telemetry card knows whether to close.
   const handlePick = async (driver) => {
-    if (!isMyTurn || draftComplete || isMemorial(driver)) return;
-    if (!window.confirm(`Lock in ${driver}?`)) return;
+    if (!isMyTurn || draftComplete || isMemorial(driver)) return false;
+    if (!window.confirm(`Lock in ${driver}?`)) return false;
     const result = await onDraftPick(currentWeek, player.id, driver, currentPickNum);
     if (result && !result.applied) {
       setPickMsg(
@@ -301,10 +302,11 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, onToggleToRea
           : "⚠️ Someone already picked this slot — the board just refreshed with the latest picks."
       );
       setTimeout(() => setPickMsg(""), 5000);
-      return;
+      return false;
     }
     haptic(15);
     setSearch("");
+    return true;
   };
 
   // ── Timer countdown display (autopick + reminders now run app-wide in App.jsx) ─
@@ -483,7 +485,7 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, onToggleToRea
               <PoolRow
                 key={row.driver} row={row} myTurn={isMyTurn} queued={liveQueue.includes(row.driver)}
                 spotlight={mode === "bonus"} onDraft={handlePick} onQueue={q.toggle}
-                tags={sc.tagsFor(row.driver)} form={sc.formFor(row.driver)} ty={sc.ty} onOpen={setSheet}
+                tags={sc.tagsFor(row.driver)} form={sc.formFor(row.driver)} ty={sc.ty} onOpen={card.open}
               />
             ))}
           </div>
@@ -540,12 +542,16 @@ export function DraftTab({ player, data, onDraftPick, onUndoDraft, onToggleToRea
       )}
 
       {/* ── Driver telemetry drawer ───────────────────────────────────────── */}
-      <DriverDrawer
-        data={data} name={sheet} onClose={() => setSheet(null)}
-        scout={sheet ? {
-          ty: sc.ty, form: sc.formFor(sheet), tags: sc.tagsFor(sheet), toRear: sc.rear.has(sheet),
-          canToggleRear: isCommish && !!onToggleToRear, onToggleRear: () => onToggleToRear(currentWeek, sheet),
-        } : null}
+      <DriverTelemetryCard
+        data={data} name={card.name} week={currentWeek} player={player} mode="draft" onClose={card.close}
+        draft={{
+          myTurn: isMyTurn && !draftComplete,
+          queued: !!card.name && liveQueue.includes(card.name),
+          onDraft: handlePick, onQueue: q.toggle,
+        }}
+        rear={card.name && isCommish && onToggleToRear ? {
+          can: true, on: sc.rear.has(card.name), onToggle: () => onToggleToRear(currentWeek, card.name),
+        } : undefined}
       />
 
       {/* ── My Queue — pinned above the bottom nav ─────────────────────────── */}

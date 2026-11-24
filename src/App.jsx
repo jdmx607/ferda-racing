@@ -422,10 +422,10 @@ export default function App() {
       <Suspense fallback={<TabLoader/>}>
         {tab==="lineups"&&<LineupsTab data={data} currentWeek={currentWeek} player={user} raceInfo={raceInfo} onApplyMulligan={handleApplyMulligan}/>}
         {tab==="mulligans"&&<MulligansTab player={user} data={data} currentWeek={currentWeek} onApplyMulligan={handleApplyMulligan}/>}
-        {tab==="results"&&<ResultsTab data={data}/>}
+        {tab==="results"&&<ResultsTab data={data} player={user}/>}
         {tab==="feed"&&<FeedTab data={data}/>}
         {tab==="news"&&<NewsTab/>}
-        {tab==="stats"&&<StatsTab data={data}/>}
+        {tab==="stats"&&<StatsTab data={data} player={user} currentWeek={currentWeek}/>}
         {tab==="history"&&<HistoryTab data={data}/>}
         {tab==="playoffs"&&<PlayoffsTab data={data} user={user} currentWeek={currentWeek} onSaveChaseField={handleSaveChaseField}/>}
         {tab==="schedule"&&<ScheduleTab data={data}/>}

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, createContext, useContext } from "react";
 import { PClr } from "../theme";
 import { PNAME, SCHEDULE, TRACK_MULTS, ACTIVE_PICKS, isMemorial } from "../constants";
 import { getWeekTopDrivers, generateWeekRecap } from "../engine/stats";
@@ -12,6 +12,8 @@ import { TrackGlyph, TrackSpecLine, auraProps } from "./TrackIdentity";
 import { optimalLineup } from "../engine/whatIf";
 import { renderRecapCard, shareBlob } from "../utils/shareCard";
 import { haptic } from "../utils/haptics";
+import { DriverTelemetryCard } from "./DriverTelemetryCard";
+import { useDriverCard, tapProps } from "../hooks/useDriverCard";
 import { pushToast } from "../utils/toast";
 import {
   scoredWeeks, weekWinners, stepWeek, buildOwnerMap, carKey, parseDriver,
@@ -27,6 +29,9 @@ const BONUS_CHIP = {
   "DNF":      "#949BA8", "DQ":       "#ef4444",
 };
 
+// Opens the telemetry card for a driver (null in Simplified Mode, where rows stay plain text).
+const OpenCtx = createContext(null);
+
 function ScoreChip({ label, pts }) {
   const col = BONUS_CHIP[label] || (pts > 0 ? "#10b981" : pts < 0 ? "#ef4444" : "#6B7280");
   const short = label === "SWEEP!" ? "💫 SWEEP" : label;
@@ -39,10 +44,11 @@ function ScoreChip({ label, pts }) {
 }
 
 function DriverResultRow({ d, tag }) {
+  const open = useContext(OpenCtx);
   const { num, name } = parseDriver(d.driver);
   const tone = d.total >= 40 ? " big" : d.total < 0 ? " neg" : d.total > 0 ? " pos" : "";
   return (
-    <div className={`rs-drv${tone}${d.dnr ? " dnr" : ""}`}>
+    <div className={`rs-drv${tone}${d.dnr ? " dnr" : ""}`} {...tapProps(open, d.driver)}>
       <div className="rs-drv-main">
         <div className="rs-drv-name">
           {num && <span className="num rs-dnum">#{num}</span>}
@@ -386,6 +392,7 @@ function PlayerCard({ pid, ps, idx, count, isOpen, onToggle, perfectScore, ctx, 
 
 // ─── 5. Top performers ───────────────────────────────────────────────────────
 function TopPerformers({ topDrivers, ownerMap }) {
+  const open = useContext(OpenCtx);
   if (!topDrivers.length) return null;
   return (
     <section className="rs-top" aria-label="Top performers this week">
@@ -396,7 +403,7 @@ function TopPerformers({ topDrivers, ownerMap }) {
         {topDrivers.map((d, i) => {
           const owners = ownerMap[carKey(d.name)] || [];
           return (
-            <div key={d.name} className={`rs-top-row${i === 0 ? " first" : ""}`}>
+            <div key={d.name} className={`rs-top-row${i === 0 ? " first" : ""}`} {...tapProps(open, d.name)}>
               <span className="num rs-top-rank">{i + 1}</span>
               <span className="rs-top-name"><DriverText name={d.name} /></span>
               <span className="rs-top-owner">
@@ -414,7 +421,8 @@ function TopPerformers({ topDrivers, ownerMap }) {
 }
 
 // ─── Tab ─────────────────────────────────────────────────────────────────────
-export function ResultsTab({ data }) {
+export function ResultsTab({ data, player }) {
+  const card = useDriverCard(player, data);
   // Scored events oldest → newest, in schedule order (so the Clash / All-Star sit
   // where they actually ran). Opens on the newest.
   const weeks   = useMemo(() => scoredWeeks(data), [data]);
@@ -493,6 +501,7 @@ export function ResultsTab({ data }) {
   }
 
   return (
+    <OpenCtx.Provider value={card.open}>
     <div className="rs">
       <div className="rs-top-bar">
         <span className="label">Results</span>
@@ -541,6 +550,8 @@ export function ResultsTab({ data }) {
             <TopPerformers topDrivers={topDrivers} ownerMap={ownerMap} />
           </>
       }
+      <DriverTelemetryCard data={data} name={card.name} week={week} player={player} mode="results" onClose={card.close} />
     </div>
+    </OpenCtx.Provider>
   );
 }

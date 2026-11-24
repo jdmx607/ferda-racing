@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { PClr } from "../theme";
 import { PNAME } from "../constants";
 import { paintFor } from "../driverPaint";
+import { tapProps } from "../hooks/useDriverCard";
 import { lastNameOf } from "../engine/draftBoard";
 import { fmtLapTime, fmtPts, getFastestLap } from "../engine/liveBoard";
 
@@ -44,7 +45,7 @@ export function StatusRow({ timing, stage, rows, liveStatus }) {
 }
 
 // ── Live 4-player standings ──────────────────────────────────────────────────
-export function StandingsCard({ standings, rows, me }) {
+export function StandingsCard({ standings, rows, me, onOpen }) {
   const [open, setOpen] = useState(null);
   return (
     <div className="card lv-stand" role="list" aria-label="Live league standings">
@@ -67,7 +68,7 @@ export function StandingsCard({ standings, rows, me }) {
               <div className="lv-st-drivers">
                 {list.length === 0 && <div className="lv-empty">No picks found</div>}
                 {list.map(d => (
-                  <div key={d.key} className={"lv-mini" + (d.dnr ? " out" : "")} style={{ "--paint": paintFor(d.name) }}>
+                  <div key={d.key} className={"lv-mini" + (d.dnr ? " out" : "")} style={{ "--paint": paintFor(d.name) }} {...tapProps(onOpen, d.name)}>
                     <span className="n num">{d.num || "—"}</span>
                     <span className="nm">{lastNameOf(d.driver)}</span>
                     <span className="ps num">{d.dnr ? "DNR" : d.pos ? `P${d.pos}` : "—"}</span>
@@ -97,7 +98,7 @@ export function FilterToggle({ filters, value, onChange, counts }) {
 }
 
 // ── One driver telemetry row ─────────────────────────────────────────────────
-export function DriverRow({ row }) {
+export function DriverRow({ row, onOpen }) {
   const [open, setOpen] = useState(false);
 
   // brief green pulse when this driver's score goes up (gains spots, leads a lap,
@@ -124,35 +125,38 @@ export function DriverRow({ row }) {
       style={{ "--paint": paintFor(row.name) }}
       key={gain /* restart the CSS animation on each gain */}
     >
-      <div
-        className="lv-row-main" role={hasDetail ? "button" : undefined} tabIndex={hasDetail ? 0 : undefined}
-        aria-expanded={hasDetail ? open : undefined}
-        onClick={() => hasDetail && setOpen(o => !o)}
-        onKeyDown={e => { if (hasDetail && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); setOpen(o => !o); } }}
-      >
-        <div className="lv-num num" aria-hidden="true">{row.num}</div>
-        <div className="lv-mid">
-          <div className="lv-l1">
-            <span className="lv-name">{row.driver}</span>
-            {row.owners.map(pid => (
-              <span key={pid} className="lv-own" style={{ "--c": accentOf(pid) }}>{PNAME[pid].toUpperCase()}</span>
-            ))}
-            {row.mull && <span className="chip">MULL</span>}
+      <div className="lv-row-top">
+        {/* tap the row → telemetry card; the chevron beside it keeps the live lap detail one tap away */}
+        <div className="lv-row-main" {...tapProps(onOpen, row.name)}>
+          <div className="lv-num num" aria-hidden="true">{row.num}</div>
+          <div className="lv-mid">
+            <div className="lv-l1">
+              <span className="lv-name">{row.driver}</span>
+              {row.owners.map(pid => (
+                <span key={pid} className="lv-own" style={{ "--c": accentOf(pid) }}>{PNAME[pid].toUpperCase()}</span>
+              ))}
+              {row.mull && <span className="chip">MULL</span>}
+            </div>
+            <div className="lv-l2 num">
+              {row.dnr ? <span>DID NOT RACE</span> : (
+                <>
+                  <span className="p">{row.pos ? `P${row.pos}` : "—"}</span>
+                  {d != null && (
+                    <span className={d > 0 ? "up" : d < 0 ? "dn" : "eq"}>{d > 0 ? `▲ +${d}` : d < 0 ? `▼ ${d}` : "— 0"}</span>
+                  )}
+                  {row.dnf ? <span className="dn">DNF</span>
+                    : row.interval ? <span className={row.pit ? "pit" : ""}>{row.interval}</span> : null}
+                </>
+              )}
+            </div>
           </div>
-          <div className="lv-l2 num">
-            {row.dnr ? <span>DID NOT RACE</span> : (
-              <>
-                <span className="p">{row.pos ? `P${row.pos}` : "—"}</span>
-                {d != null && (
-                  <span className={d > 0 ? "up" : d < 0 ? "dn" : "eq"}>{d > 0 ? `▲ +${d}` : d < 0 ? `▼ ${d}` : "— 0"}</span>
-                )}
-                {row.dnf ? <span className="dn">DNF</span>
-                  : row.interval ? <span className={row.pit ? "pit" : ""}>{row.interval}</span> : null}
-              </>
-            )}
-          </div>
+          <div className="lv-pts num" style={{ color: ptsColor }}>{row.pts == null ? "—" : fmtPts(row.pts)}</div>
         </div>
-        <div className="lv-pts num" style={{ color: ptsColor }}>{row.pts == null ? "—" : fmtPts(row.pts)}</div>
+        {hasDetail && (
+          <button className="lv-more" aria-expanded={open} aria-label={`${row.driver} lap detail`} onClick={() => setOpen(o => !o)}>
+            <span aria-hidden="true">{open ? "▲" : "▼"}</span>
+          </button>
+        )}
       </div>
 
       {open && (

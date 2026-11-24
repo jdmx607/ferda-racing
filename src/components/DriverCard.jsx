@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { DRIVER_INFO } from "../constants";
 import { carNumber, paintFor } from "../driverPaint";
+import { tapProps } from "../hooks/useDriverCard";
 
 /**
  * Compact full-width driver card.
@@ -13,7 +14,7 @@ import { carNumber, paintFor } from "../driverPaint";
  */
 export function DriverCard({
   driver, points = 0, startPos, currentPos, dnf = false, dnr = false,
-  mulligan = false, breakdown, badge, tag,
+  mulligan = false, breakdown, badge, tag, onOpen,
 }) {
   const info = DRIVER_INFO[driver] || {};
   const num  = carNumber(driver);
@@ -49,6 +50,7 @@ export function DriverCard({
     <div
       className={`dc${gain ? " is-gain" : ""}${dnr ? " is-out" : ""}`}
       style={{ "--paint": paintFor(driver) }}
+      {...tapProps(onOpen, driver)}
     >
       <div className="dc-badge">
         {badge || <span className="dc-num num">{num || "—"}</span>}

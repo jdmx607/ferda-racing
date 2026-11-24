@@ -6,7 +6,9 @@ import { nameKey } from "../driverKey";
 import { useScouting } from "../hooks/useScouting";
 import { ARCHETYPE } from "../engine/scouting";
 import { weekName } from "../exhibitions";
-import { DriverDrawer, ScoutTags } from "./DriverTelemetry";
+import { ScoutTags } from "./DriverTelemetry";
+import { DriverTelemetryCard } from "./DriverTelemetryCard";
+import { useDriverCard } from "../hooks/useDriverCard";
 
 // Scouting context for this week's race, shared by every row without prop-drilling.
 const ScoutCtx = createContext(null);
@@ -39,7 +41,7 @@ function DriverRow({ driver, note, hideTeam }) {
   const form = sc?.ty ? sc.formFor(driver) : null;
   const start = sc?.grid?.[sc.key(driver)];
   return (
-    <button className="dv-row" style={{ "--paint": paintFor(driver) }} onClick={() => sc?.open(driver)} aria-label={`${name} telemetry`}>
+    <button className="dv-row" style={{ "--paint": paintFor(driver) }} onClick={() => sc?.open?.(driver)} aria-label={`${name} telemetry`}>
       <span className="dv-num num">{num || "—"}</span>
       <span className="dv-mid">
         <span className="dv-name">{name}</span>
@@ -76,13 +78,13 @@ function Section({ title, count, accent = C.accent, children, empty }) {
 
 export function DriversTab({ data, currentWeek, player, onToggleToRear }) {
   const [search, setSearch] = useState("");
-  const [sheet,  setSheet]  = useState(null);
+  const card = useDriverCard(player, data);
   const sc = useScouting(data || {}, currentWeek);
   const isCommish = player?.id === "justin";
   const ctx = useMemo(() => ({
-    ...sc, open: setSheet, ttl: sc.ty ? { superspeedway:"SS", short_track:"ST", intermediate:"INT", road_course:"RC" }[sc.ty] : "",
+    ...sc, open: card.open, ttl: sc.ty ? { superspeedway:"SS", short_track:"ST", intermediate:"INT", road_course:"RC" }[sc.ty] : "",
     key: nameKey,
-  }), [sc]);
+  }), [sc, card.open]);
   const [view,   setView]   = useState("team");   // "team" | "number" | "silly"
 
   const groups = useMemo(() => {
@@ -225,12 +227,11 @@ export function DriversTab({ data, currentWeek, player, onToggleToRear }) {
       </>}
     </div>
     {data && (
-      <DriverDrawer
-        data={data} name={sheet} onClose={() => setSheet(null)}
-        scout={sheet ? {
-          ty: sc.ty, form: sc.formFor(sheet), tags: sc.tagsFor(sheet), toRear: sc.rear.has(sheet),
-          canToggleRear: isCommish && !!onToggleToRear && !!sc.weekInfo, onToggleRear: () => onToggleToRear(currentWeek, sheet),
-        } : null}
+      <DriverTelemetryCard
+        data={data} name={card.name} week={currentWeek} player={player} mode="drivers" onClose={card.close}
+        rear={card.name && isCommish && onToggleToRear && sc.weekInfo ? {
+          can: true, on: sc.rear.has(card.name), onToggle: () => onToggleToRear(currentWeek, card.name),
+        } : undefined}
       />
     )}
     </ScoutCtx.Provider>
