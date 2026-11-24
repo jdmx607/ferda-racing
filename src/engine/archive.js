@@ -12,7 +12,7 @@ import { CHAMPION_HISTORY } from "../championsHistory.js";
 
 const r1 = n => Math.round(n * 10) / 10;
 const carOf = name => (String(name).match(/^#(\S+)\s/) || [])[1] || null;
-const ownersOf = (scored, name) => Object.entries(scored || {})
+export const ownersOf = (scored, name) => Object.entries(scored || {})
   .filter(([, ps]) => (ps.drivers || []).some(d => !d.dnr && (d.driver === name || (carOf(d.driver) && carOf(d.driver) === carOf(name)))))
   .map(([pid]) => pid);
 

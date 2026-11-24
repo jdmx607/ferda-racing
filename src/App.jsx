@@ -37,6 +37,7 @@ import { C } from "./theme";
 // "race" chunk: screens visited every race weekend
 const LineupsTab   = lazy(() => import("./components/LineupsTab").then(m  => ({ default: m.LineupsTab   })));
 const CheatSheetTab = lazy(() => import("./components/CheatSheetTab").then(m => ({ default: m.CheatSheetTab })));
+const RaceArchiveTab = lazy(() => import("./components/RaceArchiveTab").then(m => ({ default: m.RaceArchiveTab })));
 const MulligansTab = lazy(() => import("./components/MulligansTab").then(m => ({ default: m.MulligansTab })));
 const ResultsTab   = lazy(() => import("./components/ResultsTab").then(m  => ({ default: m.ResultsTab   })));
 
@@ -432,6 +433,7 @@ export default function App() {
         {tab==="hall"&&<HallOfChampions setTab={setTab}/>}
         {tab==="achievements"&&<AchievementsTab data={data}/>}
         {tab==="seasons"&&<SeasonsTab data={data}/>}
+        {tab==="racearchive"&&<RaceArchiveTab data={data} currentWeek={currentWeek} player={user} setTab={setTab}/>}
         {tab==="cheatsheet"&&<CheatSheetTab data={data} currentWeek={currentWeek} player={user}/>}
         {tab==="rules"&&<RulesTab data={data} player={user} onBallotChange={handleBallotChange}/>}
         {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}

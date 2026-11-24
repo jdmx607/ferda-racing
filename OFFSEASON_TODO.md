@@ -143,5 +143,7 @@ against a throwaway document (then delete it as the script prints).
       refreshes it every Monday Feb–Nov and commits the changes. Tier cuts / weights live at the top
       of the script. Tracks with little Next Gen history (Chicagoland, San Diego, N. Wilkesboro: one
       race each) lean on each driver's record at similar tracks.
-- [ ] Race Archive tab (pick a track → what everyone drafted and scored, each year), built on the
-      archived season docs.
+- [x] **Race Archive** (More → League & Lore → Race Archive): pick a track → every race there across
+      all saved seasons: manager wins/avg/best + favourite drivers, each lineup with draft round/pick
+      (when the draft was logged), start → finish, the real top 10 with owners, and "the one that
+      got away". Reads archived season docs automatically, so 2027 shows up beside 2026.
