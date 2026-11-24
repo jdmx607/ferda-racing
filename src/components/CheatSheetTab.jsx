@@ -161,8 +161,8 @@ export function CheatSheetTab({ data, currentWeek, player, simple = false, onBac
         <div className="ct-hero-top">
           <div className="td-slot ct-glyph"><TrackGlyph ty={ty} /></div>
           <div className="ct-hero-mid">
-            <div className="ct-kicker">{isNow && now ? `${weekName(now.week)} · ${now.race}` : "Track Cheat Sheet"}</div>
-            <h1 className="ct-title">{trackName || "Track Cheat Sheet"}</h1>
+            <div className="ct-kicker">{isNow && now ? `${weekName(now.week)} · ${now.race}` : "Ferda Tips"}</div>
+            <h1 className="ct-title">{trackName || "Ferda Tips"}</h1>
             <div className="ct-badges">
               {ty && <DisciplineBadge ty={ty} />}
               {ty && <span className="ct-disc">{DISCIPLINE[ty].label}</span>}
@@ -197,8 +197,8 @@ export function CheatSheetTab({ data, currentWeek, player, simple = false, onBac
         </div>
       </header>
 
-      {loading && <div className="ct-note" role="status">Loading the cheat sheet…</div>}
-      {error && <div className="ct-note err" role="alert">The cheat sheet for this track isn't available right now. Check your connection and try again.</div>}
+      {loading && <div className="ct-note" role="status">Loading Ferda Tips…</div>}
+      {error && <div className="ct-note err" role="alert">Ferda Tips for this track aren't available right now. Check your connection and try again.</div>}
 
       {sheet && (
         <>

@@ -132,7 +132,7 @@ against a throwaway document (then delete it as the script prints).
 - [ ] Confirm #10/#16 at Kaulig (Dodge), #51 Cody Ware's team, and add any part-time drivers.
 - [ ] Exhibition winners don't show in the activity feed / stats yet.
 - [ ] Add 2027-schedule tests (the suite only covers 2026 now).
-- [x] **Track Cheat Sheet** (More → Racing → Cheat Sheet; also linked from Big Monroe's Make Picks).
+- [x] **Ferda Tips** (track cheat sheet; More → Racing → Ferda Tips; also linked from Big Monroe's Make Picks).
       `scripts/update_cheat_sheets.py` pulls the nascaR.data Cup results (CSV, falling back to the
       Parquet file when the CSV URL 404s — it does today), scores every active driver at every schedule
       track, and writes `public/data/tracks_master.json` + `public/data/cheat_sheets/{slug}.json`.

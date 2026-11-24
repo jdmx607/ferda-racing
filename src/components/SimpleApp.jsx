@@ -82,7 +82,7 @@ function MakePicks({ user, data, week, onDraftPick, onCheat }) {
       {status.state === "complete" && <div className="sp-status">The draft is done. Good luck this week!</div>}
 
       {info && <div className="sp-race">{weekName(week)} · {info.r} · {info.t}</div>}
-      {info && <button className="sp-cheat" onClick={onCheat}>📋 See the {info.t} Cheat Sheet — who runs well here</button>}
+      {info && <button className="sp-cheat" onClick={onCheat}>📋 Ferda Tips for {info.t} — who runs well here</button>}
 
       {/* my 5 picks */}
       <section className="sp-card">
