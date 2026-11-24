@@ -34,8 +34,8 @@ committing to any of it.
 - [ ] **Update drivers/teams for the new season** — `DRIVERS` / `DRIVER_INFO`
       in `constants.js`, including the `partTime` flags used by autopick.
       *Done Nov 13, 2026* from the 2027 lineup graphic + user-supplied changes:
-      Preece #6 (RFK), Hill #33 (RCR), Berry #42 + Herbst #84 (Legacy), Heim #35
-      (23XI), Love #21 (Wood Bros); Keselowski is the lone Free Agent;
+      Preece #6 (RFK), Hill #33 (RCR), Berry #42 + Herbst #84 (Legacy), Heim #67
+      (23XI — he kept his #67, not #35), Love #21 (Wood Bros); Keselowski is the lone Free Agent;
       Nemechek and Jimmie Johnson are out of the pool. Still open: confirm the
       remaining names are right (#10 Ty Dillon / #16 Allmendinger at Kaulig
       Dodge, #51 Cody Ware) and add any part-time / miscellaneous drivers.

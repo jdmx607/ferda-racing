@@ -113,7 +113,7 @@ export const ALL_STAR_PAYOUT = [125, 50, 10, 0];
 // 2027 draftable pool, from the 2027 Cup team lineup graphic (grouped by team).
 // Car numbers/teams are from the graphic; names are each number's 2026 driver
 // except the 2027 changes in DRIVER_INFO_2027 (Preece #6, Hill #33, Berry #42,
-// Herbst #84, Heim #35, Love #21; Nemechek and Jimmie Johnson are out). Drivers that
+// Herbst #84, Heim #67, Love #21; Nemechek and Jimmie Johnson are out). Drivers that
 // only raced in 2026 stay in DRIVER_INFO (below) so past results, stats and
 // history keep their team/make info; they're just no longer draftable.
 export const DRIVERS = [
@@ -128,7 +128,7 @@ export const DRIVERS = [
   // Joe Gibbs
   "#11 Denny Hamlin","#19 Chase Briscoe","#20 Christopher Bell","#54 Ty Gibbs",
   // 23XI
-  "#23 Bubba Wallace","#35 Corey Heim","#45 Tyler Reddick",
+  "#23 Bubba Wallace","#67 Corey Heim","#45 Tyler Reddick",
   // Legacy
   "#42 Josh Berry","#43 Erik Jones","#84 Riley Herbst",
   // Penske + Wood Brothers
@@ -207,7 +207,9 @@ const DRIVER_INFO_2027 = {
   "#33 Austin Hill":       { team:"Richard Childress Racing", make:"Chevy",  change:"Full-time in the #33 (was shared)" },
   "#42 Josh Berry":        { team:"Legacy Motor Club",        make:"Toyota", change:"Moves from Wood Brothers #21" },
   "#84 Riley Herbst":      { team:"Legacy Motor Club",        make:"Toyota", change:"Moves from 23XI #35" },
-  "#35 Corey Heim":        { team:"23XI Racing",              make:"Toyota", change:"Replaces Herbst (was part-time #67)" },
+  // Heim keeps the #67 he ran part-time in 2026 (same name string, so his 2026 history lines up).
+  // This entry replaces the 2026 partTime one, so he's a full-time driver for autopick.
+  "#67 Corey Heim":        { team:"23XI Racing",              make:"Toyota", change:"Full-time at 23XI, keeping #67 (replaces Herbst)" },
   "#21 Jesse Love":        { team:"Wood Brothers Racing",     make:"Ford",   change:"Replaces Berry at Wood Brothers" },
   "#10 Ty Dillon":         { team:"Kaulig Racing",  make:"Dodge", change:"Kaulig switches to Dodge" },
   "#16 AJ Allmendinger":   { team:"Kaulig Racing",  make:"Dodge", change:"Kaulig switches to Dodge" },

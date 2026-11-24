@@ -245,14 +245,16 @@ describe("2027 driver changes", () => {
     const slot = n => DRIVERS.filter(d => d.startsWith(`#${n} `));
     expect(slot(42)).toEqual(["#42 Josh Berry"]);
     expect(slot(84)).toEqual(["#84 Riley Herbst"]);
-    expect(slot(35)).toEqual(["#35 Corey Heim"]);
+    expect(slot(35)).toEqual([]);                               // 23XI's #35 is vacant: Heim keeps #67
+    expect(slot(67)).toEqual(["#67 Corey Heim"]);
     expect(slot(21)).toEqual(["#21 Jesse Love"]);
     expect(slot(6).sort()).toEqual(["#6 Brad Keselowski", "#6 Ryan Preece"]);
     ["#42 John Hunter Nemechek", "#84 Jimmie Johnson", "#35 Riley Herbst", "#21 Josh Berry"]
       .forEach(d => expect(DRIVERS).not.toContain(d));
     expect(DRIVER_INFO["#42 Josh Berry"]).toMatchObject({ team: "Legacy Motor Club", make: "Toyota" });
     expect(DRIVER_INFO["#84 Riley Herbst"]).toMatchObject({ team: "Legacy Motor Club", make: "Toyota" });
-    expect(DRIVER_INFO["#35 Corey Heim"]).toMatchObject({ team: "23XI Racing", make: "Toyota" });
+    expect(DRIVER_INFO["#67 Corey Heim"]).toMatchObject({ team: "23XI Racing", make: "Toyota" });
+    expect(DRIVER_INFO["#67 Corey Heim"].partTime).toBeUndefined();   // full-time in 2027 (was part-time in 2026)
     expect(DRIVER_INFO["#21 Jesse Love"]).toMatchObject({ team: "Wood Brothers Racing", make: "Ford" });
   });
   test("2026 history lookups still work for drivers who left", () => {
