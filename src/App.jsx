@@ -49,6 +49,7 @@ const HistoryTab   = lazy(() => import("./components/HistoryTab").then(m  => ({ 
 const PlayoffsTab   = lazy(() => import("./components/PlayoffsTab").then(m   => ({ default: m.PlayoffsTab   })));
 const ScheduleTab   = lazy(() => import("./components/ScheduleTab").then(m   => ({ default: m.ScheduleTab   })));
 const DriversTab    = lazy(() => import("./components/DriversTab").then(m    => ({ default: m.DriversTab    })));
+const SeasonsTab = lazy(() => import("./components/SeasonsTab").then(m => ({ default: m.SeasonsTab })));
 const AchievementsTab = lazy(() => import("./components/AchievementsTab").then(m => ({ default: m.AchievementsTab })));
 const HallOfChampions = lazy(() => import("./components/HallOfChampions").then(m => ({ default: m.HallOfChampions })));
 const RulesTab      = lazy(() => import("./components/RulesTab").then(m      => ({ default: m.RulesTab      })));
@@ -429,6 +430,7 @@ export default function App() {
         {tab==="drivers"&&<DriversTab data={data} currentWeek={currentWeek} player={user} onToggleToRear={handleToggleToRear}/>}
         {tab==="hall"&&<HallOfChampions setTab={setTab}/>}
         {tab==="achievements"&&<AchievementsTab data={data}/>}
+        {tab==="seasons"&&<SeasonsTab data={data}/>}
         {tab==="rules"&&<RulesTab data={data} player={user} onBallotChange={handleBallotChange}/>}
         {tab==="settings"&&<SettingsTab player={user} data={data} onSaveSettings={handleSaveSettings}/>}
         {tab==="isc"&&<ISCTab data={data} user={user} onSave={handleIscSave}/>}

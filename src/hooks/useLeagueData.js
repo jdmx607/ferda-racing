@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
-import { loadLeagueData, saveLeagueData, subscribeToLeagueData, loadLocalBackup, isFirebaseReady } from "../firebase";
+import { loadLeagueData, saveLeagueData, subscribeToLeagueData, loadLocalBackup, isFirebaseReady, ensureActiveSeason } from "../firebase";
 import { buildInitialData } from "../engine/scoring";
+import { buildSeasonSeed } from "../engine/rollover";
+import { ACTIVE_SEASON } from "../constants";
+import { FIRST_APP_SEASON } from "../seasons";
 
 // Manages the single Firestore document for the league.
 // Falls back to localStorage if Firebase is unavailable.
@@ -17,14 +20,27 @@ export function useLeagueData() {
         let d = await loadLeagueData();
         if (d) {
           setDbStatus("connected");
-        } else {
+        } else if (ACTIVE_SEASON > FIRST_APP_SEASON) {
+          // New season: create its document from last season's (clean slate + carried-over
+          // player settings) and archive the old one. Never seeds from the 2026 history.
+          d = await ensureActiveSeason();
+          if (d) setDbStatus("connected");
+        }
+        if (!d) {
           d = loadLocalBackup();
           if (d) setDbStatus("offline");
         }
         if (!d) {
-          d = buildInitialData();
-          setDbStatus(isFirebaseReady() ? "new" : "offline");
-          await saveLeagueData(d);
+          if (ACTIVE_SEASON > FIRST_APP_SEASON) {
+            // Couldn't reach the database to confirm the season's state: run on an empty
+            // season in memory and DON'T write it (that could overwrite a real document).
+            d = buildSeasonSeed(null, ACTIVE_SEASON);
+            setDbStatus("offline");
+          } else {
+            d = buildInitialData();
+            setDbStatus(isFirebaseReady() ? "new" : "offline");
+            await saveLeagueData(d);
+          }
         }
         setData(d);
         setLoading(false);

@@ -50,5 +50,8 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.js'],
+    // The existing fixtures are 2026 data: keep them on the 2026 schedule even after
+    // the app's default season moves on (see ACTIVE_SEASON in src/constants.js).
+    env: { VITE_ACTIVE_SEASON: '2026' },
   },
 })

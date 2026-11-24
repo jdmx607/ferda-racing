@@ -88,27 +88,49 @@ committing to any of it.
       per-race override: add `time:"15:30"` (24h, ET) to a schedule entry. For 2027,
       the race list endpoint (and 2027 race IDs) won't exist until NASCAR publishes it.
 
-## Start the 2027 season (the 2027 schedule is built but NOT active)
+## Seasons: archive + rollover (built Nov 24, 2026)
 
-The 2027 schedule (`src/schedule2027.js`) incl. the Clash and All-Star Race
-exhibitions is staged. `ACTIVE_SEASON` in `constants.js` is still 2026 so the
-2026 archive stays intact. Previewable in the Schedule tab. To go live:
+Every season is its own Firestore document, `leagues/ferda-season-YYYY`. The ACTIVE
+season's document is the live league; earlier seasons are frozen archives
+(`archived: true`, and the database rules then refuse any write to them). Browse any
+season read-only in **More → Seasons**. Nothing is ever deleted.
 
-- [ ] Flip `ACTIVE_SEASON` to 2027 in `src/constants.js`.
-- [ ] New Firestore doc for 2027 (today: `leagues/ferda-season-2026`) with
-      empty results/picks/drafts; keep the 2026 doc as the archive.
-- [ ] Per-season localStorage backup key.
-- [ ] 2027 NASCAR race IDs (`CACHER_RACE_IDS`) and year-parametrize the
-      `/2026/1/` paths in `src/nascar.js`.
-- [ ] Text that still says 2026 / Darlington (PlayoffsTab, RulesTab) —
-      Chase now opens at Richmond (W27).
-- [x] #6 = Ryan Preece (RFK), #33 = Austin Hill (RCR) added. Still verify the
-      #10/#16 Dodge moves and #51 team; Brad Keselowski stays under Free Agents
-      until he signs (his old #6 entry stays so 2026 history still matches).
-- [x] Exhibition rules confirmed: Clash = draft order only, no points. All-Star
-      pays playoff pts 125 / 50 / 10 / 0 by finish (ties split). Dover = short
-      track. Mulligans: 10/season, regular season + playoffs only (never in
-      exhibitions), +2 playoff bonus for a mulligan-free regular season.
-- [ ] Exhibition winners do not show in the activity feed / stats yet.
-- [ ] Drivers tab is a first pass (active / free agents / part-time lists) —
-      user plans further changes to it.
+### Starting a new season (do this every year)
+1. **Back up** the old season (also done automatically by step 3):
+   `npm run backup -- 2026` → saved to `../ferda-racing-backups/` (outside the repo; it holds phone numbers).
+2. **Dry run** (changes nothing): `npm run rollover -- 2027` — shows what will be created.
+3. **Roll over**: `npm run rollover -- 2027 --yes` — backs up, creates an empty 2027 season
+   (carrying over each player's settings: phone, push, Simplified Mode…), marks 2026 archived,
+   and verifies 2026's results/picks are untouched.
+4. **Flip the app**: in `src/constants.js` set `DEFAULT_ACTIVE_SEASON = 2027`, add the new year's
+   schedule/rookies if needed, push to main. (If you skip step 3, the first person to open the new
+   app does the same rollover automatically, safely, in one transaction.)
+5. Add the finished year's champions to `src/championsHistory.js` and career totals to
+   `src/careerStats.js`.
+
+Tests are pinned to 2026 (`vite.config.js` → `test.env.VITE_ACTIVE_SEASON`) so the 2026
+fixtures keep their meaning. After a rollover, `npm run rules-test` re-checks the database rules
+against a throwaway document (then delete it as the script prints).
+
+### Done
+- [x] Per-season documents, per-season offline backup key, season picker + read-only archive view.
+- [x] Database rules: every `ferda-season-20XX` doc readable/writable by shape; archived docs frozen
+      (deployed + smoke-tested Nov 24, 2026). To fix something in an archive: set its `archived`
+      field to false in the Firebase console, edit, set it back to true.
+- [x] Chase text (opening / finale track) now comes from the schedule, not hard-coded.
+- [x] Whole app dry-run on an empty 2027 season (every screen, login → Simplified Mode → rollover): no crashes.
+- [x] Corey Heim = #67 (23XI). Preece #6, Hill #33, Berry #42, Herbst #84, Love #21; Keselowski free agent.
+- [x] Exhibition rules: Clash = draft order only, no points. All-Star pays playoff pts 125 / 50 / 10 / 0.
+      Mulligans: 10/season (+2 playoff bonus for a mulligan-free regular season, never in exhibitions).
+
+### Still to do before the Daytona 500 (Clash is Sat Feb 13, 2027; its draft opens ~Mon Feb 8)
+- [ ] **2027 NASCAR race IDs** — NASCAR hasn't published the 2027 race list yet (the feed 403s).
+      `CACHER_RACE_IDS` and the `/2026/1/` paths in `src/nascar.js` are 2026-only: parametrize by season
+      and map weeks → race IDs from `race_list_basic.json` once it's published. Until then enter
+      results manually.
+- [ ] Decide who picks first in **the Clash** (today: no prior race, so the default order — Justin first).
+- [ ] Confirm #10/#16 at Kaulig (Dodge), #51 Cody Ware's team, and add any part-time drivers.
+- [ ] Exhibition winners don't show in the activity feed / stats yet.
+- [ ] Add 2027-schedule tests (the suite only covers 2026 now).
+- [ ] Per-track driver history / cheat sheet from NASCAR's free historical feeds (2019→) and a
+      Race Archive tab (pick a track → what everyone drafted and scored, each year).

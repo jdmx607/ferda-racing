@@ -1,6 +1,11 @@
 import { useMemo, useState } from "react";
 import { C, PClr, r, shadow } from "../theme";
-import { PLAYERS, PNAME, DRIVERS, PLAYOFF_START_WEEK, isMemorial } from "../constants";
+import { PLAYERS, PNAME, DRIVERS, PLAYOFF_START_WEEK, SCHEDULE, isMemorial } from "../constants";
+
+// Track names come from the active season's schedule, so the text stays right every year.
+const trackOf = w => SCHEDULE.find(s => s.w === w)?.t || "";
+const CHASE_OPENER = trackOf(PLAYOFF_START_WEEK);
+const CHASE_FINALE = trackOf(36);
 import { getDriverSeasonStats } from "../engine/stats";
 import { getChaseTotals } from "../engine/chase";
 import { getChaseWarRoom } from "../engine/warRoom";
@@ -296,7 +301,7 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
         </h2>
         <div style={{ color:C.dim, fontSize:13, marginTop:6 }}>
           {playoffsStarted
-            ? "The Chase is live — scoring through W36 (Homestead)"
+            ? `The Chase is live — scoring through W36 (${CHASE_FINALE})`
             : `${scored} races complete · ${weeksLeft} regular-season race${weeksLeft !== 1 ? "s" : ""} remain`}
         </div>
       </div>
@@ -336,7 +341,7 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
             How It Works
           </div>
           <div style={{ color:C.dim, fontSize:12, lineHeight:1.7 }}>
-            Everyone resets to <span style={{ color:C.text, fontWeight:700 }}>1,000</span> base at W{PLAYOFF_START_WEEK} (Darlington),
+            Everyone resets to <span style={{ color:C.text, fontWeight:700 }}>1,000</span> base at W{PLAYOFF_START_WEEK} ({CHASE_OPENER}),
             plus regular-season bonus pts and the champ bonus. From there, every scoring factor counts each week —
             not just bonus points. <span style={{ color:theme, fontWeight:700 }}>GOLDEN rule:</span> +5 when your pick wins the race
             and is in the real playoff field.
@@ -474,9 +479,9 @@ export function PlayoffsTab({ data, user, currentWeek, onSaveChaseField }) {
         padding:"12px 16px", border:`1px solid ${C.border}`,
         color:C.dim, fontSize:12, lineHeight:1.7,
       }}>
-        The Chase begins <strong style={{ color:C.text }}>Week {PLAYOFF_START_WEEK}</strong> at Darlington.
+        The Chase begins <strong style={{ color:C.text }}>Week {PLAYOFF_START_WEEK}</strong> at {CHASE_OPENER}.
         All players reset to 1,000 + playoff pts + champion bonus, then regular scoring continues through
-        <strong style={{ color:C.text }}> Week 36 at Homestead</strong>.
+        <strong style={{ color:C.text }}> Week 36 at {CHASE_FINALE}</strong>.
       </div>
       </>
       )}

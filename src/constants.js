@@ -94,12 +94,16 @@ export const SCHEDULE_2026 = [
   {w:36,t:"Homestead",      ty:"intermediate",  d:"Nov 8",  r:"Straight Talk Wireless 400"},
 ];
 
-// Which season the app is running. The 2026 archive keeps using the 2026
-// schedule (race names + track types drive display and re-scoring), so the
-// 2027 schedule stays staged until the new season actually starts — see
-// "Start the 2027 season" in OFFSEASON_TODO.md for what flipping this needs.
+// Which season the app is running — THE one switch for a new season. The active
+// season's schedule drives display and scoring; earlier seasons are read-only
+// archives (see seasons.js / engine/rollover.js and "Start the 2027 season" in
+// OFFSEASON_TODO.md). To go live: change the default below to 2027, then deploy;
+// the first load rolls the database over (or run `npm run rollover -- 2027 --yes`).
+// VITE_ACTIVE_SEASON overrides it — the test runner pins it to 2026 so the 2026
+// fixtures keep their meaning after the flip; dev can set it to preview a season.
 export const SCHEDULES = { 2026: SCHEDULE_2026, 2027: SCHEDULE_2027 };
-export const ACTIVE_SEASON = 2026;
+const DEFAULT_ACTIVE_SEASON = 2026;
+export const ACTIVE_SEASON = Number(import.meta.env?.VITE_ACTIVE_SEASON) || DEFAULT_ACTIVE_SEASON;
 export const SCHEDULE = SCHEDULES[ACTIVE_SEASON];
 
 // 2027 mulligan rule: 10 for the year (regular season + playoffs only — never

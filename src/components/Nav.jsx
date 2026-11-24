@@ -114,6 +114,13 @@ const Icon = {
       <path d="m12 12.2.9 1.6 1.8.3-1.3 1.2.3 1.8-1.7-.9-1.7.9.3-1.8-1.3-1.2 1.8-.3z" fill="currentColor" stroke="none"/>
     </svg>
   ),
+  Seasons: () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/>
+      <path d="M3.5 9.5h17M8 3v3M16 3v3"/>
+      <path d="M8 13.5h3M8 16.5h6" />
+    </svg>
+  ),
   Drivers: () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <circle cx="12" cy="12" r="8.5"/>
@@ -218,6 +225,7 @@ function DesktopNav({ player, tab, setTab, onLogout, data }) {
     { id:"history",      l:"History"     },
     { id:"hall",         l:"Champions"   },
     { id:"achievements", l:"Achievements" },
+    { id:"seasons",      l:"Seasons"     },
     { id:"playoffs",     l:"The Chase", strong:chaseLive },
     { id:"isc",          l:"ISC"         },
     { id:"schedule",     l:"Schedule"    },
@@ -292,6 +300,7 @@ const MORE_GROUPS = [
     { id:"hall",         label:"Champions",  Icon:Icon.Hall       },
     { id:"mulligans",    label:"Mulligans",  Icon:Icon.Mulligans  },
     { id:"achievements", label:"Achievements", Icon:Icon.Achievements },
+    { id:"seasons",      label:"Seasons",    Icon:Icon.Seasons    },
   ] },
   { title:"System", tabs:[
     { id:"rules",        label:"Rules",      Icon:Icon.Rules      },

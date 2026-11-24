@@ -1,19 +1,11 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, getDoc, setDoc, onSnapshot, runTransaction } from "firebase/firestore";
 import { ensureStore } from "./engine/events.js";
+import { firebaseConfig } from "./firebaseConfig.js";
+import { ACTIVE_SEASON } from "./constants.js";
+import { seasonDocId, backupKey, LEGACY_BACKUP_KEY, FIRST_APP_SEASON } from "./seasons.js";
+import { runRollover } from "./engine/rollover.js";
 
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// PASTE YOUR FIREBASE CONFIG HERE (from Firebase Console)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-const firebaseConfig = {
-  apiKey: "AIzaSyAxCUd_e9Fx-Aw8Ms6MAdxeTMkWwxbVWuE",
-  authDomain: "ferdaracingleague.firebaseapp.com",
-  projectId: "ferdaracingleague",
-  storageBucket: "ferdaracingleague.firebasestorage.app",
-  messagingSenderId: "927904138916",
-  appId: "1:927904138916:web:8f76928d280ba3e81d8831",
-};
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 let db = null;
 let firebaseReady = false;
@@ -35,7 +27,10 @@ try {
   console.error("Firebase init failed:", e);
 }
 
-const DOC_ID = "ferda-season-2026";
+// The live league document is the ACTIVE season's. Earlier seasons are read-only archives.
+const DOC_ID = seasonDocId(ACTIVE_SEASON);
+const BACKUP_KEY = backupKey(ACTIVE_SEASON);
+const writeBackup = data => { try { localStorage.setItem(BACKUP_KEY, JSON.stringify(data)); } catch { /* storage unavailable */ } };
 
 function withTimeout(promise, ms = 8000) {
   return Promise.race([
@@ -56,15 +51,15 @@ export async function loadLeagueData() {
 
 export async function saveLeagueData(data) {
   if (!firebaseReady || !db) {
-    localStorage.setItem("ferda-backup", JSON.stringify(data));
+    writeBackup(data);
     return;
   }
   try {
     await withTimeout(setDoc(doc(db, "leagues", DOC_ID), data));
-    localStorage.setItem("ferda-backup", JSON.stringify(data));
+    writeBackup(data);
   } catch (e) {
     console.error("Save error:", e.message);
-    localStorage.setItem("ferda-backup", JSON.stringify(data));
+    writeBackup(data);
   }
 }
 
@@ -101,7 +96,7 @@ export async function saveDraftPick(week, pid, driver, pickNum) {
       tx.set(ref, d);
       return { applied:true, data:d };
     }));
-    if (outcome.applied) localStorage.setItem("ferda-backup", JSON.stringify(outcome.data));
+    if (outcome.applied) writeBackup(outcome.data);
     return { ok:true, ...outcome };
   } catch (e) {
     console.error("Draft pick transaction failed:", e.message);
@@ -119,5 +114,44 @@ export function subscribeToLeagueData(callback) {
 }
 
 export function loadLocalBackup() {
-  try { const raw = localStorage.getItem("ferda-backup"); return raw ? JSON.parse(raw) : null; } catch { return null; }
+  try {
+    let raw = localStorage.getItem(BACKUP_KEY);
+    // 2026 builds kept their offline copy under the old un-versioned key. Only the 2026
+    // season may read it — a stale 2026 copy must never be mistaken for a later season.
+    if (!raw && ACTIVE_SEASON === FIRST_APP_SEASON) raw = localStorage.getItem(LEGACY_BACKUP_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+// ── Seasons ───────────────────────────────────────────────────────────────────
+const seasonCache = new Map();
+
+/** Read-only load of any season's document (cached for the session). null if it doesn't exist / can't be read. */
+export async function loadSeasonDoc(year, { fresh = false } = {}) {
+  if (!firebaseReady || !db) return null;
+  if (!fresh && seasonCache.has(year)) return seasonCache.get(year);
+  try {
+    const snap = await withTimeout(getDoc(doc(db, "leagues", seasonDocId(year))));
+    const data = snap.exists() ? snap.data() : null;
+    if (data) seasonCache.set(year, data);
+    return data;
+  } catch (e) { console.error("Season load error:", e.message); return null; }
+}
+
+/**
+ * First load of a new season: create the ACTIVE season's document from the previous
+ * one (clean slate + carried-over player settings) and archive the old season — in
+ * one transaction, so it's safe if several people open the app at once. Returns the
+ * season data, or null if it couldn't be verified (offline / timeout) — callers must
+ * NOT write a replacement in that case.
+ */
+export async function ensureActiveSeason() {
+  if (!firebaseReady || !db || ACTIVE_SEASON <= FIRST_APP_SEASON) return null;
+  try {
+    const out = await withTimeout(
+      runRollover(db, { doc, runTransaction }, { fromYear: ACTIVE_SEASON - 1, toYear: ACTIVE_SEASON, allowEmpty: true }),
+      15000
+    );
+    return out.data || null;
+  } catch (e) { console.error("Season rollover failed:", e.message); return null; }
 }
