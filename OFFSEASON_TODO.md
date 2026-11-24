@@ -132,5 +132,16 @@ against a throwaway document (then delete it as the script prints).
 - [ ] Confirm #10/#16 at Kaulig (Dodge), #51 Cody Ware's team, and add any part-time drivers.
 - [ ] Exhibition winners don't show in the activity feed / stats yet.
 - [ ] Add 2027-schedule tests (the suite only covers 2026 now).
-- [ ] Per-track driver history / cheat sheet from NASCAR's free historical feeds (2019→) and a
-      Race Archive tab (pick a track → what everyone drafted and scored, each year).
+- [x] **Track Cheat Sheet** (More → Racing → Cheat Sheet; also linked from Big Monroe's Make Picks).
+      `scripts/update_cheat_sheets.py` pulls the nascaR.data Cup results (CSV, falling back to the
+      Parquet file when the CSV URL 404s — it does today), scores every active driver at every schedule
+      track, and writes `public/data/tracks_master.json` + `public/data/cheat_sheets/{slug}.json`.
+      Setup once: `py -m pip install -r scripts/requirements-cheatsheet.txt`; refresh with
+      `py scripts/update_cheat_sheets.py`. On race weekend inject starting spots (flags Place-Diff
+      Targets): `py scripts/update_cheat_sheets.py --qualifying q.csv --track daytona` (the tab also
+      picks the grid up from NASCAR's feed by itself). `.github/workflows/update-cheat-sheets.yml`
+      refreshes it every Monday Feb–Nov and commits the changes. Tier cuts / weights live at the top
+      of the script. Tracks with little Next Gen history (Chicagoland, San Diego, N. Wilkesboro: one
+      race each) lean on each driver's record at similar tracks.
+- [ ] Race Archive tab (pick a track → what everyone drafted and scored, each year), built on the
+      archived season docs.

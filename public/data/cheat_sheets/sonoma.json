@@ -1,0 +1,4161 @@
+{
+ "slug": "sonoma",
+ "track": "Sonoma",
+ "discipline": "road_course",
+ "datasetTracks": [
+  "Sonoma Raceway"
+ ],
+ "lengthMi": 2.0,
+ "surface": "road",
+ "nextGenRaces": 5,
+ "seasons": [
+  2022,
+  2023,
+  2024,
+  2025,
+  2026
+ ],
+ "winners": [
+  {
+   "season": 2026,
+   "race": 18,
+   "driver": "Shane van Gisbergen",
+   "car": "97"
+  },
+  {
+   "season": 2025,
+   "race": 20,
+   "driver": "Shane van Gisbergen",
+   "car": "88"
+  },
+  {
+   "season": 2024,
+   "race": 16,
+   "driver": "Kyle Larson",
+   "car": "5"
+  },
+  {
+   "season": 2023,
+   "race": 16,
+   "driver": "Martin Truex Jr.",
+   "car": "19"
+  },
+  {
+   "season": 2022,
+   "race": 16,
+   "driver": "Daniel Suarez",
+   "car": "99"
+  }
+ ],
+ "topPerformers": [
+  {
+   "name": "Michael McDowell",
+   "key": "michaelmcdowell",
+   "starts": 5,
+   "avgFinish": 5.2,
+   "wins": 0,
+   "top5": 3
+  },
+  {
+   "name": "Chase Elliott",
+   "key": "chaseelliott",
+   "starts": 5,
+   "avgFinish": 7.9,
+   "wins": 0,
+   "top5": 3
+  },
+  {
+   "name": "Christopher Bell",
+   "key": "christopherbell",
+   "starts": 5,
+   "avgFinish": 9.3,
+   "wins": 0,
+   "top5": 2
+  }
+ ],
+ "qualifying": null,
+ "drivers": [
+  {
+   "key": "shanevangisbergen",
+   "name": "Shane van Gisbergen",
+   "car": "97",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 97.9,
+   "tier": 1,
+   "components": {
+    "finish": 96.7,
+    "rating": 98.9,
+    "dominator": 98.9,
+    "discipline": 96.7
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 2,
+    "top5": 2,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 1.0,
+    "rating": 148.9,
+    "ledPct": 77.7,
+    "avgPlaceDiff": 2.5,
+    "bestFinish": 1,
+    "disciplineAvg": 7.9
+   },
+   "tags": [
+    "2x Next Gen Winner Here",
+    "Leads Laps Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 6,
+     "finish": 1,
+     "led": 74,
+     "laps": 110,
+     "rating": 148.4,
+     "status": "running",
+     "win": true,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 1,
+     "finish": 1,
+     "led": 97,
+     "laps": 110,
+     "rating": 149.3,
+     "status": "running",
+     "win": true,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "coreyheim",
+   "name": "Corey Heim",
+   "car": "67",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 95.0,
+   "tier": 2,
+   "components": {
+    "finish": 98.9,
+    "rating": 96.7,
+    "dominator": 83.3,
+    "discipline": 98.9
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 1.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chaseelliott",
+   "name": "Chase Elliott",
+   "car": "9",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 89.8,
+   "tier": 1,
+   "components": {
+    "finish": 92.2,
+    "rating": 90.0,
+    "dominator": 85.6,
+    "discipline": 90.0
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 3,
+    "top10": 4,
+    "dnf": 0,
+    "avgFinish": 7.9,
+    "rating": 97.9,
+    "ledPct": 4.5,
+    "avgPlaceDiff": 2.0,
+    "bestFinish": 3,
+    "disciplineAvg": 11.5
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 18,
+     "finish": 17,
+     "led": 0,
+     "laps": 110,
+     "rating": 71.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 13,
+     "finish": 3,
+     "led": 0,
+     "laps": 110,
+     "rating": 108.6,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 4,
+     "finish": 4,
+     "led": 3,
+     "laps": 110,
+     "rating": 113.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 10,
+     "finish": 5,
+     "led": 7,
+     "laps": 110,
+     "rating": 99.3,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 2,
+     "finish": 8,
+     "led": 26,
+     "laps": 110,
+     "rating": 105.9,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chrisbuescher",
+   "name": "Chris Buescher",
+   "car": "17",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 89.2,
+   "tier": 1,
+   "components": {
+    "finish": 87.8,
+    "rating": 87.8,
+    "dominator": 90.0,
+    "discipline": 94.4
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 3,
+    "top10": 3,
+    "dnf": 0,
+    "avgFinish": 10.7,
+    "rating": 95.9,
+    "ledPct": 6.3,
+    "avgPlaceDiff": 4.2,
+    "bestFinish": 2,
+    "disciplineAvg": 10.4
+   },
+   "tags": [
+    "Leads Laps Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 15,
+     "finish": 19,
+     "led": 0,
+     "laps": 110,
+     "rating": 60.4,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 14,
+     "finish": 16,
+     "led": 0,
+     "laps": 110,
+     "rating": 93.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 26,
+     "finish": 3,
+     "led": 32,
+     "laps": 110,
+     "rating": 117.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 7,
+     "finish": 4,
+     "led": 0,
+     "laps": 110,
+     "rating": 107.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 3,
+     "finish": 2,
+     "led": 4,
+     "laps": 110,
+     "rating": 128.1,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "michaelmcdowell",
+   "name": "Michael McDowell",
+   "car": "71",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 87.3,
+   "tier": 1,
+   "components": {
+    "finish": 94.4,
+    "rating": 94.4,
+    "dominator": 65.6,
+    "discipline": 85.6
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 3,
+    "top10": 5,
+    "dnf": 0,
+    "avgFinish": 5.2,
+    "rating": 100.1,
+    "ledPct": 0.8,
+    "avgPlaceDiff": 2.6,
+    "bestFinish": 2,
+    "disciplineAvg": 11.8
+   },
+   "tags": [
+    "5 Straight Top-10s"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 4,
+     "finish": 9,
+     "led": 0,
+     "laps": 110,
+     "rating": 93.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 15,
+     "finish": 4,
+     "led": 3,
+     "laps": 110,
+     "rating": 93.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 12,
+     "finish": 2,
+     "led": 0,
+     "laps": 110,
+     "rating": 103.6,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 3,
+     "finish": 7,
+     "led": 1,
+     "laps": 110,
+     "rating": 107.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 4,
+     "finish": 3,
+     "led": 0,
+     "laps": 110,
+     "rating": 114.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kylelarson",
+   "name": "Kyle Larson",
+   "car": "5",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 82.3,
+   "tier": 2,
+   "components": {
+    "finish": 72.2,
+    "rating": 92.2,
+    "dominator": 94.4,
+    "discipline": 63.3
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 1,
+    "top5": 2,
+    "top10": 3,
+    "dnf": 0,
+    "avgFinish": 13.7,
+    "rating": 99.5,
+    "ledPct": 7.8,
+    "avgPlaceDiff": -5.4,
+    "bestFinish": 1,
+    "disciplineAvg": 17.3
+   },
+   "tags": [
+    "1x Next Gen Winner Here",
+    "Leads Laps Here",
+    "Loses 5 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 3,
+     "finish": 4,
+     "led": 2,
+     "laps": 110,
+     "rating": 113.4,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 11,
+     "finish": 35,
+     "led": 3,
+     "laps": 108,
+     "rating": 65.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 5,
+     "finish": 1,
+     "led": 19,
+     "laps": 110,
+     "rating": 137.0,
+     "status": "running",
+     "win": true,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 16,
+     "finish": 8,
+     "led": 0,
+     "laps": 110,
+     "rating": 92.3,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 1,
+     "finish": 15,
+     "led": 26,
+     "laps": 110,
+     "rating": 90.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "tygibbs",
+   "name": "Ty Gibbs",
+   "car": "54",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 82.2,
+   "tier": 2,
+   "components": {
+    "finish": 74.4,
+    "rating": 81.1,
+    "dominator": 96.7,
+    "discipline": 81.1
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 1,
+    "top10": 2,
+    "dnf": 1,
+    "avgFinish": 14.4,
+    "rating": 89.0,
+    "ledPct": 8.7,
+    "avgPlaceDiff": -10.5,
+    "bestFinish": 3,
+    "disciplineAvg": 14.2
+   },
+   "tags": [
+    "Leads Laps Here",
+    "Loses 10 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 1,
+     "finish": 3,
+     "led": 31,
+     "laps": 110,
+     "rating": 120.9,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 6,
+     "finish": 7,
+     "led": 0,
+     "laps": 110,
+     "rating": 100.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 10,
+     "finish": 37,
+     "led": 0,
+     "laps": 16,
+     "rating": 39.5,
+     "status": "DVP",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 6,
+     "finish": 18,
+     "led": 0,
+     "laps": 110,
+     "rating": 76.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "christopherbell",
+   "name": "Christopher Bell",
+   "car": "20",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 81.9,
+   "tier": 2,
+   "components": {
+    "finish": 90.0,
+    "rating": 85.6,
+    "dominator": 58.9,
+    "discipline": 87.8
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 2,
+    "top10": 4,
+    "dnf": 0,
+    "avgFinish": 9.3,
+    "rating": 94.0,
+    "ledPct": 0.2,
+    "avgPlaceDiff": 3.8,
+    "bestFinish": 5,
+    "disciplineAvg": 11.6
+   },
+   "tags": [
+    "4 Straight Top-10s"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 14,
+     "finish": 5,
+     "led": 0,
+     "laps": 110,
+     "rating": 104.4,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 10,
+     "finish": 5,
+     "led": 1,
+     "laps": 110,
+     "rating": 107.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 15,
+     "finish": 9,
+     "led": 0,
+     "laps": 110,
+     "rating": 83.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 4,
+     "finish": 9,
+     "led": 0,
+     "laps": 110,
+     "rating": 106.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 31,
+     "finish": 27,
+     "led": 0,
+     "laps": 110,
+     "rating": 49.6,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rosschastain",
+   "name": "Ross Chastain",
+   "car": "1",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 76.0,
+   "tier": 2,
+   "components": {
+    "finish": 78.9,
+    "rating": 78.9,
+    "dominator": 67.8,
+    "discipline": 74.4
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 3,
+    "dnf": 0,
+    "avgFinish": 13.4,
+    "rating": 89.1,
+    "ledPct": 1.3,
+    "avgPlaceDiff": -4.0,
+    "bestFinish": 5,
+    "disciplineAvg": 15.9
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 5,
+     "finish": 14,
+     "led": 1,
+     "laps": 110,
+     "rating": 81.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 4,
+     "finish": 24,
+     "led": 4,
+     "laps": 110,
+     "rating": 82.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 9,
+     "finish": 5,
+     "led": 0,
+     "laps": 110,
+     "rating": 104.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 15,
+     "finish": 10,
+     "led": 1,
+     "laps": 110,
+     "rating": 82.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 7,
+     "finish": 7,
+     "led": 0,
+     "laps": 110,
+     "rating": 100.4,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kylebusch",
+   "name": "Kyle Busch",
+   "car": "8",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 74.1,
+   "tier": 2,
+   "components": {
+    "finish": 83.3,
+    "rating": 65.6,
+    "dominator": 76.7,
+    "discipline": 72.2
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 1,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 12.7,
+    "rating": 78.9,
+    "ledPct": 3.1,
+    "avgPlaceDiff": 4.0,
+    "bestFinish": 2,
+    "disciplineAvg": 16.1
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 17,
+     "finish": 10,
+     "led": 0,
+     "laps": 110,
+     "rating": 62.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 29,
+     "finish": 12,
+     "led": 1,
+     "laps": 110,
+     "rating": 99.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 12,
+     "finish": 2,
+     "led": 17,
+     "laps": 110,
+     "rating": 112.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 12,
+     "finish": 30,
+     "led": 0,
+     "laps": 110,
+     "rating": 49.1,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "ajallmendinger",
+   "name": "A.J. Allmendinger",
+   "car": "16",
+   "team": "Kaulig Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 73.4,
+   "tier": 2,
+   "components": {
+    "finish": 81.1,
+    "rating": 72.2,
+    "dominator": 56.7,
+    "discipline": 83.3
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 13.6,
+    "rating": 82.7,
+    "ledPct": 0.5,
+    "avgPlaceDiff": -4.0,
+    "bestFinish": 6,
+    "disciplineAvg": 13.9
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 8,
+     "finish": 16,
+     "led": 0,
+     "laps": 110,
+     "rating": 77.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 5,
+     "finish": 18,
+     "led": 0,
+     "laps": 110,
+     "rating": 71.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 11,
+     "finish": 6,
+     "led": 3,
+     "laps": 110,
+     "rating": 108.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 5,
+     "finish": 6,
+     "led": 0,
+     "laps": 110,
+     "rating": 100.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 16,
+     "finish": 19,
+     "led": 0,
+     "laps": 110,
+     "rating": 61.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "tylerreddick",
+   "name": "Tyler Reddick",
+   "car": "45",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 69.7,
+   "tier": 2,
+   "components": {
+    "finish": 45.6,
+    "rating": 67.8,
+    "dominator": 92.2,
+    "discipline": 92.2
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 21.9,
+    "rating": 79.0,
+    "ledPct": 6.4,
+    "avgPlaceDiff": -18.0,
+    "bestFinish": 6,
+    "disciplineAvg": 11.5
+   },
+   "tags": [
+    "Leads Laps Here",
+    "Loses 18 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 11,
+     "finish": 36,
+     "led": 0,
+     "laps": 106,
+     "rating": 58.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 8,
+     "finish": 6,
+     "led": 0,
+     "laps": 110,
+     "rating": 89.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 2,
+     "finish": 8,
+     "led": 35,
+     "laps": 110,
+     "rating": 103.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 2,
+     "finish": 33,
+     "led": 0,
+     "laps": 109,
+     "rating": 69.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 5,
+     "finish": 35,
+     "led": 0,
+     "laps": 97,
+     "rating": 72.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chasebriscoe",
+   "name": "Chase Briscoe",
+   "car": "19",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 69.3,
+   "tier": 2,
+   "components": {
+    "finish": 76.7,
+    "rating": 74.4,
+    "dominator": 52.2,
+    "discipline": 65.6
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 2,
+    "top10": 2,
+    "dnf": 1,
+    "avgFinish": 13.5,
+    "rating": 88.4,
+    "ledPct": 0.5,
+    "avgPlaceDiff": -1.8,
+    "bestFinish": 2,
+    "disciplineAvg": 17.2
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 7,
+     "finish": 2,
+     "led": 0,
+     "laps": 110,
+     "rating": 118.4,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 2,
+     "finish": 2,
+     "led": 2,
+     "laps": 110,
+     "rating": 119.6,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 23,
+     "finish": 34,
+     "led": 0,
+     "laps": 73,
+     "rating": 39.7,
+     "status": "transmission",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 24,
+     "finish": 29,
+     "led": 0,
+     "laps": 110,
+     "rating": 46.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 15,
+     "finish": 13,
+     "led": 0,
+     "laps": 110,
+     "rating": 80.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "williambyron",
+   "name": "William Byron",
+   "car": "24",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 69.2,
+   "tier": 2,
+   "components": {
+    "finish": 70.0,
+    "rating": 70.0,
+    "dominator": 61.1,
+    "discipline": 76.7
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 14.4,
+    "rating": 82.7,
+    "ledPct": 0.2,
+    "avgPlaceDiff": -1.0,
+    "bestFinish": 8,
+    "disciplineAvg": 15.3
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 13,
+     "finish": 12,
+     "led": 1,
+     "laps": 110,
+     "rating": 92.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 3,
+     "finish": 8,
+     "led": 0,
+     "laps": 110,
+     "rating": 111.9,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 6,
+     "finish": 30,
+     "led": 0,
+     "laps": 108,
+     "rating": 35.9,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 26,
+     "finish": 14,
+     "led": 0,
+     "laps": 110,
+     "rating": 77.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 20,
+     "finish": 9,
+     "led": 0,
+     "laps": 110,
+     "rating": 79.4,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "ryanblaney",
+   "name": "Ryan Blaney",
+   "car": "12",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 69.0,
+   "tier": 2,
+   "components": {
+    "finish": 58.9,
+    "rating": 76.7,
+    "dominator": 63.3,
+    "discipline": 78.9
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 3,
+    "dnf": 1,
+    "avgFinish": 17.5,
+    "rating": 88.7,
+    "ledPct": 0.4,
+    "avgPlaceDiff": -3.0,
+    "bestFinish": 6,
+    "disciplineAvg": 15.2
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 16,
+     "finish": 6,
+     "led": 1,
+     "laps": 110,
+     "rating": 104.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 7,
+     "finish": 36,
+     "led": 0,
+     "laps": 106,
+     "rating": 82.1,
+     "status": "accident",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 3,
+     "finish": 7,
+     "led": 1,
+     "laps": 110,
+     "rating": 100.1,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 31,
+     "finish": 31,
+     "led": 0,
+     "laps": 110,
+     "rating": 41.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 14,
+     "finish": 6,
+     "led": 0,
+     "laps": 110,
+     "rating": 100.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "ryanpreece",
+   "name": "Ryan Preece",
+   "car": "60",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 67.1,
+   "tier": 2,
+   "components": {
+    "finish": 85.6,
+    "rating": 63.3,
+    "dominator": 45.6,
+    "discipline": 67.8
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 12.3,
+    "rating": 79.8,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 10.0,
+    "bestFinish": 8,
+    "disciplineAvg": 16.6
+   },
+   "tags": [
+    "Gains 10 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 19,
+     "finish": 8,
+     "led": 0,
+     "laps": 110,
+     "rating": 86.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 20,
+     "finish": 12,
+     "led": 0,
+     "laps": 110,
+     "rating": 86.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 30,
+     "finish": 18,
+     "led": 0,
+     "laps": 110,
+     "rating": 66.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 22,
+     "finish": 13,
+     "led": 0,
+     "laps": 110,
+     "rating": 72.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "connorzilisch",
+   "name": "Connor Zilisch",
+   "car": "88",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 64.9,
+   "tier": 3,
+   "components": {
+    "finish": 67.8,
+    "rating": 83.3,
+    "dominator": 54.4,
+    "discipline": 30.0
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 7.0,
+    "rating": 100.7,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 10.0,
+    "bestFinish": 7,
+    "disciplineAvg": 23.0
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 17,
+     "finish": 7,
+     "led": 0,
+     "laps": 110,
+     "rating": 100.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joeylogano",
+   "name": "Joey Logano",
+   "car": "22",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 63.1,
+   "tier": 3,
+   "components": {
+    "finish": 61.1,
+    "rating": 56.7,
+    "dominator": 78.9,
+    "discipline": 61.1
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 15.7,
+    "rating": 70.9,
+    "ledPct": 3.4,
+    "avgPlaceDiff": -3.0,
+    "bestFinish": 3,
+    "disciplineAvg": 17.6
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 10,
+     "finish": 24,
+     "led": 0,
+     "laps": 110,
+     "rating": 54.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 22,
+     "finish": 9,
+     "led": 0,
+     "laps": 110,
+     "rating": 77.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 1,
+     "finish": 21,
+     "led": 16,
+     "laps": 110,
+     "rating": 65.1,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 17,
+     "finish": 3,
+     "led": 0,
+     "laps": 110,
+     "rating": 98.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 9,
+     "finish": 17,
+     "led": 4,
+     "laps": 110,
+     "rating": 70.4,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "danielsuarez",
+   "name": "Daniel Suarez",
+   "car": "7",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 60.4,
+   "tier": 3,
+   "components": {
+    "finish": 56.7,
+    "rating": 54.4,
+    "dominator": 87.8,
+    "discipline": 45.6
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 1,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 17.9,
+    "rating": 68.1,
+    "ledPct": 5.7,
+    "avgPlaceDiff": -3.6,
+    "bestFinish": 1,
+    "disciplineAvg": 19.5
+   },
+   "tags": [
+    "1x Next Gen Winner Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 21,
+     "finish": 31,
+     "led": 0,
+     "laps": 110,
+     "rating": 33.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 19,
+     "finish": 14,
+     "led": 0,
+     "laps": 110,
+     "rating": 63.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 7,
+     "finish": 14,
+     "led": 0,
+     "laps": 110,
+     "rating": 82.1,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 9,
+     "finish": 22,
+     "led": 0,
+     "laps": 110,
+     "rating": 55.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 8,
+     "finish": 1,
+     "led": 47,
+     "laps": 110,
+     "rating": 137.5,
+     "status": "running",
+     "win": true,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "alexbowman",
+   "name": "Alex Bowman",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 59.6,
+   "tier": 3,
+   "components": {
+    "finish": 63.3,
+    "rating": 61.1,
+    "dominator": 43.3,
+    "discipline": 70.0
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 14.9,
+    "rating": 76.4,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -0.6,
+    "bestFinish": 10,
+    "disciplineAvg": 16.4
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 22,
+     "finish": 10,
+     "led": 0,
+     "laps": 110,
+     "rating": 79.3,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 9,
+     "finish": 19,
+     "led": 0,
+     "laps": 110,
+     "rating": 73.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 8,
+     "finish": 15,
+     "led": 0,
+     "laps": 110,
+     "rating": 76.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 14,
+     "finish": 15,
+     "led": 0,
+     "laps": 110,
+     "rating": 75.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 19,
+     "finish": 16,
+     "led": 0,
+     "laps": 110,
+     "rating": 77.9,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "anthonyalfredo",
+   "name": "Anthony Alfredo",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 55.4,
+   "tier": 3,
+   "components": {
+    "finish": 52.2,
+    "rating": 50.0,
+    "dominator": 72.2,
+    "discipline": 52.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bjmcleod",
+   "name": "B.J. McLeod",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 55.4,
+   "tier": 3,
+   "components": {
+    "finish": 52.2,
+    "rating": 50.0,
+    "dominator": 72.2,
+    "discipline": 52.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "caseymears",
+   "name": "Casey Mears",
+   "car": "62",
+   "team": "Beard Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 55.4,
+   "tier": 3,
+   "components": {
+    "finish": 52.2,
+    "rating": 50.0,
+    "dominator": 72.2,
+    "discipline": 52.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chadfinchum",
+   "name": "Chad Finchum",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": true,
+   "composite": 55.4,
+   "tier": 3,
+   "components": {
+    "finish": 52.2,
+    "rating": 50.0,
+    "dominator": 72.2,
+    "discipline": 52.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "danieldye",
+   "name": "Daniel Dye",
+   "car": "78",
+   "team": "Live Fast Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 55.4,
+   "tier": 3,
+   "components": {
+    "finish": 52.2,
+    "rating": 50.0,
+    "dominator": 72.2,
+    "discipline": 52.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "graygaulding",
+   "name": "Gray Gaulding",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": false,
+   "composite": 55.4,
+   "tier": 3,
+   "components": {
+    "finish": 52.2,
+    "rating": 50.0,
+    "dominator": 72.2,
+    "discipline": 52.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joeygase",
+   "name": "Joey Gase",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 55.4,
+   "tier": 3,
+   "components": {
+    "finish": 52.2,
+    "rating": 50.0,
+    "dominator": 72.2,
+    "discipline": 52.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "justinallgaier",
+   "name": "Justin Allgaier",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 55.4,
+   "tier": 3,
+   "components": {
+    "finish": 52.2,
+    "rating": 50.0,
+    "dominator": 72.2,
+    "discipline": 52.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bradkeselowski",
+   "name": "Brad Keselowski",
+   "car": "6",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 54.4,
+   "tier": 3,
+   "components": {
+    "finish": 65.6,
+    "rating": 58.9,
+    "dominator": 50.0,
+    "discipline": 27.8
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 13.0,
+    "rating": 77.4,
+    "ledPct": 0.4,
+    "avgPlaceDiff": 14.6,
+    "bestFinish": 10,
+    "disciplineAvg": 23.1
+   },
+   "tags": [
+    "Gains 15 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 35,
+     "finish": 15,
+     "led": 0,
+     "laps": 110,
+     "rating": 69.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 21,
+     "finish": 11,
+     "led": 0,
+     "laps": 110,
+     "rating": 84.1,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 35,
+     "finish": 13,
+     "led": 0,
+     "laps": 110,
+     "rating": 78.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 25,
+     "finish": 16,
+     "led": 0,
+     "laps": 110,
+     "rating": 63.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 22,
+     "finish": 10,
+     "led": 3,
+     "laps": 110,
+     "rating": 91.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austincindric",
+   "name": "Austin Cindric",
+   "car": "2",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 45.6,
+   "tier": 3,
+   "components": {
+    "finish": 47.8,
+    "rating": 45.6,
+    "dominator": 32.2,
+    "discipline": 58.9
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 19.9,
+    "rating": 65.3,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 7.8,
+    "bestFinish": 5,
+    "disciplineAvg": 17.9
+   },
+   "tags": [
+    "Gains 8 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 23,
+     "finish": 13,
+     "led": 0,
+     "laps": 110,
+     "rating": 79.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 24,
+     "finish": 30,
+     "led": 0,
+     "laps": 110,
+     "rating": 56.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 28,
+     "finish": 22,
+     "led": 0,
+     "laps": 110,
+     "rating": 57.6,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 34,
+     "finish": 25,
+     "led": 0,
+     "laps": 110,
+     "rating": 36.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 25,
+     "finish": 5,
+     "led": 0,
+     "laps": 110,
+     "rating": 94.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "dennyhamlin",
+   "name": "Denny Hamlin",
+   "car": "11",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 41.3,
+   "tier": 4,
+   "components": {
+    "finish": 14.4,
+    "rating": 38.9,
+    "dominator": 81.1,
+    "discipline": 47.8
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 2,
+    "avgFinish": 28.8,
+    "rating": 56.1,
+    "ledPct": 4.0,
+    "avgPlaceDiff": -18.0,
+    "bestFinish": 20,
+    "disciplineAvg": 19.5
+   },
+   "tags": [
+    "DNF In 2 Of 5 Starts",
+    "Loses 18 Spots On Avg",
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 9,
+     "finish": 26,
+     "led": 0,
+     "laps": 110,
+     "rating": 66.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 16,
+     "finish": 20,
+     "led": 0,
+     "laps": 110,
+     "rating": 44.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 25,
+     "finish": 38,
+     "led": 0,
+     "laps": 2,
+     "rating": 23.2,
+     "status": "engine",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 1,
+     "finish": 36,
+     "led": 33,
+     "laps": 92,
+     "rating": 100.8,
+     "status": "accident",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 10,
+     "finish": 31,
+     "led": 0,
+     "laps": 110,
+     "rating": 63.6,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "carsonhocevar",
+   "name": "Carson Hocevar",
+   "car": "77",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 40.2,
+   "tier": 3,
+   "components": {
+    "finish": 43.3,
+    "rating": 43.3,
+    "dominator": 34.4,
+    "discipline": 34.4
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 20.3,
+    "rating": 63.5,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -7.3,
+    "bestFinish": 11,
+    "disciplineAvg": 22.4
+   },
+   "tags": [
+    "Loses 7 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 2,
+     "finish": 11,
+     "led": 0,
+     "laps": 110,
+     "rating": 85.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 23,
+     "finish": 32,
+     "led": 0,
+     "laps": 110,
+     "rating": 38.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 13,
+     "finish": 17,
+     "led": 0,
+     "laps": 110,
+     "rating": 67.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "zanesmith",
+   "name": "Zane Smith",
+   "car": "38",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 38.6,
+   "tier": 4,
+   "components": {
+    "finish": 34.4,
+    "rating": 41.1,
+    "dominator": 36.7,
+    "discipline": 43.3
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 22.8,
+    "rating": 59.3,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -2.2,
+    "bestFinish": 16,
+    "disciplineAvg": 20.9
+   },
+   "tags": [
+    "0 Top-10s In 4 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 24,
+     "finish": 18,
+     "led": 0,
+     "laps": 110,
+     "rating": 63.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 12,
+     "finish": 27,
+     "led": 0,
+     "laps": 110,
+     "rating": 63.9,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 20,
+     "finish": 16,
+     "led": 0,
+     "laps": 110,
+     "rating": 63.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 30,
+     "finish": 34,
+     "led": 0,
+     "laps": 109,
+     "rating": 36.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "justinhaley",
+   "name": "Justin Haley",
+   "car": "77",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 36.7,
+   "tier": 3,
+   "components": {
+    "finish": 41.1,
+    "rating": 25.6,
+    "dominator": 47.8,
+    "discipline": 38.9
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 20.5,
+    "rating": 51.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 4.0,
+    "bestFinish": 12,
+    "disciplineAvg": 22.0
+   },
+   "tags": [
+    "0 Top-10s In 4 Starts"
+   ],
+   "log": [
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 29,
+     "finish": 15,
+     "led": 0,
+     "laps": 110,
+     "rating": 48.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 27,
+     "finish": 33,
+     "led": 0,
+     "laps": 88,
+     "rating": 41.7,
+     "status": "steering",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 23,
+     "finish": 21,
+     "led": 0,
+     "laps": 110,
+     "rating": 56.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 18,
+     "finish": 12,
+     "led": 0,
+     "laps": 110,
+     "rating": 64.6,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "toddgilliland",
+   "name": "Todd Gilliland",
+   "car": "34",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 35.1,
+   "tier": 3,
+   "components": {
+    "finish": 36.7,
+    "rating": 36.7,
+    "dominator": 25.6,
+    "discipline": 41.1
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 22.0,
+    "rating": 54.3,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 5.0,
+    "bestFinish": 10,
+    "disciplineAvg": 20.9
+   },
+   "tags": [
+    "Gains 5 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 29,
+     "finish": 29,
+     "led": 0,
+     "laps": 110,
+     "rating": 40.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 35,
+     "finish": 22,
+     "led": 0,
+     "laps": 110,
+     "rating": 51.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 14,
+     "finish": 10,
+     "led": 0,
+     "laps": 110,
+     "rating": 88.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 32,
+     "finish": 24,
+     "led": 0,
+     "laps": 110,
+     "rating": 42.3,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 24,
+     "finish": 24,
+     "led": 0,
+     "laps": 110,
+     "rating": 48.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "colecuster",
+   "name": "Cole Custer",
+   "car": "41",
+   "team": "Haas Factory Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 34.6,
+   "tier": 4,
+   "components": {
+    "finish": 38.9,
+    "rating": 34.4,
+    "dominator": 30.0,
+    "discipline": 32.2
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 21.4,
+    "rating": 52.9,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -1.3,
+    "bestFinish": 20,
+    "disciplineAvg": 22.5
+   },
+   "tags": [
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 27,
+     "finish": 20,
+     "led": 0,
+     "laps": 110,
+     "rating": 52.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 27,
+     "finish": 23,
+     "led": 0,
+     "laps": 110,
+     "rating": 44.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 6,
+     "finish": 21,
+     "led": 0,
+     "laps": 110,
+     "rating": 69.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bubbawallace",
+   "name": "Bubba Wallace",
+   "car": "23",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 33.4,
+   "tier": 4,
+   "components": {
+    "finish": 32.2,
+    "rating": 27.8,
+    "dominator": 27.8,
+    "discipline": 56.7
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 23.9,
+    "rating": 49.6,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -0.4,
+    "bestFinish": 17,
+    "disciplineAvg": 18.8
+   },
+   "tags": [
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 26,
+     "finish": 22,
+     "led": 0,
+     "laps": 110,
+     "rating": 48.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 30,
+     "finish": 26,
+     "led": 0,
+     "laps": 110,
+     "rating": 56.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 18,
+     "finish": 20,
+     "led": 0,
+     "laps": 110,
+     "rating": 51.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 18,
+     "finish": 17,
+     "led": 0,
+     "laps": 110,
+     "rating": 61.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 27,
+     "finish": 36,
+     "led": 0,
+     "laps": 9,
+     "rating": 23.3,
+     "status": "engine",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austindillon",
+   "name": "Austin Dillon",
+   "car": "3",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 28.1,
+   "tier": 4,
+   "components": {
+    "finish": 30.0,
+    "rating": 32.2,
+    "dominator": 23.3,
+    "discipline": 21.1
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 24.0,
+    "rating": 52.8,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -2.2,
+    "bestFinish": 11,
+    "disciplineAvg": 24.1
+   },
+   "tags": [
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 30,
+     "finish": 27,
+     "led": 0,
+     "laps": 110,
+     "rating": 36.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 33,
+     "finish": 21,
+     "led": 0,
+     "laps": 110,
+     "rating": 56.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 16,
+     "finish": 36,
+     "led": 0,
+     "laps": 39,
+     "rating": 45.8,
+     "status": "DVP",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 11,
+     "finish": 19,
+     "led": 0,
+     "laps": 110,
+     "rating": 60.3,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 13,
+     "finish": 11,
+     "led": 0,
+     "laps": 110,
+     "rating": 80.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rickystenhousejr",
+   "name": "Ricky Stenhouse Jr.",
+   "car": "47",
+   "team": "Hyak Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 24.3,
+   "tier": 3,
+   "components": {
+    "finish": 27.8,
+    "rating": 30.0,
+    "dominator": 10.0,
+    "discipline": 23.3
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 24.1,
+    "rating": 54.3,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 6.0,
+    "bestFinish": 12,
+    "disciplineAvg": 24.0
+   },
+   "tags": [
+    "Gains 6 Spots On Avg",
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 33,
+     "finish": 21,
+     "led": 0,
+     "laps": 110,
+     "rating": 48.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 34,
+     "finish": 33,
+     "led": 0,
+     "laps": 110,
+     "rating": 52.3,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 33,
+     "finish": 24,
+     "led": 0,
+     "laps": 110,
+     "rating": 55.1,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 13,
+     "finish": 12,
+     "led": 0,
+     "laps": 110,
+     "rating": 80.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 32,
+     "finish": 25,
+     "led": 0,
+     "laps": 110,
+     "rating": 42.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rileyherbst",
+   "name": "Riley Herbst",
+   "car": "35",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 24.0,
+   "tier": 4,
+   "components": {
+    "finish": 16.7,
+    "rating": 21.1,
+    "dominator": 38.9,
+    "discipline": 25.6
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 27.5,
+    "rating": 45.5,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -1.0,
+    "bestFinish": 25,
+    "disciplineAvg": 23.6
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 25,
+     "finish": 30,
+     "led": 0,
+     "laps": 110,
+     "rating": 37.3,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 28,
+     "finish": 25,
+     "led": 0,
+     "laps": 110,
+     "rating": 53.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kevinmagnussen",
+   "name": "Kevin Magnussen",
+   "car": "91",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 23.1,
+   "tier": 4,
+   "components": {
+    "finish": 13.3,
+    "rating": 42.2,
+    "dominator": 10.0,
+    "discipline": 15.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 27.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austinhill",
+   "name": "Austin Hill",
+   "car": "33",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 20.6,
+   "tier": 4,
+   "components": {
+    "finish": 7.8,
+    "rating": 23.3,
+    "dominator": 41.1,
+    "discipline": 12.2
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 34.0,
+    "rating": 44.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -22.0,
+    "bestFinish": 34,
+    "disciplineAvg": 27.2
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 12,
+     "finish": 34,
+     "led": 0,
+     "laps": 109,
+     "rating": 44.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "erikjones",
+   "name": "Erik Jones",
+   "car": "43",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 19.1,
+   "tier": 3,
+   "components": {
+    "finish": 23.3,
+    "rating": 14.4,
+    "dominator": 21.1,
+    "discipline": 18.9
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 24.9,
+    "rating": 43.5,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 7.4,
+    "bestFinish": 19,
+    "disciplineAvg": 24.2
+   },
+   "tags": [
+    "Gains 7 Spots On Avg",
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 32,
+     "finish": 23,
+     "led": 0,
+     "laps": 110,
+     "rating": 45.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 31,
+     "finish": 29,
+     "led": 0,
+     "laps": 110,
+     "rating": 31.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 38,
+     "finish": 19,
+     "led": 0,
+     "laps": 110,
+     "rating": 66.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 28,
+     "finish": 32,
+     "led": 0,
+     "laps": 109,
+     "rating": 31.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 33,
+     "finish": 22,
+     "led": 0,
+     "laps": 110,
+     "rating": 40.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "johnhunternemechek",
+   "name": "John Hunter Nemechek",
+   "car": "42",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 19.0,
+   "tier": 4,
+   "components": {
+    "finish": 18.9,
+    "rating": 16.7,
+    "dominator": 10.0,
+    "discipline": 36.7
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 27.2,
+    "rating": 41.9,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -2.3,
+    "bestFinish": 25,
+    "disciplineAvg": 22.0
+   },
+   "tags": [
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 20,
+     "finish": 25,
+     "led": 0,
+     "laps": 110,
+     "rating": 53.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 18,
+     "finish": 28,
+     "led": 0,
+     "laps": 110,
+     "rating": 38.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 37,
+     "finish": 29,
+     "led": 0,
+     "laps": 109,
+     "rating": 31.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "harrisonburton",
+   "name": "Harrison Burton",
+   "car": "35",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": false,
+   "composite": 17.7,
+   "tier": 4,
+   "components": {
+    "finish": 20.0,
+    "rating": 11.1,
+    "dominator": 22.2,
+    "discipline": 22.2
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 26.4,
+    "rating": 41.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 1.3,
+    "bestFinish": 25,
+    "disciplineAvg": 24.1
+   },
+   "tags": [
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 22,
+     "finish": 25,
+     "led": 0,
+     "laps": 110,
+     "rating": 43.4,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 36,
+     "finish": 27,
+     "led": 0,
+     "laps": 110,
+     "rating": 35.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 26,
+     "finish": 28,
+     "led": 0,
+     "laps": 110,
+     "rating": 43.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "tydillon",
+   "name": "Ty Dillon",
+   "car": "10",
+   "team": "Kaulig Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 17.1,
+   "tier": 3,
+   "components": {
+    "finish": 21.1,
+    "rating": 18.9,
+    "dominator": 10.0,
+    "discipline": 14.4
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 25.0,
+    "rating": 47.1,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 5.0,
+    "bestFinish": 17,
+    "disciplineAvg": 27.0
+   },
+   "tags": [
+    "Gains 5 Spots On Avg",
+    "0 Top-10s In 4 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 31,
+     "finish": 35,
+     "led": 0,
+     "laps": 109,
+     "rating": 37.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 26,
+     "finish": 17,
+     "led": 0,
+     "laps": 110,
+     "rating": 58.5,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 27,
+     "finish": 23,
+     "led": 0,
+     "laps": 110,
+     "rating": 43.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 34,
+     "finish": 23,
+     "led": 0,
+     "laps": 110,
+     "rating": 46.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joshberry",
+   "name": "Josh Berry",
+   "car": "21",
+   "team": "Wood Brothers Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 15.4,
+   "tier": 3,
+   "components": {
+    "finish": 25.6,
+    "rating": 12.2,
+    "dominator": 10.0,
+    "discipline": 10.0
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 23.6,
+    "rating": 43.1,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 4.0,
+    "bestFinish": 13,
+    "disciplineAvg": 27.5
+   },
+   "tags": [
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 28,
+     "finish": 28,
+     "led": 0,
+     "laps": 110,
+     "rating": 38.3,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 25,
+     "finish": 13,
+     "led": 0,
+     "laps": 110,
+     "rating": 56.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 32,
+     "finish": 32,
+     "led": 0,
+     "laps": 95,
+     "rating": 32.2,
+     "status": "suspension",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jesselove",
+   "name": "Jesse Love",
+   "car": "33",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 13.0,
+   "tier": 4,
+   "components": {
+    "finish": 13.3,
+    "rating": 13.3,
+    "dominator": 10.0,
+    "discipline": 15.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 27.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "noahgragson",
+   "name": "Noah Gragson",
+   "car": "4",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 11.0,
+   "tier": 4,
+   "components": {
+    "finish": 10.0,
+    "rating": 10.0,
+    "dominator": 10.0,
+    "discipline": 16.7
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 32.2,
+    "rating": 33.8,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -3.3,
+    "bestFinish": 26,
+    "disciplineAvg": 25.3
+   },
+   "tags": [
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 34,
+     "finish": 32,
+     "led": 0,
+     "laps": 110,
+     "rating": 28.7,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 32,
+     "finish": 37,
+     "led": 0,
+     "laps": 99,
+     "rating": 32.7,
+     "status": "accident",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2024,
+     "race": 16,
+     "name": "Toyota/Save Mart 350",
+     "start": 19,
+     "finish": 26,
+     "led": 0,
+     "laps": 110,
+     "rating": 42.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joshbilicki",
+   "name": "Josh Bilicki",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": true,
+   "composite": 9.6,
+   "tier": 4,
+   "components": {
+    "finish": 12.2,
+    "rating": 7.8,
+    "dominator": 10.0,
+    "discipline": 7.8
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 29.5,
+    "rating": 37.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -0.5,
+    "bestFinish": 29,
+    "disciplineAvg": 28.9
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2023,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 29,
+     "finish": 30,
+     "led": 0,
+     "laps": 110,
+     "rating": 40.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 29,
+     "finish": 29,
+     "led": 0,
+     "laps": 110,
+     "rating": 33.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "katherinelegge",
+   "name": "Katherine Legge",
+   "car": "78",
+   "team": "Live Fast Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 6.1,
+   "tier": 4,
+   "components": {
+    "finish": 5.6,
+    "rating": 5.6,
+    "dominator": 10.0,
+    "discipline": 3.3
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 31.0,
+    "rating": 28.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 6.0,
+    "bestFinish": 31,
+    "disciplineAvg": 30.6
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 37,
+     "finish": 31,
+     "led": 0,
+     "laps": 110,
+     "rating": 28.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jimmiejohnson",
+   "name": "Jimmie Johnson",
+   "car": "84",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": false,
+   "composite": 6.0,
+   "tier": 4,
+   "components": {
+    "finish": 4.4,
+    "rating": 6.7,
+    "dominator": 10.0,
+    "discipline": 2.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 31.3
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "codyware",
+   "name": "Cody Ware",
+   "car": "51",
+   "team": "Rick Ware Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 5.0,
+   "tier": 4,
+   "components": {
+    "finish": 3.3,
+    "rating": 3.3,
+    "dominator": 10.0,
+    "discipline": 5.6
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 33.2,
+    "rating": 27.4,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 3.0,
+    "bestFinish": 32,
+    "disciplineAvg": 30.3
+   },
+   "tags": [
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 18,
+     "name": "Toyota/Save Mart 350",
+     "start": 36,
+     "finish": 33,
+     "led": 0,
+     "laps": 109,
+     "rating": 26.0,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2025,
+     "race": 20,
+     "name": "Toyota/Save Mart 350",
+     "start": 36,
+     "finish": 34,
+     "led": 0,
+     "laps": 108,
+     "rating": 27.8,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    },
+    {
+     "season": 2022,
+     "race": 16,
+     "name": "Toyota / Save Mart 350",
+     "start": 36,
+     "finish": 32,
+     "led": 0,
+     "laps": 109,
+     "rating": 29.2,
+     "status": "running",
+     "win": false,
+     "track": "Sonoma Raceway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jjyeley",
+   "name": "J.J. Yeley",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 2.9,
+   "tier": 4,
+   "components": {
+    "finish": 1.1,
+    "rating": 1.1,
+    "dominator": 10.0,
+    "discipline": 1.1
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 36.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "timmyhill",
+   "name": "Timmy Hill",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": false,
+   "composite": 2.5,
+   "tier": 4,
+   "components": {
+    "finish": 1.1,
+    "rating": 0.0,
+    "dominator": 10.0,
+    "discipline": 1.1
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 36.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  }
+ ],
+ "generatedAt": "2026-11-24"
+}

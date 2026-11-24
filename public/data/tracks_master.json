@@ -1,0 +1,1142 @@
+{
+ "generatedAt": "2026-11-24",
+ "source": "nascaR.data (Kyle Grealis) / DriverAverages.com",
+ "nextGenSince": 2022,
+ "dataThrough": {
+  "season": 2026,
+  "race": 36,
+  "track": "Homestead-Miami Speedway"
+ },
+ "weights": {
+  "finish": 0.3,
+  "rating": 0.35,
+  "dominator": 0.2,
+  "discipline": 0.15
+ },
+ "tierCuts": [
+  85.0,
+  65.0,
+  40.0
+ ],
+ "tierLabels": {
+  "1": "Elite / Dominator",
+  "2": "Top-10 Contender",
+  "3": "Place-Diff / Value",
+  "4": "Fade / High Risk"
+ },
+ "recency": {
+  "currentAndLast": 1.0,
+  "twoYearsAgo": 0.75,
+  "threePlus": 0.5
+ },
+ "disciplines": {
+  "intermediate": {
+   "nextGenRaces": 70,
+   "avgFinishAll": 19.1
+  },
+  "road_course": {
+   "nextGenRaces": 27,
+   "avgFinishAll": 19.4
+  },
+  "short_track": {
+   "nextGenRaces": 49,
+   "avgFinishAll": 18.9
+  },
+  "superspeedway": {
+   "nextGenRaces": 30,
+   "avgFinishAll": 19.9
+  }
+ },
+ "tracks": [
+  {
+   "slug": "daytona",
+   "track": "Daytona",
+   "discipline": "superspeedway",
+   "lengthMi": 2.5,
+   "surface": "paved",
+   "nextGenRaces": 10,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Aric Almirola",
+     "key": "aricalmirola",
+     "starts": 4,
+     "avgFinish": 12.5,
+     "wins": 0,
+     "top5": 2
+    },
+    {
+     "name": "David Ragan",
+     "key": "davidragan",
+     "starts": 3,
+     "avgFinish": 13.4,
+     "wins": 0,
+     "top5": 0
+    },
+    {
+     "name": "Chris Buescher",
+     "key": "chrisbuescher",
+     "starts": 10,
+     "avgFinish": 14.5,
+     "wins": 1,
+     "top5": 2
+    }
+   ]
+  },
+  {
+   "slug": "atlanta",
+   "track": "Atlanta",
+   "discipline": "superspeedway",
+   "lengthMi": 1.5,
+   "surface": "paved",
+   "nextGenRaces": 10,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Carson Hocevar",
+     "key": "carsonhocevar",
+     "starts": 6,
+     "avgFinish": 8.2,
+     "wins": 0,
+     "top5": 3
+    },
+    {
+     "name": "Chase Elliott",
+     "key": "chaseelliott",
+     "starts": 9,
+     "avgFinish": 10.3,
+     "wins": 2,
+     "top5": 2
+    },
+    {
+     "name": "Ryan Blaney",
+     "key": "ryanblaney",
+     "starts": 10,
+     "avgFinish": 10.4,
+     "wins": 1,
+     "top5": 5
+    }
+   ]
+  },
+  {
+   "slug": "talladega",
+   "track": "Talladega",
+   "discipline": "superspeedway",
+   "lengthMi": 2.7,
+   "surface": "paved",
+   "nextGenRaces": 10,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Carson Hocevar",
+     "key": "carsonhocevar",
+     "starts": 7,
+     "avgFinish": 10.0,
+     "wins": 1,
+     "top5": 1
+    },
+    {
+     "name": "Todd Gilliland",
+     "key": "toddgilliland",
+     "starts": 10,
+     "avgFinish": 11.6,
+     "wins": 0,
+     "top5": 1
+    },
+    {
+     "name": "William Byron",
+     "key": "williambyron",
+     "starts": 10,
+     "avgFinish": 12.1,
+     "wins": 0,
+     "top5": 4
+    }
+   ]
+  },
+  {
+   "slug": "cota",
+   "track": "COTA",
+   "discipline": "road_course",
+   "lengthMi": 3.4,
+   "surface": "road",
+   "nextGenRaces": 5,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Tyler Reddick",
+     "key": "tylerreddick",
+     "starts": 5,
+     "avgFinish": 2.9,
+     "wins": 2,
+     "top5": 5
+    },
+    {
+     "name": "Christopher Bell",
+     "key": "christopherbell",
+     "starts": 5,
+     "avgFinish": 6.0,
+     "wins": 1,
+     "top5": 4
+    },
+    {
+     "name": "William Byron",
+     "key": "williambyron",
+     "starts": 5,
+     "avgFinish": 6.5,
+     "wins": 1,
+     "top5": 3
+    }
+   ]
+  },
+  {
+   "slug": "sonoma",
+   "track": "Sonoma",
+   "discipline": "road_course",
+   "lengthMi": 2.0,
+   "surface": "road",
+   "nextGenRaces": 5,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Michael McDowell",
+     "key": "michaelmcdowell",
+     "starts": 5,
+     "avgFinish": 5.2,
+     "wins": 0,
+     "top5": 3
+    },
+    {
+     "name": "Chase Elliott",
+     "key": "chaseelliott",
+     "starts": 5,
+     "avgFinish": 7.9,
+     "wins": 0,
+     "top5": 3
+    },
+    {
+     "name": "Christopher Bell",
+     "key": "christopherbell",
+     "starts": 5,
+     "avgFinish": 9.3,
+     "wins": 0,
+     "top5": 2
+    }
+   ]
+  },
+  {
+   "slug": "watkins-glen",
+   "track": "Watkins Glen",
+   "discipline": "road_course",
+   "lengthMi": 2.5,
+   "surface": "road",
+   "nextGenRaces": 5,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Shane van Gisbergen",
+     "key": "shanevangisbergen",
+     "starts": 3,
+     "avgFinish": 1.3,
+     "wins": 2,
+     "top5": 3
+    },
+    {
+     "name": "Chris Buescher",
+     "key": "chrisbuescher",
+     "starts": 5,
+     "avgFinish": 6.3,
+     "wins": 1,
+     "top5": 2
+    },
+    {
+     "name": "Christopher Bell",
+     "key": "christopherbell",
+     "starts": 5,
+     "avgFinish": 10.4,
+     "wins": 0,
+     "top5": 2
+    }
+   ]
+  },
+  {
+   "slug": "san-diego",
+   "track": "San Diego",
+   "discipline": "road_course",
+   "lengthMi": null,
+   "surface": null,
+   "nextGenRaces": 1,
+   "seasons": [
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Corey Heim",
+     "key": "coreyheim",
+     "starts": 1,
+     "avgFinish": 1.0,
+     "wins": 1,
+     "top5": 1
+    },
+    {
+     "name": "Bubba Wallace",
+     "key": "bubbawallace",
+     "starts": 1,
+     "avgFinish": 2.0,
+     "wins": 0,
+     "top5": 1
+    },
+    {
+     "name": "Kyle Larson",
+     "key": "kylelarson",
+     "starts": 1,
+     "avgFinish": 3.0,
+     "wins": 0,
+     "top5": 1
+    }
+   ]
+  },
+  {
+   "slug": "phoenix",
+   "track": "Phoenix",
+   "discipline": "short_track",
+   "lengthMi": 1.0,
+   "surface": "paved",
+   "nextGenRaces": 10,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Ryan Blaney",
+     "key": "ryanblaney",
+     "starts": 10,
+     "avgFinish": 5.6,
+     "wins": 2,
+     "top5": 9
+    },
+    {
+     "name": "Kevin Harvick",
+     "key": "kevinharvick",
+     "starts": 4,
+     "avgFinish": 5.8,
+     "wins": 0,
+     "top5": 2
+    },
+    {
+     "name": "Christopher Bell",
+     "key": "christopherbell",
+     "starts": 10,
+     "avgFinish": 8.2,
+     "wins": 2,
+     "top5": 5
+    }
+   ]
+  },
+  {
+   "slug": "bristol",
+   "track": "Bristol",
+   "discipline": "short_track",
+   "lengthMi": 0.5,
+   "surface": "paved",
+   "nextGenRaces": 8,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Kyle Larson",
+     "key": "kylelarson",
+     "starts": 8,
+     "avgFinish": 7.1,
+     "wins": 2,
+     "top5": 7
+    },
+    {
+     "name": "Christopher Bell",
+     "key": "christopherbell",
+     "starts": 8,
+     "avgFinish": 8.4,
+     "wins": 1,
+     "top5": 5
+    },
+    {
+     "name": "Ty Gibbs",
+     "key": "tygibbs",
+     "starts": 8,
+     "avgFinish": 8.8,
+     "wins": 1,
+     "top5": 4
+    }
+   ]
+  },
+  {
+   "slug": "martinsville",
+   "track": "Martinsville",
+   "discipline": "short_track",
+   "lengthMi": 0.5,
+   "surface": "paved",
+   "nextGenRaces": 10,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Chase Elliott",
+     "key": "chaseelliott",
+     "starts": 10,
+     "avgFinish": 5.0,
+     "wins": 1,
+     "top5": 6
+    },
+    {
+     "name": "Kyle Larson",
+     "key": "kylelarson",
+     "starts": 10,
+     "avgFinish": 6.1,
+     "wins": 1,
+     "top5": 6
+    },
+    {
+     "name": "William Byron",
+     "key": "williambyron",
+     "starts": 10,
+     "avgFinish": 7.5,
+     "wins": 4,
+     "top5": 5
+    }
+   ]
+  },
+  {
+   "slug": "richmond",
+   "track": "Richmond",
+   "discipline": "short_track",
+   "lengthMi": 0.8,
+   "surface": "paved",
+   "nextGenRaces": 8,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Kevin Harvick",
+     "key": "kevinharvick",
+     "starts": 4,
+     "avgFinish": 4.5,
+     "wins": 1,
+     "top5": 3
+    },
+    {
+     "name": "Denny Hamlin",
+     "key": "dennyhamlin",
+     "starts": 8,
+     "avgFinish": 5.4,
+     "wins": 2,
+     "top5": 6
+    },
+    {
+     "name": "Joey Logano",
+     "key": "joeylogano",
+     "starts": 8,
+     "avgFinish": 6.9,
+     "wins": 1,
+     "top5": 4
+    }
+   ]
+  },
+  {
+   "slug": "dover",
+   "track": "Dover",
+   "discipline": "short_track",
+   "lengthMi": 1.0,
+   "surface": "paved",
+   "nextGenRaces": 4,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "topPerformers": [
+    {
+     "name": "Martin Truex Jr.",
+     "key": "martintruexjr",
+     "starts": 3,
+     "avgFinish": 5.0,
+     "wins": 1,
+     "top5": 2
+    },
+    {
+     "name": "Alex Bowman",
+     "key": "alexbowman",
+     "starts": 3,
+     "avgFinish": 5.1,
+     "wins": 0,
+     "top5": 2
+    },
+    {
+     "name": "Denny Hamlin",
+     "key": "dennyhamlin",
+     "starts": 4,
+     "avgFinish": 5.4,
+     "wins": 2,
+     "top5": 3
+    }
+   ]
+  },
+  {
+   "slug": "new-hampshire",
+   "track": "New Hampshire",
+   "discipline": "short_track",
+   "lengthMi": 1.1,
+   "surface": "paved",
+   "nextGenRaces": 5,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Josh Berry",
+     "key": "joshberry",
+     "starts": 3,
+     "avgFinish": 2.6,
+     "wins": 0,
+     "top5": 3
+    },
+    {
+     "name": "Martin Truex Jr.",
+     "key": "martintruexjr",
+     "starts": 3,
+     "avgFinish": 5.3,
+     "wins": 1,
+     "top5": 2
+    },
+    {
+     "name": "Kyle Larson",
+     "key": "kylelarson",
+     "starts": 5,
+     "avgFinish": 6.3,
+     "wins": 0,
+     "top5": 3
+    }
+   ]
+  },
+  {
+   "slug": "iowa",
+   "track": "Iowa",
+   "discipline": "short_track",
+   "lengthMi": 0.9,
+   "surface": "paved",
+   "nextGenRaces": 3,
+   "seasons": [
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Ryan Blaney",
+     "key": "ryanblaney",
+     "starts": 3,
+     "avgFinish": 2.8,
+     "wins": 1,
+     "top5": 3
+    },
+    {
+     "name": "William Byron",
+     "key": "williambyron",
+     "starts": 3,
+     "avgFinish": 4.2,
+     "wins": 1,
+     "top5": 2
+    },
+    {
+     "name": "Christopher Bell",
+     "key": "christopherbell",
+     "starts": 3,
+     "avgFinish": 8.0,
+     "wins": 0,
+     "top5": 2
+    }
+   ]
+  },
+  {
+   "slug": "n-wilkesboro",
+   "track": "N. Wilkesboro",
+   "discipline": "short_track",
+   "lengthMi": null,
+   "surface": null,
+   "nextGenRaces": 1,
+   "seasons": [
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Joey Logano",
+     "key": "joeylogano",
+     "starts": 1,
+     "avgFinish": 1.0,
+     "wins": 1,
+     "top5": 1
+    },
+    {
+     "name": "Denny Hamlin",
+     "key": "dennyhamlin",
+     "starts": 1,
+     "avgFinish": 2.0,
+     "wins": 0,
+     "top5": 1
+    },
+    {
+     "name": "Chase Briscoe",
+     "key": "chasebriscoe",
+     "starts": 1,
+     "avgFinish": 3.0,
+     "wins": 0,
+     "top5": 1
+    }
+   ]
+  },
+  {
+   "slug": "las-vegas",
+   "track": "Las Vegas",
+   "discipline": "intermediate",
+   "lengthMi": 1.5,
+   "surface": "paved",
+   "nextGenRaces": 10,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Kyle Larson",
+     "key": "kylelarson",
+     "starts": 10,
+     "avgFinish": 6.5,
+     "wins": 2,
+     "top5": 6
+    },
+    {
+     "name": "Martin Truex Jr.",
+     "key": "martintruexjr",
+     "starts": 6,
+     "avgFinish": 7.2,
+     "wins": 0,
+     "top5": 0
+    },
+    {
+     "name": "William Byron",
+     "key": "williambyron",
+     "starts": 10,
+     "avgFinish": 9.7,
+     "wins": 1,
+     "top5": 5
+    }
+   ]
+  },
+  {
+   "slug": "darlington",
+   "track": "Darlington",
+   "discipline": "intermediate",
+   "lengthMi": 1.4,
+   "surface": "paved",
+   "nextGenRaces": 10,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Tyler Reddick",
+     "key": "tylerreddick",
+     "starts": 10,
+     "avgFinish": 7.5,
+     "wins": 1,
+     "top5": 7
+    },
+    {
+     "name": "Denny Hamlin",
+     "key": "dennyhamlin",
+     "starts": 10,
+     "avgFinish": 10.0,
+     "wins": 1,
+     "top5": 3
+    },
+    {
+     "name": "Ty Gibbs",
+     "key": "tygibbs",
+     "starts": 9,
+     "avgFinish": 11.6,
+     "wins": 0,
+     "top5": 2
+    }
+   ]
+  },
+  {
+   "slug": "texas",
+   "track": "Texas",
+   "discipline": "intermediate",
+   "lengthMi": 1.5,
+   "surface": "paved",
+   "nextGenRaces": 5,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "William Byron",
+     "key": "williambyron",
+     "starts": 5,
+     "avgFinish": 7.3,
+     "wins": 1,
+     "top5": 2
+    },
+    {
+     "name": "Daniel Suarez",
+     "key": "danielsuarez",
+     "starts": 5,
+     "avgFinish": 7.9,
+     "wins": 0,
+     "top5": 1
+    },
+    {
+     "name": "Chase Elliott",
+     "key": "chaseelliott",
+     "starts": 5,
+     "avgFinish": 10.5,
+     "wins": 2,
+     "top5": 2
+    }
+   ]
+  },
+  {
+   "slug": "kansas",
+   "track": "Kansas",
+   "discipline": "intermediate",
+   "lengthMi": 1.5,
+   "surface": "paved",
+   "nextGenRaces": 10,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Kyle Larson",
+     "key": "kylelarson",
+     "starts": 10,
+     "avgFinish": 5.1,
+     "wins": 3,
+     "top5": 7
+    },
+    {
+     "name": "Denny Hamlin",
+     "key": "dennyhamlin",
+     "starts": 10,
+     "avgFinish": 7.9,
+     "wins": 1,
+     "top5": 8
+    },
+    {
+     "name": "Christopher Bell",
+     "key": "christopherbell",
+     "starts": 10,
+     "avgFinish": 8.9,
+     "wins": 0,
+     "top5": 4
+    }
+   ]
+  },
+  {
+   "slug": "charlotte",
+   "track": "Charlotte",
+   "discipline": "intermediate",
+   "lengthMi": 1.5,
+   "surface": "paved",
+   "nextGenRaces": 6,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Christopher Bell",
+     "key": "christopherbell",
+     "starts": 6,
+     "avgFinish": 5.7,
+     "wins": 1,
+     "top5": 4
+    },
+    {
+     "name": "Martin Truex Jr.",
+     "key": "martintruexjr",
+     "starts": 3,
+     "avgFinish": 9.4,
+     "wins": 0,
+     "top5": 1
+    },
+    {
+     "name": "Denny Hamlin",
+     "key": "dennyhamlin",
+     "starts": 6,
+     "avgFinish": 9.6,
+     "wins": 1,
+     "top5": 4
+    }
+   ]
+  },
+  {
+   "slug": "nashville",
+   "track": "Nashville",
+   "discipline": "intermediate",
+   "lengthMi": 1.3,
+   "surface": "paved",
+   "nextGenRaces": 5,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Denny Hamlin",
+     "key": "dennyhamlin",
+     "starts": 5,
+     "avgFinish": 4.7,
+     "wins": 1,
+     "top5": 3
+    },
+    {
+     "name": "Zane Smith",
+     "key": "zanesmith",
+     "starts": 3,
+     "avgFinish": 8.5,
+     "wins": 0,
+     "top5": 1
+    },
+    {
+     "name": "Joey Logano",
+     "key": "joeylogano",
+     "starts": 5,
+     "avgFinish": 8.7,
+     "wins": 1,
+     "top5": 2
+    }
+   ]
+  },
+  {
+   "slug": "pocono",
+   "track": "Pocono",
+   "discipline": "intermediate",
+   "lengthMi": 2.5,
+   "surface": "paved",
+   "nextGenRaces": 5,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Denny Hamlin",
+     "key": "dennyhamlin",
+     "starts": 5,
+     "avgFinish": 6.0,
+     "wins": 2,
+     "top5": 4
+    },
+    {
+     "name": "Martin Truex Jr.",
+     "key": "martintruexjr",
+     "starts": 3,
+     "avgFinish": 6.3,
+     "wins": 0,
+     "top5": 1
+    },
+    {
+     "name": "Chase Elliott",
+     "key": "chaseelliott",
+     "starts": 5,
+     "avgFinish": 7.5,
+     "wins": 1,
+     "top5": 2
+    }
+   ]
+  },
+  {
+   "slug": "michigan",
+   "track": "Michigan",
+   "discipline": "intermediate",
+   "lengthMi": 2.0,
+   "surface": "paved",
+   "nextGenRaces": 5,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Denny Hamlin",
+     "key": "dennyhamlin",
+     "starts": 5,
+     "avgFinish": 3.1,
+     "wins": 2,
+     "top5": 4
+    },
+    {
+     "name": "Chris Buescher",
+     "key": "chrisbuescher",
+     "starts": 5,
+     "avgFinish": 6.4,
+     "wins": 1,
+     "top5": 2
+    },
+    {
+     "name": "Erik Jones",
+     "key": "erikjones",
+     "starts": 5,
+     "avgFinish": 9.1,
+     "wins": 0,
+     "top5": 1
+    }
+   ]
+  },
+  {
+   "slug": "chicagoland",
+   "track": "Chicagoland",
+   "discipline": "intermediate",
+   "lengthMi": null,
+   "surface": null,
+   "nextGenRaces": 1,
+   "seasons": [
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Chase Briscoe",
+     "key": "chasebriscoe",
+     "starts": 1,
+     "avgFinish": 1.0,
+     "wins": 1,
+     "top5": 1
+    },
+    {
+     "name": "Christopher Bell",
+     "key": "christopherbell",
+     "starts": 1,
+     "avgFinish": 2.0,
+     "wins": 0,
+     "top5": 1
+    },
+    {
+     "name": "Denny Hamlin",
+     "key": "dennyhamlin",
+     "starts": 1,
+     "avgFinish": 3.0,
+     "wins": 0,
+     "top5": 1
+    }
+   ]
+  },
+  {
+   "slug": "indianapolis",
+   "track": "Indianapolis",
+   "discipline": "intermediate",
+   "lengthMi": 2.5,
+   "surface": "paved",
+   "nextGenRaces": 3,
+   "seasons": [
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Christopher Bell",
+     "key": "christopherbell",
+     "starts": 3,
+     "avgFinish": 4.7,
+     "wins": 0,
+     "top5": 2
+    },
+    {
+     "name": "Brad Keselowski",
+     "key": "bradkeselowski",
+     "starts": 3,
+     "avgFinish": 9.7,
+     "wins": 0,
+     "top5": 1
+    },
+    {
+     "name": "Carson Hocevar",
+     "key": "carsonhocevar",
+     "starts": 3,
+     "avgFinish": 10.2,
+     "wins": 0,
+     "top5": 0
+    }
+   ]
+  },
+  {
+   "slug": "wwt-raceway",
+   "track": "WWT Raceway",
+   "discipline": "intermediate",
+   "lengthMi": 1.2,
+   "surface": "paved",
+   "nextGenRaces": 5,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "Joey Logano",
+     "key": "joeylogano",
+     "starts": 5,
+     "avgFinish": 3.7,
+     "wins": 1,
+     "top5": 5
+    },
+    {
+     "name": "Kyle Larson",
+     "key": "kylelarson",
+     "starts": 5,
+     "avgFinish": 7.6,
+     "wins": 1,
+     "top5": 2
+    },
+    {
+     "name": "Denny Hamlin",
+     "key": "dennyhamlin",
+     "starts": 5,
+     "avgFinish": 7.9,
+     "wins": 1,
+     "top5": 3
+    }
+   ]
+  },
+  {
+   "slug": "homestead",
+   "track": "Homestead",
+   "discipline": "intermediate",
+   "lengthMi": 1.5,
+   "surface": "paved",
+   "nextGenRaces": 5,
+   "seasons": [
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+   ],
+   "topPerformers": [
+    {
+     "name": "William Byron",
+     "key": "williambyron",
+     "starts": 5,
+     "avgFinish": 7.3,
+     "wins": 0,
+     "top5": 2
+    },
+    {
+     "name": "Bubba Wallace",
+     "key": "bubbawallace",
+     "starts": 4,
+     "avgFinish": 7.5,
+     "wins": 0,
+     "top5": 2
+    },
+    {
+     "name": "Tyler Reddick",
+     "key": "tylerreddick",
+     "starts": 5,
+     "avgFinish": 7.9,
+     "wins": 1,
+     "top5": 3
+    }
+   ]
+  }
+ ]
+}

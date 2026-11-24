@@ -114,6 +114,13 @@ const Icon = {
       <path d="m12 12.2.9 1.6 1.8.3-1.3 1.2.3 1.8-1.7-.9-1.7.9.3-1.8-1.3-1.2 1.8-.3z" fill="currentColor" stroke="none"/>
     </svg>
   ),
+  CheatSheet: () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4.5" y="3.5" width="15" height="17" rx="2.5"/>
+      <path d="M8 8.5h8M8 12h8M8 15.5h4.5"/>
+      <path d="M14.5 17.5l1.4 1.4 2.6-2.8" />
+    </svg>
+  ),
   Seasons: () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/>
@@ -226,6 +233,7 @@ function DesktopNav({ player, tab, setTab, onLogout, data }) {
     { id:"hall",         l:"Champions"   },
     { id:"achievements", l:"Achievements" },
     { id:"seasons",      l:"Seasons"     },
+    { id:"cheatsheet",   l:"Cheat Sheet" },
     { id:"playoffs",     l:"The Chase", strong:chaseLive },
     { id:"isc",          l:"ISC"         },
     { id:"schedule",     l:"Schedule"    },
@@ -289,6 +297,7 @@ const MORE_GROUPS = [
     { id:"lineups",      label:"Lineups",    Icon:Icon.Lineups    },
     { id:"schedule",     label:"Schedule",   Icon:Icon.Schedule   },
     { id:"drivers",      label:"Drivers",    Icon:Icon.Drivers    },
+    { id:"cheatsheet",   label:"Cheat Sheet", Icon:Icon.CheatSheet },
     { id:"feed",         label:"Feed",       Icon:Icon.Feed       },
     { id:"news",         label:"News",       Icon:Icon.News       },
   ] },

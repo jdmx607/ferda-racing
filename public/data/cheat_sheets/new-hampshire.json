@@ -1,0 +1,4186 @@
+{
+ "slug": "new-hampshire",
+ "track": "New Hampshire",
+ "discipline": "short_track",
+ "datasetTracks": [
+  "New Hampshire Motor Speedway"
+ ],
+ "lengthMi": 1.1,
+ "surface": "paved",
+ "nextGenRaces": 5,
+ "seasons": [
+  2022,
+  2023,
+  2024,
+  2025,
+  2026
+ ],
+ "winners": [
+  {
+   "season": 2026,
+   "race": 25,
+   "driver": "Ryan Blaney",
+   "car": "12"
+  },
+  {
+   "season": 2025,
+   "race": 30,
+   "driver": "Ryan Blaney",
+   "car": "12"
+  },
+  {
+   "season": 2024,
+   "race": 18,
+   "driver": "Christopher Bell",
+   "car": "20"
+  },
+  {
+   "season": 2023,
+   "race": 20,
+   "driver": "Martin Truex Jr.",
+   "car": "19"
+  },
+  {
+   "season": 2022,
+   "race": 20,
+   "driver": "Christopher Bell",
+   "car": "20"
+  }
+ ],
+ "topPerformers": [
+  {
+   "name": "Josh Berry",
+   "key": "joshberry",
+   "starts": 3,
+   "avgFinish": 2.6,
+   "wins": 0,
+   "top5": 3
+  },
+  {
+   "name": "Martin Truex Jr.",
+   "key": "martintruexjr",
+   "starts": 3,
+   "avgFinish": 5.3,
+   "wins": 1,
+   "top5": 2
+  },
+  {
+   "name": "Kyle Larson",
+   "key": "kylelarson",
+   "starts": 5,
+   "avgFinish": 6.3,
+   "wins": 0,
+   "top5": 3
+  }
+ ],
+ "qualifying": null,
+ "drivers": [
+  {
+   "key": "ryanblaney",
+   "name": "Ryan Blaney",
+   "car": "12",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 96.9,
+   "tier": 1,
+   "components": {
+    "finish": 92.2,
+    "rating": 98.9,
+    "dominator": 98.9,
+    "discipline": 98.9
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 2,
+    "top5": 2,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 10.9,
+    "rating": 114.2,
+    "ledPct": 20.5,
+    "avgPlaceDiff": -7.8,
+    "bestFinish": 1,
+    "disciplineAvg": 9.4
+   },
+   "tags": [
+    "2x Next Gen Winner Here",
+    "Leads Laps Here",
+    "Loses 8 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 8,
+     "finish": 1,
+     "led": 115,
+     "laps": 301,
+     "rating": 136.3,
+     "status": "running",
+     "win": true,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 2,
+     "finish": 1,
+     "led": 116,
+     "laps": 301,
+     "rating": 138.3,
+     "status": "running",
+     "win": true,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 2,
+     "finish": 25,
+     "led": 0,
+     "laps": 305,
+     "rating": 96.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 5,
+     "finish": 22,
+     "led": 0,
+     "laps": 301,
+     "rating": 100.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 11,
+     "finish": 18,
+     "led": 0,
+     "laps": 300,
+     "rating": 62.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "christopherbell",
+   "name": "Christopher Bell",
+   "car": "20",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 94.1,
+   "tier": 1,
+   "components": {
+    "finish": 94.4,
+    "rating": 94.4,
+    "dominator": 94.4,
+    "discipline": 92.2
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 2,
+    "top5": 3,
+    "top10": 4,
+    "dnf": 0,
+    "avgFinish": 6.9,
+    "rating": 108.9,
+    "ledPct": 11.7,
+    "avgPlaceDiff": -1.2,
+    "bestFinish": 1,
+    "disciplineAvg": 10.1
+   },
+   "tags": [
+    "2x Next Gen Winner Here",
+    "3 Straight Top-10s",
+    "Leads Laps Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 6,
+     "finish": 4,
+     "led": 0,
+     "laps": 301,
+     "rating": 104.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 19,
+     "finish": 6,
+     "led": 0,
+     "laps": 301,
+     "rating": 96.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 4,
+     "finish": 1,
+     "led": 149,
+     "laps": 305,
+     "rating": 142.1,
+     "status": "running",
+     "win": true,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 1,
+     "finish": 29,
+     "led": 1,
+     "laps": 299,
+     "rating": 86.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 5,
+     "finish": 1,
+     "led": 42,
+     "laps": 301,
+     "rating": 115.9,
+     "status": "running",
+     "win": true,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joshberry",
+   "name": "Josh Berry",
+   "car": "21",
+   "team": "Wood Brothers Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 93.4,
+   "tier": 1,
+   "components": {
+    "finish": 98.9,
+    "rating": 96.7,
+    "dominator": 92.2,
+    "discipline": 76.7
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 3,
+    "top10": 3,
+    "dnf": 0,
+    "avgFinish": 2.6,
+    "rating": 119.0,
+    "ledPct": 10.0,
+    "avgPlaceDiff": 2.3,
+    "bestFinish": 2,
+    "disciplineAvg": 15.1
+   },
+   "tags": [
+    "3 Straight Top-5s",
+    "Leads Laps Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 2,
+     "finish": 3,
+     "led": 73,
+     "laps": 301,
+     "rating": 131.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 3,
+     "finish": 2,
+     "led": 10,
+     "laps": 301,
+     "rating": 111.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 10,
+     "finish": 3,
+     "led": 0,
+     "laps": 305,
+     "rating": 112.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kylelarson",
+   "name": "Kyle Larson",
+   "car": "5",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 92.1,
+   "tier": 1,
+   "components": {
+    "finish": 96.7,
+    "rating": 92.2,
+    "dominator": 83.3,
+    "discipline": 94.4
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 3,
+    "top10": 4,
+    "dnf": 0,
+    "avgFinish": 6.3,
+    "rating": 102.8,
+    "ledPct": 2.2,
+    "avgPlaceDiff": 6.8,
+    "bestFinish": 3,
+    "disciplineAvg": 9.7
+   },
+   "tags": [
+    "4 Straight Top-10s",
+    "Gains 7 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 9,
+     "finish": 5,
+     "led": 18,
+     "laps": 301,
+     "rating": 109.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 16,
+     "finish": 7,
+     "led": 4,
+     "laps": 301,
+     "rating": 107.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 19,
+     "finish": 4,
+     "led": 0,
+     "laps": 305,
+     "rating": 93.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 15,
+     "finish": 3,
+     "led": 6,
+     "laps": 301,
+     "rating": 105.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 8,
+     "finish": 14,
+     "led": 0,
+     "laps": 300,
+     "rating": 92.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "dennyhamlin",
+   "name": "Denny Hamlin",
+   "car": "11",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 90.2,
+   "tier": 1,
+   "components": {
+    "finish": 90.0,
+    "rating": 87.8,
+    "dominator": 90.0,
+    "discipline": 96.7
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 3,
+    "dnf": 0,
+    "avgFinish": 11.6,
+    "rating": 92.3,
+    "ledPct": 2.8,
+    "avgPlaceDiff": 1.0,
+    "bestFinish": 6,
+    "disciplineAvg": 9.5
+   },
+   "tags": [
+    "Leads Laps Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 4,
+     "finish": 7,
+     "led": 0,
+     "laps": 301,
+     "rating": 89.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 9,
+     "finish": 12,
+     "led": 0,
+     "laps": 301,
+     "rating": 91.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 14,
+     "finish": 24,
+     "led": 43,
+     "laps": 305,
+     "rating": 91.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 20,
+     "finish": 7,
+     "led": 0,
+     "laps": 301,
+     "rating": 103.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 14,
+     "finish": 6,
+     "led": 0,
+     "laps": 301,
+     "rating": 91.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joeylogano",
+   "name": "Joey Logano",
+   "car": "22",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 88.3,
+   "tier": 1,
+   "components": {
+    "finish": 81.1,
+    "rating": 90.0,
+    "dominator": 96.7,
+    "discipline": 87.8
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 2,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 14.7,
+    "rating": 100.5,
+    "ledPct": 14.2,
+    "avgPlaceDiff": -6.4,
+    "bestFinish": 2,
+    "disciplineAvg": 11.8
+   },
+   "tags": [
+    "Leads Laps Here",
+    "Loses 6 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 21,
+     "finish": 14,
+     "led": 0,
+     "laps": 301,
+     "rating": 70.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 1,
+     "finish": 4,
+     "led": 147,
+     "laps": 301,
+     "rating": 134.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 6,
+     "finish": 32,
+     "led": 0,
+     "laps": 302,
+     "rating": 91.4,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 4,
+     "finish": 2,
+     "led": 2,
+     "laps": 301,
+     "rating": 113.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 12,
+     "finish": 24,
+     "led": 25,
+     "laps": 300,
+     "rating": 93.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chaseelliott",
+   "name": "Chase Elliott",
+   "car": "9",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 86.1,
+   "tier": 1,
+   "components": {
+    "finish": 87.8,
+    "rating": 83.3,
+    "dominator": 85.6,
+    "discipline": 90.0
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 2,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 13.5,
+    "rating": 82.7,
+    "ledPct": 3.5,
+    "avgPlaceDiff": 3.0,
+    "bestFinish": 2,
+    "disciplineAvg": 11.7
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 29,
+     "finish": 25,
+     "led": 0,
+     "laps": 300,
+     "rating": 46.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 27,
+     "finish": 5,
+     "led": 3,
+     "laps": 301,
+     "rating": 87.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 1,
+     "finish": 18,
+     "led": 41,
+     "laps": 305,
+     "rating": 105.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 18,
+     "finish": 12,
+     "led": 0,
+     "laps": 301,
+     "rating": 71.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 2,
+     "finish": 2,
+     "led": 13,
+     "laps": 301,
+     "rating": 121.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "tylerreddick",
+   "name": "Tyler Reddick",
+   "car": "45",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 78.6,
+   "tier": 2,
+   "components": {
+    "finish": 85.6,
+    "rating": 78.9,
+    "dominator": 78.9,
+    "discipline": 63.3
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 3,
+    "dnf": 0,
+    "avgFinish": 12.5,
+    "rating": 79.3,
+    "ledPct": 3.5,
+    "avgPlaceDiff": -5.2,
+    "bestFinish": 6,
+    "disciplineAvg": 16.6
+   },
+   "tags": [
+    "Loses 5 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 1,
+     "finish": 8,
+     "led": 0,
+     "laps": 301,
+     "rating": 80.4,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 4,
+     "finish": 21,
+     "led": 0,
+     "laps": 301,
+     "rating": 73.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 12,
+     "finish": 6,
+     "led": 53,
+     "laps": 305,
+     "rating": 90.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 6,
+     "finish": 6,
+     "led": 0,
+     "laps": 301,
+     "rating": 90.6,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 13,
+     "finish": 21,
+     "led": 0,
+     "laps": 300,
+     "rating": 62.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "williambyron",
+   "name": "William Byron",
+   "car": "24",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 78.0,
+   "tier": 2,
+   "components": {
+    "finish": 58.9,
+    "rating": 85.6,
+    "dominator": 87.8,
+    "discipline": 85.6
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 18.7,
+    "rating": 87.0,
+    "ledPct": 2.7,
+    "avgPlaceDiff": -14.0,
+    "bestFinish": 3,
+    "disciplineAvg": 13.0
+   },
+   "tags": [
+    "Loses 14 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 3,
+     "finish": 30,
+     "led": 26,
+     "laps": 296,
+     "rating": 79.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 5,
+     "finish": 3,
+     "led": 0,
+     "laps": 301,
+     "rating": 115.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 3,
+     "finish": 26,
+     "led": 0,
+     "laps": 305,
+     "rating": 63.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 7,
+     "finish": 24,
+     "led": 9,
+     "laps": 301,
+     "rating": 79.6,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 6,
+     "finish": 11,
+     "led": 0,
+     "laps": 301,
+     "rating": 88.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chasebriscoe",
+   "name": "Chase Briscoe",
+   "car": "19",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 77.8,
+   "tier": 2,
+   "components": {
+    "finish": 83.3,
+    "rating": 72.2,
+    "dominator": 76.7,
+    "discipline": 81.1
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 3,
+    "dnf": 0,
+    "avgFinish": 13.3,
+    "rating": 74.0,
+    "ledPct": 1.9,
+    "avgPlaceDiff": 10.2,
+    "bestFinish": 2,
+    "disciplineAvg": 14.1
+   },
+   "tags": [
+    "Gains 10 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 17,
+     "finish": 26,
+     "led": 0,
+     "laps": 300,
+     "rating": 74.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 18,
+     "finish": 10,
+     "led": 19,
+     "laps": 301,
+     "rating": 81.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 23,
+     "finish": 2,
+     "led": 0,
+     "laps": 305,
+     "rating": 68.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 27,
+     "finish": 10,
+     "led": 0,
+     "laps": 301,
+     "rating": 75.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 29,
+     "finish": 15,
+     "led": 6,
+     "laps": 300,
+     "rating": 64.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bubbawallace",
+   "name": "Bubba Wallace",
+   "car": "23",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 75.1,
+   "tier": 2,
+   "components": {
+    "finish": 72.2,
+    "rating": 81.1,
+    "dominator": 74.4,
+    "discipline": 67.8
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 2,
+    "top10": 3,
+    "dnf": 1,
+    "avgFinish": 15.7,
+    "rating": 85.2,
+    "ledPct": 1.9,
+    "avgPlaceDiff": -1.4,
+    "bestFinish": 2,
+    "disciplineAvg": 16.1
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 23,
+     "finish": 2,
+     "led": 22,
+     "laps": 301,
+     "rating": 118.6,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 14,
+     "finish": 26,
+     "led": 0,
+     "laps": 300,
+     "rating": 54.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 17,
+     "finish": 34,
+     "led": 0,
+     "laps": 265,
+     "rating": 64.8,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 8,
+     "finish": 8,
+     "led": 0,
+     "laps": 301,
+     "rating": 88.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 4,
+     "finish": 3,
+     "led": 0,
+     "laps": 301,
+     "rating": 106.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "ryanpreece",
+   "name": "Ryan Preece",
+   "car": "60",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 71.7,
+   "tier": 2,
+   "components": {
+    "finish": 78.9,
+    "rating": 67.8,
+    "dominator": 72.2,
+    "discipline": 65.6
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 13.9,
+    "rating": 75.2,
+    "ledPct": 1.7,
+    "avgPlaceDiff": 7.8,
+    "bestFinish": 9,
+    "disciplineAvg": 16.5
+   },
+   "tags": [
+    "Gains 8 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 18,
+     "finish": 9,
+     "led": 17,
+     "laps": 301,
+     "rating": 104.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 23,
+     "finish": 14,
+     "led": 0,
+     "laps": 301,
+     "rating": 69.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 31,
+     "finish": 11,
+     "led": 0,
+     "laps": 305,
+     "rating": 59.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 21,
+     "finish": 28,
+     "led": 0,
+     "laps": 300,
+     "rating": 51.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chrisbuescher",
+   "name": "Chris Buescher",
+   "car": "17",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 68.9,
+   "tier": 2,
+   "components": {
+    "finish": 76.7,
+    "rating": 65.6,
+    "dominator": 58.9,
+    "discipline": 74.4
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 14.9,
+    "rating": 72.5,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 3.0,
+    "bestFinish": 5,
+    "disciplineAvg": 15.5
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 16,
+     "finish": 18,
+     "led": 0,
+     "laps": 301,
+     "rating": 73.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 15,
+     "finish": 18,
+     "led": 0,
+     "laps": 301,
+     "rating": 63.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 15,
+     "finish": 5,
+     "led": 0,
+     "laps": 305,
+     "rating": 84.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 26,
+     "finish": 15,
+     "led": 0,
+     "laps": 301,
+     "rating": 75.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 16,
+     "finish": 17,
+     "led": 0,
+     "laps": 300,
+     "rating": 68.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "tygibbs",
+   "name": "Ty Gibbs",
+   "car": "54",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 68.4,
+   "tier": 2,
+   "components": {
+    "finish": 56.7,
+    "rating": 74.4,
+    "dominator": 67.8,
+    "discipline": 78.9
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 1,
+    "avgFinish": 20.5,
+    "rating": 75.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -2.5,
+    "bestFinish": 6,
+    "disciplineAvg": 14.4
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 7,
+     "finish": 6,
+     "led": 0,
+     "laps": 301,
+     "rating": 101.4,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 13,
+     "finish": 35,
+     "led": 0,
+     "laps": 134,
+     "rating": 48.5,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 18,
+     "finish": 16,
+     "led": 0,
+     "laps": 305,
+     "rating": 81.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 36,
+     "finish": 27,
+     "led": 0,
+     "laps": 301,
+     "rating": 66.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bradkeselowski",
+   "name": "Brad Keselowski",
+   "car": "6",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 68.0,
+   "tier": 2,
+   "components": {
+    "finish": 67.8,
+    "rating": 70.0,
+    "dominator": 63.3,
+    "discipline": 70.0
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 16.3,
+    "rating": 74.4,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -1.0,
+    "bestFinish": 5,
+    "disciplineAvg": 16.0
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 25,
+     "finish": 11,
+     "led": 0,
+     "laps": 301,
+     "rating": 89.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 17,
+     "finish": 23,
+     "led": 0,
+     "laps": 301,
+     "rating": 51.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 9,
+     "finish": 28,
+     "led": 0,
+     "laps": 305,
+     "rating": 60.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 9,
+     "finish": 5,
+     "led": 0,
+     "laps": 301,
+     "rating": 99.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 9,
+     "finish": 7,
+     "led": 0,
+     "laps": 301,
+     "rating": 84.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rosschastain",
+   "name": "Ross Chastain",
+   "car": "1",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 65.9,
+   "tier": 2,
+   "components": {
+    "finish": 63.3,
+    "rating": 63.3,
+    "dominator": 61.1,
+    "discipline": 83.3
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 3,
+    "dnf": 1,
+    "avgFinish": 18.1,
+    "rating": 67.1,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -1.8,
+    "bestFinish": 8,
+    "disciplineAvg": 13.5
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 12,
+     "finish": 36,
+     "led": 0,
+     "laps": 41,
+     "rating": 30.2,
+     "status": "engine",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 8,
+     "finish": 9,
+     "led": 0,
+     "laps": 301,
+     "rating": 83.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 8,
+     "finish": 10,
+     "led": 0,
+     "laps": 305,
+     "rating": 88.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 31,
+     "finish": 23,
+     "led": 0,
+     "laps": 301,
+     "rating": 55.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 18,
+     "finish": 8,
+     "led": 0,
+     "laps": 301,
+     "rating": 86.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "carsonhocevar",
+   "name": "Carson Hocevar",
+   "car": "77",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 65.1,
+   "tier": 2,
+   "components": {
+    "finish": 65.6,
+    "rating": 76.7,
+    "dominator": 52.2,
+    "discipline": 54.4
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 15.5,
+    "rating": 81.3,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 0.3,
+    "bestFinish": 11,
+    "disciplineAvg": 19.2
+   },
+   "tags": [
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 22,
+     "finish": 19,
+     "led": 0,
+     "laps": 300,
+     "rating": 74.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 6,
+     "finish": 11,
+     "led": 0,
+     "laps": 301,
+     "rating": 99.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 20,
+     "finish": 17,
+     "led": 0,
+     "laps": 305,
+     "rating": 67.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "danieldye",
+   "name": "Daniel Dye",
+   "car": "78",
+   "team": "Live Fast Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 62.2,
+   "tier": 3,
+   "components": {
+    "finish": 57.8,
+    "rating": 60.0,
+    "dominator": 77.8,
+    "discipline": 55.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "graygaulding",
+   "name": "Gray Gaulding",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": false,
+   "composite": 62.2,
+   "tier": 3,
+   "components": {
+    "finish": 57.8,
+    "rating": 60.0,
+    "dominator": 77.8,
+    "discipline": 55.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kevinmagnussen",
+   "name": "Kevin Magnussen",
+   "car": "91",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 62.2,
+   "tier": 3,
+   "components": {
+    "finish": 57.8,
+    "rating": 60.0,
+    "dominator": 77.8,
+    "discipline": 55.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "timmyhill",
+   "name": "Timmy Hill",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": false,
+   "composite": 62.2,
+   "tier": 3,
+   "components": {
+    "finish": 57.8,
+    "rating": 60.0,
+    "dominator": 77.8,
+    "discipline": 55.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "michaelmcdowell",
+   "name": "Michael McDowell",
+   "car": "71",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 56.0,
+   "tier": 3,
+   "components": {
+    "finish": 70.0,
+    "rating": 56.7,
+    "dominator": 36.7,
+    "discipline": 52.2
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 14.9,
+    "rating": 68.3,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 0.6,
+    "bestFinish": 8,
+    "disciplineAvg": 20.0
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 15,
+     "finish": 16,
+     "led": 0,
+     "laps": 301,
+     "rating": 55.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 11,
+     "finish": 8,
+     "led": 0,
+     "laps": 301,
+     "rating": 89.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 25,
+     "finish": 15,
+     "led": 0,
+     "laps": 305,
+     "rating": 66.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 17,
+     "finish": 13,
+     "led": 0,
+     "laps": 301,
+     "rating": 82.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 15,
+     "finish": 28,
+     "led": 0,
+     "laps": 299,
+     "rating": 41.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "shanevangisbergen",
+   "name": "Shane van Gisbergen",
+   "car": "97",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 54.4,
+   "tier": 3,
+   "components": {
+    "finish": 34.4,
+    "rating": 61.1,
+    "dominator": 81.1,
+    "discipline": 43.3
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 26.0,
+    "rating": 75.6,
+    "ledPct": 5.0,
+    "avgPlaceDiff": -18.5,
+    "bestFinish": 20,
+    "disciplineAvg": 22.1
+   },
+   "tags": [
+    "Loses 18 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 5,
+     "finish": 20,
+     "led": 30,
+     "laps": 300,
+     "rating": 71.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 10,
+     "finish": 32,
+     "led": 0,
+     "laps": 250,
+     "rating": 79.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "alexbowman",
+   "name": "Alex Bowman",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 53.9,
+   "tier": 4,
+   "components": {
+    "finish": 50.0,
+    "rating": 58.9,
+    "dominator": 45.6,
+    "discipline": 61.1
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 2,
+    "avgFinish": 21.7,
+    "rating": 65.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -8.2,
+    "bestFinish": 14,
+    "disciplineAvg": 17.7
+   },
+   "tags": [
+    "DNF In 2 Of 5 Starts",
+    "Loses 8 Spots On Avg",
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 10,
+     "finish": 15,
+     "led": 0,
+     "laps": 301,
+     "rating": 66.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 7,
+     "finish": 15,
+     "led": 0,
+     "laps": 301,
+     "rating": 85.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 5,
+     "finish": 36,
+     "led": 0,
+     "laps": 142,
+     "rating": 59.5,
+     "status": "engine",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 25,
+     "finish": 14,
+     "led": 0,
+     "laps": 301,
+     "rating": 69.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 27,
+     "finish": 35,
+     "led": 0,
+     "laps": 4,
+     "rating": 26.0,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "coreyheim",
+   "name": "Corey Heim",
+   "car": "67",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 53.3,
+   "tier": 3,
+   "components": {
+    "finish": 74.4,
+    "rating": 50.0,
+    "dominator": 13.3,
+    "discipline": 72.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 15.7
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austincindric",
+   "name": "Austin Cindric",
+   "car": "2",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 53.2,
+   "tier": 3,
+   "components": {
+    "finish": 61.1,
+    "rating": 54.4,
+    "dominator": 43.3,
+    "discipline": 47.8
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 16.6,
+    "rating": 64.9,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 8.2,
+    "bestFinish": 12,
+    "disciplineAvg": 20.5
+   },
+   "tags": [
+    "Gains 8 Spots On Avg",
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 26,
+     "finish": 12,
+     "led": 0,
+     "laps": 301,
+     "rating": 80.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 22,
+     "finish": 17,
+     "led": 0,
+     "laps": 301,
+     "rating": 67.4,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 29,
+     "finish": 19,
+     "led": 0,
+     "laps": 305,
+     "rating": 48.4,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 22,
+     "finish": 25,
+     "led": 0,
+     "laps": 301,
+     "rating": 42.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 28,
+     "finish": 13,
+     "led": 0,
+     "laps": 301,
+     "rating": 75.6,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "toddgilliland",
+   "name": "Todd Gilliland",
+   "car": "34",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 53.1,
+   "tier": 3,
+   "components": {
+    "finish": 54.4,
+    "rating": 45.6,
+    "dominator": 70.0,
+    "discipline": 45.6
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 19.2,
+    "rating": 56.4,
+    "ledPct": 1.2,
+    "avgPlaceDiff": 3.2,
+    "bestFinish": 12,
+    "disciplineAvg": 20.6
+   },
+   "tags": [
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 13,
+     "finish": 21,
+     "led": 0,
+     "laps": 300,
+     "rating": 49.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 36,
+     "finish": 19,
+     "led": 0,
+     "laps": 301,
+     "rating": 51.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 16,
+     "finish": 12,
+     "led": 19,
+     "laps": 305,
+     "rating": 86.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 23,
+     "finish": 21,
+     "led": 0,
+     "laps": 301,
+     "rating": 48.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 26,
+     "finish": 25,
+     "led": 0,
+     "laps": 300,
+     "rating": 42.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austindillon",
+   "name": "Austin Dillon",
+   "car": "3",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 46.8,
+   "tier": 3,
+   "components": {
+    "finish": 41.1,
+    "rating": 36.7,
+    "dominator": 65.6,
+    "discipline": 56.7
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 1,
+    "avgFinish": 22.9,
+    "rating": 48.6,
+    "ledPct": 0.5,
+    "avgPlaceDiff": 3.0,
+    "bestFinish": 9,
+    "disciplineAvg": 18.7
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 34,
+     "finish": 32,
+     "led": 0,
+     "laps": 282,
+     "rating": 30.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 28,
+     "finish": 13,
+     "led": 0,
+     "laps": 301,
+     "rating": 63.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 22,
+     "finish": 33,
+     "led": 0,
+     "laps": 268,
+     "rating": 37.7,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 11,
+     "finish": 9,
+     "led": 12,
+     "laps": 301,
+     "rating": 68.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 30,
+     "finish": 23,
+     "led": 0,
+     "laps": 300,
+     "rating": 52.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "ajallmendinger",
+   "name": "A.J. Allmendinger",
+   "car": "16",
+   "team": "Kaulig Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 46.3,
+   "tier": 3,
+   "components": {
+    "finish": 47.8,
+    "rating": 52.2,
+    "dominator": 41.1,
+    "discipline": 36.7
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 20.2,
+    "rating": 59.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -2.0,
+    "bestFinish": 16,
+    "disciplineAvg": 23.8
+   },
+   "tags": [
+    "0 Top-10s In 4 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 24,
+     "finish": 23,
+     "led": 0,
+     "laps": 300,
+     "rating": 44.6,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 12,
+     "finish": 20,
+     "led": 0,
+     "laps": 301,
+     "rating": 68.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 14,
+     "finish": 19,
+     "led": 0,
+     "laps": 301,
+     "rating": 59.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 20,
+     "finish": 16,
+     "led": 0,
+     "laps": 300,
+     "rating": 67.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "danielsuarez",
+   "name": "Daniel Suarez",
+   "car": "7",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 44.8,
+   "tier": 3,
+   "components": {
+    "finish": 45.6,
+    "rating": 38.9,
+    "dominator": 50.0,
+    "discipline": 50.0
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 1,
+    "avgFinish": 21.7,
+    "rating": 50.4,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 2.0,
+    "bestFinish": 9,
+    "disciplineAvg": 20.2
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 35,
+     "finish": 17,
+     "led": 0,
+     "laps": 301,
+     "rating": 52.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 32,
+     "finish": 36,
+     "led": 0,
+     "laps": 117,
+     "rating": 31.8,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 11,
+     "finish": 21,
+     "led": 0,
+     "laps": 305,
+     "rating": 41.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 12,
+     "finish": 16,
+     "led": 0,
+     "laps": 301,
+     "rating": 72.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 19,
+     "finish": 9,
+     "led": 0,
+     "laps": 301,
+     "rating": 76.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "noahgragson",
+   "name": "Noah Gragson",
+   "car": "4",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 44.1,
+   "tier": 3,
+   "components": {
+    "finish": 52.2,
+    "rating": 47.8,
+    "dominator": 27.8,
+    "discipline": 41.1
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 1,
+    "avgFinish": 19.2,
+    "rating": 58.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 4.2,
+    "bestFinish": 10,
+    "disciplineAvg": 22.7
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 19,
+     "finish": 10,
+     "led": 0,
+     "laps": 301,
+     "rating": 67.6,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 33,
+     "finish": 16,
+     "led": 0,
+     "laps": 301,
+     "rating": 64.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 21,
+     "finish": 27,
+     "led": 0,
+     "laps": 305,
+     "rating": 54.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 29,
+     "finish": 32,
+     "led": 0,
+     "laps": 268,
+     "rating": 30.3,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "harrisonburton",
+   "name": "Harrison Burton",
+   "car": "35",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": false,
+   "composite": 42.0,
+   "tier": 3,
+   "components": {
+    "finish": 44.4,
+    "rating": 40.0,
+    "dominator": 53.3,
+    "discipline": 26.7
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 19.1,
+    "rating": 55.7,
+    "ledPct": 0.3,
+    "avgPlaceDiff": 8.7,
+    "bestFinish": 14,
+    "disciplineAvg": 25.3
+   },
+   "tags": [
+    "Gains 9 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 27,
+     "finish": 14,
+     "led": 0,
+     "laps": 305,
+     "rating": 57.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 28,
+     "finish": 20,
+     "led": 0,
+     "laps": 301,
+     "rating": 59.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 31,
+     "finish": 26,
+     "led": 3,
+     "laps": 300,
+     "rating": 48.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "zanesmith",
+   "name": "Zane Smith",
+   "car": "38",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 37.8,
+   "tier": 4,
+   "components": {
+    "finish": 36.7,
+    "rating": 43.3,
+    "dominator": 32.2,
+    "discipline": 34.4
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 22.7,
+    "rating": 56.9,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -0.7,
+    "bestFinish": 13,
+    "disciplineAvg": 24.0
+   },
+   "tags": [
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 14,
+     "finish": 13,
+     "led": 0,
+     "laps": 301,
+     "rating": 79.6,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 20,
+     "finish": 27,
+     "led": 0,
+     "laps": 300,
+     "rating": 52.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 34,
+     "finish": 30,
+     "led": 0,
+     "laps": 304,
+     "rating": 32.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kylebusch",
+   "name": "Kyle Busch",
+   "car": "8",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 36.9,
+   "tier": 4,
+   "components": {
+    "finish": 23.3,
+    "rating": 27.8,
+    "dominator": 56.7,
+    "discipline": 58.9
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 2,
+    "avgFinish": 29.2,
+    "rating": 41.8,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -8.0,
+    "bestFinish": 12,
+    "disciplineAvg": 18.1
+   },
+   "tags": [
+    "DNF In 2 Of 4 Starts",
+    "Loses 8 Spots On Avg",
+    "0 Top-10s In 4 Starts"
+   ],
+   "log": [
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 24,
+     "finish": 30,
+     "led": 0,
+     "laps": 297,
+     "rating": 29.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 30,
+     "finish": 35,
+     "led": 0,
+     "laps": 222,
+     "rating": 45.1,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 10,
+     "finish": 36,
+     "led": 0,
+     "laps": 71,
+     "rating": 27.2,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 17,
+     "finish": 12,
+     "led": 0,
+     "laps": 301,
+     "rating": 77.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "justinallgaier",
+   "name": "Justin Allgaier",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 36.1,
+   "tier": 4,
+   "components": {
+    "finish": 40.0,
+    "rating": 42.2,
+    "dominator": 13.3,
+    "discipline": 44.4
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 22.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rickystenhousejr",
+   "name": "Ricky Stenhouse Jr.",
+   "car": "47",
+   "team": "Hyak Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 36.0,
+   "tier": 4,
+   "components": {
+    "finish": 43.3,
+    "rating": 25.6,
+    "dominator": 47.8,
+    "discipline": 30.0
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 20.9,
+    "rating": 47.4,
+    "ledPct": 0.1,
+    "avgPlaceDiff": 3.4,
+    "bestFinish": 7,
+    "disciplineAvg": 24.2
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 30,
+     "finish": 28,
+     "led": 0,
+     "laps": 300,
+     "rating": 36.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 34,
+     "finish": 25,
+     "led": 0,
+     "laps": 300,
+     "rating": 40.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 13,
+     "finish": 7,
+     "led": 0,
+     "laps": 305,
+     "rating": 61.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 16,
+     "finish": 18,
+     "led": 3,
+     "laps": 301,
+     "rating": 55.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 24,
+     "finish": 22,
+     "led": 0,
+     "laps": 300,
+     "rating": 52.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "erikjones",
+   "name": "Erik Jones",
+   "car": "43",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 34.9,
+   "tier": 4,
+   "components": {
+    "finish": 38.9,
+    "rating": 30.0,
+    "dominator": 34.4,
+    "discipline": 38.9
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 22.9,
+    "rating": 48.9,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 3.4,
+    "bestFinish": 11,
+    "disciplineAvg": 23.5
+   },
+   "tags": [
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 11,
+     "finish": 33,
+     "led": 0,
+     "laps": 251,
+     "rating": 45.0,
+     "status": "transaxle",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 26,
+     "finish": 28,
+     "led": 0,
+     "laps": 300,
+     "rating": 36.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 32,
+     "finish": 13,
+     "led": 0,
+     "laps": 305,
+     "rating": 61.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 30,
+     "finish": 11,
+     "led": 0,
+     "laps": 301,
+     "rating": 54.9,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 22,
+     "finish": 19,
+     "led": 0,
+     "laps": 300,
+     "rating": 56.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "justinhaley",
+   "name": "Justin Haley",
+   "car": "77",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 32.3,
+   "tier": 4,
+   "components": {
+    "finish": 25.6,
+    "rating": 34.4,
+    "dominator": 38.9,
+    "discipline": 32.2
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 26.6,
+    "rating": 50.2,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -2.5,
+    "bestFinish": 17,
+    "disciplineAvg": 24.1
+   },
+   "tags": [
+    "0 Top-10s In 4 Starts"
+   ],
+   "log": [
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 21,
+     "finish": 33,
+     "led": 0,
+     "laps": 207,
+     "rating": 39.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 24,
+     "finish": 29,
+     "led": 0,
+     "laps": 305,
+     "rating": 62.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 19,
+     "finish": 17,
+     "led": 0,
+     "laps": 301,
+     "rating": 55.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 25,
+     "finish": 20,
+     "led": 0,
+     "laps": 300,
+     "rating": 48.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austinhill",
+   "name": "Austin Hill",
+   "car": "33",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 27.1,
+   "tier": 4,
+   "components": {
+    "finish": 32.2,
+    "rating": 32.2,
+    "dominator": 13.3,
+    "discipline": 23.3
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 24.0,
+    "rating": 56.7,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 4.0,
+    "bestFinish": 24,
+    "disciplineAvg": 25.8
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 28,
+     "finish": 24,
+     "led": 0,
+     "laps": 300,
+     "rating": 56.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "colecuster",
+   "name": "Cole Custer",
+   "car": "41",
+   "team": "Haas Factory Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 25.7,
+   "tier": 4,
+   "components": {
+    "finish": 27.8,
+    "rating": 23.3,
+    "dominator": 30.0,
+    "discipline": 21.1
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 25.7,
+    "rating": 47.2,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 3.0,
+    "bestFinish": 22,
+    "disciplineAvg": 26.4
+   },
+   "tags": [
+    "0 Top-10s In 4 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 32,
+     "finish": 22,
+     "led": 0,
+     "laps": 300,
+     "rating": 48.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 31,
+     "finish": 24,
+     "led": 0,
+     "laps": 301,
+     "rating": 43.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 34,
+     "finish": 35,
+     "led": 0,
+     "laps": 130,
+     "rating": 34.2,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 23,
+     "finish": 27,
+     "led": 0,
+     "laps": 300,
+     "rating": 65.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "connorzilisch",
+   "name": "Connor Zilisch",
+   "car": "88",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 25.6,
+   "tier": 4,
+   "components": {
+    "finish": 14.4,
+    "rating": 41.1,
+    "dominator": 13.3,
+    "discipline": 27.8
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 35.0,
+    "rating": 53.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -15.0,
+    "bestFinish": 35,
+    "disciplineAvg": 25.2
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 20,
+     "finish": 35,
+     "led": 0,
+     "laps": 222,
+     "rating": 53.0,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "johnhunternemechek",
+   "name": "John Hunter Nemechek",
+   "car": "42",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 22.1,
+   "tier": 3,
+   "components": {
+    "finish": 30.0,
+    "rating": 18.9,
+    "dominator": 13.3,
+    "discipline": 25.6
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 1,
+    "avgFinish": 25.8,
+    "rating": 34.7,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 5.0,
+    "bestFinish": 8,
+    "disciplineAvg": 25.4
+   },
+   "tags": [
+    "Gains 5 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 31,
+     "finish": 31,
+     "led": 0,
+     "laps": 296,
+     "rating": 28.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 29,
+     "finish": 34,
+     "led": 0,
+     "laps": 146,
+     "rating": 26.8,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 28,
+     "finish": 8,
+     "led": 0,
+     "laps": 305,
+     "rating": 54.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "codyware",
+   "name": "Cody Ware",
+   "car": "51",
+   "team": "Rick Ware Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 19.9,
+   "tier": 3,
+   "components": {
+    "finish": 12.2,
+    "rating": 10.0,
+    "dominator": 54.4,
+    "discipline": 12.2
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 30.0,
+    "rating": 29.9,
+    "ledPct": 0.3,
+    "avgPlaceDiff": 5.7,
+    "bestFinish": 29,
+    "disciplineAvg": 31.1
+   },
+   "tags": [
+    "Gains 6 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 36,
+     "finish": 29,
+     "led": 0,
+     "laps": 300,
+     "rating": 28.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 35,
+     "finish": 31,
+     "led": 2,
+     "laps": 296,
+     "rating": 29.1,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 36,
+     "finish": 30,
+     "led": 0,
+     "laps": 297,
+     "rating": 34.3,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jimmiejohnson",
+   "name": "Jimmie Johnson",
+   "car": "84",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": false,
+   "composite": 18.3,
+   "tier": 4,
+   "components": {
+    "finish": 20.0,
+    "rating": 20.0,
+    "dominator": 13.3,
+    "discipline": 17.8
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 27.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rileyherbst",
+   "name": "Riley Herbst",
+   "car": "35",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 18.2,
+   "tier": 4,
+   "components": {
+    "finish": 18.9,
+    "rating": 21.1,
+    "dominator": 13.3,
+    "discipline": 16.7
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 28.0,
+    "rating": 46.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -2.0,
+    "bestFinish": 22,
+    "disciplineAvg": 27.7
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 27,
+     "finish": 34,
+     "led": 0,
+     "laps": 222,
+     "rating": 41.4,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 25,
+     "finish": 22,
+     "led": 0,
+     "laps": 301,
+     "rating": 50.6,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "tydillon",
+   "name": "Ty Dillon",
+   "car": "10",
+   "team": "Kaulig Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 17.7,
+   "tier": 3,
+   "components": {
+    "finish": 21.1,
+    "rating": 16.7,
+    "dominator": 13.3,
+    "discipline": 18.9
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 26.8,
+    "rating": 35.6,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 6.8,
+    "bestFinish": 20,
+    "disciplineAvg": 26.9
+   },
+   "tags": [
+    "Gains 7 Spots On Avg",
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 25,
+     "name": "Dollar Tree 301",
+     "start": 33,
+     "finish": 27,
+     "led": 0,
+     "laps": 300,
+     "rating": 38.8,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 30,
+     "name": "Mobil 1 301",
+     "start": 30,
+     "finish": 29,
+     "led": 0,
+     "laps": 300,
+     "rating": 35.2,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 18,
+     "name": "USA TODAY 301",
+     "start": 36,
+     "finish": 20,
+     "led": 0,
+     "laps": 305,
+     "rating": 34.0,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 35,
+     "finish": 26,
+     "led": 0,
+     "laps": 301,
+     "rating": 37.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 35,
+     "finish": 33,
+     "led": 0,
+     "laps": 5,
+     "rating": 30.2,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "katherinelegge",
+   "name": "Katherine Legge",
+   "car": "78",
+   "team": "Live Fast Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 14.1,
+   "tier": 4,
+   "components": {
+    "finish": 16.7,
+    "rating": 12.2,
+    "dominator": 13.3,
+    "discipline": 14.4
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 30.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jesselove",
+   "name": "Jesse Love",
+   "car": "33",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 12.9,
+   "tier": 4,
+   "components": {
+    "finish": 8.9,
+    "rating": 17.8,
+    "dominator": 13.3,
+    "discipline": 8.9
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 32.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jjyeley",
+   "name": "J.J. Yeley",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 12.2,
+   "tier": 4,
+   "components": {
+    "finish": 10.0,
+    "rating": 14.4,
+    "dominator": 13.3,
+    "discipline": 10.0
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 29.0,
+    "rating": 36.7,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 4.0,
+    "bestFinish": 29,
+    "disciplineAvg": 31.8
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 33,
+     "finish": 29,
+     "led": 0,
+     "laps": 299,
+     "rating": 36.7,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bjmcleod",
+   "name": "B.J. McLeod",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 8.9,
+   "tier": 4,
+   "components": {
+    "finish": 7.8,
+    "rating": 7.8,
+    "dominator": 13.3,
+    "discipline": 7.8
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 33.5,
+    "rating": 26.6,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -1.5,
+    "bestFinish": 31,
+    "disciplineAvg": 33.0
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2023,
+     "race": 20,
+     "name": "Crayon 301",
+     "start": 32,
+     "finish": 31,
+     "led": 0,
+     "laps": 295,
+     "rating": 27.5,
+     "status": "running",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 32,
+     "finish": 36,
+     "led": 0,
+     "laps": 4,
+     "rating": 25.7,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "anthonyalfredo",
+   "name": "Anthony Alfredo",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 8.8,
+   "tier": 4,
+   "components": {
+    "finish": 6.7,
+    "rating": 8.9,
+    "dominator": 13.3,
+    "discipline": 6.7
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 33.5
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "caseymears",
+   "name": "Casey Mears",
+   "car": "62",
+   "team": "Beard Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 5.6,
+   "tier": 4,
+   "components": {
+    "finish": 5.6,
+    "rating": 1.1,
+    "dominator": 13.3,
+    "discipline": 5.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 34.7
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chadfinchum",
+   "name": "Chad Finchum",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": true,
+   "composite": 5.4,
+   "tier": 4,
+   "components": {
+    "finish": 1.1,
+    "rating": 5.6,
+    "dominator": 13.3,
+    "discipline": 3.3
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 35.5
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joshbilicki",
+   "name": "Josh Bilicki",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": true,
+   "composite": 5.0,
+   "tier": 4,
+   "components": {
+    "finish": 3.3,
+    "rating": 3.3,
+    "dominator": 13.3,
+    "discipline": 1.1
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 34.0,
+    "rating": 26.7,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 0.0,
+    "bestFinish": 34,
+    "disciplineAvg": 36.0
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2022,
+     "race": 20,
+     "name": "Ambetter 301",
+     "start": 34,
+     "finish": 34,
+     "led": 0,
+     "laps": 5,
+     "rating": 26.7,
+     "status": "accident",
+     "win": false,
+     "track": "New Hampshire Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joeygase",
+   "name": "Joey Gase",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 2.7,
+   "tier": 4,
+   "components": {
+    "finish": 0.0,
+    "rating": 0.0,
+    "dominator": 13.3,
+    "discipline": 0.0
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 37.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  }
+ ],
+ "generatedAt": "2026-11-24"
+}

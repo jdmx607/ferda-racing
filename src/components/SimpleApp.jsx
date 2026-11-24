@@ -5,6 +5,10 @@ import { draftStatus, myPicks, availableDrivers, scoreboard, mulliganWindow, spl
 import { weekName } from "../exhibitions";
 import { haptic } from "../utils/haptics";
 import { pushToast } from "../utils/toast";
+import { useCheatSheet } from "../hooks/useCheatSheet";
+import { currentTrack, buildRows, TIERS } from "../engine/cheatSheet";
+import { nameKey } from "../driverKey";
+import { CheatSheetTab } from "./CheatSheetTab";
 
 const ME_BLUE = "#3B82F6";
 const f1 = n => (n == null ? "—" : (Math.round(n * 10) / 10).toFixed(1));
@@ -29,7 +33,7 @@ function DriverName({ driver }) {
 }
 
 // ── MAKE PICKS ───────────────────────────────────────────────────────────────
-function MakePicks({ user, data, week, onDraftPick }) {
+function MakePicks({ user, data, week, onDraftPick, onCheat }) {
   const status = draftStatus(data, week, user.id);
   const picks = myPicks(data, week, user.id);
   const [search, setSearch] = useState("");
@@ -39,6 +43,14 @@ function MakePicks({ user, data, week, onDraftPick }) {
   const list = useMemo(() => availableDrivers(data, week, { search, sort }), [data, week, search, sort]);
   const myTurn = status.state === "myTurn";
   const info = SCHEDULE.find(s => s.w === week);
+  // Plain-language cheat-sheet tier next to each driver (blank until the sheet loads).
+  const sheetSlug = currentTrack(week)?.slug;
+  const sheet = useCheatSheet(sheetSlug).data;
+  const tierByKey = useMemo(() => {
+    const m = {};
+    if (sheet) buildRows(sheet).forEach(r => { if (r.tier) m[r.key] = r.tier; });
+    return m;
+  }, [sheet]);
 
   const lockIn = async () => {
     if (!confirm || busy) return;
@@ -70,6 +82,7 @@ function MakePicks({ user, data, week, onDraftPick }) {
       {status.state === "complete" && <div className="sp-status">The draft is done. Good luck this week!</div>}
 
       {info && <div className="sp-race">{weekName(week)} · {info.r} · {info.t}</div>}
+      {info && <button className="sp-cheat" onClick={onCheat}>📋 See the {info.t} Cheat Sheet — who runs well here</button>}
 
       {/* my 5 picks */}
       <section className="sp-card">
@@ -103,6 +116,7 @@ function MakePicks({ user, data, week, onDraftPick }) {
                 <div key={d} className="sp-row">
                   <span className="n num">#{num}</span>
                   <span className="nm">{name}</span>
+                  {tierByKey[nameKey(d)] && <span className="sp-tier" style={{ "--tc": TIERS[tierByKey[nameKey(d)]].color }}>{TIERS[tierByKey[nameKey(d)]].plain}</span>}
                   {myTurn && <button className="sp-pick" onClick={() => setConfirm(d)}>PICK</button>}
                 </div>
               );
@@ -219,6 +233,7 @@ function Scoreboard({ user, data, week, liveScores, onApplyMulligan }) {
 /** The whole simplified app: two big tabs + a small way back to the full app. */
 export function SimpleApp({ user, data, currentWeek, liveScores, onDraftPick, onApplyMulligan, onExitSimple, onLogout }) {
   const [tab, setTab] = useState("picks");
+  const [cheat, setCheat] = useState(false);
   return (
     <div className="sp" style={{ "--me": PClr[user.id]?.accent || ME_BLUE }}>
       <header className="sp-head">
@@ -226,8 +241,10 @@ export function SimpleApp({ user, data, currentWeek, liveScores, onDraftPick, on
         <span className="who">{user.name}</span>
       </header>
 
-      {tab === "picks"
-        ? <MakePicks user={user} data={data} week={currentWeek} onDraftPick={onDraftPick} />
+      {tab === "picks" && cheat
+        ? <CheatSheetTab simple data={data} currentWeek={currentWeek} player={user} onBack={() => setCheat(false)} />
+        : tab === "picks"
+        ? <MakePicks user={user} data={data} week={currentWeek} onDraftPick={onDraftPick} onCheat={() => setCheat(true)} />
         : <Scoreboard user={user} data={data} week={currentWeek} liveScores={liveScores} onApplyMulligan={onApplyMulligan} />}
 
       <div className="sp-foot">
@@ -236,7 +253,7 @@ export function SimpleApp({ user, data, currentWeek, liveScores, onDraftPick, on
       </div>
 
       <nav className="sp-tabs" aria-label="Main">
-        <button aria-current={tab === "picks" ? "page" : undefined} onClick={() => setTab("picks")}>MAKE PICKS</button>
+        <button aria-current={tab === "picks" ? "page" : undefined} onClick={() => { setTab("picks"); setCheat(false); }}>MAKE PICKS</button>
         <button aria-current={tab === "scores" ? "page" : undefined} onClick={() => setTab("scores")}>SCOREBOARD</button>
       </nav>
     </div>

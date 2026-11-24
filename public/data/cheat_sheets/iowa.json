@@ -1,0 +1,3382 @@
+{
+ "slug": "iowa",
+ "track": "Iowa",
+ "discipline": "short_track",
+ "datasetTracks": [
+  "Iowa Speedway"
+ ],
+ "lengthMi": 0.9,
+ "surface": "paved",
+ "nextGenRaces": 3,
+ "seasons": [
+  2024,
+  2025,
+  2026
+ ],
+ "winners": [
+  {
+   "season": 2026,
+   "race": 23,
+   "driver": "Ty Gibbs",
+   "car": "54"
+  },
+  {
+   "season": 2025,
+   "race": 23,
+   "driver": "William Byron",
+   "car": "24"
+  },
+  {
+   "season": 2024,
+   "race": 17,
+   "driver": "Ryan Blaney",
+   "car": "12"
+  }
+ ],
+ "topPerformers": [
+  {
+   "name": "Ryan Blaney",
+   "key": "ryanblaney",
+   "starts": 3,
+   "avgFinish": 2.8,
+   "wins": 1,
+   "top5": 3
+  },
+  {
+   "name": "William Byron",
+   "key": "williambyron",
+   "starts": 3,
+   "avgFinish": 4.2,
+   "wins": 1,
+   "top5": 2
+  },
+  {
+   "name": "Christopher Bell",
+   "key": "christopherbell",
+   "starts": 3,
+   "avgFinish": 8.0,
+   "wins": 0,
+   "top5": 2
+  }
+ ],
+ "qualifying": null,
+ "drivers": [
+  {
+   "key": "ryanblaney",
+   "name": "Ryan Blaney",
+   "car": "12",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 98.9,
+   "tier": 1,
+   "components": {
+    "finish": 98.9,
+    "rating": 98.9,
+    "dominator": 98.9,
+    "discipline": 98.9
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 1,
+    "top5": 3,
+    "top10": 3,
+    "dnf": 0,
+    "avgFinish": 2.8,
+    "rating": 129.7,
+    "ledPct": 32.1,
+    "avgPlaceDiff": 0.3,
+    "bestFinish": 1,
+    "disciplineAvg": 9.4
+   },
+   "tags": [
+    "1x Next Gen Winner Here",
+    "3 Straight Top-5s",
+    "Leads Laps Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 1,
+     "finish": 3,
+     "led": 129,
+     "laps": 350,
+     "rating": 131.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 6,
+     "finish": 4,
+     "led": 29,
+     "laps": 350,
+     "rating": 115.5,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 2,
+     "finish": 1,
+     "led": 201,
+     "laps": 350,
+     "rating": 146.0,
+     "status": "running",
+     "win": true,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "williambyron",
+   "name": "William Byron",
+   "car": "24",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 95.0,
+   "tier": 1,
+   "components": {
+    "finish": 96.7,
+    "rating": 96.7,
+    "dominator": 96.7,
+    "discipline": 85.6
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 1,
+    "top5": 2,
+    "top10": 3,
+    "dnf": 0,
+    "avgFinish": 4.2,
+    "rating": 115.5,
+    "ledPct": 14.6,
+    "avgPlaceDiff": 4.3,
+    "bestFinish": 1,
+    "disciplineAvg": 13.0
+   },
+   "tags": [
+    "1x Next Gen Winner Here",
+    "3 Straight Top-10s",
+    "Leads Laps Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 19,
+     "finish": 9,
+     "led": 0,
+     "laps": 350,
+     "rating": 84.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 2,
+     "finish": 1,
+     "led": 141,
+     "laps": 350,
+     "rating": 143.1,
+     "status": "running",
+     "win": true,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 4,
+     "finish": 2,
+     "led": 0,
+     "laps": 350,
+     "rating": 120.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "christopherbell",
+   "name": "Christopher Bell",
+   "car": "20",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 94.1,
+   "tier": 1,
+   "components": {
+    "finish": 94.4,
+    "rating": 94.4,
+    "dominator": 94.4,
+    "discipline": 92.2
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 2,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 8.0,
+    "rating": 99.5,
+    "ledPct": 11.8,
+    "avgPlaceDiff": 8.7,
+    "bestFinish": 2,
+    "disciplineAvg": 10.1
+   },
+   "tags": [
+    "Leads Laps Here",
+    "Gains 9 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 22,
+     "finish": 2,
+     "led": 108,
+     "laps": 350,
+     "rating": 124.1,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 17,
+     "finish": 17,
+     "led": 0,
+     "laps": 350,
+     "rating": 76.5,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 10,
+     "finish": 4,
+     "led": 7,
+     "laps": 350,
+     "rating": 97.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chasebriscoe",
+   "name": "Chase Briscoe",
+   "car": "19",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 87.4,
+   "tier": 1,
+   "components": {
+    "finish": 83.3,
+    "rating": 92.2,
+    "dominator": 90.0,
+    "discipline": 81.1
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 1,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 10.5,
+    "rating": 98.4,
+    "ledPct": 8.4,
+    "avgPlaceDiff": -3.0,
+    "bestFinish": 2,
+    "disciplineAvg": 14.1
+   },
+   "tags": [
+    "Leads Laps Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 20,
+     "finish": 6,
+     "led": 0,
+     "laps": 350,
+     "rating": 100.7,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 1,
+     "finish": 2,
+     "led": 81,
+     "laps": 350,
+     "rating": 121.3,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 6,
+     "finish": 28,
+     "led": 0,
+     "laps": 348,
+     "rating": 64.8,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joeylogano",
+   "name": "Joey Logano",
+   "car": "22",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 86.6,
+   "tier": 1,
+   "components": {
+    "finish": 90.0,
+    "rating": 90.0,
+    "dominator": 74.4,
+    "discipline": 87.8
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 10.0,
+    "rating": 91.3,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -0.3,
+    "bestFinish": 6,
+    "disciplineAvg": 11.8
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 3,
+     "finish": 14,
+     "led": 0,
+     "laps": 349,
+     "rating": 98.5,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 14,
+     "finish": 9,
+     "led": 0,
+     "laps": 350,
+     "rating": 77.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 11,
+     "finish": 6,
+     "led": 0,
+     "laps": 350,
+     "rating": 100.4,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chaseelliott",
+   "name": "Chase Elliott",
+   "car": "9",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 85.4,
+   "tier": 1,
+   "components": {
+    "finish": 85.6,
+    "rating": 83.3,
+    "dominator": 85.6,
+    "discipline": 90.0
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 11.4,
+    "rating": 88.6,
+    "ledPct": 3.1,
+    "avgPlaceDiff": 5.7,
+    "bestFinish": 3,
+    "disciplineAvg": 11.7
+   },
+   "tags": [
+    "Gains 6 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 32,
+     "finish": 15,
+     "led": 18,
+     "laps": 349,
+     "rating": 62.8,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 8,
+     "finish": 14,
+     "led": 11,
+     "laps": 350,
+     "rating": 93.3,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 9,
+     "finish": 3,
+     "led": 1,
+     "laps": 350,
+     "rating": 116.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joshberry",
+   "name": "Josh Berry",
+   "car": "21",
+   "team": "Wood Brothers Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 84.3,
+   "tier": 2,
+   "components": {
+    "finish": 92.2,
+    "rating": 87.8,
+    "dominator": 72.2,
+    "discipline": 76.7
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 1,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 8.1,
+    "rating": 95.4,
+    "ledPct": 2.5,
+    "avgPlaceDiff": 1.3,
+    "bestFinish": 4,
+    "disciplineAvg": 15.1
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 13,
+     "finish": 4,
+     "led": 0,
+     "laps": 350,
+     "rating": 98.8,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 12,
+     "finish": 13,
+     "led": 0,
+     "laps": 350,
+     "rating": 80.8,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 3,
+     "finish": 7,
+     "led": 32,
+     "laps": 350,
+     "rating": 110.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rosschastain",
+   "name": "Ross Chastain",
+   "car": "1",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 83.9,
+   "tier": 2,
+   "components": {
+    "finish": 87.8,
+    "rating": 81.1,
+    "dominator": 83.3,
+    "discipline": 83.3
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 9.5,
+    "rating": 91.1,
+    "ledPct": 4.2,
+    "avgPlaceDiff": 8.3,
+    "bestFinish": 7,
+    "disciplineAvg": 13.5
+   },
+   "tags": [
+    "Gains 8 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 9,
+     "finish": 7,
+     "led": 40,
+     "laps": 350,
+     "rating": 110.5,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 28,
+     "finish": 11,
+     "led": 0,
+     "laps": 350,
+     "rating": 69.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 17,
+     "finish": 11,
+     "led": 0,
+     "laps": 350,
+     "rating": 94.4,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bubbawallace",
+   "name": "Bubba Wallace",
+   "car": "23",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 77.6,
+   "tier": 2,
+   "components": {
+    "finish": 81.1,
+    "rating": 76.7,
+    "dominator": 81.1,
+    "discipline": 67.8
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 11.2,
+    "rating": 81.8,
+    "ledPct": 3.6,
+    "avgPlaceDiff": 7.3,
+    "bestFinish": 6,
+    "disciplineAvg": 16.1
+   },
+   "tags": [
+    "Gains 7 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 26,
+     "finish": 12,
+     "led": 35,
+     "laps": 349,
+     "rating": 85.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 15,
+     "finish": 6,
+     "led": 0,
+     "laps": 350,
+     "rating": 88.7,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 16,
+     "finish": 17,
+     "led": 0,
+     "laps": 349,
+     "rating": 68.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "dennyhamlin",
+   "name": "Denny Hamlin",
+   "car": "11",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 77.2,
+   "tier": 2,
+   "components": {
+    "finish": 72.2,
+    "rating": 72.2,
+    "dominator": 78.9,
+    "discipline": 96.7
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 17.1,
+    "rating": 71.6,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -0.3,
+    "bestFinish": 5,
+    "disciplineAvg": 9.5
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 29,
+     "finish": 5,
+     "led": 0,
+     "laps": 350,
+     "rating": 93.3,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 11,
+     "finish": 24,
+     "led": 0,
+     "laps": 350,
+     "rating": 72.1,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 12,
+     "finish": 24,
+     "led": 0,
+     "laps": 348,
+     "rating": 42.1,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bradkeselowski",
+   "name": "Brad Keselowski",
+   "car": "6",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 77.1,
+   "tier": 2,
+   "components": {
+    "finish": 76.7,
+    "rating": 74.4,
+    "dominator": 87.8,
+    "discipline": 70.0
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 1,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 13.6,
+    "rating": 83.9,
+    "ledPct": 7.5,
+    "avgPlaceDiff": -8.7,
+    "bestFinish": 3,
+    "disciplineAvg": 16.0
+   },
+   "tags": [
+    "Loses 9 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 4,
+     "finish": 27,
+     "led": 0,
+     "laps": 348,
+     "rating": 41.5,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 5,
+     "finish": 3,
+     "led": 68,
+     "laps": 350,
+     "rating": 124.4,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 5,
+     "finish": 10,
+     "led": 5,
+     "laps": 350,
+     "rating": 86.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "tygibbs",
+   "name": "Ty Gibbs",
+   "car": "54",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 77.1,
+   "tier": 2,
+   "components": {
+    "finish": 74.4,
+    "rating": 78.9,
+    "dominator": 76.7,
+    "discipline": 78.9
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 1,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 14.8,
+    "rating": 85.5,
+    "ledPct": 2.1,
+    "avgPlaceDiff": 2.0,
+    "bestFinish": 1,
+    "disciplineAvg": 14.4
+   },
+   "tags": [
+    "1x Next Gen Winner Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 6,
+     "finish": 1,
+     "led": 20,
+     "laps": 350,
+     "rating": 119.1,
+     "status": "running",
+     "win": true,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 20,
+     "finish": 21,
+     "led": 0,
+     "laps": 350,
+     "rating": 69.9,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 27,
+     "finish": 25,
+     "led": 0,
+     "laps": 348,
+     "rating": 61.5,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kylelarson",
+   "name": "Kyle Larson",
+   "car": "5",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 72.2,
+   "tier": 2,
+   "components": {
+    "finish": 32.2,
+    "rating": 85.6,
+    "dominator": 92.2,
+    "discipline": 94.4
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 31.5,
+    "rating": 85.7,
+    "ledPct": 6.2,
+    "avgPlaceDiff": -29.7,
+    "bestFinish": 28,
+    "disciplineAvg": 9.7
+   },
+   "tags": [
+    "High Speed / Bad Luck",
+    "Leads Laps Here",
+    "Loses 30 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 2,
+     "finish": 33,
+     "led": 0,
+     "laps": 332,
+     "rating": 90.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 3,
+     "finish": 28,
+     "led": 0,
+     "laps": 350,
+     "rating": 78.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 1,
+     "finish": 34,
+     "led": 80,
+     "laps": 314,
+     "rating": 88.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austindillon",
+   "name": "Austin Dillon",
+   "car": "3",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 67.6,
+   "tier": 2,
+   "components": {
+    "finish": 78.9,
+    "rating": 70.0,
+    "dominator": 54.4,
+    "discipline": 56.7
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 12.5,
+    "rating": 80.9,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 7.3,
+    "bestFinish": 10,
+    "disciplineAvg": 18.7
+   },
+   "tags": [
+    "Gains 7 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 7,
+     "finish": 10,
+     "led": 0,
+     "laps": 350,
+     "rating": 94.8,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 18,
+     "finish": 10,
+     "led": 0,
+     "laps": 350,
+     "rating": 91.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 36,
+     "finish": 19,
+     "led": 0,
+     "laps": 349,
+     "rating": 49.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "danieldye",
+   "name": "Daniel Dye",
+   "car": "78",
+   "team": "Live Fast Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 63.0,
+   "tier": 3,
+   "components": {
+    "finish": 57.8,
+    "rating": 62.2,
+    "dominator": 77.8,
+    "discipline": 55.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "graygaulding",
+   "name": "Gray Gaulding",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": false,
+   "composite": 63.0,
+   "tier": 3,
+   "components": {
+    "finish": 57.8,
+    "rating": 62.2,
+    "dominator": 77.8,
+    "discipline": 55.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kevinmagnussen",
+   "name": "Kevin Magnussen",
+   "car": "91",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 63.0,
+   "tier": 3,
+   "components": {
+    "finish": 57.8,
+    "rating": 62.2,
+    "dominator": 77.8,
+    "discipline": 55.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "timmyhill",
+   "name": "Timmy Hill",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": false,
+   "composite": 63.0,
+   "tier": 3,
+   "components": {
+    "finish": 57.8,
+    "rating": 62.2,
+    "dominator": 77.8,
+    "discipline": 55.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "ryanpreece",
+   "name": "Ryan Preece",
+   "car": "60",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 61.6,
+   "tier": 3,
+   "components": {
+    "finish": 67.8,
+    "rating": 52.2,
+    "dominator": 65.6,
+    "discipline": 65.6
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 16.5,
+    "rating": 56.7,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 15.0,
+    "bestFinish": 5,
+    "disciplineAvg": 16.5
+   },
+   "tags": [
+    "Gains 15 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 35,
+     "finish": 20,
+     "led": 0,
+     "laps": 349,
+     "rating": 52.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 33,
+     "finish": 5,
+     "led": 0,
+     "laps": 350,
+     "rating": 69.1,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 29,
+     "finish": 27,
+     "led": 0,
+     "laps": 348,
+     "rating": 46.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "alexbowman",
+   "name": "Alex Bowman",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 61.4,
+   "tier": 3,
+   "components": {
+    "finish": 63.3,
+    "rating": 67.8,
+    "dominator": 47.8,
+    "discipline": 61.1
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 2,
+    "dnf": 1,
+    "avgFinish": 17.1,
+    "rating": 72.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 10.0,
+    "bestFinish": 7,
+    "disciplineAvg": 17.7
+   },
+   "tags": [
+    "Gains 10 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 30,
+     "finish": 34,
+     "led": 0,
+     "laps": 194,
+     "rating": 44.6,
+     "status": "accident",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 16,
+     "finish": 7,
+     "led": 0,
+     "laps": 350,
+     "rating": 84.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 33,
+     "finish": 8,
+     "led": 0,
+     "laps": 350,
+     "rating": 91.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "carsonhocevar",
+   "name": "Carson Hocevar",
+   "car": "77",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 58.8,
+   "tier": 3,
+   "components": {
+    "finish": 58.9,
+    "rating": 65.6,
+    "dominator": 50.0,
+    "discipline": 54.4
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 18.0,
+    "rating": 71.8,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -2.7,
+    "bestFinish": 8,
+    "disciplineAvg": 19.2
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 18,
+     "finish": 31,
+     "led": 0,
+     "laps": 347,
+     "rating": 49.3,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 7,
+     "finish": 8,
+     "led": 0,
+     "laps": 350,
+     "rating": 100.9,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 20,
+     "finish": 14,
+     "led": 0,
+     "laps": 350,
+     "rating": 63.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chrisbuescher",
+   "name": "Chris Buescher",
+   "car": "17",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 58.0,
+   "tier": 3,
+   "components": {
+    "finish": 65.6,
+    "rating": 38.9,
+    "dominator": 67.8,
+    "discipline": 74.4
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 17.6,
+    "rating": 50.8,
+    "ledPct": 1.2,
+    "avgPlaceDiff": 5.3,
+    "bestFinish": 13,
+    "disciplineAvg": 15.5
+   },
+   "tags": [
+    "Gains 5 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 27,
+     "finish": 13,
+     "led": 0,
+     "laps": 349,
+     "rating": 49.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 27,
+     "finish": 22,
+     "led": 0,
+     "laps": 350,
+     "rating": 47.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 15,
+     "finish": 18,
+     "led": 16,
+     "laps": 349,
+     "rating": 57.5,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "danielsuarez",
+   "name": "Daniel Suarez",
+   "car": "7",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 54.2,
+   "tier": 3,
+   "components": {
+    "finish": 56.7,
+    "rating": 50.0,
+    "dominator": 61.1,
+    "discipline": 50.0
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 19.9,
+    "rating": 58.6,
+    "ledPct": 0.3,
+    "avgPlaceDiff": 5.0,
+    "bestFinish": 9,
+    "disciplineAvg": 20.2
+   },
+   "tags": [
+    "Gains 5 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 33,
+     "finish": 23,
+     "led": 0,
+     "laps": 349,
+     "rating": 46.3,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 26,
+     "finish": 25,
+     "led": 0,
+     "laps": 350,
+     "rating": 47.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 13,
+     "finish": 9,
+     "led": 4,
+     "laps": 350,
+     "rating": 90.1,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austincindric",
+   "name": "Austin Cindric",
+   "car": "2",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 54.0,
+   "tier": 3,
+   "components": {
+    "finish": 43.3,
+    "rating": 56.7,
+    "dominator": 70.0,
+    "discipline": 47.8
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 23.1,
+    "rating": 63.6,
+    "ledPct": 2.1,
+    "avgPlaceDiff": -11.3,
+    "bestFinish": 12,
+    "disciplineAvg": 20.5
+   },
+   "tags": [
+    "Loses 11 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 12,
+     "finish": 29,
+     "led": 0,
+     "laps": 348,
+     "rating": 43.4,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 4,
+     "finish": 12,
+     "led": 20,
+     "laps": 350,
+     "rating": 102.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 21,
+     "finish": 30,
+     "led": 0,
+     "laps": 347,
+     "rating": 38.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kylebusch",
+   "name": "Kyle Busch",
+   "car": "8",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 52.4,
+   "tier": 3,
+   "components": {
+    "finish": 38.9,
+    "rating": 58.9,
+    "dominator": 56.7,
+    "discipline": 58.9
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 26.4,
+    "rating": 64.2,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -5.5,
+    "bestFinish": 20,
+    "disciplineAvg": 18.1
+   },
+   "tags": [
+    "Loses 6 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 37,
+     "finish": 20,
+     "led": 0,
+     "laps": 350,
+     "rating": 52.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 7,
+     "finish": 35,
+     "led": 0,
+     "laps": 272,
+     "rating": 80.3,
+     "status": "water pump",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "coreyheim",
+   "name": "Corey Heim",
+   "car": "67",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 50.4,
+   "tier": 3,
+   "components": {
+    "finish": 70.0,
+    "rating": 45.6,
+    "dominator": 13.3,
+    "discipline": 72.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 15.7
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "justinhaley",
+   "name": "Justin Haley",
+   "car": "77",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 50.1,
+   "tier": 3,
+   "components": {
+    "finish": 52.2,
+    "rating": 61.1,
+    "dominator": 41.1,
+    "discipline": 32.2
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 18.7,
+    "rating": 75.7,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -3.5,
+    "bestFinish": 13,
+    "disciplineAvg": 24.1
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 10,
+     "finish": 23,
+     "led": 0,
+     "laps": 350,
+     "rating": 76.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 19,
+     "finish": 13,
+     "led": 0,
+     "laps": 350,
+     "rating": 75.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "ajallmendinger",
+   "name": "A.J. Allmendinger",
+   "car": "16",
+   "team": "Kaulig Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 49.6,
+   "tier": 3,
+   "components": {
+    "finish": 54.4,
+    "rating": 54.4,
+    "dominator": 43.3,
+    "discipline": 36.7
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 1,
+    "avgFinish": 19.3,
+    "rating": 67.6,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -3.3,
+    "bestFinish": 8,
+    "disciplineAvg": 23.8
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 25,
+     "finish": 8,
+     "led": 0,
+     "laps": 350,
+     "rating": 78.7,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 9,
+     "finish": 18,
+     "led": 0,
+     "laps": 350,
+     "rating": 86.3,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 18,
+     "finish": 36,
+     "led": 0,
+     "laps": 54,
+     "rating": 27.8,
+     "status": "accident",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "tylerreddick",
+   "name": "Tyler Reddick",
+   "car": "45",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 48.3,
+   "tier": 3,
+   "components": {
+    "finish": 36.7,
+    "rating": 43.3,
+    "dominator": 63.3,
+    "discipline": 63.3
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 26.0,
+    "rating": 50.5,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -14.0,
+    "bestFinish": 19,
+    "disciplineAvg": 16.6
+   },
+   "tags": [
+    "Loses 14 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 5,
+     "finish": 36,
+     "led": 0,
+     "laps": 3,
+     "rating": 23.2,
+     "status": "accident",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 22,
+     "finish": 19,
+     "led": 0,
+     "laps": 350,
+     "rating": 61.9,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 8,
+     "finish": 22,
+     "led": 0,
+     "laps": 349,
+     "rating": 71.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "connorzilisch",
+   "name": "Connor Zilisch",
+   "car": "88",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 47.3,
+   "tier": 3,
+   "components": {
+    "finish": 61.1,
+    "rating": 63.3,
+    "dominator": 13.3,
+    "discipline": 27.8
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 11.0,
+    "rating": 86.4,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -3.0,
+    "bestFinish": 11,
+    "disciplineAvg": 25.2
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 8,
+     "finish": 11,
+     "led": 0,
+     "laps": 349,
+     "rating": 86.4,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "michaelmcdowell",
+   "name": "Michael McDowell",
+   "car": "71",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 42.7,
+   "tier": 3,
+   "components": {
+    "finish": 34.4,
+    "rating": 47.8,
+    "dominator": 38.9,
+    "discipline": 52.2
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 25.2,
+    "rating": 58.2,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -9.7,
+    "bestFinish": 23,
+    "disciplineAvg": 20.0
+   },
+   "tags": [
+    "Loses 10 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 11,
+     "finish": 25,
+     "led": 0,
+     "laps": 349,
+     "rating": 49.8,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 13,
+     "finish": 27,
+     "led": 0,
+     "laps": 350,
+     "rating": 59.4,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 22,
+     "finish": 23,
+     "led": 0,
+     "laps": 349,
+     "rating": 67.8,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rickystenhousejr",
+   "name": "Ricky Stenhouse Jr.",
+   "car": "47",
+   "team": "Hyak Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 41.3,
+   "tier": 3,
+   "components": {
+    "finish": 47.8,
+    "rating": 34.4,
+    "dominator": 52.2,
+    "discipline": 30.0
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 19.9,
+    "rating": 55.9,
+    "ledPct": 0.3,
+    "avgPlaceDiff": 8.3,
+    "bestFinish": 5,
+    "disciplineAvg": 24.2
+   },
+   "tags": [
+    "Gains 8 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 16,
+     "finish": 18,
+     "led": 0,
+     "laps": 349,
+     "rating": 64.9,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 30,
+     "finish": 33,
+     "led": 0,
+     "laps": 347,
+     "rating": 29.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 35,
+     "finish": 5,
+     "led": 4,
+     "laps": 350,
+     "rating": 79.6,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "toddgilliland",
+   "name": "Todd Gilliland",
+   "car": "34",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 39.6,
+   "tier": 4,
+   "components": {
+    "finish": 41.1,
+    "rating": 32.2,
+    "dominator": 45.6,
+    "discipline": 45.6
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 23.6,
+    "rating": 52.2,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -1.0,
+    "bestFinish": 12,
+    "disciplineAvg": 20.6
+   },
+   "tags": [
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 17,
+     "finish": 22,
+     "led": 0,
+     "laps": 349,
+     "rating": 57.5,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 34,
+     "finish": 34,
+     "led": 0,
+     "laps": 347,
+     "rating": 33.7,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 14,
+     "finish": 12,
+     "led": 0,
+     "laps": 350,
+     "rating": 69.8,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "noahgragson",
+   "name": "Noah Gragson",
+   "car": "4",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 38.2,
+   "tier": 4,
+   "components": {
+    "finish": 45.6,
+    "rating": 36.7,
+    "dominator": 27.8,
+    "discipline": 41.1
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 21.1,
+    "rating": 54.9,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 2.3,
+    "bestFinish": 16,
+    "disciplineAvg": 22.7
+   },
+   "tags": [
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 15,
+     "finish": 17,
+     "led": 0,
+     "laps": 349,
+     "rating": 70.9,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 31,
+     "finish": 29,
+     "led": 0,
+     "laps": 350,
+     "rating": 36.3,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 23,
+     "finish": 16,
+     "led": 0,
+     "laps": 349,
+     "rating": 58.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "johnhunternemechek",
+   "name": "John Hunter Nemechek",
+   "car": "42",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 35.9,
+   "tier": 3,
+   "components": {
+    "finish": 50.0,
+    "rating": 41.1,
+    "dominator": 13.3,
+    "discipline": 25.6
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 19.5,
+    "rating": 60.6,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 8.0,
+    "bestFinish": 15,
+    "disciplineAvg": 25.4
+   },
+   "tags": [
+    "Gains 8 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 21,
+     "finish": 19,
+     "led": 0,
+     "laps": 349,
+     "rating": 69.9,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 29,
+     "finish": 15,
+     "led": 0,
+     "laps": 350,
+     "rating": 66.3,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 34,
+     "finish": 26,
+     "led": 0,
+     "laps": 348,
+     "rating": 40.5,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "justinallgaier",
+   "name": "Justin Allgaier",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 34.3,
+   "tier": 4,
+   "components": {
+    "finish": 44.4,
+    "rating": 33.3,
+    "dominator": 13.3,
+    "discipline": 44.4
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 22.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "harrisonburton",
+   "name": "Harrison Burton",
+   "car": "35",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": false,
+   "composite": 32.9,
+   "tier": 4,
+   "components": {
+    "finish": 40.0,
+    "rating": 26.7,
+    "dominator": 37.8,
+    "discipline": 26.7
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 20.0,
+    "rating": 50.3,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 5.0,
+    "bestFinish": 20,
+    "disciplineAvg": 25.3
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 25,
+     "finish": 20,
+     "led": 0,
+     "laps": 349,
+     "rating": 50.3,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "shanevangisbergen",
+   "name": "Shane van Gisbergen",
+   "car": "97",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 32.9,
+   "tier": 4,
+   "components": {
+    "finish": 18.9,
+    "rating": 25.6,
+    "dominator": 58.9,
+    "discipline": 43.3
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 30.5,
+    "rating": 38.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -8.5,
+    "bestFinish": 30,
+    "disciplineAvg": 22.1
+   },
+   "tags": [
+    "Loses 8 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 23,
+     "finish": 30,
+     "led": 0,
+     "laps": 347,
+     "rating": 32.8,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 21,
+     "finish": 31,
+     "led": 0,
+     "laps": 349,
+     "rating": 43.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "zanesmith",
+   "name": "Zane Smith",
+   "car": "38",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 29.1,
+   "tier": 4,
+   "components": {
+    "finish": 23.3,
+    "rating": 30.0,
+    "dominator": 32.2,
+    "discipline": 34.4
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 27.4,
+    "rating": 51.9,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -6.7,
+    "bestFinish": 16,
+    "disciplineAvg": 24.0
+   },
+   "tags": [
+    "Loses 7 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 14,
+     "finish": 16,
+     "led": 0,
+     "laps": 349,
+     "rating": 79.4,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 23,
+     "finish": 36,
+     "led": 0,
+     "laps": 344,
+     "rating": 40.7,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 26,
+     "finish": 31,
+     "led": 0,
+     "laps": 347,
+     "rating": 30.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "erikjones",
+   "name": "Erik Jones",
+   "car": "43",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 28.2,
+   "tier": 4,
+   "components": {
+    "finish": 25.6,
+    "rating": 21.1,
+    "dominator": 36.7,
+    "discipline": 38.9
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 27.3,
+    "rating": 39.3,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -5.3,
+    "bestFinish": 16,
+    "disciplineAvg": 23.5
+   },
+   "tags": [
+    "Loses 5 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 10,
+     "finish": 35,
+     "led": 0,
+     "laps": 4,
+     "rating": 25.3,
+     "status": "accident",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 25,
+     "finish": 16,
+     "led": 0,
+     "laps": 350,
+     "rating": 59.7,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 17,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 32,
+     "finish": 32,
+     "led": 0,
+     "laps": 347,
+     "rating": 30.8,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austinhill",
+   "name": "Austin Hill",
+   "car": "33",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 23.3,
+   "tier": 4,
+   "components": {
+    "finish": 30.0,
+    "rating": 23.3,
+    "dominator": 13.3,
+    "discipline": 23.3
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 26.0,
+    "rating": 43.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -2.0,
+    "bestFinish": 26,
+    "disciplineAvg": 25.8
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 24,
+     "finish": 26,
+     "led": 0,
+     "laps": 349,
+     "rating": 43.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rileyherbst",
+   "name": "Riley Herbst",
+   "car": "35",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 23.2,
+   "tier": 4,
+   "components": {
+    "finish": 27.8,
+    "rating": 27.8,
+    "dominator": 13.3,
+    "discipline": 16.7
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 25.5,
+    "rating": 51.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 0.5,
+    "bestFinish": 21,
+    "disciplineAvg": 27.7
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 28,
+     "finish": 21,
+     "led": 0,
+     "laps": 349,
+     "rating": 62.4,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 24,
+     "finish": 30,
+     "led": 0,
+     "laps": 350,
+     "rating": 39.7,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "colecuster",
+   "name": "Cole Custer",
+   "car": "41",
+   "team": "Haas Factory Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 22.2,
+   "tier": 4,
+   "components": {
+    "finish": 21.1,
+    "rating": 16.7,
+    "dominator": 34.4,
+    "discipline": 21.1
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 27.0,
+    "rating": 38.8,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 0.5,
+    "bestFinish": 26,
+    "disciplineAvg": 26.4
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 36,
+     "finish": 28,
+     "led": 0,
+     "laps": 348,
+     "rating": 33.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 19,
+     "finish": 26,
+     "led": 0,
+     "laps": 350,
+     "rating": 44.5,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jimmiejohnson",
+   "name": "Jimmie Johnson",
+   "car": "84",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": false,
+   "composite": 20.7,
+   "tier": 4,
+   "components": {
+    "finish": 20.0,
+    "rating": 26.7,
+    "dominator": 13.3,
+    "discipline": 17.8
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 27.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "tydillon",
+   "name": "Ty Dillon",
+   "car": "10",
+   "team": "Kaulig Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 17.1,
+   "tier": 4,
+   "components": {
+    "finish": 16.7,
+    "rating": 18.9,
+    "dominator": 13.3,
+    "discipline": 18.9
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 29.5,
+    "rating": 43.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 2.0,
+    "bestFinish": 24,
+    "disciplineAvg": 26.9
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 31,
+     "finish": 24,
+     "led": 0,
+     "laps": 349,
+     "rating": 56.9,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 32,
+     "finish": 35,
+     "led": 0,
+     "laps": 346,
+     "rating": 29.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "codyware",
+   "name": "Cody Ware",
+   "car": "51",
+   "team": "Rick Ware Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 15.0,
+   "tier": 4,
+   "components": {
+    "finish": 12.2,
+    "rating": 10.0,
+    "dominator": 30.0,
+    "discipline": 12.2
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 32.0,
+    "rating": 30.1,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 2.5,
+    "bestFinish": 32,
+    "disciplineAvg": 31.1
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 34,
+     "finish": 32,
+     "led": 0,
+     "laps": 347,
+     "rating": 30.3,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 35,
+     "finish": 32,
+     "led": 0,
+     "laps": 349,
+     "rating": 30.0,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "katherinelegge",
+   "name": "Katherine Legge",
+   "car": "78",
+   "team": "Live Fast Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 14.2,
+   "tier": 4,
+   "components": {
+    "finish": 14.4,
+    "rating": 14.4,
+    "dominator": 13.3,
+    "discipline": 14.4
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 30.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jesselove",
+   "name": "Jesse Love",
+   "car": "33",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 12.1,
+   "tier": 4,
+   "components": {
+    "finish": 8.9,
+    "rating": 15.6,
+    "dominator": 13.3,
+    "discipline": 8.9
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 32.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jjyeley",
+   "name": "J.J. Yeley",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 11.4,
+   "tier": 4,
+   "components": {
+    "finish": 10.0,
+    "rating": 12.2,
+    "dominator": 13.3,
+    "discipline": 10.0
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 31.8
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bjmcleod",
+   "name": "B.J. McLeod",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 8.9,
+   "tier": 4,
+   "components": {
+    "finish": 7.8,
+    "rating": 7.8,
+    "dominator": 13.3,
+    "discipline": 7.8
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 33.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "anthonyalfredo",
+   "name": "Anthony Alfredo",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 8.8,
+   "tier": 4,
+   "components": {
+    "finish": 6.7,
+    "rating": 8.9,
+    "dominator": 13.3,
+    "discipline": 6.7
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 33.5
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "caseymears",
+   "name": "Casey Mears",
+   "car": "62",
+   "team": "Beard Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 6.3,
+   "tier": 4,
+   "components": {
+    "finish": 5.6,
+    "rating": 3.3,
+    "dominator": 13.3,
+    "discipline": 5.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 34.7
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chadfinchum",
+   "name": "Chad Finchum",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": true,
+   "composite": 6.1,
+   "tier": 4,
+   "components": {
+    "finish": 3.3,
+    "rating": 5.6,
+    "dominator": 13.3,
+    "discipline": 3.3
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 35.5
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joshbilicki",
+   "name": "Josh Bilicki",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": true,
+   "composite": 3.6,
+   "tier": 4,
+   "components": {
+    "finish": 1.1,
+    "rating": 1.1,
+    "dominator": 13.3,
+    "discipline": 1.1
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 36.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joeygase",
+   "name": "Joey Gase",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 2.7,
+   "tier": 4,
+   "components": {
+    "finish": 0.0,
+    "rating": 0.0,
+    "dominator": 13.3,
+    "discipline": 0.0
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 37.0,
+    "rating": 23.2,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -1.0,
+    "bestFinish": 37,
+    "disciplineAvg": 37.0
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2025,
+     "race": 23,
+     "name": "Iowa Corn 350 Powered by Ethanol",
+     "start": 36,
+     "finish": 37,
+     "led": 0,
+     "laps": 340,
+     "rating": 23.2,
+     "status": "running",
+     "win": false,
+     "track": "Iowa Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  }
+ ],
+ "generatedAt": "2026-11-24"
+}

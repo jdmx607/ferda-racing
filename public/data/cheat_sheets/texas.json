@@ -1,0 +1,4281 @@
+{
+ "slug": "texas",
+ "track": "Texas",
+ "discipline": "intermediate",
+ "datasetTracks": [
+  "Texas Motor Speedway"
+ ],
+ "lengthMi": 1.5,
+ "surface": "paved",
+ "nextGenRaces": 5,
+ "seasons": [
+  2022,
+  2023,
+  2024,
+  2025,
+  2026
+ ],
+ "winners": [
+  {
+   "season": 2026,
+   "race": 11,
+   "driver": "Chase Elliott",
+   "car": "9"
+  },
+  {
+   "season": 2025,
+   "race": 11,
+   "driver": "Joey Logano",
+   "car": "22"
+  },
+  {
+   "season": 2024,
+   "race": 9,
+   "driver": "Chase Elliott",
+   "car": "9"
+  },
+  {
+   "season": 2023,
+   "race": 30,
+   "driver": "William Byron",
+   "car": "24"
+  },
+  {
+   "season": 2022,
+   "race": 30,
+   "driver": "Tyler Reddick",
+   "car": "8"
+  }
+ ],
+ "topPerformers": [
+  {
+   "name": "William Byron",
+   "key": "williambyron",
+   "starts": 5,
+   "avgFinish": 7.3,
+   "wins": 1,
+   "top5": 2
+  },
+  {
+   "name": "Daniel Suarez",
+   "key": "danielsuarez",
+   "starts": 5,
+   "avgFinish": 7.9,
+   "wins": 0,
+   "top5": 1
+  },
+  {
+   "name": "Chase Elliott",
+   "key": "chaseelliott",
+   "starts": 5,
+   "avgFinish": 10.5,
+   "wins": 2,
+   "top5": 2
+  }
+ ],
+ "qualifying": null,
+ "drivers": [
+  {
+   "key": "tylerreddick",
+   "name": "Tyler Reddick",
+   "car": "45",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 94.6,
+   "tier": 1,
+   "components": {
+    "finish": 92.2,
+    "rating": 98.9,
+    "dominator": 92.2,
+    "discipline": 92.2
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 1,
+    "top5": 3,
+    "top10": 3,
+    "dnf": 0,
+    "avgFinish": 10.9,
+    "rating": 109.8,
+    "ledPct": 7.4,
+    "avgPlaceDiff": -1.4,
+    "bestFinish": 1,
+    "disciplineAvg": 12.7
+   },
+   "tags": [
+    "1x Next Gen Winner Here",
+    "Leads Laps Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 8,
+     "finish": 4,
+     "led": 0,
+     "laps": 267,
+     "rating": 110.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 17,
+     "finish": 21,
+     "led": 1,
+     "laps": 271,
+     "rating": 101.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 4,
+     "finish": 4,
+     "led": 37,
+     "laps": 276,
+     "rating": 129.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 15,
+     "finish": 25,
+     "led": 36,
+     "laps": 267,
+     "rating": 74.4,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 4,
+     "finish": 1,
+     "led": 70,
+     "laps": 334,
+     "rating": 130.1,
+     "status": "running",
+     "win": true,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chaseelliott",
+   "name": "Chase Elliott",
+   "car": "9",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 93.4,
+   "tier": 1,
+   "components": {
+    "finish": 94.4,
+    "rating": 94.4,
+    "dominator": 94.4,
+    "discipline": 87.8
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 2,
+    "top5": 2,
+    "top10": 2,
+    "dnf": 1,
+    "avgFinish": 10.5,
+    "rating": 103.4,
+    "ledPct": 13.3,
+    "avgPlaceDiff": 8.2,
+    "bestFinish": 1,
+    "disciplineAvg": 13.9
+   },
+   "tags": [
+    "2x Next Gen Winner Here",
+    "Leads Laps Here",
+    "Gains 8 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 14,
+     "finish": 1,
+     "led": 87,
+     "laps": 267,
+     "rating": 134.8,
+     "status": "running",
+     "win": true,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 29,
+     "finish": 16,
+     "led": 0,
+     "laps": 271,
+     "rating": 71.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 24,
+     "finish": 1,
+     "led": 39,
+     "laps": 276,
+     "rating": 114.9,
+     "status": "running",
+     "win": true,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 29,
+     "finish": 11,
+     "led": 1,
+     "laps": 267,
+     "rating": 84.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 6,
+     "finish": 32,
+     "led": 44,
+     "laps": 184,
+     "rating": 106.8,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "williambyron",
+   "name": "William Byron",
+   "car": "24",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 93.2,
+   "tier": 1,
+   "components": {
+    "finish": 98.9,
+    "rating": 96.7,
+    "dominator": 81.1,
+    "discipline": 90.0
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 1,
+    "top5": 2,
+    "top10": 4,
+    "dnf": 0,
+    "avgFinish": 7.3,
+    "rating": 103.0,
+    "ledPct": 4.1,
+    "avgPlaceDiff": 2.4,
+    "bestFinish": 1,
+    "disciplineAvg": 12.8
+   },
+   "tags": [
+    "1x Next Gen Winner Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 15,
+     "finish": 8,
+     "led": 0,
+     "laps": 267,
+     "rating": 87.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 2,
+     "finish": 13,
+     "led": 22,
+     "laps": 271,
+     "rating": 106.4,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 6,
+     "finish": 3,
+     "led": 0,
+     "laps": 276,
+     "rating": 113.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 18,
+     "finish": 1,
+     "led": 6,
+     "laps": 267,
+     "rating": 97.9,
+     "status": "running",
+     "win": true,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 3,
+     "finish": 7,
+     "led": 42,
+     "laps": 334,
+     "rating": 117.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kylelarson",
+   "name": "Kyle Larson",
+   "car": "5",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 83.9,
+   "tier": 2,
+   "components": {
+    "finish": 58.9,
+    "rating": 92.2,
+    "dominator": 98.9,
+    "discipline": 94.4
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 2,
+    "dnf": 1,
+    "avgFinish": 19.7,
+    "rating": 98.5,
+    "ledPct": 20.1,
+    "avgPlaceDiff": -12.6,
+    "bestFinish": 4,
+    "disciplineAvg": 12.2
+   },
+   "tags": [
+    "Leads Laps Here",
+    "Loses 13 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 11,
+     "finish": 34,
+     "led": 0,
+     "laps": 180,
+     "rating": 51.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 4,
+     "finish": 4,
+     "led": 90,
+     "laps": 271,
+     "rating": 128.4,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 1,
+     "finish": 21,
+     "led": 77,
+     "laps": 276,
+     "rating": 108.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 11,
+     "finish": 31,
+     "led": 99,
+     "laps": 248,
+     "rating": 114.8,
+     "status": "DVP",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 9,
+     "finish": 9,
+     "led": 19,
+     "laps": 334,
+     "rating": 101.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "dennyhamlin",
+   "name": "Denny Hamlin",
+   "car": "11",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 83.3,
+   "tier": 2,
+   "components": {
+    "finish": 63.3,
+    "rating": 90.0,
+    "dominator": 90.0,
+    "discipline": 98.9
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 2,
+    "top10": 3,
+    "dnf": 1,
+    "avgFinish": 18.7,
+    "rating": 92.7,
+    "ledPct": 5.0,
+    "avgPlaceDiff": -8.8,
+    "bestFinish": 2,
+    "disciplineAvg": 9.0
+   },
+   "tags": [
+    "Leads Laps Here",
+    "Loses 9 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 4,
+     "finish": 2,
+     "led": 21,
+     "laps": 267,
+     "rating": 128.4,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 8,
+     "finish": 38,
+     "led": 1,
+     "laps": 73,
+     "rating": 38.9,
+     "status": "engine",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 11,
+     "finish": 30,
+     "led": 37,
+     "laps": 276,
+     "rating": 101.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 10,
+     "finish": 5,
+     "led": 0,
+     "laps": 267,
+     "rating": 115.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 8,
+     "finish": 10,
+     "led": 2,
+     "laps": 334,
+     "rating": 93.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "ryanblaney",
+   "name": "Ryan Blaney",
+   "car": "12",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 82.3,
+   "tier": 2,
+   "components": {
+    "finish": 85.6,
+    "rating": 83.3,
+    "dominator": 76.7,
+    "discipline": 81.1
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 2,
+    "top10": 3,
+    "dnf": 1,
+    "avgFinish": 14.3,
+    "rating": 83.5,
+    "ledPct": 3.1,
+    "avgPlaceDiff": 4.2,
+    "bestFinish": 3,
+    "disciplineAvg": 15.0
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 31,
+     "finish": 10,
+     "led": 5,
+     "laps": 267,
+     "rating": 77.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 24,
+     "finish": 3,
+     "led": 2,
+     "laps": 271,
+     "rating": 91.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 7,
+     "finish": 33,
+     "led": 17,
+     "laps": 268,
+     "rating": 76.9,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 23,
+     "finish": 28,
+     "led": 0,
+     "laps": 258,
+     "rating": 68.5,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 14,
+     "finish": 4,
+     "led": 29,
+     "laps": 334,
+     "rating": 104.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bubbawallace",
+   "name": "Bubba Wallace",
+   "car": "23",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 79.3,
+   "tier": 2,
+   "components": {
+    "finish": 74.4,
+    "rating": 81.1,
+    "dominator": 85.6,
+    "discipline": 76.7
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 3,
+    "dnf": 1,
+    "avgFinish": 16.3,
+    "rating": 83.8,
+    "ledPct": 5.9,
+    "avgPlaceDiff": -0.2,
+    "bestFinish": 3,
+    "disciplineAvg": 15.6
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 37,
+     "finish": 9,
+     "led": 0,
+     "laps": 267,
+     "rating": 79.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 9,
+     "finish": 33,
+     "led": 0,
+     "laps": 179,
+     "rating": 78.5,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 10,
+     "finish": 7,
+     "led": 5,
+     "laps": 276,
+     "rating": 88.4,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 1,
+     "finish": 3,
+     "led": 111,
+     "laps": 267,
+     "rating": 128.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 19,
+     "finish": 25,
+     "led": 0,
+     "laps": 334,
+     "rating": 50.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "carsonhocevar",
+   "name": "Carson Hocevar",
+   "car": "77",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 79.3,
+   "tier": 2,
+   "components": {
+    "finish": 78.9,
+    "rating": 85.6,
+    "dominator": 87.8,
+    "discipline": 54.4
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 14.3,
+    "rating": 88.7,
+    "ledPct": 7.1,
+    "avgPlaceDiff": -5.0,
+    "bestFinish": 7,
+    "disciplineAvg": 18.9
+   },
+   "tags": [
+    "Loses 5 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 1,
+     "finish": 7,
+     "led": 40,
+     "laps": 267,
+     "rating": 105.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 1,
+     "finish": 24,
+     "led": 22,
+     "laps": 270,
+     "rating": 103.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 16,
+     "finish": 10,
+     "led": 0,
+     "laps": 276,
+     "rating": 62.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 19,
+     "finish": 16,
+     "led": 0,
+     "laps": 267,
+     "rating": 66.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bradkeselowski",
+   "name": "Brad Keselowski",
+   "car": "6",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 77.3,
+   "tier": 2,
+   "components": {
+    "finish": 90.0,
+    "rating": 74.4,
+    "dominator": 65.6,
+    "discipline": 74.4
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 3,
+    "dnf": 1,
+    "avgFinish": 13.3,
+    "rating": 76.8,
+    "ledPct": 1.6,
+    "avgPlaceDiff": 4.6,
+    "bestFinish": 2,
+    "disciplineAvg": 16.5
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 25,
+     "finish": 13,
+     "led": 4,
+     "laps": 267,
+     "rating": 68.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 30,
+     "finish": 28,
+     "led": 0,
+     "laps": 246,
+     "rating": 61.3,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 22,
+     "finish": 2,
+     "led": 0,
+     "laps": 276,
+     "rating": 79.4,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 3,
+     "finish": 7,
+     "led": 0,
+     "laps": 267,
+     "rating": 103.4,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 1,
+     "finish": 8,
+     "led": 31,
+     "laps": 334,
+     "rating": 93.6,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chrisbuescher",
+   "name": "Chris Buescher",
+   "car": "17",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 76.9,
+   "tier": 2,
+   "components": {
+    "finish": 83.3,
+    "rating": 87.8,
+    "dominator": 43.3,
+    "discipline": 83.3
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 1,
+    "avgFinish": 15.0,
+    "rating": 91.2,
+    "ledPct": 0.1,
+    "avgPlaceDiff": -6.6,
+    "bestFinish": 5,
+    "disciplineAvg": 14.7
+   },
+   "tags": [
+    "Loses 7 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 3,
+     "finish": 5,
+     "led": 0,
+     "laps": 267,
+     "rating": 114.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 12,
+     "finish": 18,
+     "led": 0,
+     "laps": 271,
+     "rating": 90.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 19,
+     "finish": 15,
+     "led": 0,
+     "laps": 276,
+     "rating": 73.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 2,
+     "finish": 14,
+     "led": 2,
+     "laps": 267,
+     "rating": 103.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 13,
+     "finish": 30,
+     "led": 0,
+     "laps": 270,
+     "rating": 60.4,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joeylogano",
+   "name": "Joey Logano",
+   "car": "22",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 75.7,
+   "tier": 2,
+   "components": {
+    "finish": 81.1,
+    "rating": 70.0,
+    "dominator": 70.0,
+    "discipline": 85.6
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 1,
+    "top5": 2,
+    "top10": 2,
+    "dnf": 1,
+    "avgFinish": 15.4,
+    "rating": 73.8,
+    "ledPct": 2.3,
+    "avgPlaceDiff": 4.0,
+    "bestFinish": 1,
+    "disciplineAvg": 14.7
+   },
+   "tags": [
+    "1x Next Gen Winner Here"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 23,
+     "finish": 37,
+     "led": 0,
+     "laps": 95,
+     "rating": 38.1,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 27,
+     "finish": 1,
+     "led": 7,
+     "laps": 271,
+     "rating": 97.2,
+     "status": "running",
+     "win": true,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 20,
+     "finish": 11,
+     "led": 14,
+     "laps": 276,
+     "rating": 81.4,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 20,
+     "finish": 21,
+     "led": 0,
+     "laps": 267,
+     "rating": 49.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 2,
+     "finish": 2,
+     "led": 15,
+     "laps": 334,
+     "rating": 111.6,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rosschastain",
+   "name": "Ross Chastain",
+   "car": "1",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 75.6,
+   "tier": 2,
+   "components": {
+    "finish": 76.7,
+    "rating": 78.9,
+    "dominator": 72.2,
+    "discipline": 70.0
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 2,
+    "top10": 2,
+    "dnf": 1,
+    "avgFinish": 15.9,
+    "rating": 79.1,
+    "ledPct": 2.5,
+    "avgPlaceDiff": 0.2,
+    "bestFinish": 2,
+    "disciplineAvg": 16.9
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 16,
+     "finish": 26,
+     "led": 0,
+     "laps": 266,
+     "rating": 58.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 31,
+     "finish": 2,
+     "led": 0,
+     "laps": 271,
+     "rating": 77.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 12,
+     "finish": 32,
+     "led": 33,
+     "laps": 275,
+     "rating": 87.1,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 5,
+     "finish": 2,
+     "led": 1,
+     "laps": 267,
+     "rating": 100.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 12,
+     "finish": 13,
+     "led": 1,
+     "laps": 334,
+     "rating": 89.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "christopherbell",
+   "name": "Christopher Bell",
+   "car": "20",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 73.2,
+   "tier": 3,
+   "components": {
+    "finish": 56.7,
+    "rating": 76.7,
+    "dominator": 74.4,
+    "discipline": 96.7
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 2,
+    "dnf": 2,
+    "avgFinish": 21.0,
+    "rating": 73.3,
+    "ledPct": 2.3,
+    "avgPlaceDiff": -9.0,
+    "bestFinish": 4,
+    "disciplineAvg": 12.1
+   },
+   "tags": [
+    "High Speed / Bad Luck",
+    "DNF In 2 Of 5 Starts",
+    "Loses 9 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 7,
+     "finish": 38,
+     "led": 22,
+     "laps": 68,
+     "rating": 75.7,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 16,
+     "finish": 9,
+     "led": 0,
+     "laps": 271,
+     "rating": 72.6,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 3,
+     "finish": 17,
+     "led": 1,
+     "laps": 276,
+     "rating": 84.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 9,
+     "finish": 4,
+     "led": 0,
+     "laps": 267,
+     "rating": 78.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 22,
+     "finish": 34,
+     "led": 0,
+     "laps": 136,
+     "rating": 48.5,
+     "status": "DVP",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "danielsuarez",
+   "name": "Daniel Suarez",
+   "car": "7",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 71.8,
+   "tier": 2,
+   "components": {
+    "finish": 96.7,
+    "rating": 67.8,
+    "dominator": 41.1,
+    "discipline": 72.2
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 4,
+    "dnf": 0,
+    "avgFinish": 7.9,
+    "rating": 77.0,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 4.2,
+    "bestFinish": 5,
+    "disciplineAvg": 16.9
+   },
+   "tags": [
+    "4 Straight Top-10s"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 2,
+     "finish": 6,
+     "led": 0,
+     "laps": 267,
+     "rating": 96.1,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 25,
+     "finish": 10,
+     "led": 0,
+     "laps": 271,
+     "rating": 59.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 17,
+     "finish": 5,
+     "led": 0,
+     "laps": 276,
+     "rating": 63.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 8,
+     "finish": 8,
+     "led": 0,
+     "laps": 267,
+     "rating": 90.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 10,
+     "finish": 12,
+     "led": 1,
+     "laps": 334,
+     "rating": 80.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "erikjones",
+   "name": "Erik Jones",
+   "car": "43",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 70.9,
+   "tier": 2,
+   "components": {
+    "finish": 87.8,
+    "rating": 63.3,
+    "dominator": 61.1,
+    "discipline": 67.8
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 2,
+    "dnf": 1,
+    "avgFinish": 13.1,
+    "rating": 76.1,
+    "ledPct": 1.5,
+    "avgPlaceDiff": 5.8,
+    "bestFinish": 5,
+    "disciplineAvg": 17.5
+   },
+   "tags": [
+    "Gains 6 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 21,
+     "finish": 12,
+     "led": 13,
+     "laps": 267,
+     "rating": 66.6,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 14,
+     "finish": 5,
+     "led": 0,
+     "laps": 271,
+     "rating": 83.4,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 27,
+     "finish": 19,
+     "led": 0,
+     "laps": 276,
+     "rating": 60.1,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 12,
+     "finish": 30,
+     "led": 3,
+     "laps": 255,
+     "rating": 89.1,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 27,
+     "finish": 6,
+     "led": 1,
+     "laps": 334,
+     "rating": 91.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chasebriscoe",
+   "name": "Chase Briscoe",
+   "car": "19",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 67.6,
+   "tier": 2,
+   "components": {
+    "finish": 72.2,
+    "rating": 61.1,
+    "dominator": 63.3,
+    "discipline": 78.9
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 3,
+    "dnf": 1,
+    "avgFinish": 16.5,
+    "rating": 71.3,
+    "ledPct": 0.4,
+    "avgPlaceDiff": 4.4,
+    "bestFinish": 5,
+    "disciplineAvg": 15.4
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 5,
+     "finish": 23,
+     "led": 4,
+     "laps": 266,
+     "rating": 72.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 22,
+     "finish": 27,
+     "led": 0,
+     "laps": 254,
+     "rating": 57.5,
+     "status": "suspension",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 5,
+     "finish": 6,
+     "led": 0,
+     "laps": 276,
+     "rating": 92.6,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 31,
+     "finish": 10,
+     "led": 0,
+     "laps": 267,
+     "rating": 68.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 30,
+     "finish": 5,
+     "led": 0,
+     "laps": 334,
+     "rating": 67.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austincindric",
+   "name": "Austin Cindric",
+   "car": "2",
+   "team": "Team Penske",
+   "make": "Ford",
+   "regular": true,
+   "composite": 60.0,
+   "tier": 3,
+   "components": {
+    "finish": 47.8,
+    "rating": 56.7,
+    "dominator": 83.3,
+    "discipline": 61.1
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 21.3,
+    "rating": 72.2,
+    "ledPct": 6.0,
+    "avgPlaceDiff": -8.0,
+    "bestFinish": 15,
+    "disciplineAvg": 18.2
+   },
+   "tags": [
+    "Loses 8 Spots On Avg",
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 13,
+     "finish": 15,
+     "led": 0,
+     "laps": 267,
+     "rating": 78.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 3,
+     "finish": 25,
+     "led": 60,
+     "laps": 268,
+     "rating": 89.9,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 8,
+     "finish": 25,
+     "led": 0,
+     "laps": 276,
+     "rating": 66.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 32,
+     "finish": 27,
+     "led": 1,
+     "laps": 261,
+     "rating": 34.8,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 11,
+     "finish": 15,
+     "led": 0,
+     "laps": 334,
+     "rating": 70.1,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "anthonyalfredo",
+   "name": "Anthony Alfredo",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 57.9,
+   "tier": 3,
+   "components": {
+    "finish": 57.8,
+    "rating": 51.1,
+    "dominator": 73.3,
+    "discipline": 53.3
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joeygase",
+   "name": "Joey Gase",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 57.9,
+   "tier": 3,
+   "components": {
+    "finish": 57.8,
+    "rating": 51.1,
+    "dominator": 73.3,
+    "discipline": 53.3
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kevinmagnussen",
+   "name": "Kevin Magnussen",
+   "car": "91",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 57.9,
+   "tier": 3,
+   "components": {
+    "finish": 57.8,
+    "rating": 51.1,
+    "dominator": 73.3,
+    "discipline": 53.3
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": null
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "tygibbs",
+   "name": "Ty Gibbs",
+   "car": "54",
+   "team": "Joe Gibbs Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 56.8,
+   "tier": 4,
+   "components": {
+    "finish": 34.4,
+    "rating": 72.2,
+    "dominator": 56.7,
+    "discipline": 65.6
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 2,
+    "avgFinish": 25.4,
+    "rating": 74.6,
+    "ledPct": 0.5,
+    "avgPlaceDiff": -17.4,
+    "bestFinish": 13,
+    "disciplineAvg": 17.7
+   },
+   "tags": [
+    "High Speed / Bad Luck",
+    "DNF In 2 Of 5 Starts",
+    "Loses 17 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 10,
+     "finish": 36,
+     "led": 1,
+     "laps": 110,
+     "rating": 68.1,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 6,
+     "finish": 23,
+     "led": 0,
+     "laps": 271,
+     "rating": 89.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 2,
+     "finish": 13,
+     "led": 5,
+     "laps": 276,
+     "rating": 93.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 4,
+     "finish": 33,
+     "led": 0,
+     "laps": 77,
+     "rating": 55.8,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 16,
+     "finish": 20,
+     "led": 0,
+     "laps": 334,
+     "rating": 48.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "coreyheim",
+   "name": "Corey Heim",
+   "car": "67",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 54.8,
+   "tier": 3,
+   "components": {
+    "finish": 25.6,
+    "rating": 58.9,
+    "dominator": 96.7,
+    "discipline": 47.8
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 31.0,
+    "rating": 78.3,
+    "ledPct": 25.8,
+    "avgPlaceDiff": -14.0,
+    "bestFinish": 31,
+    "disciplineAvg": 20.7
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 17,
+     "finish": 31,
+     "led": 69,
+     "laps": 254,
+     "rating": 78.3,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "alexbowman",
+   "name": "Alex Bowman",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 53.4,
+   "tier": 4,
+   "components": {
+    "finish": 36.7,
+    "rating": 65.6,
+    "dominator": 50.0,
+    "discipline": 63.3
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 2,
+    "avgFinish": 23.0,
+    "rating": 75.0,
+    "ledPct": 0.1,
+    "avgPlaceDiff": -10.2,
+    "bestFinish": 3,
+    "disciplineAvg": 18.0
+   },
+   "tags": [
+    "DNF In 2 Of 5 Starts",
+    "Loses 10 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 9,
+     "finish": 3,
+     "led": 0,
+     "laps": 267,
+     "rating": 98.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 11,
+     "finish": 35,
+     "led": 1,
+     "laps": 172,
+     "rating": 74.5,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 14,
+     "finish": 37,
+     "led": 0,
+     "laps": 100,
+     "rating": 52.2,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 14,
+     "finish": 12,
+     "led": 1,
+     "laps": 267,
+     "rating": 74.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 17,
+     "finish": 29,
+     "led": 0,
+     "laps": 329,
+     "rating": 63.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rickystenhousejr",
+   "name": "Ricky Stenhouse Jr.",
+   "car": "47",
+   "team": "Hyak Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 50.8,
+   "tier": 3,
+   "components": {
+    "finish": 61.1,
+    "rating": 43.3,
+    "dominator": 58.9,
+    "discipline": 36.7
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 2,
+    "dnf": 0,
+    "avgFinish": 16.1,
+    "rating": 62.8,
+    "ledPct": 0.9,
+    "avgPlaceDiff": 9.6,
+    "bestFinish": 6,
+    "disciplineAvg": 22.5
+   },
+   "tags": [
+    "Gains 10 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 22,
+     "finish": 19,
+     "led": 0,
+     "laps": 267,
+     "rating": 71.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 34,
+     "finish": 6,
+     "led": 0,
+     "laps": 271,
+     "rating": 60.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 31,
+     "finish": 23,
+     "led": 0,
+     "laps": 276,
+     "rating": 63.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 24,
+     "finish": 9,
+     "led": 0,
+     "laps": 267,
+     "rating": 59.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 21,
+     "finish": 27,
+     "led": 23,
+     "laps": 333,
+     "rating": 52.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "kylebusch",
+   "name": "Kyle Busch",
+   "car": "8",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 50.7,
+   "tier": 4,
+   "components": {
+    "finish": 43.3,
+    "rating": 52.2,
+    "dominator": 54.4,
+    "discipline": 56.7
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 2,
+    "avgFinish": 21.8,
+    "rating": 68.2,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -5.4,
+    "bestFinish": 9,
+    "disciplineAvg": 18.6
+   },
+   "tags": [
+    "DNF In 2 Of 5 Starts",
+    "Loses 5 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 6,
+     "finish": 20,
+     "led": 0,
+     "laps": 267,
+     "rating": 88.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 26,
+     "finish": 20,
+     "led": 0,
+     "laps": 271,
+     "rating": 72.9,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 35,
+     "finish": 9,
+     "led": 0,
+     "laps": 276,
+     "rating": 61.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 7,
+     "finish": 34,
+     "led": 0,
+     "laps": 73,
+     "rating": 63.6,
+     "status": "DVP",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 18,
+     "finish": 36,
+     "led": 0,
+     "laps": 48,
+     "rating": 33.0,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "rileyherbst",
+   "name": "Riley Herbst",
+   "car": "35",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 47.4,
+   "tier": 3,
+   "components": {
+    "finish": 67.8,
+    "rating": 47.8,
+    "dominator": 34.4,
+    "discipline": 23.3
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 12.5,
+    "rating": 69.5,
+    "ledPct": 0.2,
+    "avgPlaceDiff": 7.0,
+    "bestFinish": 11,
+    "disciplineAvg": 24.5
+   },
+   "tags": [
+    "Gains 7 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 18,
+     "finish": 11,
+     "led": 1,
+     "laps": 267,
+     "rating": 89.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 21,
+     "finish": 14,
+     "led": 0,
+     "laps": 271,
+     "rating": 49.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "ryanpreece",
+   "name": "Ryan Preece",
+   "car": "60",
+   "team": "RFK Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 47.3,
+   "tier": 3,
+   "components": {
+    "finish": 52.2,
+    "rating": 54.4,
+    "dominator": 18.9,
+    "discipline": 58.9
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 19.5,
+    "rating": 72.1,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 6.5,
+    "bestFinish": 12,
+    "disciplineAvg": 18.3
+   },
+   "tags": [
+    "Gains 6 Spots On Avg",
+    "0 Top-10s In 4 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 20,
+     "finish": 14,
+     "led": 0,
+     "laps": 267,
+     "rating": 75.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 33,
+     "finish": 29,
+     "led": 0,
+     "laps": 237,
+     "rating": 76.0,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 26,
+     "finish": 12,
+     "led": 0,
+     "laps": 276,
+     "rating": 71.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 25,
+     "finish": 23,
+     "led": 0,
+     "laps": 267,
+     "rating": 57.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "michaelmcdowell",
+   "name": "Michael McDowell",
+   "car": "71",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 47.2,
+   "tier": 4,
+   "components": {
+    "finish": 32.2,
+    "rating": 50.0,
+    "dominator": 67.8,
+    "discipline": 43.3
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 2,
+    "avgFinish": 24.6,
+    "rating": 69.3,
+    "ledPct": 2.3,
+    "avgPlaceDiff": -11.0,
+    "bestFinish": 11,
+    "disciplineAvg": 21.2
+   },
+   "tags": [
+    "DNF In 2 Of 5 Starts",
+    "Loses 11 Spots On Avg",
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 19,
+     "finish": 27,
+     "led": 0,
+     "laps": 266,
+     "rating": 40.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 5,
+     "finish": 26,
+     "led": 19,
+     "laps": 265,
+     "rating": 74.3,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 13,
+     "finish": 35,
+     "led": 0,
+     "laps": 143,
+     "rating": 75.2,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 17,
+     "finish": 15,
+     "led": 0,
+     "laps": 267,
+     "rating": 82.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 5,
+     "finish": 11,
+     "led": 12,
+     "laps": 334,
+     "rating": 96.1,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "justinhaley",
+   "name": "Justin Haley",
+   "car": "77",
+   "team": "Spire Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 46.8,
+   "tier": 3,
+   "components": {
+    "finish": 70.0,
+    "rating": 38.9,
+    "dominator": 23.3,
+    "discipline": 50.0
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 1,
+    "top10": 1,
+    "dnf": 0,
+    "avgFinish": 14.9,
+    "rating": 60.8,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 12.8,
+    "bestFinish": 3,
+    "disciplineAvg": 20.6
+   },
+   "tags": [
+    "Gains 13 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 15,
+     "finish": 15,
+     "led": 0,
+     "laps": 271,
+     "rating": 65.1,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 32,
+     "finish": 24,
+     "led": 0,
+     "laps": 276,
+     "rating": 45.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 28,
+     "finish": 13,
+     "led": 0,
+     "laps": 267,
+     "rating": 59.9,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 31,
+     "finish": 3,
+     "led": 0,
+     "laps": 334,
+     "rating": 75.4,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austindillon",
+   "name": "Austin Dillon",
+   "car": "3",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 45.8,
+   "tier": 3,
+   "components": {
+    "finish": 65.6,
+    "rating": 36.7,
+    "dominator": 32.2,
+    "discipline": 45.6
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 2,
+    "dnf": 1,
+    "avgFinish": 15.3,
+    "rating": 58.2,
+    "ledPct": 0.1,
+    "avgPlaceDiff": 1.2,
+    "bestFinish": 7,
+    "disciplineAvg": 21.1
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 38,
+     "finish": 18,
+     "led": 0,
+     "laps": 267,
+     "rating": 51.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 19,
+     "finish": 7,
+     "led": 0,
+     "laps": 271,
+     "rating": 67.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 15,
+     "finish": 8,
+     "led": 0,
+     "laps": 276,
+     "rating": 57.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 13,
+     "finish": 36,
+     "led": 0,
+     "laps": 40,
+     "rating": 36.8,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 7,
+     "finish": 17,
+     "led": 3,
+     "laps": 334,
+     "rating": 76.9,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "johnhunternemechek",
+   "name": "John Hunter Nemechek",
+   "car": "42",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": true,
+   "composite": 44.8,
+   "tier": 3,
+   "components": {
+    "finish": 50.0,
+    "rating": 41.1,
+    "dominator": 47.8,
+    "discipline": 38.9
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 1,
+    "dnf": 1,
+    "avgFinish": 19.8,
+    "rating": 60.2,
+    "ledPct": 0.1,
+    "avgPlaceDiff": 9.3,
+    "bestFinish": 8,
+    "disciplineAvg": 22.4
+   },
+   "tags": [
+    "Gains 9 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 33,
+     "finish": 21,
+     "led": 0,
+     "laps": 266,
+     "rating": 66.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 28,
+     "finish": 8,
+     "led": 1,
+     "laps": 271,
+     "rating": 70.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 30,
+     "finish": 34,
+     "led": 0,
+     "laps": 226,
+     "rating": 37.7,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joshberry",
+   "name": "Josh Berry",
+   "car": "21",
+   "team": "Wood Brothers Racing",
+   "make": "Ford",
+   "regular": true,
+   "composite": 40.6,
+   "tier": 3,
+   "components": {
+    "finish": 14.4,
+    "rating": 45.6,
+    "dominator": 78.9,
+    "discipline": 30.0
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 32.0,
+    "rating": 62.9,
+    "ledPct": 5.5,
+    "avgPlaceDiff": -13.7,
+    "bestFinish": 29,
+    "disciplineAvg": 23.1
+   },
+   "tags": [
+    "Loses 14 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 24,
+     "finish": 29,
+     "led": 0,
+     "laps": 266,
+     "rating": 45.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 7,
+     "finish": 32,
+     "led": 41,
+     "laps": 187,
+     "rating": 105.1,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 25,
+     "finish": 36,
+     "led": 0,
+     "laps": 136,
+     "rating": 29.5,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "harrisonburton",
+   "name": "Harrison Burton",
+   "car": "35",
+   "team": "23XI Racing",
+   "make": "Toyota",
+   "regular": false,
+   "composite": 37.2,
+   "tier": 3,
+   "components": {
+    "finish": 35.6,
+    "rating": 28.9,
+    "dominator": 62.2,
+    "discipline": 26.7
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 22.9,
+    "rating": 52.1,
+    "ledPct": 2.4,
+    "avgPlaceDiff": 4.3,
+    "bestFinish": 18,
+    "disciplineAvg": 24.2
+   },
+   "tags": [
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 29,
+     "finish": 28,
+     "led": 7,
+     "laps": 276,
+     "rating": 47.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 30,
+     "finish": 20,
+     "led": 0,
+     "laps": 267,
+     "rating": 46.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 20,
+     "finish": 18,
+     "led": 15,
+     "laps": 334,
+     "rating": 65.9,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "tydillon",
+   "name": "Ty Dillon",
+   "car": "10",
+   "team": "Kaulig Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 35.0,
+   "tier": 3,
+   "components": {
+    "finish": 54.4,
+    "rating": 23.3,
+    "dominator": 36.7,
+    "discipline": 21.1
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 17.5,
+    "rating": 46.8,
+    "ledPct": 0.1,
+    "avgPlaceDiff": 13.0,
+    "bestFinish": 12,
+    "disciplineAvg": 25.7
+   },
+   "tags": [
+    "Gains 13 Spots On Avg",
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 35,
+     "finish": 24,
+     "led": 0,
+     "laps": 266,
+     "rating": 40.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 23,
+     "finish": 12,
+     "led": 0,
+     "laps": 271,
+     "rating": 50.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 36,
+     "finish": 16,
+     "led": 0,
+     "laps": 276,
+     "rating": 41.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 26,
+     "finish": 19,
+     "led": 3,
+     "laps": 267,
+     "rating": 48.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 32,
+     "finish": 16,
+     "led": 0,
+     "laps": 334,
+     "rating": 59.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "zanesmith",
+   "name": "Zane Smith",
+   "car": "38",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 35.0,
+   "tier": 4,
+   "components": {
+    "finish": 41.1,
+    "rating": 30.0,
+    "dominator": 30.0,
+    "discipline": 41.1
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 21.7,
+    "rating": 50.4,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 2.2,
+    "bestFinish": 17,
+    "disciplineAvg": 22.3
+   },
+   "tags": [
+    "0 Top-10s In 4 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 34,
+     "finish": 22,
+     "led": 0,
+     "laps": 266,
+     "rating": 46.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 13,
+     "finish": 17,
+     "led": 0,
+     "laps": 271,
+     "rating": 49.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 18,
+     "finish": 26,
+     "led": 0,
+     "laps": 276,
+     "rating": 64.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 33,
+     "finish": 24,
+     "led": 0,
+     "laps": 267,
+     "rating": 40.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "shanevangisbergen",
+   "name": "Shane van Gisbergen",
+   "car": "97",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 33.0,
+   "tier": 3,
+   "components": {
+    "finish": 45.6,
+    "rating": 25.6,
+    "dominator": 27.8,
+    "discipline": 32.2
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 19.5,
+    "rating": 47.9,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 14.0,
+    "bestFinish": 17,
+    "disciplineAvg": 23.0
+   },
+   "tags": [
+    "Gains 14 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 30,
+     "finish": 17,
+     "led": 0,
+     "laps": 267,
+     "rating": 56.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 37,
+     "finish": 22,
+     "led": 0,
+     "laps": 271,
+     "rating": 39.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "toddgilliland",
+   "name": "Todd Gilliland",
+   "car": "34",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 32.0,
+   "tier": 4,
+   "components": {
+    "finish": 30.0,
+    "rating": 21.1,
+    "dominator": 52.2,
+    "discipline": 34.4
+   },
+   "stats": {
+    "starts": 5,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 26.1,
+    "rating": 44.7,
+    "ledPct": 0.7,
+    "avgPlaceDiff": 3.8,
+    "bestFinish": 11,
+    "disciplineAvg": 22.5
+   },
+   "tags": [
+    "0 Top-10s In 5 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 32,
+     "finish": 32,
+     "led": 0,
+     "laps": 254,
+     "rating": 33.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 32,
+     "finish": 11,
+     "led": 4,
+     "laps": 271,
+     "rating": 61.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 28,
+     "finish": 31,
+     "led": 3,
+     "laps": 276,
+     "rating": 53.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 36,
+     "finish": 35,
+     "led": 0,
+     "laps": 52,
+     "rating": 23.7,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 28,
+     "finish": 28,
+     "led": 1,
+     "laps": 333,
+     "rating": 41.6,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "ajallmendinger",
+   "name": "A.J. Allmendinger",
+   "car": "16",
+   "team": "Kaulig Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 29.1,
+   "tier": 4,
+   "components": {
+    "finish": 16.7,
+    "rating": 34.4,
+    "dominator": 21.1,
+    "discipline": 52.2
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 2,
+    "avgFinish": 30.2,
+    "rating": 50.0,
+    "ledPct": 0.1,
+    "avgPlaceDiff": -16.0,
+    "bestFinish": 25,
+    "disciplineAvg": 20.4
+   },
+   "tags": [
+    "DNF In 2 Of 3 Starts",
+    "Loses 16 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 26,
+     "finish": 25,
+     "led": 0,
+     "laps": 266,
+     "rating": 49.0,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 10,
+     "finish": 36,
+     "led": 0,
+     "laps": 172,
+     "rating": 43.2,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 6,
+     "finish": 29,
+     "led": 1,
+     "laps": 255,
+     "rating": 65.8,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "justinallgaier",
+   "name": "Justin Allgaier",
+   "car": "48",
+   "team": "Hendrick Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 28.2,
+   "tier": 4,
+   "components": {
+    "finish": 42.2,
+    "rating": 24.4,
+    "dominator": 3.3,
+    "discipline": 42.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 21.4
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "connorzilisch",
+   "name": "Connor Zilisch",
+   "car": "88",
+   "team": "Trackhouse Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 26.0,
+   "tier": 4,
+   "components": {
+    "finish": 38.9,
+    "rating": 27.8,
+    "dominator": 12.2,
+    "discipline": 14.4
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 16.0,
+    "rating": 61.8,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -4.0,
+    "bestFinish": 16,
+    "disciplineAvg": 27.8
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 12,
+     "finish": 16,
+     "led": 0,
+     "laps": 267,
+     "rating": 61.8,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "noahgragson",
+   "name": "Noah Gragson",
+   "car": "4",
+   "team": "Front Row Motorsports",
+   "make": "Ford",
+   "regular": true,
+   "composite": 25.8,
+   "tier": 4,
+   "components": {
+    "finish": 27.8,
+    "rating": 32.2,
+    "dominator": 10.0,
+    "discipline": 27.8
+   },
+   "stats": {
+    "starts": 4,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 26.5,
+    "rating": 52.9,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -2.0,
+    "bestFinish": 18,
+    "disciplineAvg": 23.5
+   },
+   "tags": [
+    "0 Top-10s In 4 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 28,
+     "finish": 28,
+     "led": 0,
+     "laps": 266,
+     "rating": 42.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 18,
+     "finish": 34,
+     "led": 0,
+     "laps": 172,
+     "rating": 45.2,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 21,
+     "finish": 18,
+     "led": 0,
+     "laps": 276,
+     "rating": 73.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 26,
+     "finish": 21,
+     "led": 0,
+     "laps": 334,
+     "rating": 58.4,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "austinhill",
+   "name": "Austin Hill",
+   "car": "33",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 19.9,
+   "tier": 4,
+   "components": {
+    "finish": 10.0,
+    "rating": 18.9,
+    "dominator": 38.9,
+    "discipline": 16.7
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 38.0,
+    "rating": 37.2,
+    "ledPct": 0.4,
+    "avgPlaceDiff": -4.0,
+    "bestFinish": 38,
+    "disciplineAvg": 26.7
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 34,
+     "finish": 38,
+     "led": 1,
+     "laps": 98,
+     "rating": 37.2,
+     "status": "steering",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "colecuster",
+   "name": "Cole Custer",
+   "car": "41",
+   "team": "Haas Factory Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 18.9,
+   "tier": 4,
+   "components": {
+    "finish": 21.1,
+    "rating": 16.7,
+    "dominator": 14.4,
+    "discipline": 25.6
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 28.6,
+    "rating": 35.3,
+    "ledPct": 0.0,
+    "avgPlaceDiff": -6.0,
+    "bestFinish": 19,
+    "disciplineAvg": 24.3
+   },
+   "tags": [
+    "Loses 6 Spots On Avg",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 27,
+     "finish": 35,
+     "led": 0,
+     "laps": 173,
+     "rating": 29.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 20,
+     "finish": 19,
+     "led": 0,
+     "laps": 271,
+     "rating": 43.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 24,
+     "finish": 35,
+     "led": 0,
+     "laps": 77,
+     "rating": 30.0,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "bjmcleod",
+   "name": "B.J. McLeod",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 16.6,
+   "tier": 3,
+   "components": {
+    "finish": 18.9,
+    "rating": 12.2,
+    "dominator": 25.6,
+    "discipline": 10.0
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 24.0,
+    "rating": 34.4,
+    "ledPct": 0.1,
+    "avgPlaceDiff": 10.0,
+    "bestFinish": 22,
+    "disciplineAvg": 30.8
+   },
+   "tags": [
+    "Gains 10 Spots On Avg"
+   ],
+   "log": [
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 34,
+     "finish": 22,
+     "led": 0,
+     "laps": 267,
+     "rating": 36.2,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 34,
+     "finish": 26,
+     "led": 1,
+     "laps": 333,
+     "rating": 32.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jjyeley",
+   "name": "J.J. Yeley",
+   "car": "44",
+   "team": "NY Racing Team",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 16.1,
+   "tier": 4,
+   "components": {
+    "finish": 7.8,
+    "rating": 10.0,
+    "dominator": 45.6,
+    "discipline": 7.8
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 32.0,
+    "rating": 32.7,
+    "ledPct": 0.7,
+    "avgPlaceDiff": 3.0,
+    "bestFinish": 32,
+    "disciplineAvg": 31.6
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2023,
+     "race": 30,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 35,
+     "finish": 32,
+     "led": 2,
+     "laps": 241,
+     "rating": 32.7,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "katherinelegge",
+   "name": "Katherine Legge",
+   "car": "78",
+   "team": "Live Fast Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 15.6,
+   "tier": 4,
+   "components": {
+    "finish": 23.3,
+    "rating": 14.4,
+    "dominator": 3.3,
+    "discipline": 18.9
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 26.3
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jesselove",
+   "name": "Jesse Love",
+   "car": "33",
+   "team": "Richard Childress Racing",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 12.0,
+   "tier": 4,
+   "components": {
+    "finish": 15.6,
+    "rating": 13.3,
+    "dominator": 3.3,
+    "discipline": 13.3
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 31.0,
+    "rating": 30.8,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 4.0,
+    "bestFinish": 31,
+    "disciplineAvg": 28.0
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 35,
+     "finish": 31,
+     "led": 0,
+     "laps": 217,
+     "rating": 30.8,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "codyware",
+   "name": "Cody Ware",
+   "car": "51",
+   "team": "Rick Ware Racing",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 9.8,
+   "tier": 4,
+   "components": {
+    "finish": 12.2,
+    "rating": 7.8,
+    "dominator": 7.8,
+    "discipline": 12.2
+   },
+   "stats": {
+    "starts": 3,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 2,
+    "avgFinish": 30.6,
+    "rating": 30.2,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 2.7,
+    "bestFinish": 30,
+    "disciplineAvg": 30.1
+   },
+   "tags": [
+    "DNF In 2 Of 3 Starts",
+    "0 Top-10s In 3 Starts"
+   ],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 29,
+     "finish": 30,
+     "led": 0,
+     "laps": 265,
+     "rating": 32.3,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 36,
+     "finish": 30,
+     "led": 0,
+     "laps": 237,
+     "rating": 30.8,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2022,
+     "race": 30,
+     "name": "Autotrader EchoPark Automotive 500",
+     "start": 36,
+     "finish": 33,
+     "led": 0,
+     "laps": 166,
+     "rating": 24.8,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "jimmiejohnson",
+   "name": "Jimmie Johnson",
+   "car": "84",
+   "team": "Legacy Motor Club",
+   "make": "Toyota",
+   "regular": false,
+   "composite": 8.0,
+   "tier": 4,
+   "components": {
+    "finish": 6.7,
+    "rating": 13.3,
+    "dominator": 3.3,
+    "discipline": 4.4
+   },
+   "stats": {
+    "starts": 1,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": 29.0,
+    "rating": 33.7,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 8.0,
+    "bestFinish": 29,
+    "disciplineAvg": 33.9
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2024,
+     "race": 9,
+     "name": "AutoTrader EchoPark Automotive 400",
+     "start": 37,
+     "finish": 29,
+     "led": 0,
+     "laps": 276,
+     "rating": 33.7,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "joshbilicki",
+   "name": "Josh Bilicki",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": true,
+   "composite": 7.8,
+   "tier": 4,
+   "components": {
+    "finish": 5.6,
+    "rating": 5.6,
+    "dominator": 16.7,
+    "discipline": 5.6
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 31.8
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "danieldye",
+   "name": "Daniel Dye",
+   "car": "78",
+   "team": "Live Fast Motorsports",
+   "make": "Chevrolet",
+   "regular": false,
+   "composite": 7.3,
+   "tier": 4,
+   "components": {
+    "finish": 4.4,
+    "rating": 13.3,
+    "dominator": 3.3,
+    "discipline": 4.4
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 33.5
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "graygaulding",
+   "name": "Gray Gaulding",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": false,
+   "composite": 4.2,
+   "tier": 4,
+   "components": {
+    "finish": 4.4,
+    "rating": 4.4,
+    "dominator": 3.3,
+    "discipline": 4.4
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 33.7
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "chadfinchum",
+   "name": "Chad Finchum",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": true,
+   "composite": 2.6,
+   "tier": 4,
+   "components": {
+    "finish": 3.3,
+    "rating": 1.1,
+    "dominator": 3.3,
+    "discipline": 3.3
+   },
+   "stats": {
+    "starts": 2,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 1,
+    "avgFinish": 35.0,
+    "rating": 25.9,
+    "ledPct": 0.0,
+    "avgPlaceDiff": 2.0,
+    "bestFinish": 33,
+    "disciplineAvg": 35.4
+   },
+   "tags": [],
+   "log": [
+    {
+     "season": 2026,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 36,
+     "finish": 33,
+     "led": 0,
+     "laps": 223,
+     "rating": 27.5,
+     "status": "running",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    },
+    {
+     "season": 2025,
+     "race": 11,
+     "name": "Wurth 400 presented by LIQUI MOLY",
+     "start": 38,
+     "finish": 37,
+     "led": 0,
+     "laps": 167,
+     "rating": 24.2,
+     "status": "accident",
+     "win": false,
+     "track": "Texas Motor Speedway"
+    }
+   ],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "caseymears",
+   "name": "Casey Mears",
+   "car": "62",
+   "team": "Beard Motorsports",
+   "make": "Chevrolet",
+   "regular": true,
+   "composite": 2.3,
+   "tier": 4,
+   "components": {
+    "finish": 1.1,
+    "rating": 3.3,
+    "dominator": 3.3,
+    "discipline": 1.1
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 36.0
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  },
+  {
+   "key": "timmyhill",
+   "name": "Timmy Hill",
+   "car": "66",
+   "team": "Garage 66",
+   "make": "Ford",
+   "regular": false,
+   "composite": 1.7,
+   "tier": 4,
+   "components": {
+    "finish": 2.2,
+    "rating": 0.0,
+    "dominator": 3.3,
+    "discipline": 2.2
+   },
+   "stats": {
+    "starts": 0,
+    "wins": 0,
+    "top5": 0,
+    "top10": 0,
+    "dnf": 0,
+    "avgFinish": null,
+    "rating": null,
+    "ledPct": null,
+    "avgPlaceDiff": null,
+    "bestFinish": null,
+    "disciplineAvg": 35.8
+   },
+   "tags": [
+    "No Next Gen Starts Here"
+   ],
+   "log": [],
+   "start": null,
+   "placeDiffTarget": false
+  }
+ ],
+ "generatedAt": "2026-11-24"
+}
